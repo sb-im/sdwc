@@ -59,23 +59,48 @@
 
   <div class="layui-body">
     <!-- 内容主体区域 -->
-    <div style="padding: 15px;">内容主体区域</div>
+    <div style="padding: 15px;">内容主体区域
+      <div id="app">
+        <button v-on:click="sendMessage" class="layui-btn">sendMessage</button>
+
+      </div>
+      </form>
+    </div>
   </div>
 
   <div class="layui-footer">
-    <!-- 底部固定区域 -->
-    © layui.com - 底部固定区域
+    <!-- footer fix zone -->
+    © sb.im - 2017
   </div>
 </div>
 <script src="./bower_components/layui/dist/layui.js"></script>
 <script>
-//JavaScript代码区域
+//Layui JavaScript
 layui.use('element', function(){
   var element = layui.element;
 
 });
 </script>
 
+<script src="./bower_components/vue/dist/vue.js"></script>
+<script src="./bower_components/axios/dist/axios.js"></script>
+<script>
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    items: false
+  },
+	methods: {
+    sendMessage: function () {
+    //axios.get('/action/start')
+    axios.get('/action.php?cmd=start')
+    }
+	}
+})
+</script>
+
+<!-- Weather plugins of seniverse.com -->
 <script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
 <script>tpwidget("init", {
     "flavor": "bubble",

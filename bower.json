@@ -16,5 +16,6 @@
   ],
   "dependencies": {
     "layui": "https://github.com/sentsin/layui/archive/v2.1.5.tar.gz"
-  }
+  },
+  "private": true
 }
