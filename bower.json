@@ -1,0 +1,20 @@
+{
+  "name": "dashboard",
+  "authors": [
+    "YongXin Shi <shiyongxin@aliyun.com>"
+  ],
+  "description": "super_dock dashboard",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "layui": "https://github.com/sentsin/layui/archive/v2.1.5.tar.gz"
+  }
+}
