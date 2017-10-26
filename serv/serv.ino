@@ -51,8 +51,18 @@ void setup() {
 }
 
 
-void loop()
-{
+void action(button, en, dir, clk) {
+  digitalWrite(dir, HIGH);               // motor dir : Open the door
+  while(digitalRead(button) == HIGH) {      // loop until the button is pressed
+    digitalWrite(clk, HIGH);
+    delayMicroseconds(500);                    // motor speed
+    digitalWrite(clk, LOW);
+    delayMicroseconds(500);                    // motor speed
+  }
+  digitalWrite(en, HIGH);                // disable the motor
+}
+
+void loop() {
 
                                                          // OPEN THE DOOR
 
