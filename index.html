@@ -61,8 +61,8 @@
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">内容主体区域
       <div id="app">
-        <button v-on:click="sendMessage" class="layui-btn">start</button>
-        <button v-on:click="sendMessage1" class="layui-btn">stop</button>
+        <button v-on:click="sendMessage('start')" class="layui-btn">start</button>
+        <button v-on:click="sendMessage('stop')" class="layui-btn">stop</button>
 
       </div>
       </form>
@@ -93,13 +93,9 @@ var app = new Vue({
     items: false
   },
 	methods: {
-    sendMessage: function () {
+    sendMessage: function (cmd) {
     //axios.get('/action/start')
-    axios.get('/action.php?cmd=start')
-    },
-    sendMessage1: function () {
-    //axios.get('/action/start')
-    axios.get('/action.php?cmd=stop')
+    axios.get('/action.php?cmd='+ cmd)
     }
 	}
 })

@@ -36,13 +36,13 @@ void loop() {
   if (comchar == "start") {
     digitalWrite(LED, HIGH);   // 点亮LED
 
-    delay(1000);               // 持续1秒
+    //delay(1000);               // 持续1秒
   } else if (comchar == "stop") {
 
     digitalWrite(LED, LOW);    // 熄灭LED
 
-    delay(1000);               // 持续1秒
+    //delay(1000);               // 持续1秒
   }
-  delay(1000);
+ // delay(1000);
 
 }
