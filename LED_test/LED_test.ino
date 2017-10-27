@@ -1,3 +1,11 @@
+/*
+ * SuperDock
+ *
+ * Version: v0.10
+ * Date: 2017.10.27
+ *
+ */
+
 #define BUTTON_START A0
 #define BUTTON_DOOR_OPENED A1
 #define BUTTON_PLAT_TOP A2
@@ -17,29 +25,30 @@
 #define MOTOR_FIX_CLK 5
 
 
+#define ACTION_MAX_SIZE 2
 
 int LED = 7;
 String comchar;
 
 
-
 struct Action {
+  String  cmd;
   int  button;
   boolean button_status;
+  boolean cw_status;
   int  en;
   int  cw;
   int  clk;
 } action1, action2;
 
-
-struct Action action3 = {BUTTON_START, 1, 13, 12, 11};
 /*
-action1.button = BUTTON_START
-action1.button_status = HIGH
-action1.en = MOTOR_DOOR_EN
-action1.cw = MOTOR_PLAT_DIR
-action1.clk = MOTOR_DOOR_CLK
+*命令，限位开关接口，限位开关状态， cw方向， en, cw, clk
 */
+
+struct Action action_lib[ACTION_MAX_SIZE] = {
+  {"start", BUTTON_START, HIGH, HIGH, 13, 12, 11},
+  {"stop", A2, HIGH, HIGH, 13, 12, 11}
+};
 
 //char line[500] = "";   // 传入的串行数据
 int ret = 0;
@@ -90,8 +99,8 @@ String msg() {
 int action(struct Action *action) {
 
   digitalWrite(action->en, LOW);                // enable the motor
-  digitalWrite(action->cw, HIGH);               // motor dir : Open the door
-  while(digitalRead(action->button) == HIGH) {      // loop until the button is pressed
+  digitalWrite(action->cw, action->cw_status);               // motor dir : Open the door
+  while(digitalRead(action->button) == action->button_status) {      // loop until the button is pressed
     digitalWrite(action->clk, HIGH);
     delayMicroseconds(500);                    // motor speed
     digitalWrite(action->clk, LOW);
@@ -105,11 +114,20 @@ int action(struct Action *action) {
 void loop() {
 
   comchar = msg();
+  for( int a = 0; a < ACTION_MAX_SIZE; a++ ) {
+    //Serial.println(a);
+    if (comchar == action_lib[a].cmd) {
+      action(&action_lib[a]);
+    }
+  }
+
+/*
+//测试用代码
   if (comchar == "start") {
     digitalWrite(LED, HIGH);   // 点亮LED
-    Serial.println(action3.button);
-    Serial.println(action3.button_status);
-    action( &action3 );
+    //Serial.println(action3.button);
+    //Serial.println(action3.button_status);
+    action( &action_lib[0] );
 
     //delay(1000);               // 持续1秒
   } else if (comchar == "stop") {
@@ -119,5 +137,5 @@ void loop() {
     //delay(1000);               // 持续1秒
   }
  // delay(1000);
-
+*/
 }
