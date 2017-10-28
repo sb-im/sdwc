@@ -25,7 +25,7 @@
 #define MOTOR_FIX_CLK 5
 
 
-#define ACTION_MAX_SIZE 2
+#define ACTION_MAX_SIZE 3
 
 int LED = 7;
 String comchar;
@@ -39,6 +39,7 @@ struct Action {
   int  en;
   int  cw;
   int  clk;
+  int  speed;
 } action1, action2;
 
 /*
@@ -46,8 +47,9 @@ struct Action {
 */
 
 struct Action action_lib[ACTION_MAX_SIZE] = {
-  {"start", BUTTON_START, HIGH, HIGH, 13, 12, 11},
-  {"stop", A2, HIGH, HIGH, 13, 12, 11}
+  {"plet_up", A0, HIGH, HIGH, 10, 9, 8, 100},
+  {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
+  {"stopplet_down", A2, HIGH, HIGH, 13, 12, 11, 500}
 };
 
 //char line[500] = "";   // 传入的串行数据
@@ -102,9 +104,9 @@ int action(struct Action *action) {
   digitalWrite(action->cw, action->cw_status);               // motor dir : Open the door
   while(digitalRead(action->button) == action->button_status) {      // loop until the button is pressed
     digitalWrite(action->clk, HIGH);
-    delayMicroseconds(500);                    // motor speed
+    delayMicroseconds(action->speed);                    // motor speed
     digitalWrite(action->clk, LOW);
-    delayMicroseconds(500);                    // motor speed
+    delayMicroseconds(action->speed);                    // motor speed
   }
   digitalWrite(action->en, HIGH);                // disable the motor
   return 0;
