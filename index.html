@@ -95,6 +95,7 @@ var app = new Vue({
 	methods: {
     sendMessage: function (cmd) {
     //axios.get('/action/start')
+    axios.get('http://localhost:3000/depot/'+ cmd)
     axios.get('/action.php?cmd='+ cmd)
     }
 	}
