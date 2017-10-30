@@ -106,6 +106,16 @@ layui.use('element', function(){
 <script src="./bower_components/axios/dist/axios.js"></script>
 <script>
 
+window.onbeforeunload = function () {
+  try {
+    socket.close()
+    socket = null
+  }
+  catch (ex) {
+    alert(ex)
+  }
+}
+
 var console = new Vue({
   el: '#console',
   data: {
@@ -128,9 +138,7 @@ var console = new Vue({
 
         socket.onmessage = function (msg) {
           if (typeof msg.data == "string") {
-            //displayContent(msg.data);
-            //alert(msg.data)
-            console.content = console.content + msg.data
+            log(msg.data)
           }
           else {
             alert("非文本消息");
@@ -140,7 +148,8 @@ var console = new Vue({
         socket.onclose = function (msg) { alert("socket closed!") }
       }
       catch (ex) {
-        log(ex)
+        //log(ex)
+        alert(ex)
       }
     },
     send: function () {
@@ -149,6 +158,27 @@ var console = new Vue({
     }
   }
 })
+
+Date.prototype.Format = function (fmt) { //author: meizz
+  var o = {
+    "M+": this.getMonth() + 1, //月份
+    "d+": this.getDate(), //日
+    "h+": this.getHours(), //小时
+    "m+": this.getMinutes(), //分
+    "s+": this.getSeconds(), //秒
+    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+    "S": this.getMilliseconds() //毫秒
+  };
+  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+  for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+  return fmt;
+}
+
+function log(msg) {
+  console.content += new Date().Format("yyyy/MM/dd hh:mm:ss")+ ":  " + msg
+}
+
 
 var app = new Vue({
   el: '#app',
