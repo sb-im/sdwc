@@ -25,7 +25,7 @@
 #define MOTOR_FIX_CLK 5
 */
 
-#define ACTION_MAX_SIZE 3
+//#define ACTION_MAX_SIZE 3
 
 //int LED = 7;
 String comchar;
@@ -40,14 +40,16 @@ struct Action {
   int  cw;
   int  clk;
   int  speed;
-} action1, action2;
+};
+//action1, action2;
 
 /*
 *命令，限位开关接口，限位开关状态， cw方向， en, cw, clk
 */
 
-struct Action action_lib[ACTION_MAX_SIZE] = {
+struct Action action_lib[] = {
   {"plet_up", A0, HIGH, HIGH, 10, 9, 8, 1000},
+  {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
   {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
   {"stopplet_down", A2, HIGH, HIGH, 13, 12, 11, 500}
 };
@@ -91,7 +93,7 @@ void setup() {
   pinMode(MOTOR_FIX_DIR, OUTPUT);
   pinMode(MOTOR_FIX_CLK, OUTPUT);
 */
-  for( int a = 0; a < ACTION_MAX_SIZE; a++ ) {
+  for( int a = 0; a < sizeof(action_lib)/sizeof(action_lib[0]); a++ ) {
     init(&action_lib[a]);
   }
 }
@@ -129,8 +131,9 @@ int action(struct Action *action) {
 void loop() {
 
   comchar = msg();
-  for( int a = 0; a < ACTION_MAX_SIZE; a++ ) {
-    //Serial.println(a);
+  //for( int a = 0; a < ACTION_MAX_SIZE; a++ ) {
+  for( int a = 0; a < sizeof(action_lib)/sizeof(action_lib[0]); a++ ) {
+    Serial.println(a);
     if (comchar == action_lib[a].cmd) {
       action(&action_lib[a]);
     }
