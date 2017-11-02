@@ -5,7 +5,7 @@
  * Date: 2017.10.27
  *
  */
-
+/*
 #define BUTTON_START A0
 #define BUTTON_DOOR_OPENED A1
 #define BUTTON_PLAT_TOP A2
@@ -23,11 +23,11 @@
 #define MOTOR_FIX_EN 7
 #define MOTOR_FIX_DIR 6
 #define MOTOR_FIX_CLK 5
-
+*/
 
 #define ACTION_MAX_SIZE 3
 
-int LED = 7;
+//int LED = 7;
 String comchar;
 
 
@@ -47,7 +47,7 @@ struct Action {
 */
 
 struct Action action_lib[ACTION_MAX_SIZE] = {
-  {"plet_up", A0, HIGH, HIGH, 10, 9, 8, 100},
+  {"plet_up", A0, HIGH, HIGH, 10, 9, 8, 1000},
   {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
   {"stopplet_down", A2, HIGH, HIGH, 13, 12, 11, 500}
 };
@@ -55,9 +55,19 @@ struct Action action_lib[ACTION_MAX_SIZE] = {
 //char line[500] = "";   // 传入的串行数据
 int ret = 0;
 
+int init(struct Action *action) {
+
+  pinMode(action->button, INPUT_PULLUP);
+
+  pinMode(action->en, OUTPUT);
+  pinMode(action->cw, OUTPUT);
+  pinMode(action->clk, OUTPUT);
+  return 0;
+}
+
 void setup() {
   Serial.begin(9600);
-
+/*
   // 定义7为输出引脚
   pinMode(LED, OUTPUT);
 
@@ -80,7 +90,10 @@ void setup() {
   pinMode(MOTOR_FIX_EN, OUTPUT);
   pinMode(MOTOR_FIX_DIR, OUTPUT);
   pinMode(MOTOR_FIX_CLK, OUTPUT);
-
+*/
+  for( int a = 0; a < ACTION_MAX_SIZE; a++ ) {
+    init(&action_lib[a]);
+  }
 }
 
 /////////////////////////////////
