@@ -1,10 +1,12 @@
 /*
  * SuperDock
  *
- * Version: v0.11
- * Date: 2017.11.2
+ * Version: v0.12
+ * Date: 2017.11.3
  *
  */
+
+int stop = 2;
 
 String comchar;
 
@@ -56,6 +58,8 @@ int init(struct Action *action) {
 void setup() {
   Serial.begin(9600);
 
+  pinMode(stop, INPUT_PULLUP);
+
   for( int a = 0; a < sizeof(action_lib)/sizeof(action_lib[0]); a++ ) {
     init(&action_lib[a]);
   }
@@ -80,7 +84,9 @@ int action(struct Action *action) {
 
   digitalWrite(action->en, LOW);                // enable the motor
   digitalWrite(action->cw, action->cw_status);               // motor dir : Open the door
-  while(digitalRead(action->button) == action->button_status) {      // loop until the button is pressed
+
+  // loop until the button is pressed
+  while(digitalRead(action->button) == action->button_status && digitalRead(stop) == HIGH) {
     digitalWrite(action->clk, HIGH);
     delayMicroseconds(action->speed);                    // motor speed
     digitalWrite(action->clk, LOW);
