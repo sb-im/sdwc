@@ -24,10 +24,19 @@ struct Action {
 */
 
 struct Action action_lib[] = {
+  {"door_up", A0, HIGH, HIGH, 13, 12, 11, 100},
+  {"door_down", A0, HIGH, LOW, 13, 12, 11, 100},
   {"plet_up", A0, HIGH, HIGH, 10, 9, 8,50},
   {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
-  {"b_up", A0, HIGH, LOW, 26, 28, 30, 100},
-  {"b_down", A0, HIGH, HIGH, 26, 28, 30, 100},
+  {"fix_up", A0, HIGH, LOW, 7, 6, 5, 500},
+  {"fix_down", A0, HIGH, HIGH, 7, 6, 5, 500},
+  {"lock_up", A0, HIGH, LOW, 4, 3, 2, 500},
+  {"lock_down", A0, HIGH, HIGH, 4, 3, 2, 500},
+  {"push_up", A0, HIGH, LOW, 40, 42, 44, 100},
+  {"push_down", A0, HIGH, HIGH, 40, 42, 44, 100},
+  {"b_up", A0, HIGH, LOW, 26, 28, 30, 200},
+  {"b_down", A0, HIGH, HIGH, 26, 28, 30, 200},
+  {"roate", A0, HIGH, HIGH, 34, 36, 38, 500},
   {"stopplet_down", A2, HIGH, HIGH, 13, 12, 11, 500}
 };
 
