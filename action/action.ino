@@ -26,8 +26,8 @@ struct Action {
 */
 
 struct Action action_lib[] = {
-  {"door_up", A0, HIGH, HIGH, 13, 12, 11, 100},
-  {"door_down", A0, HIGH, LOW, 13, 12, 11, 100},
+  {"door_up", A0, HIGH, HIGH, 13, 12, 11, 200},
+  {"door_down", A0, HIGH, LOW, 13, 12, 11, 200},
   {"plet_up", A0, HIGH, HIGH, 10, 9, 8,50},
   {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
   {"fix_up", A0, HIGH, LOW, 7, 6, 5, 500},
@@ -39,11 +39,9 @@ struct Action action_lib[] = {
   {"b_up", A0, HIGH, LOW, 26, 28, 30, 200},
   {"b_down", A0, HIGH, HIGH, 26, 28, 30, 200},
   {"roate", A0, HIGH, HIGH, 34, 36, 38, 500},
-  {"stopplet_down", A2, HIGH, HIGH, 13, 12, 11, 500}
+  {"aa", A0, HIGH, HIGH, 13, 12, 11, 500}
 };
 
-//char line[500] = "";   // 传入的串行数据
-int ret = 0;
 
 int init(struct Action *action) {
 
@@ -67,6 +65,7 @@ void setup() {
 
 /////////////////////////////////
 String msg() {
+  int ret = 0;
   char line[500] = "";
   if (Serial.available() > 0) {
     // 读取传入的数据:  读到 \n 为止，或者最多 500 个字符
