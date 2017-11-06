@@ -26,8 +26,8 @@ struct Action {
 */
 
 struct Action action_lib[] = {
-  {"door_up", A0, HIGH, HIGH, 13, 12, 11, 200},
-  {"door_down", A0, HIGH, LOW, 13, 12, 11, 200},
+  {"door_up", A0, HIGH, HIGH, 13, 12, 11, 5},
+  {"door_down", A0, HIGH, LOW, 13, 12, 11, 5},
   {"plet_up", A0, HIGH, HIGH, 10, 9, 8,50},
   {"plet_down", A0, HIGH, LOW, 10, 9, 8, 100},
   {"fix_up", A0, HIGH, LOW, 7, 6, 5, 500},
