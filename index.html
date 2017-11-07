@@ -65,7 +65,12 @@
               <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
                 <input v-model="port" class="layui-input"/>
               </div>
-              <button v-on:click="connect()" class="layui-btn">连接</button>
+              <div v-if="connect_status == 0" >
+                <button v-on:click="connect()" class="layui-btn">连接</button>
+              </div>
+              <div v-else>
+                <button v-on:click="close()" class="layui-btn">断开</button>
+              </div>
             </div>
             <div>
               <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
@@ -107,13 +112,7 @@ layui.use('element', function(){
 <script>
 
 window.onbeforeunload = function () {
-  try {
-    socket.close()
-    socket = null
-  }
-  catch (ex) {
-    alert(ex)
-  }
+    console.close()
 }
 
 var console = new Vue({
@@ -139,6 +138,7 @@ var console = new Vue({
     hostname: window.location.hostname,
     port: '22333',
     message: 'hello',
+    connect_status: false,
     content: ''
   },
 	methods: {
@@ -150,7 +150,8 @@ var console = new Vue({
 
         socket.onopen = function (msg) {
           //$("btnConnect").disabled = true;
-          alert("连接成功！")
+          //alert("连接成功！")
+          console.connect_status = socket.readyState
         }
 
         socket.onmessage = function (msg) {
@@ -162,7 +163,10 @@ var console = new Vue({
           }
         }
 
-        socket.onclose = function (msg) { alert("socket closed!") }
+        socket.onclose = function (msg) {
+          //alert("socket closed!")
+          console.connect_status = false
+        }
       }
       catch (ex) {
         //log(ex)
@@ -172,6 +176,15 @@ var console = new Vue({
     send: function (msg = this.message) {
       //alert(msg)
       socket.send(msg)
+    },
+    close: function () {
+      try {
+        socket.close()
+        socket = null
+      }
+      catch (ex) {
+        alert(ex)
+      }
     },
     clean: function () {
       this.content = ""
