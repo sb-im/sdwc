@@ -48,7 +48,14 @@
 
   <div class="layui-body">
     <!-- 内容主体区域 -->
-    <div style="padding: 15px;">内容主体区域
+    <div style="padding: 15px;">
+      <fieldset class="layui-elem-field">
+        <legend>机舱内实时状态</legend>
+        <div class="layui-field-box">
+          <img src="http://192.168.100.121:8080/?action=stream" />
+        </div>
+      </fieldset>
+      <hr class="layui-bg-blue">
       <div id="app">
         <button v-on:click="sendMessage('start')" class="layui-btn">start</button>
         <button v-on:click="sendMessage('stop')" class="layui-btn">stop</button>
