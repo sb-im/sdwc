@@ -208,8 +208,15 @@ Date.prototype.Format = function (fmt) { //author: meizz
   return fmt;
 }
 
+var msg_tmp = ''
 function log(msg) {
-  console.content += new Date().Format("yyyy/MM/dd hh:mm:ss")+ ":  " + msg
+    //console.content += new Date().Format("yyyy/MM/dd hh:mm:ss")+ ":  " + msg
+  msg_tmp += msg
+  //alert(msg_tmp)
+  if (msg_tmp.indexOf("\n") != -1) {
+    console.content += new Date().Format("yyyy/MM/dd hh:mm:ss")+ ":  " + msg_tmp
+    msg_tmp = ''
+  }
 }
 
 
