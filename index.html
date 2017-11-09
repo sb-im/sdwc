@@ -55,6 +55,19 @@
           <img src="http://192.168.100.121:8080/?action=stream" />
         </div>
       </fieldset>
+      <fieldset class="layui-elem-field">
+        <legend>供电实时状态</legend>
+        <div class="layui-field-box">
+          <button onclick="tete()" class="layui-btn layui-btn-danger">tet</button>
+          <button onclick="drawSwitchPower('electrical')" class="layui-btn layui-btn-danger">电源供电</button>
+          <button onclick="drawSwitchPower('solar_panel')" class="layui-btn layui-btn-danger">太阳能</button>
+          <hr/>
+           <canvas id="myCanvas" width="1000" height="600" style="border:1px solid #000000;"></canvas>
+          <img id="img_1" src="/img/electrical_100.png" />
+          <img id="img_2" src="/img/solar_panel_100.png" />
+          <img id="img_3" src="/img/car_battery_100.png" />
+        </div>
+      </fieldset>
       <hr class="layui-bg-blue">
       <div id="app">
         <button v-on:click="sendMessage('start')" class="layui-btn">start</button>
@@ -123,6 +136,79 @@ layui.use('element', function(){
   var element = layui.element;
 
 });
+</script>
+
+<script>
+
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+function tete () {
+// 矩形
+ctx.fillStyle="#FF0000";
+ctx.fillRect(100,10,300,75);
+drawActionPower()
+}
+// 直线
+function drawPower() {
+  ctx.beginPath()
+  ctx.moveTo(110,50);
+  ctx.lineTo(200,50);
+  ctx.lineTo(200,300);
+  ctx.lineTo(300,300);
+  ctx.lineTo(200,300);
+  ctx.lineTo(200,550);
+  ctx.lineTo(110,550);
+  ctx.lineWidth = 20;
+  ctx.strokeStyle = 'rgba(204, 204, 204, 0.8)';
+  ctx.stroke();
+}
+drawPower()
+
+function drawSwitchPower(mode = "electrical") {
+  drawPower()
+  ctx.beginPath()
+  if (mode == "electrical") {
+  drawElectricalPower()
+  } else if (mode == "solar_panel") {
+    drawSolar_panelPower()
+  }
+  ctx.lineWidth = 8
+  ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)'
+  ctx.stroke()
+}
+
+
+function drawElectricalPower() {
+  ctx.moveTo(110,50);
+  ctx.lineTo(200,50);
+  ctx.lineTo(200,300);
+  ctx.lineTo(300,300);
+}
+function drawSolar_panelPower() {
+  ctx.moveTo(300,300);
+  ctx.lineTo(200,300);
+  ctx.lineTo(200,550);
+  ctx.lineTo(110,550);
+}
+
+
+// 文本
+ctx.font="30px Arial";
+ctx.fillText("Hello World",800,50);
+
+var img_1 = document.getElementById("img_1")
+var img_2 = document.getElementById("img_2")
+var img_3 = document.getElementById("img_3")
+//alert(img)
+img_1.onload = function() {
+	ctx.drawImage(img_1, 10, 0);
+}
+img_2.onload = function() {
+	ctx.drawImage(img_2, 10, 500);
+}
+img_3.onload = function() {
+	ctx.drawImage(img_3, 300, 250);
+}
 </script>
 
 <script src="./bower_components/vue/dist/vue.js"></script>
