@@ -52,7 +52,7 @@
       <fieldset class="layui-elem-field">
         <legend>机舱内实时状态</legend>
         <div class="layui-field-box">
-          <img src="http://192.168.100.121:8080/?action=stream" />
+          <img src="http://192.168.101.208:8080/?action=stream" />
         </div>
       </fieldset>
       <fieldset class="layui-elem-field">
@@ -62,7 +62,7 @@
           <button onclick="drawSwitchPower('electrical')" class="layui-btn layui-btn-danger">电源供电</button>
           <button onclick="drawSwitchPower('solar_panel')" class="layui-btn layui-btn-danger">太阳能</button>
           <hr/>
-           <canvas id="myCanvas" width="1000" height="600" style="border:1px solid #000000;"></canvas>
+           <canvas id="myCanvas" width="1000" height="650" style="border:1px solid #000000;"></canvas>
         </div>
       </fieldset>
       <hr class="layui-bg-blue">
@@ -139,12 +139,14 @@ layui.use('element', function(){
 
 var c=document.getElementById("myCanvas");
 var ctx=c.getContext("2d");
+/*
 function tete () {
 // 矩形
 ctx.fillStyle="#FF0000";
 ctx.fillRect(100,10,300,75);
 drawActionPower()
 }
+*/
 // 直线
 function drawPower() {
   ctx.beginPath()
@@ -225,11 +227,12 @@ function drawUse(output = 0) {
     ctx.lineTo(x_start, y_start + i*h + h/2)
 
     // icon
-    //draw_Img("/img/box_100.png", x_start + l, y_start + i*h + h/2 - img_h/2)
+    draw_Img("/img/box_50.png", x_start + l + img_status_l/2, y_start + i*h + h/2 - img_status_h/2)
+  /*
     var img = new Image()
     img.src = "/img/box1600.png"
     ctx.drawImage(img, x_start + l + img_status_l/2, y_start + i*h + h/2 - img_status_h/2, 50, 50)
-
+*/
     draw_Img("/img/charged_battery_empty_100.png", x_start + l + img_l, y_start + i*h + h/2 - img_h/2)
 
     // color
