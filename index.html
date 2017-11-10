@@ -151,10 +151,11 @@ function drawPower() {
   ctx.moveTo(110,50);
   ctx.lineTo(200,50);
   ctx.lineTo(200,300);
-  ctx.lineTo(300,300);
+  ctx.lineTo(290,300);
   ctx.lineTo(200,300);
   ctx.lineTo(200,550);
   ctx.lineTo(110,550);
+  ctx.lineJoin = "round";
   ctx.lineWidth = 20;
   ctx.strokeStyle = 'rgba(204, 204, 204, 0.8)';
   ctx.stroke();
@@ -169,6 +170,9 @@ function drawSwitchPower(mode = "electrical") {
   } else if (mode == "solar_panel") {
     drawSolar_panelPower()
   }
+  // 圆角
+  ctx.lineJoin = "round";
+
   ctx.lineWidth = 8
   ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)'
   ctx.stroke()
@@ -188,7 +192,7 @@ function drawSolar_panelPower() {
   ctx.lineTo(110,550);
 }
 
-function drawUse() {
+function drawUse(output = 0) {
   count = 6
 
   // line x length
@@ -204,6 +208,8 @@ function drawUse() {
   // icon img
   img_l = 100
   img_h = 100
+  img_status_l = 50
+  img_status_h = 50
 
   h = (y_end - y_start) / count
 
@@ -219,32 +225,52 @@ function drawUse() {
     ctx.lineTo(x_start, y_start + i*h + h/2)
 
     // icon
-    draw_Img("/img/box_100.png", x_start + l, y_start + i*h + h/2 - img_h/2)
+    //draw_Img("/img/box_100.png", x_start + l, y_start + i*h + h/2 - img_h/2)
+    var img = new Image()
+    img.src = "/img/box1600.png"
+    ctx.drawImage(img, x_start + l + img_status_l/2, y_start + i*h + h/2 - img_status_h/2, 50, 50)
+
     draw_Img("/img/charged_battery_empty_100.png", x_start + l + img_l, y_start + i*h + h/2 - img_h/2)
 
     // color
-    ctx.fillStyle="#4788c7";
+    ctx.fillStyle="rgba(1, 0, 0, 1.0)";
 
     // text
     ctx.font="20px Arial";
-    ctx.fillText("电池仓 "+ i + "  99%  ", x_start + l + img_l, y_start + i*h + img_h + h/2 - img_h/2);
+    ctx.fillText("电池仓 "+ i, x_start + l + 10, y_start + i*h + img_h + h/2 - img_h/2);
 
+    // color
+    ctx.fillStyle="rgba(152, 204, 253, 1.0)";
     // %
     ctx.fillRect(x_start + l + img_l, y_start + i*h + 25 + h/2 - img_h/2, 180, 50);
 
     // color
-    ctx.fillStyle="#ef371f";
+    ctx.fillStyle="rgba(1, 0, 0, 0.8)";
 
-    // text
+    // text %
     ctx.font="30px Arial";
     ctx.fillText("99%", x_start + l + img_l + 100, y_start + i*h +  h/2 + 10);
+
+    // text 9℃"
+    ctx.font="30px Arial";
+    ctx.fillText("29℃", x_start + l + img_l + 220, y_start + i*h +  h/2 + 10);
   }
 
-  ctx.lineWidth = 20;
-  ctx.strokeStyle = 'rgba(204, 204, 204, 0.8)';
+
+  // 圆角
+  ctx.lineJoin = "round";
+
+  if (output == 1) {
+    ctx.lineWidth = 8
+    ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)'
+  } else {
+    ctx.lineWidth = 20;
+    ctx.strokeStyle = 'rgba(204, 204, 204, 0.8)';
+  }
   ctx.stroke();
 }
 drawUse()
+drawUse(1)
 
 function draw_Img(src, x, y) {
   var img = {"src": src, "x": x, "y": y}
