@@ -191,6 +191,40 @@ function drawSolar_panelPower() {
   ctx.lineTo(110,550);
 }
 
+function drawUse() {
+  count = 6
+  l = 100
+
+  // x&y
+  x_start = 500
+  y_start = 50
+
+  x_end = 1000
+  y_end = 550
+
+  h = (y_end - y_start) / count
+
+  //alert(h)
+
+  ctx.beginPath()
+  ctx.lineTo(x_start-100, (y_end - y_start)/2 + y_start)
+  ctx.lineTo(x_start, (y_end - y_start)/2 + y_start)
+  for (i =0; i<count; i++ ) {
+    //alert(i)
+    ctx.lineTo(x_start, y_start + i*h + h/2)
+    ctx.lineTo(x_start + l, y_start + i*h + h/2)
+    ctx.lineTo(x_start, y_start + i*h + h/2)
+
+
+    ctx.font="20px Arial";
+    ctx.fillText(i + "Hello World", x_start + l, y_start + i*h);
+  }
+
+  ctx.lineWidth = 20;
+  ctx.strokeStyle = 'rgba(204, 204, 204, 0.8)';
+  ctx.stroke();
+}
+drawUse()
 
 // 文本
 ctx.font="30px Arial";
