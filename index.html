@@ -58,14 +58,11 @@
       <fieldset class="layui-elem-field">
         <legend>供电实时状态</legend>
         <div class="layui-field-box">
-          <button onclick="tete()" class="layui-btn layui-btn-danger">tet</button>
+          <button onclick="tete()" class="layui-btn layui-btn-danger">AUTO</button>
           <button onclick="drawSwitchPower('electrical')" class="layui-btn layui-btn-danger">电源供电</button>
           <button onclick="drawSwitchPower('solar_panel')" class="layui-btn layui-btn-danger">太阳能</button>
           <hr/>
            <canvas id="myCanvas" width="1000" height="600" style="border:1px solid #000000;"></canvas>
-          <img id="img_1" src="/img/electrical_100.png" />
-          <img id="img_2" src="/img/solar_panel_100.png" />
-          <img id="img_3" src="/img/car_battery_100.png" />
         </div>
       </fieldset>
       <hr class="layui-bg-blue">
@@ -197,10 +194,14 @@ function drawUse() {
 
   // x&y
   x_start = 500
-  y_start = 50
+  y_start = 0
 
   x_end = 1000
-  y_end = 550
+  y_end = 600
+
+  // icon img
+  img_l = 100
+  img_h = 100
 
   h = (y_end - y_start) / count
 
@@ -215,9 +216,19 @@ function drawUse() {
     ctx.lineTo(x_start + l, y_start + i*h + h/2)
     ctx.lineTo(x_start, y_start + i*h + h/2)
 
+    // icon
+    draw_Img("/img/box_100.png", x_start + l, y_start + i*h)
+    draw_Img("/img/charged_battery_empty_100.png", x_start + l + img_l, y_start + i*h)
 
+    // color
+    ctx.fillStyle="#4788c7";
+
+    // text
     ctx.font="20px Arial";
-    ctx.fillText(i + "Hello World", x_start + l, y_start + i*h);
+    ctx.fillText("电池仓 "+ i, x_start + l + img_l, y_start + i*h + 100);
+
+    // %
+    ctx.fillRect(x_start + l + img_l, y_start + i*h + 25, 180, 50);
   }
 
   ctx.lineWidth = 20;
@@ -226,23 +237,45 @@ function drawUse() {
 }
 drawUse()
 
+function draw_Img(src, x, y) {
+  var img = {"src": src, "x": x, "y": y}
+  drawImg(img)
+}
+
+function drawImg(source) {
+  //alert(source.src)
+  var img = new Image();
+  img.src = source.src;
+  img.onload = function() {
+    ctx.drawImage(img, source.x, source.y);
+  }
+}
+
+function drawAllImg() {
+  var img = [
+    {"src": "/img/electrical_100.png", "x": 10, "y": 0},
+    {"src": "/img/solar_panel_100.png", "x": 10, "y": 500},
+    {"src": "/img/car_battery_100.png", "x": 300, "y": 250}
+    /*
+    {"src": "/img/quad-col_100.png", "x": 600, "y": 0},
+    {"src": "/img/box_100.png", "x": 600, "y": 100}
+    */
+  ]
+
+  for (var i in img) {
+    drawImg(img[i])
+  }
+}
+
+//drawImg()
+drawAllImg()
+
+/*
 // 文本
 ctx.font="30px Arial";
 ctx.fillText("Hello World",800,50);
 
-var img_1 = document.getElementById("img_1")
-var img_2 = document.getElementById("img_2")
-var img_3 = document.getElementById("img_3")
-//alert(img)
-img_1.onload = function() {
-	ctx.drawImage(img_1, 10, 0);
-}
-img_2.onload = function() {
-	ctx.drawImage(img_2, 10, 500);
-}
-img_3.onload = function() {
-	ctx.drawImage(img_3, 300, 250);
-}
+*/
 </script>
 
 <script src="./bower_components/vue/dist/vue.js"></script>
