@@ -190,6 +190,8 @@ function drawSolar_panelPower() {
 
 function drawUse() {
   count = 6
+
+  // line x length
   l = 100
 
   // x&y
@@ -217,18 +219,25 @@ function drawUse() {
     ctx.lineTo(x_start, y_start + i*h + h/2)
 
     // icon
-    draw_Img("/img/box_100.png", x_start + l, y_start + i*h)
-    draw_Img("/img/charged_battery_empty_100.png", x_start + l + img_l, y_start + i*h)
+    draw_Img("/img/box_100.png", x_start + l, y_start + i*h + h/2 - img_h/2)
+    draw_Img("/img/charged_battery_empty_100.png", x_start + l + img_l, y_start + i*h + h/2 - img_h/2)
 
     // color
     ctx.fillStyle="#4788c7";
 
     // text
     ctx.font="20px Arial";
-    ctx.fillText("电池仓 "+ i, x_start + l + img_l, y_start + i*h + 100);
+    ctx.fillText("电池仓 "+ i + "  99%  ", x_start + l + img_l, y_start + i*h + img_h + h/2 - img_h/2);
 
     // %
-    ctx.fillRect(x_start + l + img_l, y_start + i*h + 25, 180, 50);
+    ctx.fillRect(x_start + l + img_l, y_start + i*h + 25 + h/2 - img_h/2, 180, 50);
+
+    // color
+    ctx.fillStyle="#ef371f";
+
+    // text
+    ctx.font="30px Arial";
+    ctx.fillText("99%", x_start + l + img_l + 100, y_start + i*h +  h/2 + 10);
   }
 
   ctx.lineWidth = 20;
