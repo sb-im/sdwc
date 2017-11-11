@@ -38,8 +38,8 @@ struct Action action_lib[] = {
   {"push_down", A0, HIGH, LOW, 40, 42, 44, 10},
   {"b_up", A0, HIGH, HIGH, 41, 43, 45, 20},
   {"b_down", A0, HIGH, LOW, 41, 43, 45, 20},
-  {"roate_up", A0, HIGH, HIGH, 35, 37, 39, 50},
-  {"roate_down", A0, HIGH, LOW, 35, 37, 39, 50},
+  {"roate_up", A0, HIGH, HIGH, 35, 37, 39, 500},
+  {"roate_down", A0, HIGH, LOW, 35, 37, 39, 500},
   {"test", A0, HIGH, HIGH, 13, 12, 11, 50}
 };
 
@@ -86,7 +86,7 @@ int action(struct Action *action) {
   digitalWrite(action->cw, action->cw_status);               // motor dir : Open the door
 
   // loop until the button is pressed
-  while(digitalRead(action->button) == action->button_status && digitalRead(stop) == HIGH) {
+  while(digitalRead(action->button) == action->button_status && digitalRead(stop) == LOW) {
     digitalWrite(action->clk, HIGH);
     delayMicroseconds(action->speed);                    // motor speed
     digitalWrite(action->clk, LOW);
