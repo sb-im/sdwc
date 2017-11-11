@@ -18,8 +18,8 @@
     <ul class="layui-nav layui-layout-right">
       <li class="layui-nav-item">
         <a href="javascript:;">
-          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-          贤心
+          <img src="https://sb.im/images/logo-sb.png" class="layui-nav-img">
+          草莓创新
         </a>
         <dl class="layui-nav-child">
           <dd><a href="">基本资料</a></dd>
@@ -49,12 +49,31 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
-      <fieldset class="layui-elem-field">
-        <legend>机舱内实时状态</legend>
-        <div class="layui-field-box">
-          <img src="http://192.168.101.208:8080/?action=stream" />
-        </div>
-      </fieldset>
+      <div class="layui-col-xs6 layui-col-sm6 layui-col-md8">
+        <fieldset class="layui-elem-field">
+          <legend>机舱内实时状态</legend>
+          <div class="layui-field-box">
+            <img src="http://192.168.101.208:8080/?action=stream" />
+          </div>
+        </fieldset>
+      </div>
+      <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+        <fieldset class="layui-elem-field">
+          <legend>天气实时状态</legend>
+          <div class="layui-field-box">
+            <div id="weather">
+              <button v-on:click="getWeatherForecast()" class="layui-btn">发送</button>
+              <div v-show="forecast">
+                HHHHHHHHHHHHHHHHHHHH
+                <br/>
+                {{ forecast.status }}
+                {{ forecast.description }}
+
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
       <fieldset class="layui-elem-field">
         <legend>供电实时状态</legend>
         <div class="layui-field-box">
@@ -139,6 +158,39 @@ layui.use('element', function(){
 
 <script src="./bower_components/vue/dist/vue.js"></script>
 <script src="./bower_components/axios/dist/axios.js"></script>
+
+<script>
+//window.onload = weather.getWeatherForecast()
+
+var weather = new Vue({
+  el: '#weather',
+  data: {
+    forecast: ""
+  },
+  methods: {
+    getWeatherForecast: function () {
+      axios.get('./forecast.json')
+      .then(function (response) {
+        //weather.aa(response)
+        //console.log(response)
+        weather.forecast = response.data.result.minutely
+        //alert(response.data.result.minutely.status)
+      })
+      .catch(function (error) {
+        console.log(error)
+      });
+      //var tmp = axios.get('./forecast.json')
+      //this.forecast = tmp.result.hourly
+      //alert(tmp.status)
+      //alert(tmp.result.hourly.description)
+    }
+  }
+
+})
+
+</script>
+
+
 <script>
 
 window.onbeforeunload = function () {
