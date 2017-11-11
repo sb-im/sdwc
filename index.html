@@ -62,9 +62,26 @@
           <legend>天气实时状态</legend>
           <div class="layui-field-box">
             <div id="weather">
-              <button v-on:click="getWeatherForecast()" class="layui-btn">发送</button>
-              <div v-show="forecast">
-                HHHHHHHHHHHHHHHHHHHH
+              <button v-on:click="getWeatherRealtime()" class="layui-btn">实时</button>
+              <button v-on:click="getWeatherForecast()" class="layui-btn">预报</button>
+              <hr/>
+              <div v-show="realtime">
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                  {{ realtime.skycon }}
+                  <img src="./assets/skycon/CLEAR_DAY.png" />
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                  温度：
+                  {{ realtime.temperature }}
+                  <br/>
+                  湿度：
+                  {{ realtime.humidity }}
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                  {{ realtime.skycon }}
+                </div>
+                {{ realtime.cloudrate }}
+                {{ realtime.status }}
                 <br/>
                 {{ forecast.status }}
                 {{ forecast.description }}
@@ -165,9 +182,19 @@ layui.use('element', function(){
 var weather = new Vue({
   el: '#weather',
   data: {
+    realtime: "",
     forecast: ""
   },
   methods: {
+    getWeatherRealtime: function () {
+      axios.get('./realtime.json')
+      .then(function (response) {
+        weather.realtime = response.data.result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
     getWeatherForecast: function () {
       axios.get('./forecast.json')
       .then(function (response) {
