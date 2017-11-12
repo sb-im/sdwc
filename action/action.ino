@@ -7,6 +7,7 @@
  */
 
 int stop = 2;
+int low = 3;
 
 String comchar;
 
@@ -58,6 +59,8 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(stop, INPUT_PULLUP);
+  pinMode(low, OUTPUT);
+  digitalWrite(low, LOW);                // enable the motor
 
   for( int a = 0; a < sizeof(action_lib)/sizeof(action_lib[0]); a++ ) {
     init(&action_lib[a]);
