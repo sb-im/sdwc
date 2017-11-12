@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>superdock - sb.im</title>
   <link rel="stylesheet" href="./bower_components/layui/dist/css/layui.css">
-  <script src="./bower_components/echarts/dist/echarts.js"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -93,29 +92,7 @@
                 </div>
               <div v-show="forecast">
                 <hr/>
-                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
-                  {{ realtime.skycon }}
-                  <img v-bind:src="[ './assets/skycon/' + realtime.skycon + '.png']" />
-                  <img src="./assets/skycon/CLEAR_DAY.png" />
-                </div>
-                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
-                  温度：
-                  {{ realtime.temperature }}
-                  <br/>
-                  湿度：
-                  {{ realtime.humidity }}
-                </div>
-                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
-                  风向：
-                  {{ wind.direction }}
-                  <br/>
-                  风速：
-                  {{ wind.speed }}
-                </div>
-                {{ realtime.cloudrate }}
-                {{ realtime.status }}
-                <br/>
-                {{ forecast.status }}
+                当前状态描述：
                 {{ forecast.description }}
 
               </div>
@@ -209,6 +186,8 @@ layui.use('element', function(){
 <script src="./bower_components/vue/dist/vue.js"></script>
 <script src="./bower_components/axios/dist/axios.js"></script>
 
+<script src="./bower_components/echarts/dist/echarts.js"></script>
+
 
 <script type="text/javascript">
 
@@ -216,19 +195,12 @@ function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 1
   // 基于准备好的dom，初始化echarts实例
   var myChart = echarts.init(document.getElementById('weather_minute'));
 
-
-  //var dataAxis = ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
-
   var dataAxis = new Array()
-  /*
-  for (i=1; 1<60; i++) {
+
+  for (i=0; i<60; i++) {
     dataAxis.push(i)
-
   }
-  */
 
-
-//  var data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
   var yMax = 1;
   var dataShadow = [];
 
@@ -238,15 +210,14 @@ function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 1
 
   option = {
     title: {
-      text: '特性示例：渐变色 阴影 点击缩放',
-      subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
+      text: '最近一小时降水情况',
+      subtext: '坐标数据来源取决于网络出口节点坐标，数据仅供参考'
     },
     xAxis: {
       data: dataAxis,
       axisLabel: {
-        inside: true,
         textStyle: {
-          color: '#fff'
+          color: '#999'
         }
       },
       axisTick: {
@@ -325,27 +296,6 @@ function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 1
       endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
     });
   });
-  /*
-  // 指定图表的配置项和数据
-  var option = {
-title: {
-text: 'ECharts 入门示例'
-},
-tooltip: {},
-legend: {
-data:['销量']
-},
-xAxis: {
-data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-},
-yAxis: {},
-series: [{
-name: '销量',
-type: 'bar',
-data: [5, 20, 36, 10, 10, 20]
-}]
-};
-   */
 
   // 使用刚指定的配置项和数据显示图表。
   myChart.setOption(option);
