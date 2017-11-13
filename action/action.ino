@@ -29,16 +29,16 @@ struct Action {
 struct Action action_lib[] = {
   {"door_up", A14, HIGH, LOW, 13, 12, 11, 35},
   {"door_down", A13, HIGH, HIGH, 13, 12, 11, 35},
-  {"plet_up", A1, HIGH, LOW, 22, 24, 26, 20},
-  {"plet_down", A0, HIGH, HIGH, 22, 24, 26, 20},
+  {"plat_up", A1, HIGH, LOW, 22, 24, 26, 20},
+  {"plat_down", A0, HIGH, HIGH, 22, 24, 26, 20},
   {"fix_up", A3, HIGH, HIGH, 23, 25, 27, 300},
-  {"fix_down", A2, HIGH, LOW, 23, 25, 27, 300},
+  {"fix_down", A2, HIGH, LOW, 23, 25, 27, 30},
   {"lock_up", A5, HIGH, LOW, 29, 31, 33, 50},
   {"lock_down", A4, HIGH, HIGH, 29, 31, 33, 50},
   {"push_up", A7, HIGH, HIGH, 40, 42, 44, 10},
   {"push_down", A6, HIGH, LOW, 40, 42, 44, 10},
-  {"b_up", A8, HIGH, HIGH, 41, 43, 45, 10},
-  {"b_down", A9, HIGH, LOW, 41, 43, 45, 10},
+  {"battery_up", A8, HIGH, HIGH, 41, 43, 45, 10},
+  {"battery_down", A9, HIGH, LOW, 41, 43, 45, 10},
   {"roate_up", A10, HIGH, LOW, 35, 37, 39, 800},
   {"roate_down", A11, HIGH, LOW, 35, 37, 39, 800},
   {"test", A0, HIGH, HIGH, 13, 12, 11, 50}
@@ -82,6 +82,11 @@ String msg() {
   return line;
 }
 
+int callbackMsg(String cmd) {
+    Serial.print(cmd);
+    Serial.println(" done");
+
+}
 
 int action(struct Action *action) {
 
@@ -96,6 +101,7 @@ int action(struct Action *action) {
     delayMicroseconds(action->speed);                    // motor speed
   }
   digitalWrite(action->en, HIGH);                // disable the motor
+  callbackMsg(action->cmd);
   return 0;
 }
 /////////////////////////////////
