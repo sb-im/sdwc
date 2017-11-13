@@ -69,7 +69,6 @@
                 <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
                   {{ realtime.skycon }}
                   <img v-bind:src="[ './assets/skycon/' + realtime.skycon + '.png']" />
-                  <img src="./assets/skycon/CLEAR_DAY.png" />
                 </div>
                 <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
                   温度：
@@ -86,10 +85,6 @@
                   {{ wind.speed }}
                 </div>
               </div>
-
-                <div v-for="item in forecast.precipitation" >
-                  {{ item }}
-                </div>
               <div v-show="forecast">
                 <hr/>
                 当前状态描述：
