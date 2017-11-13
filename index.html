@@ -196,7 +196,7 @@ function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 1
     dataAxis.push(i)
   }
 
-  var yMax = 1;
+  var yMax = 3;
   var dataShadow = [];
 
   for (var i = 0; i < data.length; i++) {
@@ -206,7 +206,7 @@ function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 1
   option = {
     title: {
       text: '最近一小时降水情况',
-      subtext: '坐标数据来源取决于网络出口节点坐标，数据仅供参考'
+      subtext: '降水强度，0.03-0.25是小雨，0.25-0.35是中雨, 0.35以上是大雨'
     },
     xAxis: {
       data: dataAxis,
