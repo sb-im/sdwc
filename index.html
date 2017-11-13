@@ -18,8 +18,8 @@
     <ul class="layui-nav layui-layout-right">
       <li class="layui-nav-item">
         <a href="javascript:;">
-          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-          贤心
+          <img src="https://sb.im/images/logo-sb.png" class="layui-nav-img">
+          草莓创新
         </a>
         <dl class="layui-nav-child">
           <dd><a href="">基本资料</a></dd>
@@ -49,12 +49,53 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
-      <fieldset class="layui-elem-field">
-        <legend>机舱内实时状态</legend>
-        <div class="layui-field-box">
-          <img src="http://192.168.101.208:8080/?action=stream" />
-        </div>
-      </fieldset>
+      <div class="layui-col-xs6 layui-col-sm6 layui-col-md8">
+        <fieldset class="layui-elem-field">
+          <legend>机舱内实时状态</legend>
+          <div class="layui-field-box">
+            <img src="http://192.168.101.208:8080/?action=stream" />
+          </div>
+        </fieldset>
+      </div>
+      <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+        <fieldset class="layui-elem-field">
+          <legend>天气实时状态</legend>
+          <div class="layui-field-box">
+            <div id="weather">
+              <button v-on:click="getWeatherRealtime()" class="layui-btn">实时</button>
+              <button v-on:click="getWeatherForecast()" class="layui-btn">预报</button>
+              <div v-show="realtime">
+                <hr/>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                  {{ realtime.skycon }}
+                  <img v-bind:src="[ './assets/skycon/' + realtime.skycon + '.png']" />
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                  温度：
+                  {{ realtime.temperature }}
+                  <br/>
+                  湿度：
+                  {{ realtime.humidity }}
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                  风向：
+                  {{ wind.direction }}
+                  <br/>
+                  风速：
+                  {{ wind.speed }}
+                </div>
+              </div>
+              <div v-show="forecast">
+                <hr/>
+                当前状态描述：
+                {{ forecast.description }}
+
+              </div>
+            </div>
+          </div>
+          <div id="weather_minute" style="width: 400px;height:200px;"></div>
+        </fieldset>
+      </div>
       <fieldset class="layui-elem-field">
         <legend>供电实时状态</legend>
         <div class="layui-field-box">
@@ -139,6 +180,171 @@ layui.use('element', function(){
 
 <script src="./bower_components/vue/dist/vue.js"></script>
 <script src="./bower_components/axios/dist/axios.js"></script>
+
+<script src="./bower_components/echarts/dist/echarts.common.js"></script>
+
+
+<script type="text/javascript">
+
+function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220]) {
+  // 基于准备好的dom，初始化echarts实例
+  var myChart = echarts.init(document.getElementById('weather_minute'));
+
+  var dataAxis = new Array()
+
+  for (i=0; i<60; i++) {
+    dataAxis.push(i)
+  }
+
+  var yMax = 3;
+  var dataShadow = [];
+
+  for (var i = 0; i < data.length; i++) {
+    dataShadow.push(yMax);
+  }
+
+  option = {
+    title: {
+      text: '最近一小时降水情况',
+      subtext: '降水强度，0.03-0.25是小雨，0.25-0.35是中雨, 0.35以上是大雨'
+    },
+    xAxis: {
+      data: dataAxis,
+      axisLabel: {
+        textStyle: {
+          color: '#999'
+        }
+      },
+      axisTick: {
+        show: false
+      },
+      axisLine: {
+        show: false
+      },
+      z: 10
+    },
+    yAxis: {
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        textStyle: {
+          color: '#999'
+        }
+      }
+    },
+    dataZoom: [
+      {
+        type: 'inside'
+      }
+    ],
+    series: [
+      { // For shadow
+        type: 'bar',
+        itemStyle: {
+          normal: {color: 'rgba(0,0,0,0.05)'}
+        },
+        barGap:'-100%',
+        barCategoryGap:'40%',
+        data: dataShadow,
+        animation: false
+      },
+      {
+        type: 'bar',
+        itemStyle: {
+          normal: {
+            color: new echarts.graphic.LinearGradient(
+              0, 0, 0, 1,
+              [
+                {offset: 0, color: '#83bff6'},
+                {offset: 0.5, color: '#188df0'},
+                {offset: 1, color: '#188df0'}
+              ]
+            )
+          },
+          emphasis: {
+            color: new echarts.graphic.LinearGradient(
+              0, 0, 0, 1,
+              [
+                {offset: 0, color: '#2378f7'},
+                {offset: 0.7, color: '#2378f7'},
+                {offset: 1, color: '#83bff6'}
+              ]
+            )
+          }
+        },
+        data: data
+      }
+    ]
+  };
+
+  // Enable data zoom when user click bar.
+  var zoomSize = 6;
+  myChart.on('click', function (params) {
+    console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
+    myChart.dispatchAction({
+      type: 'dataZoom',
+      startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
+      endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+    });
+  });
+
+  // 使用刚指定的配置项和数据显示图表。
+  myChart.setOption(option);
+}
+</script>
+
+<script>
+//window.onload = weather.getWeatherForecast()
+
+var weather = new Vue({
+  el: '#weather',
+  data: {
+    realtime: "",
+    wind: "",
+    forecast: ""
+  },
+  methods: {
+    getWeatherRealtime: function () {
+      axios.get('./realtime.json')
+      .then(function (response) {
+        weather.realtime = response.data.result
+        weather.wind = response.data.result.wind
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    getWeatherForecast: function () {
+      axios.get('./forecast.json')
+      .then(function (response) {
+        //weather.aa(response)
+        //console.log(response)
+        weather.forecast = response.data.result.minutely
+        echart(response.data.result.minutely.precipitation)
+        //alert(response.data.result.minutely.status)
+      })
+      .catch(function (error) {
+        console.log(error)
+      });
+      //var tmp = axios.get('./forecast.json')
+      //this.forecast = tmp.result.hourly
+      //alert(tmp.status)
+      //alert(tmp.result.hourly.description)
+    },
+    aa: function () {
+      alert(option)
+    }
+  }
+
+})
+
+</script>
+
+
 <script>
 
 window.onbeforeunload = function () {
@@ -266,20 +472,5 @@ var app = new Vue({
 })
 </script>
 
-<!-- Weather plugins of seniverse.com -->
-<script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
-<script>tpwidget("init", {
-    "flavor": "bubble",
-    "location": "WX4FBXXFKE4F",
-    "geolocation": "enabled",
-    "position": "bottom-right",
-    "margin": "10px 10px",
-    "language": "auto",
-    "unit": "c",
-    "theme": "chameleon",
-    "uid": "U6330AC00A",
-    "hash": "75d296be2d9d0d336fa5ee10ed3bc879"
-});
-tpwidget("show");</script>
 </body>
 </html>
