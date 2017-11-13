@@ -62,8 +62,8 @@
           <legend>天气实时状态</legend>
           <div class="layui-field-box">
             <div id="weather">
-              <button v-on:click="getWeatherRealtime()" class="layui-btn">实时</button>
-              <button v-on:click="getWeatherForecast()" class="layui-btn">预报</button>
+              <button v-on:click="getWeatherRealtime()" class="layui-btn">更新实时数据</button>
+              <button v-on:click="getWeatherForecast()" class="layui-btn">更新预报数据</button>
               <div v-show="realtime">
                 <hr/>
                 <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
@@ -298,7 +298,6 @@ function echart (data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 1
 </script>
 
 <script>
-//window.onload = weather.getWeatherForecast()
 
 var weather = new Vue({
   el: '#weather',
@@ -321,7 +320,6 @@ var weather = new Vue({
     getWeatherForecast: function () {
       axios.get('./forecast.json')
       .then(function (response) {
-        //weather.aa(response)
         //console.log(response)
         weather.forecast = response.data.result.minutely
         echart(response.data.result.minutely.precipitation)
@@ -329,19 +327,18 @@ var weather = new Vue({
       })
       .catch(function (error) {
         console.log(error)
-      });
-      //var tmp = axios.get('./forecast.json')
-      //this.forecast = tmp.result.hourly
-      //alert(tmp.status)
-      //alert(tmp.result.hourly.description)
-    },
-    aa: function () {
-      alert(option)
+      })
     }
   }
 
 })
 
+function initdata() {
+  weather.getWeatherRealtime()
+  weather.getWeatherForecast()
+}
+
+window.onload = initdata()
 </script>
 
 
