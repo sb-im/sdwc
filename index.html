@@ -49,7 +49,7 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
-      <div class="layui-col-xs6 layui-col-sm6 layui-col-md8">
+      <div class="layui-col-xs12 layui-col-sm6 layui-col-md8">
         <fieldset class="layui-elem-field">
           <legend>机舱内实时状态</legend>
           <div class="layui-field-box">
@@ -57,7 +57,7 @@
           </div>
         </fieldset>
       </div>
-      <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+      <div class="layui-col-sm12 layui-col-md4">
         <fieldset class="layui-elem-field">
           <legend>天气实时状态</legend>
           <div class="layui-field-box">
@@ -66,18 +66,18 @@
               <button v-on:click="getWeatherForecast()" class="layui-btn">更新预报数据</button>
               <div v-show="realtime">
                 <hr/>
-                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
                   {{ realtime.skycon }}
                   <img v-bind:src="[ './assets/skycon/' + realtime.skycon + '.png']" />
                 </div>
-                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                <div class="layui-col-xs6 layui-col-sm3 layui-col-md3">
                   温度：
                   {{ realtime.temperature }}
                   <br/>
                   湿度：
                   {{ realtime.humidity }}
                 </div>
-                <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                <div class="layui-col-xs6 layui-col-sm3 layui-col-md3">
                   风向：
                   {{ wind.direction }}
                   <br/>
@@ -122,17 +122,17 @@
                   <button v-on:click="send()" class="layui-btn layui-btn-danger">停止</button>
               </div>
               <hr class="layui-bg-green">
-              <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
-                <li v-for="cmd in commands" class="layui-inline layui-col-md6" style="margin-top: 20px;">
+              <div class="layui-col-sm12 layui-col-md4">
+                <li v-for="cmd in commands" class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6" style="margin-top: 20px;">
                   <button v-bind:onclick="['console.send(\'' + cmd.value + '\')']" class="layui-btn">{{ cmd.name }}</button>
                 </li>
               </div>
-              <div class="layui-col-xs6 layui-col-sm6 layui-col-md8">
+              <div class="layui-col-sm12 layui-col-md8">
                 <div>
-                  <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+                  <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
                     <input v-model="hostname" class="layui-input"/>
                   </div>
-                  <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+                  <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
                     <input v-model="port" class="layui-input"/>
                   </div>
                   <div v-if="connect_status == 0" >
