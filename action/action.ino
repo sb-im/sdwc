@@ -39,7 +39,7 @@ struct Action action_lib[] = {
   {"push_down", A6, HIGH, LOW, 40, 42, 44, 10},
   {"b_up", A8, HIGH, HIGH, 41, 43, 45, 20},
   {"b_down", A9, HIGH, LOW, 41, 43, 45, 20},
-  {"roate_up", A10, HIGH, HIGH, 35, 37, 39, 500},
+  {"roate_up", A10, HIGH, LOW, 35, 37, 39, 500},
   {"roate_down", A11, HIGH, LOW, 35, 37, 39, 500},
   {"test", A0, HIGH, HIGH, 13, 12, 11, 50}
 };
