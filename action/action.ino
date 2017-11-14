@@ -36,11 +36,12 @@ struct Action action_lib[] = {
   {"lock_up", A5, HIGH, LOW, 29, 31, 33, 50},
   {"lock_down", A4, HIGH, HIGH, 29, 31, 33, 50},
   {"push_up", A7, HIGH, HIGH, 40, 42, 44, 10},
-  {"push_down", A6, HIGH, LOW, 40, 42, 44, 10},
+  {"push_down", A6, HIGH, LOW, 40, 42, 44, 5},
   {"battery_up", A8, HIGH, HIGH, 41, 43, 45, 10},
   {"battery_down", A9, HIGH, LOW, 41, 43, 45, 10},
   {"roate_up", A10, HIGH, LOW, 35, 37, 39, 800},
   {"roate_down", A11, HIGH, LOW, 35, 37, 39, 800},
+  {"re_roate_down", A11, HIGH, HIGH, 35, 37, 39, 800},
   {"test", A0, HIGH, HIGH, 13, 12, 11, 50}
 };
 
