@@ -15,7 +15,9 @@
     "tests"
   ],
   "dependencies": {
-    "layui": "https://github.com/sentsin/layui/archive/v2.1.5.tar.gz"
+    "axios": "^0.17.1",
+    "echarts": "^3.8.5",
+    "vue": "^2.5.13"
   },
   "private": true
 }
