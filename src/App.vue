@@ -22,7 +22,7 @@
         </el-menu>
       </el-header>
       <el-container>
-        <el-aside width="200px">
+        <el-aside width="220px">
           <el-menu
           default-active="2"
           class="el-menu-vertical-demo"
@@ -60,7 +60,11 @@
         </el-menu>
         </el-aside>
         <el-container>
-          <el-main>Main</el-main>
+          <el-main>
+            <img src="http://192.168.101.208:8080/?action=stream" />
+
+            Main
+          </el-main>
           <el-footer>Footer</el-footer>
         </el-container>
       </el-container>
@@ -76,19 +80,6 @@
       <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
       <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
     </ul>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
     <br/>
     <br/>
     <h2>Ecosystem</h2>
@@ -153,7 +144,7 @@
     line-height: 200px;
   }
 
-  .el-main {
+  .el-main-old {
     background-color: #E9EEF3;
     color: #333;
     text-align: center;
