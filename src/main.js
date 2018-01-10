@@ -8,7 +8,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 import App from './App.vue'
-import App2 from './Login.vue'
+import Login from './Login.vue'
+
+Vue.component('my-component', Login)
 
 Vue.use(ElementUI)
 
@@ -17,9 +19,3 @@ new Vue({
   render: h => h(App)
 })
 
-
-new Vue ({
-  el: '#app2',
-  render: h => h(App2)
-
-})
