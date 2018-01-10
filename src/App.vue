@@ -46,7 +46,9 @@
             </el-menu-item-group>
             <el-submenu index="1-4">
               <template slot="title">选项4</template>
-              <el-menu-item index="1-4-1">选项1</el-menu-item>
+              <div v-for="item in items">
+                <el-menu-item index="1-4-1">{{ item.name }}</el-menu-item>
+              </div >
             </el-submenu>
           </el-submenu>
           <el-menu-item index="2">
@@ -62,6 +64,7 @@
         <el-container>
           <el-main>
             <img src="http://192.168.101.208:8080/?action=stream" />
+            <el-button v-on:click="getNodeConfig" type="primary">获取node信息</el-button>
 
             Main
           </el-main>
@@ -96,6 +99,8 @@
   export default {
     data() {
       return {
+        config: {},
+        items: [],
         msg: "DDDDDDDDDD",
         activeIndex: '1',
         activeIndex2: '1'
@@ -110,6 +115,21 @@
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+      getNodeConfig: function () {
+        //axios.get(api_url)
+        var _this = this
+        //this.$http.get(this.config.api_url)
+        let api_url = location.href + "/node_config.json"
+        this.$http.get(api_url)
+        .then(function (response) {
+          //console.log(_this.aaa)
+          console.log(response.data)
+          _this.items = response.data
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
       }
     }
   }
