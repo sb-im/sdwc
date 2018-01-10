@@ -72,6 +72,10 @@
         </el-container>
       </el-container>
     </el-container>
+    <router-link to="/login">Go to Foo</router-link>
+    <router-link to="/app">Go to Bar</router-link>
+    <router-view></router-view>
+
     <my-component>
     </my-component>
 
