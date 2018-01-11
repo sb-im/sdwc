@@ -57,6 +57,12 @@
         let api_url = "http://" + location.hostname + "/user/login"
         console.log(api_url)
 
+        //console.log(store.state.count)
+        this.$store.commit('increment')
+        this.$store.state.count = 555
+
+        console.log(this.$store.state.count)
+
         this.$http.get(api_url)
         .then(function (response) {
           //console.log(_this.aaa)
@@ -64,7 +70,6 @@
           //_this.items = response.data
         })
         .catch(function (error) {
-          console.log("EEEEEEEEEEEEEEEEEEE")
           console.log(error)
         })
       },
