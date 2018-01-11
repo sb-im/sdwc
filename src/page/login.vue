@@ -7,7 +7,8 @@
       <el-input type="password" v-model="ruleForm2.pass" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
+      <el-button type="primary" @click="login">提交</el-button>
+      <!--<el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>-->
     </el-form-item>
   </el-form>
 </template>
@@ -53,14 +54,17 @@
     },
     methods: {
       login() {
+        let api_url = "http://" + location.hostname + "/user/login"
+        console.log(api_url)
 
         this.$http.get(api_url)
         .then(function (response) {
           //console.log(_this.aaa)
           console.log(response.data)
-          _this.items = response.data
+          //_this.items = response.data
         })
         .catch(function (error) {
+          console.log("EEEEEEEEEEEEEEEEEEE")
           console.log(error)
         })
       },
