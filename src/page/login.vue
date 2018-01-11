@@ -52,6 +52,18 @@
       };
     },
     methods: {
+      login() {
+
+        this.$http.get(api_url)
+        .then(function (response) {
+          //console.log(_this.aaa)
+          console.log(response.data)
+          _this.items = response.data
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+      },
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {

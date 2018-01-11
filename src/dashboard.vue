@@ -107,7 +107,8 @@
         //axios.get(api_url)
         var _this = this
         //this.$http.get(this.config.api_url)
-        let api_url = location.href + "/node_config.json"
+        //console.log(location.host)
+        let api_url = "/node_config.json"
         this.$http.get(api_url)
         .then(function (response) {
           //console.log(_this.aaa)
