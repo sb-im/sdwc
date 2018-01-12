@@ -1,14 +1,14 @@
 <template>
   <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-    <el-form-item label="账号" prop="user">
+    <el-form-item label="账号" prop="username">
       <el-input type="password" v-model="ruleForm.username" auto-complete="off"></el-input>
     </el-form-item>
-    <el-form-item label="密码" prop="pass">
+    <el-form-item label="密码" prop="password">
       <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="login">提交</el-button>
-      <!--<el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>-->
+      <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -19,8 +19,8 @@
         if (value === '') {
           callback(new Error('请输入账号'));
         } else {
-          if (this.ruleForm.checkPass !== '') {
-            this.$refs.ruleForm.validateField('checkPass');
+          if (this.ruleForm.username !== '') {
+            this.$refs.ruleForm.validateField('username');
           }
           callback();
         }
@@ -29,8 +29,8 @@
         if (value === '') {
           callback(new Error('请输入密码'));
         } else {
-          if (this.ruleForm.checkPass !== '') {
-            this.$refs.ruleForm.validateField('checkPass');
+          if (this.ruleForm.password !== '') {
+            this.$refs.ruleForm.validateField('password');
           }
           callback();
         }
@@ -39,32 +39,23 @@
         ruleForm: {
           username: '',
           password: '',
-          checkPass: '',
           age: ''
         },
         rules: {
-          user: [
+          username: [
             { validator: validateUser, trigger: 'blur' }
           ],
-          pass: [
+          password: [
             { validator: validatePass, trigger: 'blur' }
           ]
         }
       };
     },
     methods: {
-      update() {
-        this.$store.commit('increment')
-        this.$store.state.count = 555
-        console.log(this.$store.state.count)
-
-      },
       login() {
         //let api_url = "http://" + location.hostname + "/user/login"
         let api_url = this.$store.state.config.server + "/user/login"
         console.log(api_url)
-
-        //this.update()
 
         //this.$http.get(api_url)
         //this.$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
