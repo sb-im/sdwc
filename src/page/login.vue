@@ -68,21 +68,14 @@
         this.$http.get(api_url)
         .then((response) => {
           console.log(this)
-          this.update()
-
-        })
-        /*
-        .then(function (response) {
-          //console.log(_this.aaa)
+          //this.update()
           console.log(response.data)
-          console.log(this)
-          //update()
-          //_this.items = response.data
+          this.$store.state.config.token = response.data.token
+          this.$router.push('app')
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error)
         })
-        */
       },
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {

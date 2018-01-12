@@ -6,7 +6,15 @@
   </div>
 </template>
 
+<script>
+  export default {
+    methods: {
+      getConfig() {
+      }
+    }
+  }
 
+</script>
 
 
 <style>

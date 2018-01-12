@@ -104,6 +104,7 @@
         console.log(key, keyPath);
       },
       getNodeConfig: function () {
+          console.log(this.$store.state.config.token)
         //axios.get(api_url)
         var _this = this
         //this.$http.get(this.config.api_url)

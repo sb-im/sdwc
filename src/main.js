@@ -27,6 +27,9 @@ const router =  new VueRouter({
 
 const store = new Vuex.Store({
   state: {
+    config: {
+      token: ""
+    },
     count: 0
   },
   mutations: {
