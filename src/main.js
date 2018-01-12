@@ -28,11 +28,18 @@ const router =  new VueRouter({
 const store = new Vuex.Store({
   state: {
     config: {
+      server: "",
       token: ""
     },
     count: 0
   },
   mutations: {
+    config (state, config) {
+      state.config.server = config.server
+    },
+    token (state, config) {
+      state.config.token = config.token
+    },
     increment (state) {
       state.count++
     }

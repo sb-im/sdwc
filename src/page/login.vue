@@ -60,17 +60,19 @@
 
       },
       login() {
-        let api_url = "http://" + location.hostname + "/user/login"
+        //let api_url = "http://" + location.hostname + "/user/login"
+        let api_url = this.$store.state.config.server + "/user/login"
         console.log(api_url)
 
-        this.update()
+        //this.update()
 
         this.$http.get(api_url)
         .then((response) => {
           console.log(this)
           //this.update()
           console.log(response.data)
-          this.$store.state.config.token = response.data.token
+          //this.$store.state.config.token = response.data.token
+          this.$store.commit("token", response.data)
           this.$router.push('app')
         })
         .catch((error) => {
