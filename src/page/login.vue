@@ -8,7 +8,6 @@
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="login">提交</el-button>
-      <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -20,7 +19,7 @@
           callback(new Error('请输入账号'));
         } else {
           if (this.ruleForm.username !== '') {
-            this.$refs.ruleForm.validateField('username');
+            //this.$refs.ruleForm.validateField('username');
           }
           callback();
         }
@@ -30,7 +29,7 @@
           callback(new Error('请输入密码'));
         } else {
           if (this.ruleForm.password !== '') {
-            this.$refs.ruleForm.validateField('password');
+            //this.$refs.ruleForm.validateField('password');
           }
           callback();
         }
@@ -81,16 +80,6 @@
         .catch((error) => {
           console.log(error)
         })
-      },
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
       }
     }
   }
