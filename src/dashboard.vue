@@ -2,7 +2,7 @@
   <div id="app23333">
 
     <el-container>
-      <el-header>
+      <el-header style="height: 60px;margin: 0;padding: 0;">
         <el-menu
           :default-active="activeIndex2"
           class="el-menu"
@@ -76,8 +76,6 @@
     <router-link to="/app">Go to Bar</router-link>
     <router-view></router-view>
 
-    <my-component>
-    </my-component>
 
     <img src="./assets/logo.png">
   </div>
@@ -124,7 +122,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 
   .el-menu {
     margin: 0;

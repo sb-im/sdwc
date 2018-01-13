@@ -1,15 +1,26 @@
 <template>
-  <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-    <el-form-item label="账号" prop="username">
-      <el-input type="password" v-model="ruleForm.username" auto-complete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="login">提交</el-button>
-    </el-form-item>
-  </el-form>
+  <div>
+    <el-container>
+      <el-main class="elmain">Main</el-main>
+      <el-aside width="500px" class="elaside">登录
+
+        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="账号" prop="username">
+            <el-input type="password" v-model="ruleForm.username" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="login">提交</el-button>
+          </el-form-item>
+        </el-form>
+
+
+
+      </el-aside>
+    </el-container>
+  </div>
 </template>
 <script>
   export default {
@@ -84,3 +95,23 @@
     }
   }
 </script>
+
+<style>
+
+  .elaside {
+    padding: 50px;
+    background-color: #D3DCE6;
+    color: #333;
+    text-align: center;
+    line-height: 500px;
+  }
+
+  .elmain {
+    background: url(../assets/login.jpg);
+    background-color: #E9EEF3;
+    color: #333;
+    text-align: center;
+    line-height: 160px;
+  }
+</style>
+
