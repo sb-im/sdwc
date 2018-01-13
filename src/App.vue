@@ -1,15 +1,14 @@
 <template>
   <div id="app">
-    <el-button type="primary" @click="getConfig">提交</el-button>
-
-    <router-link to="/login">Go to Foo</router-link>
-    <router-link to="/app">Go to Bar</router-link>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
   export default {
+    created: function () {
+      this.getConfig()
+    },
     methods: {
       getConfig() {
         let url = "http://" + location.host + "/config.json"
