@@ -1,5 +1,5 @@
 <template>
-  <div id="app23333">
+  <div>
 
     <el-container>
       <el-header style="height: 60px;margin: 0;padding: 0;">
@@ -64,6 +64,7 @@
         <el-container>
           <el-main>
             <img src="http://192.168.101.208:8080/?action=stream" />
+            <el-button @click="getItems" type="primary">获取Items信息</el-button>
             <el-button v-on:click="getNodeConfig" type="primary">获取node信息</el-button>
 
             Main
@@ -100,6 +101,25 @@
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+      getItems: function () {
+        console.log("getItems")
+        console.log(this.$store.state.config.server)
+        let api_url = "/node_config.json"
+        this.$http.get(api_url)
+        .then((response) => {
+          console.log(this)
+          //this.update()
+          console.log(response.data)
+          //this.$store.state.config.token = response.data.token
+          //this.$store.commit("token", response.data)
+          //if (response.data.token) {
+          //  this.$router.push('app')
+          //}
+        })
+        .catch((error) => {
+          console.log(error)
+        })
       },
       getNodeConfig: function () {
           console.log(this.$store.state.config.token)

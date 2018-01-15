@@ -1,5 +1,11 @@
 export default [
     {
+        path: '/',
+        title: '登录',
+        component: require('./page/login.vue').default,
+        icon: 'polymer'
+    },
+    {
         path: '/login',
         title: '登录',
         component: require('./page/login.vue').default,
