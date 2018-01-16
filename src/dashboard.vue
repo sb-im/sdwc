@@ -127,8 +127,17 @@
         var _this = this
         //this.$http.get(this.config.api_url)
         //console.log(location.host)
-        let api_url = "/node_config.json"
+        //let api_url = "/node_config.json"
+        let api_url = this.$store.state.config.server + "/nodes"
         this.$http.get(api_url)
+        .then((response) => {
+          this.items = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
+        /*
         .then(function (response) {
           //console.log(_this.aaa)
           console.log(response.data)
@@ -137,6 +146,7 @@
         .catch(function (error) {
           console.log(error)
         })
+        */
       }
     }
   }
