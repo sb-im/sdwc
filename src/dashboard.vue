@@ -97,6 +97,7 @@
         </el-aside>
         <el-container>
           <el-main>
+            <tab-page :node="items[1]"></tab-page>
             <img src="http://192.168.101.208:8080/?action=stream" />
             <el-button @click="getItems" type="primary">获取Items信息</el-button>
             <el-button v-on:click="getNodeConfig" type="primary">获取node信息</el-button>
@@ -119,6 +120,7 @@
 
 <script>
 import MonitorImg from './components/monitor-img.vue'
+import Tabs from './page/tabs.vue'
 //Vue.component('monitor-img', monitorimg)
 
   export default {
@@ -131,6 +133,7 @@ import MonitorImg from './components/monitor-img.vue'
       };
     },
     components: {
+      'tab-page': Tabs,
       'monitor-img': MonitorImg
     },
     methods: {

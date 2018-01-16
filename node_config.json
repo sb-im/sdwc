@@ -6,7 +6,8 @@
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
     "video": [
-      "http://192.168.101.208:8080/?action=stream"
+      "http://192.168.101.208:8080/?action=stream",
+      "http://192.168.101.208:8081/?action=stream"
     ]
   },
   {
@@ -16,7 +17,8 @@
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
     "video": [
-      "http://192.168.101.208:8080/?action=stream"
+      "http://192.168.101.208:8080/?action=stream",
+      "http://192.168.101.208:8081/?action=stream"
     ]
   },
   {
