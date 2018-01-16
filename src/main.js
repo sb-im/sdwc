@@ -31,6 +31,7 @@ const store = new Vuex.Store({
       server: "",
       token: ""
     },
+    items:[],
     count: 0
   },
   mutations: {
@@ -39,6 +40,9 @@ const store = new Vuex.Store({
     },
     token (state, config) {
       state.config.token = config.token
+    },
+    items (state, items) {
+      state.items = items
     },
     increment (state) {
       state.count++
