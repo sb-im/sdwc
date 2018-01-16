@@ -26,6 +26,7 @@
           <el-menu
           default-active="2"
           class="el-menu-vertical-demo"
+          @select="handleSelect"
           @open="handleOpen"
           @close="handleClose"
           background-color="#545c64"
@@ -67,7 +68,7 @@
               <span>飞机</span>
             </template>
             <div v-for="item in items" v-show="item.type == 'air'">
-              <el-menu-item :index="'2' + item.id">{{ item.name }}</el-menu-item>
+              <el-menu-item :index="item.id">{{ item.name }}</el-menu-item>
             </div >
           </el-submenu>
 
@@ -78,13 +79,13 @@
             </template>
 
             <div v-for="item in items" v-show="item.type == 'depot'">
-              <el-menu-item :index="'3' + item.id">{{ item.name }}</el-menu-item>
+              <el-menu-item :index="item.id">{{ item.name }}</el-menu-item>
             </div >
           </el-submenu>
 
 
 
-          <el-menu-item index="2">
+          <el-menu-item index="aa">
             <i class="el-icon-menu"></i>
             <span slot="title">导航二</span>
           </el-menu-item>
@@ -101,6 +102,7 @@
             <el-button v-on:click="getNodeConfig" type="primary">获取node信息</el-button>
 
             Main
+            <monitor-img source="http://192.168.101.208:8080/?action=stream"></monitor-img>
           </el-main>
           <el-footer>Footer</el-footer>
         </el-container>
@@ -116,6 +118,9 @@
 </template>
 
 <script>
+import MonitorImg from './components/monitor-img.vue'
+//Vue.component('monitor-img', monitorimg)
+
   export default {
     data() {
       return {
@@ -125,15 +130,21 @@
         activeIndex2: '1'
       };
     },
+    components: {
+      'monitor-img': MonitorImg
+    },
     methods: {
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
+        console.log("SSSSSSSSSSS");
       },
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
+        console.log("OOOOOOOOOOO");
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+        console.log("CCCCCCCCCCC");
       },
       getItems: function () {
         //console.log("getItems")
