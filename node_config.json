@@ -10,6 +10,16 @@
     ]
   },
   {
+    "id": "2",
+    "name": "Test2",
+    "type": "depot",
+    "address": "http://192.168.101.208:8080/?action=stream",
+    "websocket": "http://192.168.101.208:8080/?action=stream",
+    "video": [
+      "http://192.168.101.208:8080/?action=stream"
+    ]
+  },
+  {
     "id": "3",
     "name": "Test3",
     "type": "air",

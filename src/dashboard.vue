@@ -33,7 +33,7 @@
           active-text-color="#ffd04b">
           <el-submenu index="1">
             <template slot="title">
-              <i class="el-icon-location"></i>
+              <i class="el-icon-star-on"></i>
               <span>导航一</span>
             </template>
             <el-menu-item-group>
@@ -44,13 +44,46 @@
             <el-menu-item-group title="分组2">
               <el-menu-item index="1-3">选项3</el-menu-item>
             </el-menu-item-group>
-            <el-submenu index="1-4">
-              <template slot="title">选项4</template>
-              <div v-for="item in items">
+
+            <el-submenu index="1-8">
+              <template slot="title">old飞机</template>
+              <div v-for="item in items" v-show="item.type == 'air'">
                 <el-menu-item index="1-4-1">{{ item.name }}</el-menu-item>
               </div >
             </el-submenu>
+            <el-submenu index="1-4">
+              <template slot="title">old机场</template>
+              <div v-for="item in items" v-show="item.type == 'depot'">
+                <el-menu-item index="1-4-1">{{ item.name }}</el-menu-item>
+              </div >
+            </el-submenu>
+
           </el-submenu>
+
+
+          <el-submenu index="233">
+            <template slot="title">
+              <i class="el-icon-tickets"></i>
+              <span>飞机</span>
+            </template>
+            <div v-for="item in items" v-show="item.type == 'air'">
+              <el-menu-item :index="'2' + item.id">{{ item.name }}</el-menu-item>
+            </div >
+          </el-submenu>
+
+          <el-submenu index="2233">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>机场</span>
+            </template>
+
+            <div v-for="item in items" v-show="item.type == 'depot'">
+              <el-menu-item :index="'3' + item.id">{{ item.name }}</el-menu-item>
+            </div >
+          </el-submenu>
+
+
+
           <el-menu-item index="2">
             <i class="el-icon-menu"></i>
             <span slot="title">导航二</span>
@@ -103,19 +136,14 @@
         console.log(key, keyPath);
       },
       getItems: function () {
-        console.log("getItems")
-        console.log(this.$store.state.config.server)
+        //console.log("getItems")
+        //console.log(this.$store.state.config.server)
         let api_url = "/node_config.json"
+        //let api_url = this.$store.state.config.server + "/nodes"
         this.$http.get(api_url)
         .then((response) => {
-          console.log(this)
-          //this.update()
-          console.log(response.data)
-          //this.$store.state.config.token = response.data.token
-          //this.$store.commit("token", response.data)
-          //if (response.data.token) {
-          //  this.$router.push('app')
-          //}
+          //console.log(response.data)
+          this.items = response.data
         })
         .catch((error) => {
           console.log(error)
@@ -124,7 +152,7 @@
       getNodeConfig: function () {
           console.log(this.$store.state.config.token)
         //axios.get(api_url)
-        var _this = this
+        //var _this = this
         //this.$http.get(this.config.api_url)
         //console.log(location.host)
         //let api_url = "/node_config.json"
