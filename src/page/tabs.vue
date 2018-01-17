@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <div style="margin-bottom: 20px;">
       <el-button
          size="small"
@@ -8,14 +9,16 @@
          add tab
       </el-button>
     </div>
+
+
     <el-tabs v-model="editableTabsValue2" type="card" closable @tab-remove="removeTab">
       <el-tab-pane
-        v-for="(item, index) in editableTabs2"
+        v-for="(item, index) in this.$store.state.links"
         :key="item.name"
-        :label="item.title"
+        :label="item.name"
         :name="item.name"
       >
-        <div v-for="video in node.video">
+        <div v-for="video in item.video">
           <monitor-img :source="video"></monitor-img>
         </div>
         {{item.content}}
@@ -40,6 +43,8 @@ import MonitorImg from '../components/monitor-img.vue'
     data() {
       return {
         editableTabsValue2: '2',
+
+        editableTabs: this.$store.state.items,
         editableTabs2: [{
           title: 'Tab 1',
           name: '1',

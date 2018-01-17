@@ -54,7 +54,17 @@
     methods: {
       handleSelect(key, keyPath) {
         this.$emit('select')
-        console.log(key, keyPath);
+        console.log(key, keyPath)
+        for (let item of this.items) {
+          //console.log(keyPath)
+          //console.log(String(keyPath))
+          //console.log(typeof(item.id))
+          if (keyPath[1] == item.id) {
+            console.log(item.id)
+            this.$store.commit("linkadd", item)
+          }
+        }
+        //this.$store.commit("linkadd", response.data)
         //console.log("SSSSSSSSSSS");
       },
       handleOpen(key, keyPath) {

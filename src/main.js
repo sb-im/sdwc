@@ -32,6 +32,7 @@ const store = new Vuex.Store({
       token: ""
     },
     items:[],
+    links:[],
     count: 0
   },
   mutations: {
@@ -43,6 +44,27 @@ const store = new Vuex.Store({
     },
     items (state, items) {
       state.items = items
+    },
+    linkadd (state, item) {
+      if (state.links.length == 0) {
+        state.links.push(item)
+
+      } else {
+        //console.log("去重")
+
+        // 去重
+        let t = 0
+        for (let link of state.links) {
+          if (link.id == item.id) {
+            t = 1
+          }
+        }
+        if (t == 0) {
+          state.links.push(item)
+        }
+
+
+      }
     },
     increment (state) {
       state.count++
