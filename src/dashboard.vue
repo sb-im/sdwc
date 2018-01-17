@@ -23,7 +23,7 @@
       </el-header>
       <el-container>
         <el-aside width="220px">
-          <sidemenu></sidemenu>
+          <sidemenu @select="getItems"></sidemenu>
         </el-aside>
         <el-container>
           <el-main>
@@ -41,8 +41,8 @@
     <router-link to="/app">Go to Bar</router-link>
     <router-view></router-view>
 
-
     <img src="./assets/logo.png">
+
   </div>
 </template>
 
