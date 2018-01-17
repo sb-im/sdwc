@@ -1,17 +1,6 @@
 <template>
   <div>
-
-    <div style="margin-bottom: 20px;">
-      <el-button
-         size="small"
-         @click="addTab(editableTabsValue2)"
-         >
-         add tab
-      </el-button>
-    </div>
-
-
-    <el-tabs v-model="editableTabsValue2" type="card" closable @tab-remove="removeTab">
+    <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
       <el-tab-pane
         v-for="(item, index) in this.$store.state.links"
         :key="item.name"
@@ -42,51 +31,33 @@ import MonitorImg from '../components/monitor-img.vue'
     },
     data() {
       return {
-        editableTabsValue2: '2',
-
-        editableTabs: this.$store.state.items,
-        editableTabs2: [{
-          title: 'Tab 1',
-          name: '1',
-          content: 'Tab 1 content'
-        }, {
-          title: 'Tab 2',
-          name: '2',
-          content: 'Tab 2 content'
-        }],
-        tabIndex: 2
+        activeTab: '1'
       }
     },
     methods: {
-      addTab(targetName) {
-        let newTabName = ++this.tabIndex + '';
-        this.editableTabs2.push({
-          title: 'New Tab',
-          name: newTabName,
-          content: 'New Tab content'
-        });
-        this.editableTabsValue2 = newTabName;
+      removeTab(id) {
+
+        this.otherActive(id)
+        this.$store.commit("linkdel", id)
       },
-      removeTab(name) {
-        console.log(name)
-        this.$store.commit("linkdel", name)
-      },
-      removeTabiiii(targetName) {
-        let tabs = this.editableTabs2;
-        let activeName = this.editableTabsValue2;
+      otherActive(targetName) {
+        // Delete the tab focus transfer other tab
+
+        let tabs = this.$store.state.links
+        let activeName = this.activeTab
         if (activeName === targetName) {
           tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1];
+            if (tab.id === targetName) {
+              let nextTab = tabs[index + 1] || tabs[index - 1]
               if (nextTab) {
-                activeName = nextTab.name;
+                activeName = nextTab.id
               }
             }
-          });
+          })
         }
 
-        this.editableTabsValue2 = activeName;
-        this.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
+        //console.log(activeName)
+        this.activeTab = activeName;
       }
     }
   }
