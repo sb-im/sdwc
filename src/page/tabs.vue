@@ -16,7 +16,7 @@
         v-for="(item, index) in this.$store.state.links"
         :key="item.name"
         :label="item.name"
-        :name="item.name"
+        :name="item.id"
       >
         <div v-for="video in item.video">
           <monitor-img :source="video"></monitor-img>
@@ -67,7 +67,11 @@ import MonitorImg from '../components/monitor-img.vue'
         });
         this.editableTabsValue2 = newTabName;
       },
-      removeTab(targetName) {
+      removeTab(name) {
+        console.log(name)
+        this.$store.commit("linkdel", name)
+      },
+      removeTabiiii(targetName) {
         let tabs = this.editableTabs2;
         let activeName = this.editableTabsValue2;
         if (activeName === targetName) {

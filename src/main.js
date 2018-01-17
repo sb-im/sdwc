@@ -17,7 +17,7 @@ import App from './App.vue'
 import Login from './page/login.vue'
 import routes from "./routes.js"
 
-Vue.component('my-component', Login)
+//Vue.component('my-component', Login)
 
 Vue.use(ElementUI)
 
@@ -52,7 +52,7 @@ const store = new Vuex.Store({
       } else {
         //console.log("去重")
 
-        // 去重
+        // 去重。。我知道这段代码写的很渣。。。
         let t = 0
         for (let link of state.links) {
           if (link.id == item.id) {
@@ -65,6 +65,11 @@ const store = new Vuex.Store({
 
 
       }
+    },
+    linkdel (state, item) {
+      //console.log("linkdel")
+      //console.log(item)
+      state.links = state.links.filter(tab => tab.id !== item)
     },
     increment (state) {
       state.count++
