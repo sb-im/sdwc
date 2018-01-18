@@ -12,7 +12,6 @@
         <el-container>
           <el-main>
             <tab-page :node="this.$store.state.items[1]"></tab-page>
-            <img src="http://192.168.101.208:8080/?action=stream" />
             <el-button @click="" type="primary">获取Items信息</el-button>
 
             Main

@@ -32,8 +32,7 @@ const store = new Vuex.Store({
       token: ""
     },
     items:[],
-    links:[],
-    count: 0
+    links:[]
   },
   mutations: {
     config (state, config) {
@@ -53,6 +52,7 @@ const store = new Vuex.Store({
         //console.log("去重")
 
         // 去重。。我知道这段代码写的很渣。。。
+        // 要抱怨不如想想如何优雅的实现
         let t = 0
         for (let link of state.links) {
           if (link.id == item.id) {
@@ -62,17 +62,14 @@ const store = new Vuex.Store({
         if (t == 0) {
           state.links.push(item)
         }
-
+        // 渣代码结束
 
       }
     },
-    linkdel (state, item) {
+    linkdel (state, item_id) {
       //console.log("linkdel")
       //console.log(item)
-      state.links = state.links.filter(tab => tab.id !== item)
-    },
-    increment (state) {
-      state.count++
+      state.links = state.links.filter(tab => tab.id !== item_id)
     }
   }
 })
