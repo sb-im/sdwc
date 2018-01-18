@@ -10,6 +10,7 @@
         <div v-for="video in item.video">
           <monitor-img :source="video"></monitor-img>
         </div>
+        <webterminal></webterminal>
         {{item.content}}
       </el-tab-pane>
     </el-tabs>
@@ -17,6 +18,7 @@
 </template>
 <script>
 import MonitorImg from '../components/monitor-img.vue'
+import WebTerminal from '../components/webterminal.vue'
 
 
   export default {
@@ -27,7 +29,8 @@ import MonitorImg from '../components/monitor-img.vue'
       }
     },
     components: {
-      'monitor-img': MonitorImg
+      'monitor-img': MonitorImg,
+      'webterminal': WebTerminal
     },
     data() {
       return {

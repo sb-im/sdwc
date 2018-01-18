@@ -30,5 +30,13 @@
     "video": [
       "http://192.168.101.208:8080/?action=stream"
     ]
+  },
+  {
+    "id": "4",
+    "name": "Test4",
+    "type": "depot",
+    "address": "http://192.168.101.208:8080/?action=stream",
+    "websocket": "http://192.168.101.208:8080/?action=stream",
+    "video": []
   }
 ]
