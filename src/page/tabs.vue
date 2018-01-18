@@ -37,14 +37,12 @@ import MonitorImg from '../components/monitor-img.vue'
     methods: {
       removeTab(id) {
 
-        this.otherActive(id)
+        this.activeTab = this.otherActive(id, this.activeTab, this.$store.state.links)
         this.$store.commit("linkdel", id)
       },
-      otherActive(targetName) {
+      otherActive(targetName, activeName, tabs) {
         // Delete the tab focus transfer other tab
 
-        let tabs = this.$store.state.links
-        let activeName = this.activeTab
         if (activeName === targetName) {
           tabs.forEach((tab, index) => {
             if (tab.id === targetName) {
@@ -56,9 +54,9 @@ import MonitorImg from '../components/monitor-img.vue'
           })
         }
 
-        //console.log(activeName)
-        this.activeTab = activeName;
+        return activeName
       }
+
     }
   }
 </script>
