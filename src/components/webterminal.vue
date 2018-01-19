@@ -7,30 +7,54 @@
       <el-button @click="send" type="danger" plain>停止</el-button>
     </div>
     <hr/>
-    <el-row :gutter="20" type="flex" justify="end">
-      <el-col :span="8">
-        <div :span="4" v-for="cmd in commands">
+    <el-row :gutter="20">
+      <el-col :span="4">
+        <div v-for="(cmd, i) in commands" v-if="(i+1)%2" style="margin: 20px 0">
           <el-button type="success" plain v-bind:onclick="['console.send(\'' + cmd.value + '\')']">{{ cmd.name }}</el-button>
-
+        </div>
+      </el-col>
+      <el-col :span="4">
+        <div v-for="(cmd, i) in commands" v-if="i%2" style="margin: 20px 0">
+          <el-button type="success" plain v-bind:onclick="['console.send(\'' + cmd.value + '\')']">{{ cmd.name }}</el-button>
         </div>
       </el-col>
       <el-col :span="16">
-        <div>
-          <el-input v-model="hostname">
-            <el-button slot="append" @click="test" icon="el-icon-search"></el-button>
-          </el-input>
-          <el-input v-model="hostname">
-            <el-button slot="append" @click="test" icon="el-icon-search"></el-button>
-            <el-button slot="append" @click="test" icon="el-icon-search"></el-button>
-          </el-input>
-          <el-input
-              type="textarea"
-              :rows="2"
-              readonly
-              placeholder="请输入内容"
-              v-model="content">
-          </el-input>
-        </div>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-input v-model="hostname"/>
+          </el-col>
+          <el-col :span="8">
+            <el-input v-model="port"/>
+          </el-col>
+          <el-col :span="8">
+            <el-button @click="" type="primary" plain>连接</el-button>
+          </el-col>
+        </el-row>
+        <br/>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-input v-model="message"/>
+          </el-col>
+          <el-col :span="3">
+            <el-button @click="" type="success" plain>发送</el-button>
+          </el-col>
+          <el-col :span="9">
+            <el-button @click="" type="danger" plain>清空内容</el-button>
+          </el-col>
+        </el-row>
+
+
+        <br/>
+        <br/>
+        <hr/>
+        <el-input
+            type="textarea"
+            :rows="8"
+            readonly
+            placeholder="来自服务器的消息"
+            v-model="content">
+        </el-input>
 
       </el-col>
     </el-row>
