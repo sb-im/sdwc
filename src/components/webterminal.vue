@@ -9,8 +9,8 @@
     <hr/>
     <el-row :gutter="20">
       <el-col :span="4">
-        <div v-for="(cmd, i) in commands" v-if="(i+1)%2" style="margin: 20px 0">
-          <el-button type="success" plain v-bind:onclick="['console.send(\'' + cmd.value + '\')']">{{ cmd.name }}</el-button>
+        <div v-for="(cmd, i) in commands" v-if="!(i%2)" style="margin: 20px 0">
+          <el-button type="success" plain @click="test(cmd.value)">{{ cmd.name }}</el-button>
         </div>
       </el-col>
       <el-col :span="4">
@@ -18,13 +18,15 @@
           <el-button type="success" plain v-bind:onclick="['console.send(\'' + cmd.value + '\')']">{{ cmd.name }}</el-button>
         </div>
       </el-col>
+
       <el-col :span="16">
+
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-input v-model="hostname"/>
+            <el-input placeholder="请输入主机名" v-model="hostname"/>
           </el-col>
           <el-col :span="8">
-            <el-input v-model="port"/>
+            <el-input placeholder="请输入端口" v-model="port"/>
           </el-col>
           <el-col :span="8">
             <el-button @click="" type="primary" plain>连接</el-button>
@@ -34,13 +36,13 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-input v-model="message"/>
+            <el-input placeholder="请输入命令" v-model="message"/>
           </el-col>
           <el-col :span="3">
-            <el-button @click="" type="success" plain>发送</el-button>
+            <el-button @click="test(message)" type="success" plain>发送</el-button>
           </el-col>
           <el-col :span="9">
-            <el-button @click="" type="danger" plain>清空内容</el-button>
+            <el-button @click="clean" type="danger" plain>清空内容</el-button>
           </el-col>
         </el-row>
 
@@ -87,7 +89,7 @@
           { name: '全部停止～ Σ( ﾟдﾟ) ～', value: 'stop_all' },
           { name: '测试 ～ (〃∀〃) ～', value: 'test' }
         ],
-        hostname: window.location.hostname,
+        hostname: location.hostname,
         port: '22333',
         message: 'hello',
         connect_status: false,
@@ -103,8 +105,10 @@
       }
     },
     methods: {
-      test() {
-        console.log("233333333333333")
+      test(msg = "23333333333333") {
+        //console.log("###############")
+        //console.log(msg)
+        this.content = this.content + this.tarCmd(msg)
       },
       connect() {
         //alert(this.hostname + ':' + this.port)
@@ -117,8 +121,6 @@
             var _this = this
 
           socket.onopen = function (msg) {
-            //$("btnConnect").disabled = true;
-            //alert("连接成功！")
             console.log("连接成功！")
             console.log(socket.readyState)
             console.log(this.connect_status)
@@ -146,12 +148,15 @@
           alert(ex)
         }
       },
+      tarCmd(cmd) {
+        return cmd + '\n'
+      },
       send(msg = this.message) {
         //alert(msg)
         this.socket.send(msg)
         console.log(msg)
       },
-      close: function () {
+      close() {
         try {
           this.socket.close()
           this.socket = null
@@ -160,7 +165,7 @@
           alert(ex)
         }
       },
-      clean: function () {
+      clean() {
         this.content = ""
       }
     }
