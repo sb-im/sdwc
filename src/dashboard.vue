@@ -12,8 +12,10 @@
         <el-main>
           <tab-page :node="this.$store.state.items[1]"></tab-page>
         </el-main>
-        <el-footer height="100px">
+        <el-footer height="140px">
           <img src="./assets/logo-sb.png">
+          <br/>
+          Copyright © 2017-2018 StrawBerry Tech.
         </el-footer>
       </el-container>
 
@@ -52,7 +54,6 @@ import Tabs from './page/tabs.vue'
     background-color: #B3C0D1;
     color: #333;
     text-align: center;
-    line-height: 60px;
   }
 
   .el-aside {
