@@ -1,54 +1,41 @@
 <template>
+  <fieldset>
+    <legend>操作控制</legend>
+    <div align="right">
+      <el-button @click="" type="primary" plain>获取Items信息</el-button>
+      <el-button @click="send" type="warning" plain>初始化</el-button>
+      <el-button @click="send" type="danger" plain>停止</el-button>
+    </div>
+    <hr/>
+    <el-row :gutter="20" type="flex" justify="end">
+      <el-col :span="8">
+        <div :span="4" v-for="cmd in commands">
+          <el-button type="success" plain v-bind:onclick="['console.send(\'' + cmd.value + '\')']">{{ cmd.name }}</el-button>
 
-      <fieldset class="layui-elem-field">
-        <legend>操作控制</legend>
-        <div class="layui-field-box">
-          <div id="console">
-            <div class="layui-row">
-              <div align="right">
-                  <button v-on:click="send()" class="layui-btn layui-btn-warm">初始化</button>
-                  <button v-on:click="send()" class="layui-btn layui-btn-danger">停止</button>
-              </div>
-              <hr class="layui-bg-green">
-              <div class="layui-col-sm12 layui-col-md4">
-                <li v-for="cmd in commands" class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6" style="margin-top: 20px;">
-                  <button v-bind:onclick="['console.send(\'' + cmd.value + '\')']" class="layui-btn">{{ cmd.name }}</button>
-                </li>
-              </div>
-              <div class="layui-col-sm12 layui-col-md8">
-                <div>
-                  <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
-                    <input v-model="hostname" class="layui-input"/>
-                  </div>
-                  <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
-                    <input v-model="port" class="layui-input"/>
-                  </div>
-                    <button v-on:click="close()" class="layui-btn">断开</button>
-                  <div v-if="connect_status == 0" >
-                    <button v-on:click="connect()" class="layui-btn">连接</button>
-                  </div>
-                  <div v-else>
-                    <button v-on:click="close()" class="layui-btn">断开</button>
-                  </div>
-                </div>
-                <div>
-                  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
-                    <input v-model="message" class="layui-input"/>
-                  </div>
-                  <button v-on:click="send()" class="layui-btn">发送</button>
-                <button v-on:click="clean()" class="layui-btn">清空内容</button>
-                </div>
-                <div>
-                  <fieldset class="layui-elem-field layui-field-title">
-                    <legend>来自服务端的消息</legend>
-                  </fieldset>
-                  <textarea rows="10" class="layui-textarea" readonly="readonly">{{ content }}</textarea>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </fieldset>
+      </el-col>
+      <el-col :span="16">
+        <div>
+          <el-input v-model="hostname">
+            <el-button slot="append" @click="test" icon="el-icon-search"></el-button>
+          </el-input>
+          <el-input v-model="hostname">
+            <el-button slot="append" @click="test" icon="el-icon-search"></el-button>
+            <el-button slot="append" @click="test" icon="el-icon-search"></el-button>
+          </el-input>
+          <el-input
+              type="textarea"
+              :rows="2"
+              readonly
+              placeholder="请输入内容"
+              v-model="content">
+          </el-input>
+        </div>
+
+      </el-col>
+    </el-row>
+
+  </fieldset>
 
 </template>
 
@@ -92,6 +79,9 @@
       }
     },
     methods: {
+      test() {
+        console.log("233333333333333")
+      },
       connect() {
         //alert(this.hostname + ':' + this.port)
         var host = "ws://" + this.hostname + ":" + this.port + "/"
