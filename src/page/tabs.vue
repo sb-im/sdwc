@@ -25,7 +25,7 @@ import WebTerminal from '../components/webterminal.vue'
     props: {
       node: {
         type: Object,
-        default: 'vertical'
+        default: Object
       }
     },
     components: {
