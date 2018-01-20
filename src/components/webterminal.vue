@@ -7,27 +7,22 @@
     </div>
     <hr/>
     <el-row :gutter="20">
-      <el-col :span="4">
-        <div v-for="(cmd, i) in commands" v-if="!(i%2)" style="margin: 20px 0">
+      <el-col :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
+        <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-for="(cmd, i) in commands" style="margin: 12px 0">
           <el-button type="success" plain @click="send(cmd.value)">{{ cmd.name }}</el-button>
-        </div>
-      </el-col>
-      <el-col :span="4">
-        <div v-for="(cmd, i) in commands" v-if="i%2" style="margin: 20px 0">
-          <el-button type="success" plain @click="send(cmd.value)">{{ cmd.name }}</el-button>
-        </div>
+        </el-col>
       </el-col>
 
-      <el-col :span="16">
+      <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :xs="9" :sm="10" :md="9" :lg="10" :xl="8">
             <el-input placeholder="请输入主机名" v-model="hostname"/>
           </el-col>
-          <el-col :span="8">
+          <el-col :xs="9" :sm="10" :md="9" :lg="10" :xl="8">
             <el-input placeholder="请输入端口" v-model="port"/>
           </el-col>
-          <el-col :span="8">
+          <el-col :xs="6" :sm="4" :md="6" :lg="4" :xl="8">
             <div v-if="connect_status == 0" >
               <el-button @click="connect" type="primary" plain>连接</el-button>
             </div>
@@ -39,13 +34,13 @@
         <br/>
 
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :xs="12" :sm="14" :md="12" :lg="12" :xl="12">
             <el-input placeholder="请输入命令" v-model="message"/>
           </el-col>
-          <el-col :span="3">
+          <el-col :xs="4" :sm="4" :md="4" :lg="3" :xl="3">
             <el-button @click="send(message)" type="success" plain>发送</el-button>
           </el-col>
-          <el-col :span="9">
+          <el-col :xs="8" :sm="6" :md="8" :lg="9" :xl="9">
             <el-button @click="clean" type="danger" plain>清空内容</el-button>
           </el-col>
         </el-row>
