@@ -28,7 +28,7 @@
             <el-input placeholder="请输入端口" v-model="port"/>
           </el-col>
           <el-col :span="8">
-            <el-button @click="" type="primary" plain>连接</el-button>
+            <el-button @click="connect" type="primary" plain>连接</el-button>
           </el-col>
         </el-row>
         <br/>
@@ -38,7 +38,9 @@
             <el-input placeholder="请输入命令" v-model="message"/>
           </el-col>
           <el-col :span="3">
-            <el-button @click="test(message)" type="success" plain>发送</el-button>
+            <el-button @click="send(message)" type="success" plain>发送</el-button>
+            {{ connect_status }}
+            <el-button @click="close" type="success" plain>断开</el-button>
           </el-col>
           <el-col :span="9">
             <el-button @click="clean" type="danger" plain>清空内容</el-button>
@@ -93,6 +95,11 @@ import Command from './command.json'
         this.content = this.content + this.tarCmd(msg)
       },
       connect() {
+        // 关于这个函数他为什么好使我也没看明白
+        // 反正改了就不好使了
+        // javascript基础不好不知道怎么改才是优雅的实现
+
+        // console.log("###############")
         //alert(this.hostname + ':' + this.port)
         var host = "ws://" + this.hostname + ":" + this.port + "/"
         this.socket = new WebSocket(host)
@@ -113,16 +120,15 @@ import Command from './command.json'
 
           socket.onmessage = function (msg) {
             if (typeof msg.data == "string") {
-              console.log(msg.data)
-            }
-            else {
+              _this.test(msg.data)
+            } else {
               alert("非文本消息");
             }
           }
 
           socket.onclose = function (msg) {
             //alert("socket closed!")
-            console.connect_status = false
+            _this.connect_status = false
           }
         }
         catch (ex) {
@@ -137,6 +143,7 @@ import Command from './command.json'
         //alert(msg)
         this.socket.send(msg)
         console.log(msg)
+        this.test(msg)
       },
       close() {
         try {
