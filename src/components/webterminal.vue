@@ -9,12 +9,12 @@
     <el-row :gutter="20">
       <el-col :span="4">
         <div v-for="(cmd, i) in commands" v-if="!(i%2)" style="margin: 20px 0">
-          <el-button type="success" plain @click="test(cmd.value)">{{ cmd.name }}</el-button>
+          <el-button type="success" plain @click="send(cmd.value)">{{ cmd.name }}</el-button>
         </div>
       </el-col>
       <el-col :span="4">
         <div v-for="(cmd, i) in commands" v-if="i%2" style="margin: 20px 0">
-          <el-button type="success" plain v-bind:onclick="['console.send(\'' + cmd.value + '\')']">{{ cmd.name }}</el-button>
+          <el-button type="success" plain @click="send(cmd.value)">{{ cmd.name }}</el-button>
         </div>
       </el-col>
 
@@ -44,7 +44,6 @@
           </el-col>
           <el-col :span="3">
             <el-button @click="send(message)" type="success" plain>发送</el-button>
-            {{ connect_status }}
           </el-col>
           <el-col :span="9">
             <el-button @click="clean" type="danger" plain>清空内容</el-button>
