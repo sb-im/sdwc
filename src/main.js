@@ -16,6 +16,7 @@ import App from './App.vue'
 
 import Login from './page/login.vue'
 import routes from "./routes.js"
+import Config from "./config.json"
 
 //Vue.component('my-component', Login)
 
@@ -27,10 +28,7 @@ const router =  new VueRouter({
 
 const store = new Vuex.Store({
   state: {
-    config: {
-      server: "",
-      suffix: ""
-    },
+    config: Config,
     token: "",
     items:[],
     links:[]
