@@ -1,24 +1,18 @@
 <template>
-  <div>
-    <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
-      <el-tab-pane
-        v-for="(item, index) in this.$store.state.links"
-        :key="item.name"
-        :label="item.name"
-        :name="item.id"
+  <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
+    <el-tab-pane
+      v-for="(item, index) in this.$store.state.links"
+      :key="item.name"
+      :label="item.name"
+      :name="item.id"
       >
-        <div v-for="video in item.video">
-          <monitor-img :source="video"></monitor-img>
-        </div>
-        <webterminal></webterminal>
-        {{item.content}}
-      </el-tab-pane>
-    </el-tabs>
-  </div>
+      <sd-content :node="item"></sd-content>
+      {{item.content}}
+    </el-tab-pane>
+  </el-tabs>
 </template>
 <script>
-import MonitorImg from '../components/monitor-img.vue'
-import WebTerminal from '../components/webterminal.vue'
+import Content from './content.vue'
 
 
   export default {
@@ -29,8 +23,7 @@ import WebTerminal from '../components/webterminal.vue'
       }
     },
     components: {
-      'monitor-img': MonitorImg,
-      'webterminal': WebTerminal
+      'sd-content': Content
     },
     data() {
       return {
