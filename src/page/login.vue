@@ -29,7 +29,7 @@
           }
           callback();
         }
-      };
+      }
       var validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入密码'));
@@ -39,12 +39,11 @@
           }
           callback();
         }
-      };
+      }
       return {
         ruleForm: {
           username: '',
-          password: '',
-          age: ''
+          password: ''
         },
         rules: {
           username: [
@@ -54,24 +53,15 @@
             { validator: validatePass, trigger: 'blur' }
           ]
         }
-      };
+      }
     },
     methods: {
       login() {
+        let suffix = ''
         //let api_url = "http://" + location.hostname + "/user/login"
-        let api_url = this.$store.state.config.server + "/user/login"
+        let api_url = this.$store.state.config.server + "/user/login" + suffix
         console.log(api_url)
 
-        //this.$http.get(api_url)
-        //this.$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-        //this.$http.defaults.headers.post['Access-Control-Request-Method'] = 'POST'
-        //this.$http.defaults.headers.post['Access-Control-Request-Headers'] = 'X-PINGOTHER'
-/*
-        this.$http.create({
-          "Access-Control-Request-Method": "POST",
-          "Access-Control-Request-Headers": "X-PINGOTHER"
-        })
-        */
         this.$http.get(api_url + "/" + this.ruleForm.username + "/" + this.ruleForm.password)
         .then((response) => {
           console.log(this)
@@ -90,7 +80,6 @@
     }
   }
 </script>
-
 <style scoped>
 
   .login {
@@ -108,4 +97,3 @@
     position:absolute;
   }
 </style>
-

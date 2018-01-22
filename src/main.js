@@ -29,17 +29,18 @@ const store = new Vuex.Store({
   state: {
     config: {
       server: "",
-      token: ""
+      suffix: ""
     },
+    token: "",
     items:[],
     links:[]
   },
   mutations: {
     config (state, config) {
-      state.config.server = config.server
+      state.config = config
     },
     token (state, config) {
-      state.config.token = config.token
+      state.token = config.token
     },
     items (state, items) {
       state.items = items
