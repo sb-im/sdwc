@@ -57,15 +57,22 @@
     },
     methods: {
       login() {
-        let suffix = ''
-        //let api_url = "http://" + location.hostname + "/user/login"
-        let api_url = this.$store.state.config.server + "/user/login" + suffix
-        console.log(api_url)
+        let api_url = this.$store.state.config.server + "/user/login"
 
-        this.$http.get(api_url + "/" + this.ruleForm.username + "/" + this.ruleForm.password)
+        // local User debug
+        if (this.ruleForm.username == "debug" && this.ruleForm.password == "debug") {
+          api_url = this.$store.state.config.server + "/user" + this.$store.state.config.suffix
+        } else {
+          api_url = api_url + "/" + this.ruleForm.username + "/" + this.ruleForm.password
+        }
+        console.log(api_url)
+        this.getLogin(api_url)
+      },
+      getLogin(api_url) {
+
+        this.$http.get(api_url)
         .then((response) => {
           console.log(this)
-          //this.update()
           console.log(response.data)
           //this.$store.state.config.token = response.data.token
           this.$store.commit("token", response.data)

@@ -78,8 +78,9 @@
       getItems() {
         //console.log("getItems")
         //console.log(this.$store.state.config.server)
-        let api_url = "/node_config.json"
-        //let api_url = this.$store.state.config.server + "/nodes"
+        //let api_url = "/node_config.json"
+        let api_url = this.$store.state.config.server + "/nodes" + this.$store.state.config.suffix
+        console.log(api_url)
         this.$http.get(api_url)
         .then((response) => {
           //console.log(response.data)
