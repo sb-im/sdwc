@@ -54,13 +54,12 @@
     methods: {
       handleSelect(key, keyPath) {
         this.$emit('select')
-        console.log(key, keyPath)
+        //console.log(key, keyPath)
         for (let item of this.items) {
-          //console.log(keyPath)
           //console.log(String(keyPath))
           //console.log(typeof(item.id))
           if (keyPath[1] == item.id) {
-            console.log(item.id)
+            //console.log(item.id)
             this.$store.commit("linkadd", item)
           }
         }
@@ -68,19 +67,16 @@
         //console.log("SSSSSSSSSSS");
       },
       handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-        console.log("OOOOOOOOOOO");
+        //console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
-        console.log(key, keyPath);
-        console.log("CCCCCCCCCCC");
+        //console.log(key, keyPath);
       },
       getItems() {
         //console.log("getItems")
-        //console.log(this.$store.state.config.server)
         //let api_url = "/node_config.json"
         let api_url = this.$store.state.config.server + "/nodes" + this.$store.state.config.suffix
-        console.log(api_url)
+        //console.log(api_url)
         this.$http.get(api_url)
         .then((response) => {
           //console.log(response.data)
