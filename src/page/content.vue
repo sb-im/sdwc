@@ -1,14 +1,17 @@
 <template>
-  <div>
-    <div v-for="video in node.video">
-      <monitor-img :source="video"></monitor-img>
-    </div>
-    <webterminal></webterminal>
+  <div v-if="node.type == 'air'">
+    <sd-air :node="node"></sd-air>
+  </div>
+  <div v-else-if="node.type == 'depot'">
+    <sd-depot :node="node"></sd-depot>
+  </div>
+  <div v-else>
+    <h1>404</h1>
   </div>
 </template>
 <script>
-import MonitorImg from '../components/monitor-img.vue'
-import WebTerminal from '../components/webterminal.vue'
+import Depot from '../contents/depot.vue'
+import Air from '../contents/air.vue'
 
 
   export default {
@@ -19,8 +22,8 @@ import WebTerminal from '../components/webterminal.vue'
       }
     },
     components: {
-      'monitor-img': MonitorImg,
-      'webterminal': WebTerminal
+      'sd-depot': Depot,
+      'sd-air': Air
     }
   }
 </script>
