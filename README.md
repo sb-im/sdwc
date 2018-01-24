@@ -64,6 +64,15 @@ cp src/config.json ./
 >
 >pass: debug
 
+## 关于token 认证
+目前只支持在url里埋token方式
+
+1. 在suffix 变量里设置好token变量名
+2. 在login 返回json 中设置 url_token 参数为 true
+3. token 值会自动加在 suffix 后面，每次请求会自动添加token
+
+
+
 ### 生命周期异步资源加载过程
 1. load config.json
 2. auth user [post && get]

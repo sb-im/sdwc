@@ -39,6 +39,9 @@ const store = new Vuex.Store({
     },
     token (state, config) {
       state.token = config.token
+      if (config.url_token != undefined) {
+        state.config.suffix = state.config.suffix + config.token
+      }
     },
     items (state, items) {
       state.items = items
