@@ -1,4 +1,4 @@
-SDashboard v3.0
+SDWC v3.0 == SuperDock Web Console
 =====
 
 > A Vue.js project
