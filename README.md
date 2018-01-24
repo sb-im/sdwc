@@ -6,6 +6,7 @@ SDWC v3.0 == SuperDock Web Console
 > element-ui
 
 
+![SDWC-demo](doc/SDWC-v3.gif)
 ## Config
 
 config.json
@@ -103,3 +104,5 @@ cp src/config.json ./
 
 #### old
 old 目录下的是 2.0 版本程序 （已废弃）可以拿来做参考～ (・∀・) ～
+
+![SDWC-2-old-demo](doc/SDWC-v2.gif)
