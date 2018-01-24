@@ -107,6 +107,6 @@ old 目录下的是 2.0 版本程序 （已废弃）可以拿来做参考～ (�
 
 ![SDWC-2-old-demo](doc/SDWC-v2.gif)
 
-v 1.0 纯图片
+v1.0 纯图片
 
 ![SDWC-1-old-demo](doc/SDWC-v1.jpg)
