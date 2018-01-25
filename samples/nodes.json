@@ -25,8 +25,8 @@
     "id": "3",
     "name": "Test3",
     "type": "air",
-    "address": "http://192.168.101.208:8080/?action=stream",
-    "websocket": "http://192.168.101.208:8080/?action=stream",
+    "address": "http://localhost:22333",
+    "websocket": "ws://localhost:22333",
     "video": [
       "http://192.168.101.208:8080/?action=stream"
     ]

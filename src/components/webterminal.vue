@@ -17,7 +17,7 @@
 
       <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
-        <el-row :gutter="20">
+        <el-row :gutter="20" v-if="this.websocket == hostname">
           <el-col :xs="9" :sm="10" :md="9" :lg="10" :xl="8">
             <el-input placeholder="请输入主机名" v-model="hostname"/>
           </el-col>
@@ -84,10 +84,6 @@ import Command from './command.json'
       }
     },
     props: {
-      source: {
-        type: String,
-        default: 'vertical'
-      },
       websocket: {
         type: String,
         default: location.hostname
@@ -95,6 +91,18 @@ import Command from './command.json'
       autolf: {
         type: Boolean,
         default: true
+      }
+    },
+    created: function () {
+      if (this.websocket != location.hostname) {
+        //console.log("start")
+        this.connect()
+      }
+    },
+    beforeDestroy: function () {
+      if (this.connect_status) {
+        //console.log("stop")
+        this.close()
       }
     },
     methods: {
@@ -105,7 +113,13 @@ import Command from './command.json'
 
         // console.log("###############")
         //alert(this.hostname + ':' + this.port)
-        var host = "ws://" + this.hostname + ":" + this.port + "/"
+        var host
+        if (this.websocket == location.hostname) {
+          host = "ws://" + this.hostname + ":" + this.port + "/"
+        } else {
+          host = this.websocket
+        }
+        //console.log(host)
         this.socket = new WebSocket(host)
         var socket = this.socket
         try {
