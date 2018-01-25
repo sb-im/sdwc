@@ -87,14 +87,17 @@ import Command from './command.json'
       source: {
         type: String,
         default: 'vertical'
+      },
+      websocket: {
+        type: String,
+        default: location.hostname
+      },
+      autolf: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {
-      test(msg = "23333333333333") {
-        //console.log("###############")
-        //console.log(msg)
-        this.content = this.content + this.tarCmd(msg)
-      },
       connect() {
         // 关于这个函数他为什么好使我也没看明白
         // 反正改了就不好使了
@@ -106,22 +109,22 @@ import Command from './command.json'
         this.socket = new WebSocket(host)
         var socket = this.socket
         try {
-            console.log(this)
-            console.log(this.connect_status)
+            //console.log(this)
+            //console.log(this.connect_status)
             var _this = this
 
           socket.onopen = function (msg) {
-            console.log("连接成功！")
-            console.log(socket.readyState)
-            console.log(this.connect_status)
-            console.log(this)
+            //console.log("连接成功！")
+            //console.log(socket.readyState)
+            //console.log(this.connect_status)
+            //console.log(this)
 
             _this.connect_status = socket.readyState
           }
 
           socket.onmessage = function (msg) {
             if (typeof msg.data == "string") {
-              _this.display(msg.data)
+              _this.msg(msg.data)
             } else {
               alert("非文本消息");
             }
@@ -138,20 +141,32 @@ import Command from './command.json'
         }
       },
       tarCmd(cmd) {
-        return cmd + '\n'
+        //return cmd + '\n'
+        return cmd
       },
-      display(msg) {
+      msg(msg) {
+        if (this.autolf) {
+          this.display(msg)
+        } else {
+          this.pInfo(msg)
+        }
+      },
+      pInfo(msg) {
         this.display_tmp += msg
         if (this.display_tmp.indexOf("\n") != -1) {
-          this.test(this.display_tmp)
+          this.display(this.display_tmp)
           this.display_tmp = ''
         }
+      },
+      display(msg = "Not Content") {
+        //console.log(msg)
+        this.content += this.tarCmd(msg+ "\n")
       },
       send(msg = this.message) {
         //alert(msg)
         this.socket.send(msg)
         console.log(msg)
-        this.test(msg)
+        this.display(msg)
       },
       close() {
         try {
