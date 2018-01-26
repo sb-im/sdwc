@@ -97,6 +97,7 @@
     },
     created: function () {
       if (this.websocket != location.hostname) {
+        //console.log(this.websocket)
         //console.log("start")
         this.connect()
       }
@@ -113,7 +114,7 @@
         if (this.websocket == location.hostname) {
           host = "ws://" + this.hostname + ":" + this.port + "/"
         } else {
-          host = this.websocket
+          host = "ws://" + this.websocket
         }
         //console.log(host)
         this.socket = new WebSocket(host)

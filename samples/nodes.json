@@ -12,10 +12,10 @@
   },
   {
     "id": "2",
-    "name": "Test2",
-    "type": "depot",
+    "name": "Test2-drone-1",
+    "type": "air",
     "address": "http://192.168.101.208:8080/?action=stream",
-    "websocket": "http://192.168.101.208:8080/?action=stream",
+    "websocket": "localhost:22333",
     "video": [
       "http://192.168.101.208:8080/?action=stream",
       "http://192.168.101.208:8081/?action=stream"
@@ -23,10 +23,10 @@
   },
   {
     "id": "3",
-    "name": "Test3",
+    "name": "Test3-drone-2",
     "type": "air",
     "address": "http://localhost:22333",
-    "websocket": "ws://localhost:22333",
+    "websocket": "superdock-air:22333",
     "video": [
       "http://192.168.101.208:8080/?action=stream"
     ]

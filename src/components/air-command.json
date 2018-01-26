@@ -1,6 +1,6 @@
 [
-  { "name": "打开舱门～ | ω・´) ～", "value": "door_up" },
-  { "name": "关闭舱门～ (＾o＾)ﾉ ～", "value": "door_down" },
-  { "name": "全部停止～ Σ( ﾟдﾟ) ～", "value": "stop_all" },
-  { "name": "测试 ～ (〃∀〃) ～", "value": "test" }
+  { "name": "解锁～ | ω・´) ～", "value": "arm throttle" },
+  { "name": "上锁～ (＾o＾)ﾉ ～", "value": "disarm" },
+  { "name": "安全开关开～ Σ( ﾟдﾟ) ～", "value": "arm safetyon" },
+  { "name": "安全开关关～ Σ( ﾟдﾟ) ～", "value": "arm safetyoff" }
 ]
