@@ -67,12 +67,10 @@
 </template>
 
 <script>
-import Command from './command.json'
 
   export default {
     data() {
       return {
-        commands: Command,
         hostname: location.hostname,
         port: '22333',
         message: 'hello',
@@ -84,6 +82,10 @@ import Command from './command.json'
       }
     },
     props: {
+      commands: {
+        type: Array,
+        default: []
+      },
       websocket: {
         type: String,
         default: location.hostname
