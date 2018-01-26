@@ -79,7 +79,7 @@ import Command from './command.json'
         connect_status: false,
         content: '',
         display_tmp: '',
-        socket: Object
+        socket: {}
 
       }
     },
@@ -107,12 +107,6 @@ import Command from './command.json'
     },
     methods: {
       connect() {
-        // 关于这个函数他为什么好使我也没看明白
-        // 反正改了就不好使了
-        // javascript基础不好不知道怎么改才是优雅的实现
-
-        // console.log("###############")
-        //alert(this.hostname + ':' + this.port)
         var host
         if (this.websocket == location.hostname) {
           host = "ws://" + this.hostname + ":" + this.port + "/"
@@ -121,37 +115,29 @@ import Command from './command.json'
         }
         //console.log(host)
         this.socket = new WebSocket(host)
-        var socket = this.socket
         try {
-            //console.log(this)
             //console.log(this.connect_status)
-            var _this = this
 
-          socket.onopen = function (msg) {
-            //console.log("连接成功！")
-            //console.log(socket.readyState)
+          this.socket.onopen = (msg) => {
+            //console.log("connect successed")
             //console.log(this.connect_status)
-            //console.log(this)
-
-            _this.connect_status = socket.readyState
+            this.connect_status = this.socket.readyState
           }
 
-          socket.onmessage = function (msg) {
+          this.socket.onmessage = (msg) => {
             if (typeof msg.data == "string") {
-              _this.msg(msg.data)
+              this.msg(msg.data)
             } else {
               alert("非文本消息");
             }
           }
 
-          socket.onclose = function (msg) {
-            //alert("socket closed!")
-            _this.connect_status = false
+          this.socket.onclose = (msg) => {
+            this.connect_status = false
           }
         }
         catch (ex) {
-          //log(ex)
-          alert(ex)
+          console.log(ex)
         }
       },
       tarCmd(cmd) {
