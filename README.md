@@ -25,18 +25,24 @@ yarn run dev
 yarn run build
 ```
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Update Log
+- 2018.0124
+  - start_public
 
 
 ## Todo List
 - [ ] English Doc
-- [ ] add flv.js
+- [x] add flv.js
+- [ ] add hls.js
 - [ ] mavlink components
 
 ## 中文文档
-本程序使用 vue 全家桶 + element-ui + axios.js 开发
 
-本程序可以实现同时控制多台设备
+本程序由草莓科技开发并开源，以MPL-2.0协议开源，目地是想做一个通用型控制台
+
+使用 vue 全家桶 + element-ui + axios.js 开发
+
+可以实现同时控制多台设备
 
 有些东西不知道如何中描述～ (￣∇￣) ～ 请参上面的英文文档
 
@@ -102,11 +108,11 @@ cp src/config.json ./
     - command.json
   - monitor-img
 
-#### old
-old 目录下的是 2.0 版本程序 （已废弃）可以拿来做参考～ (・∀・) ～
+### old
+old 目录下的是 2.0 版本程序 （已废弃）可以拿来做参考（如电源模块）～ (・∀・) ～
 
 ![SDWC-2-old-demo](doc/SDWC-v2.gif)
 
-v1.0 纯图片
+v1.0 版 （已无参价值）
 
 ![SDWC-1-old-demo](doc/SDWC-v1.jpg)
