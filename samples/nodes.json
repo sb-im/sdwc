@@ -5,9 +5,9 @@
     "type": "depot",
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
-    "video": [
-      "http://192.168.101.208:8080/?action=stream",
-      "http://192.168.101.208:8081/?action=stream"
+    "videos": [
+      {"address": "http://192.168.101.208:8080/?action=stream", "type": "img"},
+      {"address": "http://192.168.101.208:8080/?action=stream", "type": "img"}
     ]
   },
   {
@@ -16,9 +16,9 @@
     "type": "air",
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "localhost:22333",
-    "video": [
-      "http://192.168.101.208:8080/?action=stream",
-      "http://192.168.101.208:8081/?action=stream"
+    "videos": [
+      {"address": "http://127.0.0.1:7001/live/movie.flv", "type": "flv"},
+      {"address": "http://127.0.0.1:7001/live/movie.flv", "type": "flv"}
     ]
   },
   {
@@ -27,8 +27,8 @@
     "type": "air",
     "address": "http://localhost:22333",
     "websocket": "superdock-air:22333",
-    "video": [
-      "http://192.168.101.208:8080/?action=stream"
+    "videos": [
+      {"address": "http://127.0.0.1:7001/live/movie.flv", "type": "flv"}
     ]
   },
   {
@@ -37,6 +37,6 @@
     "type": "depot",
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
-    "video": []
+    "videos": []
   }
 ]

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-for="video in node.video">
-      <monitor-img :source="video"></monitor-img>
+    <div v-for="video in node.videos">
+      <monitor-img :source="video.address"></monitor-img>
     </div>
     <webterminal :autolf=false :commands=command></webterminal>
   </div>

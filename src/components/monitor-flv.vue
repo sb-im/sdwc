@@ -1,15 +1,11 @@
 <template>
-  <div>
-  <video ref="vvv" id="videoElement"></video>
-            <el-button @click="play" type="danger" plain>play</el-button>
-  </div>
+  <video ref="vvv"></video>
 </template>
 
 
 
 <script>
 import flvjs from 'flv.js'
-//this.prototype.$flv = flvjs
 
   export default {
     data() {
@@ -18,8 +14,14 @@ import flvjs from 'flv.js'
     props: {
       source: {
         type: String,
-        default: 'vertical'
+        default: 'http://127.0.0.1:7001/live/movie.flv'
       }
+    },
+    mounted() {
+      this.play()
+    },
+    beforeDestroy() {
+      this.flv_destroy()
     },
     methods: {
       play() {
@@ -29,12 +31,21 @@ import flvjs from 'flv.js'
           var videoElement = this.$refs.vvv
           var flvPlayer = flvjs.createPlayer({
             type: 'flv',
-            url: 'http://127.0.0.1:7001/live/movie.flv'
+            url: this.source
           });
           flvPlayer.attachMediaElement(videoElement);
           flvPlayer.load();
           flvPlayer.play();
+          this.flvPlayer = flvPlayer
         }
+      },
+      flv_destroy() {
+        var player = this.flvPlayer
+        player.pause();
+        player.unload();
+        player.detachMediaElement();
+        player.destroy();
+        player = null;
       }
     }
 
