@@ -1,19 +1,13 @@
 <template>
   <div>
     <div v-for="video in node.videos">
-      <div v-if="video.type=='img'">
-        <monitor-img :source="video.address"></monitor-img>
-      </div>
-      <div v-else>
-        <monitor-flv :source="video.address"></monitor-flv>
-      </div>
+        <rt-monitor :video="video"></rt-monitor>
     </div>
     <webterminal :websocket=node.websocket :commands=command></webterminal>
   </div>
 </template>
 <script>
-import MonitorImg from '../components/monitor-img.vue'
-import MonitorFlv from '../components/monitor-flv.vue'
+import Monitor from '../components/rt-monitor/rt-monitor.vue'
 import WebTerminal from '../components/webterminal.vue'
 import Command from '../components/air-command.json'
 
@@ -31,8 +25,7 @@ import Command from '../components/air-command.json'
       }
     },
     components: {
-      'monitor-img': MonitorImg,
-      'monitor-flv': MonitorFlv,
+      'rt-monitor': Monitor,
       'webterminal': WebTerminal
     }
   }

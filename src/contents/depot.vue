@@ -1,13 +1,13 @@
 <template>
   <div>
     <div v-for="video in node.videos">
-      <monitor-img :source="video.address"></monitor-img>
+      <rt-monitor :video="video"></rt-monitor>
     </div>
     <webterminal :autolf=false :commands=command></webterminal>
   </div>
 </template>
 <script>
-import MonitorImg from '../components/monitor-img.vue'
+import Monitor from '../components/rt-monitor/rt-monitor.vue'
 import WebTerminal from '../components/webterminal.vue'
 import Command from '../components/depot-command.json'
 
@@ -25,7 +25,7 @@ import Command from '../components/depot-command.json'
       }
     },
     components: {
-      'monitor-img': MonitorImg,
+      'rt-monitor': Monitor,
       'webterminal': WebTerminal
     }
   }
