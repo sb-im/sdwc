@@ -28,6 +28,9 @@ yarn run build
 ## Update Log
 - 2018.0124
   - start_public
+- 2018.0129
+  - add node video type
+  - add video type flv
 
 
 ## Todo List
