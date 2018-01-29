@@ -1,15 +1,23 @@
 <template>
   <div>
-    <div v-for="video in node.video">
-      <monitor-img :source="video"></monitor-img>
+    <div v-for="video in node.videos">
+        <rt-monitor :video="video"></rt-monitor>
     </div>
+    <webterminal :websocket=node.websocket :commands=command></webterminal>
   </div>
 </template>
 <script>
-import MonitorImg from '../components/monitor-img.vue'
+import Monitor from '../components/rt-monitor/rt-monitor.vue'
+import WebTerminal from '../components/webterminal.vue'
+import Command from '../components/air-command.json'
 
 
   export default {
+    data() {
+      return {
+        command: Command
+      }
+    },
     props: {
       node: {
         type: Object,
@@ -17,7 +25,8 @@ import MonitorImg from '../components/monitor-img.vue'
       }
     },
     components: {
-      'monitor-img': MonitorImg
+      'rt-monitor': Monitor,
+      'webterminal': WebTerminal
     }
   }
 </script>

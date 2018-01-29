@@ -17,7 +17,7 @@
 
       <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
-        <el-row :gutter="20">
+        <el-row :gutter="20" v-if="this.websocket == hostname">
           <el-col :xs="9" :sm="10" :md="9" :lg="10" :xl="8">
             <el-input placeholder="请输入主机名" v-model="hostname"/>
           </el-col>
@@ -67,91 +67,109 @@
 </template>
 
 <script>
-import Command from './command.json'
 
   export default {
     data() {
       return {
-        commands: Command,
         hostname: location.hostname,
         port: '22333',
         message: 'hello',
         connect_status: false,
         content: '',
         display_tmp: '',
-        socket: Object
+        socket: {}
 
       }
     },
     props: {
-      source: {
+      commands: {
+        type: Array,
+        default: []
+      },
+      websocket: {
         type: String,
-        default: 'vertical'
+        default: location.hostname
+      },
+      autolf: {
+        type: Boolean,
+        default: true
+      }
+    },
+    created: function () {
+      if (this.websocket != location.hostname) {
+        //console.log(this.websocket)
+        //console.log("start")
+        this.connect()
+      }
+    },
+    beforeDestroy: function () {
+      if (this.connect_status) {
+        //console.log("stop")
+        this.close()
       }
     },
     methods: {
-      test(msg = "23333333333333") {
-        //console.log("###############")
-        //console.log(msg)
-        this.content = this.content + this.tarCmd(msg)
-      },
       connect() {
-        // 关于这个函数他为什么好使我也没看明白
-        // 反正改了就不好使了
-        // javascript基础不好不知道怎么改才是优雅的实现
-
-        // console.log("###############")
-        //alert(this.hostname + ':' + this.port)
-        var host = "ws://" + this.hostname + ":" + this.port + "/"
+        var host
+        if (this.websocket == location.hostname) {
+          host = "ws://" + this.hostname + ":" + this.port + "/"
+        } else {
+          host = "ws://" + this.websocket
+        }
+        //console.log(host)
         this.socket = new WebSocket(host)
-        var socket = this.socket
         try {
-            console.log(this)
-            console.log(this.connect_status)
-            var _this = this
+            //console.log(this.connect_status)
 
-          socket.onopen = function (msg) {
-            console.log("连接成功！")
-            console.log(socket.readyState)
-            console.log(this.connect_status)
-            console.log(this)
-
-            _this.connect_status = socket.readyState
+          this.socket.onopen = (msg) => {
+            //console.log("connect successed")
+            //console.log(this.connect_status)
+            this.connect_status = this.socket.readyState
           }
 
-          socket.onmessage = function (msg) {
+          this.socket.onmessage = (msg) => {
             if (typeof msg.data == "string") {
-              _this.display(msg.data)
+              this.msg(msg.data)
             } else {
               alert("非文本消息");
             }
           }
 
-          socket.onclose = function (msg) {
-            //alert("socket closed!")
-            _this.connect_status = false
+          this.socket.onclose = (msg) => {
+            this.connect_status = false
           }
         }
         catch (ex) {
-          //log(ex)
-          alert(ex)
+          console.log(ex)
         }
       },
       tarCmd(cmd) {
-        return cmd + '\n'
+        //return cmd + '\n'
+        return cmd
       },
-      display(msg) {
+      msg(msg) {
+        if (this.autolf) {
+          this.display(msg)
+        } else {
+          this.pInfo(msg)
+        }
+      },
+      pInfo(msg) {
         this.display_tmp += msg
         if (this.display_tmp.indexOf("\n") != -1) {
-          this.test(this.display_tmp)
+          this.display(this.display_tmp)
           this.display_tmp = ''
         }
+      },
+      display(msg = "Not Content") {
+        //console.log(msg)
+        this.content += this.tarCmd(msg+ "\n")
       },
       send(msg = this.message) {
         //alert(msg)
         this.socket.send(msg)
         console.log(msg)
-        this.test(msg)
+        this.display(msg)
       },
       close() {
         try {
