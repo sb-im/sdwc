@@ -1,8 +1,8 @@
 <template>
-  <div v-if="node.type == 'air'">
+  <div v-if="node.type_name == 'air'">
     <sd-air :node="node"></sd-air>
   </div>
-  <div v-else-if="node.type == 'depot'">
+  <div v-else-if="node.type_name == 'depot'">
     <sd-depot :node="node"></sd-depot>
   </div>
   <div v-else>

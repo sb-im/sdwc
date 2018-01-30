@@ -2,39 +2,39 @@
   {
     "id": "1",
     "name": "Test",
-    "type": "depot",
+    "type_name": "depot",
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
     "videos": [
-      {"address": "http://192.168.101.208:8080/?action=stream", "type": "img"},
-      {"address": "http://192.168.101.208:8080/?action=stream", "type": "img"}
+      {"address": "http://192.168.101.208:8080/?action=stream", "type_name": "img"},
+      {"address": "http://192.168.101.208:8080/?action=stream", "type_name": "img"}
     ]
   },
   {
     "id": "2",
     "name": "Test2-drone-1",
-    "type": "air",
+    "type_name": "air",
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "localhost:22333",
     "videos": [
-      {"address": "http://127.0.0.1:7001/live/movie.flv", "type": "flv"},
-      {"address": "http://127.0.0.1:7001/live/movie.flv", "type": "hls"}
+      {"address": "http://127.0.0.1:7001/live/movie.flv", "type_name": "flv"},
+      {"address": "http://127.0.0.1:7001/live/movie.flv", "type_name": "hls"}
     ]
   },
   {
     "id": "3",
     "name": "Test3-drone-2",
-    "type": "air",
+    "type_name": "air",
     "address": "http://localhost:22333",
     "websocket": "localhost:22333",
     "videos": [
-      {"address": "http://127.0.0.1:7001/live/movie.flv", "type": "flv"}
+      {"address": "http://127.0.0.1:7001/live/movie.flv", "type_name": "flv"}
     ]
   },
   {
     "id": "4",
     "name": "Test4",
-    "type": "depot",
+    "type_name": "depot",
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
     "videos": []

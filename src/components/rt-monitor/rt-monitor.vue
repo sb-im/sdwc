@@ -1,8 +1,8 @@
 <template>
-  <div v-if="video.type=='img'">
+  <div v-if="video.type_name=='img'">
     <monitor-img :source="video.address"></monitor-img>
   </div>
-  <div v-else-if="video.type=='flv'">
+  <div v-else-if="video.type_name=='flv'">
     <monitor-flv :source="video.address"></monitor-flv>
   </div>
   <div v-else>

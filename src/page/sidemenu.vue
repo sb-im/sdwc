@@ -15,7 +15,7 @@
           <i class="el-icon-tickets"></i>
           <span>飞机</span>
         </template>
-        <div v-for="item in items" v-if="item.type == 'air'">
+        <div v-for="item in items" v-if="item.type_name == 'air'">
           <el-menu-item :index="item.id">{{ item.name }}</el-menu-item>
         </div >
       </el-submenu>
@@ -25,7 +25,7 @@
           <span>机场</span>
         </template>
 
-        <div v-for="item in items" v-if="item.type == 'depot'">
+        <div v-for="item in items" v-if="item.type_name == 'depot'">
           <el-menu-item :index="item.id">{{ item.name }}</el-menu-item>
         </div >
       </el-submenu>
