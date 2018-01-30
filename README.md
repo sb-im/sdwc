@@ -31,6 +31,8 @@ yarn run build
 - 2018.0129
   - add node video type
   - add video type flv
+- 2018.0130
+  - rename type to type_name (有些后端框架type是保留字段，为了消除歧义重命名此字段)
 
 
 ## Todo List
