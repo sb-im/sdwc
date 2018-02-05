@@ -4,7 +4,7 @@
       v-for="(item, index) in this.$store.state.links"
       :key="item.name"
       :label="item.name"
-      :name="item.id"
+      :name="String(item.id)"
       >
       <sd-content :node="item"></sd-content>
       {{item.content}}
@@ -32,9 +32,10 @@ import Content from './content.vue'
     },
     methods: {
       removeTab(id) {
+        //console.log(typeof(id))
 
         this.activeTab = this.otherActive(id, this.activeTab, this.$store.state.links)
-        this.$store.commit("linkdel", id)
+        this.$store.commit("linkdel", Number(id))
       },
       otherActive(targetName, activeName, tabs) {
         // Delete the tab focus transfer other tab

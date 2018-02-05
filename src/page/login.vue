@@ -14,7 +14,6 @@
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="login">提交</el-button>
-                <el-button type="primary" @click="test">TTTTT</el-button>
               </el-form-item>
             </el-form>
 
@@ -72,7 +71,6 @@
         .catch((error) => {
           console.log(error)
         })
-
       },
       login() {
         let api_url = this.$store.state.config.server + "/user/login"
