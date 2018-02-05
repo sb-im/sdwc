@@ -14,6 +14,7 @@
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="login">提交</el-button>
+                <el-button type="primary" @click="test">TTTTT</el-button>
               </el-form-item>
             </el-form>
 
@@ -62,6 +63,17 @@
       }
     },
     methods: {
+      test() {
+        let api_url = this.$store.state.config.server + "/user/index/"
+        this.$http.get(api_url)
+        .then((response) => {
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
+      },
       login() {
         let api_url = this.$store.state.config.server + "/user/login"
 
@@ -97,13 +109,16 @@
         this.$http.post(api_url, {
         client_id: this.$store.state.config.client_id,
         client_secret: this.$store.state.config.client_secret,
-        username: this.ruleForm.username,
-        password: this.ruleForm.password,
+        //username: this.ruleForm.username,
+        //password: this.ruleForm.password,
+        username: 'sb@sb.im',
+        password: '123456',
         grant_type: 'password'
       })
         .then((response) => {
-          this.$store.commit("token", response.data)
-          if (response.data.token) {
+          if (response.data.access_token) {
+            //console.log(response.data.token_type + ' ' + response.data.access_token)
+            this.$http.create().defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token
             this.$router.push('app')
           }
         })
