@@ -68,11 +68,14 @@
         // local User debug
         if (this.ruleForm.username == "debug" && this.ruleForm.password == "debug") {
           api_url = this.$store.state.config.server + "/user" + this.$store.state.config.suffix
+          this.getLogin(api_url)
         } else {
-          api_url = api_url + "/" + this.ruleForm.username + "/" + this.ruleForm.password
+          // remote user login
+
+          //api_url = api_url + "/" + this.ruleForm.username + "/" + this.ruleForm.password
+          api_url = this.$store.state.config.server + "/oauth/token/"
+          this.postLogin(api_url)
         }
-        console.log(api_url)
-        this.getLogin(api_url)
       },
       getLogin(api_url) {
 
@@ -81,6 +84,24 @@
           console.log(this)
           console.log(response.data)
           //this.$store.state.config.token = response.data.token
+          this.$store.commit("token", response.data)
+          if (response.data.token) {
+            this.$router.push('app')
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      },
+      postLogin(api_url) {
+        this.$http.post(api_url, {
+        client_id: this.$store.state.config.client_id,
+        client_secret: this.$store.state.config.client_secret,
+        username: this.ruleForm.username,
+        password: this.ruleForm.password,
+        grant_type: 'password'
+      })
+        .then((response) => {
           this.$store.commit("token", response.data)
           if (response.data.token) {
             this.$router.push('app')

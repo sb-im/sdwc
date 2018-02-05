@@ -1,4 +1,6 @@
 {
   "server": "/samples",
+  "client_id": "",
+  "client_secret": "",
   "suffix": ".json"
 }
