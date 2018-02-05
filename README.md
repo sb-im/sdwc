@@ -26,6 +26,9 @@ yarn run build
 ```
 
 ## Update Log
+
+year month day
+
 - 2018.0124
   - start_public
 - 2018.0129
@@ -33,7 +36,8 @@ yarn run build
   - add video type flv
 - 2018.0130
   - rename type to type_name (有些后端框架type是保留字段，为了消除歧义重命名此字段)
-
+- 2018.0205
+  - add oauth 2.0 type: password
 
 ## Todo List
 - [ ] English Doc
@@ -61,6 +65,8 @@ yarn run build
     - tabs
       - context
 
+## ××××× 重要！！！！
+
 程序启动默认加载 / 目录下的 config.json 配置文件
 
 ```
@@ -77,12 +83,13 @@ cp src/config.json ./
 >pass: debug
 
 ## 关于token 认证
-目前只支持在url里埋token方式
+目前支持在url里埋token方式
 
 1. 在suffix 变量里设置好token变量名
 2. 在login 返回json 中设置 url_token 参数为 true
 3. token 值会自动加在 suffix 后面，每次请求会自动添加token
 
+还支持oauth2.0 password 模式认证
 
 
 ### 生命周期异步资源加载过程
