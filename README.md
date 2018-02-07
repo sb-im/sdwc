@@ -1,4 +1,4 @@
-SDWC v3.0 == SuperDock Web Console
+SDWC == S Dashboard Web Console == SuperDock Web Console v3.0
 =====
 
 > A Vue.js project
@@ -26,16 +26,25 @@ yarn run build
 
 ## Install && Config
 
-
 ```bash
 cp src/config.json ./
 
 vim config.json
 
 ```
-### ××××× important! ! ! !
 
-The program launches the config.json configuration file for the default load /config.json
+
+### ××××× Important! ! ! !
+
+>The program launches the config.json configuration file for the default load /config.json
+
+>If you do not find the file, the default Kai file to load the data under the samples directory (local data)
+
+>This will enable local debug account
+
+>user: debug
+>
+>pass: debug
 
 
 ### Lifecycle Async Resource Load
@@ -44,6 +53,14 @@ The program launches the config.json configuration file for the default load /co
 3. get nodes list
 4. get node detail && link node
 
+## Composing with Components Relation Diagram
+* app
+  - login
+  - dashboard
+    - header
+    - sidemenu
+    - tabs
+      - context
 
 ## Update Log
 
@@ -55,7 +72,7 @@ year month day
   - add node video type
   - add video type flv
 - 2018.0130
-  - rename type to type_name (有些后端框架type是保留字段，为了消除歧义重命名此字段)
+  - rename type to type_name
 - 2018.0205
   - add oauth 2.0 type: password
 
