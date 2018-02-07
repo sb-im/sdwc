@@ -3,14 +3,13 @@ SDWC v3.0 == SuperDock Web Console
 
 > A Vue.js project
 >
-> element-ui
+> vue + vuex + vue-router + axios + element-ui
 
 
 ![SDWC-demo](doc/SDWC-v3.gif)
-## Config
 
-config.json
-
+## Introduction
+>The program developed by the SBIM (StrawBerry Tech) and MPL-2.0 protocol open source, the goal is to do a general-purpose console
 
 ## Build Setup
 
@@ -24,6 +23,27 @@ yarn run dev
 # build for production with minification
 yarn run build
 ```
+
+## Install && Config
+
+
+```bash
+cp src/config.json ./
+
+vim config.json
+
+```
+### ××××× important! ! ! !
+
+The program launches the config.json configuration file for the default load /config.json
+
+
+### Lifecycle Async Resource Load
+1. load config.json
+2. auth user [post && get]
+3. get nodes list
+4. get node detail && link node
+
 
 ## Update Log
 
@@ -40,10 +60,11 @@ year month day
   - add oauth 2.0 type: password
 
 ## Todo List
-- [ ] English Doc
+- [x] English Docs
 - [x] add flv.js
 - [ ] add hls.js
-- [ ] mavlink components
+- [x] mavlink components
+- [ ] Add vue-i18n
 
 ## 中文文档
 
