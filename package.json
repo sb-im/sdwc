@@ -2,16 +2,19 @@
   "name": "dashboard",
   "description": "A Vue.js project",
   "version": "1.0.0",
-  "author": "YongXin Shi <shiyongxin@aliyun.com>",
+  "author": "metal A-wing <shiyongxin@aliyun.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "test": "eslint src webpack"
   },
   "dependencies": {
     "axios": "^0.17.1",
     "element-ui": "^2.0.11",
+    "eslint": "^4.18.1",
+    "eslint-plugin-vue": "^4.3.0",
     "flv.js": "^1.4.0",
     "vue": "^2.5.11",
     "vue-router": "^3.0.1",
