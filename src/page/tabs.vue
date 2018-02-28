@@ -5,9 +5,9 @@
       :key="item.name"
       :label="item.name"
       :name="String(item.id)"
-      >
+    >
       <sd-content :node="item"></sd-content>
-      {{item.content}}
+      {{ item.content }}
     </el-tab-pane>
   </el-tabs>
 </template>

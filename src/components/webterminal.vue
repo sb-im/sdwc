@@ -8,7 +8,7 @@
     <hr/>
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
-        <div v-for="(cmd, i) in commands">
+        <div v-for="cmd in commands">
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="margin: 12px 0">
             <el-button type="success" plain @click="send(cmd.value)">{{ cmd.name }}</el-button>
           </el-col>
@@ -52,11 +52,11 @@
         <br/>
         <hr/>
         <el-input
-            type="textarea"
-            :rows="8"
-            readonly
-            placeholder="来自服务器的消息"
-            v-model="content">
+          type="textarea"
+          :rows="8"
+          readonly
+          placeholder="来自服务器的消息"
+          v-model="content">
         </el-input>
 
       </el-col>
@@ -84,7 +84,7 @@
     props: {
       commands: {
         type: Array,
-        default: []
+        default: Array
       },
       websocket: {
         type: String,
@@ -121,7 +121,7 @@
         try {
             //console.log(this.connect_status)
 
-          this.socket.onopen = (msg) => {
+          this.socket.onopen = () => {
             //console.log("connect successed")
             //console.log(this.connect_status)
             this.connect_status = this.socket.readyState
@@ -135,7 +135,7 @@
             }
           }
 
-          this.socket.onclose = (msg) => {
+          this.socket.onclose = () => {
             this.connect_status = false
           }
         }

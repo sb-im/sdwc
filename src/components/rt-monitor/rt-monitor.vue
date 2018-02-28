@@ -21,7 +21,7 @@ import MonitorFlv from './monitor-flv.vue'
     props: {
       video: {
         type: Object,
-        default: {}
+        default: Object
       }
     },
     components: {

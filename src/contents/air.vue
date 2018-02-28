@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="video in node.videos">
-        <rt-monitor :video="video"></rt-monitor>
+      <rt-monitor :video="video"></rt-monitor>
     </div>
     <webterminal :websocket=node.websocket :commands=command></webterminal>
   </div>
