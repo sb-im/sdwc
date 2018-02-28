@@ -8,5 +8,8 @@ cache:
   directories:
     - node_modules
 
+script:
+  - yarn build
+
 after_script:
   - ls dist/
