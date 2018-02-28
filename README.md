@@ -1,10 +1,12 @@
-SDWC == S Dashboard Web Console == SuperDock Web Console v3.0
+SDWC == S Dashboard Web Console
 =====
+[![Build Status](https://travis-ci.org/SB-IM/SDWC.svg?branch=master)](https://travis-ci.org/SB-IM/SDWC)
 
-> A Vue.js project
+> Multiple drones and ground station Web consoles
 >
 > vue + vuex + vue-router + axios + element-ui
-
+>
+> SDWC is SuperDock Web Console v3.0
 
 ![SDWC-demo](doc/SDWC-v3.gif)
 

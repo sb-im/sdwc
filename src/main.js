@@ -14,7 +14,6 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 import App from './App.vue'
 
-//import Login from './page/login.vue'
 import routes from "./routes.js"
 import Config from "./config.json"
 
