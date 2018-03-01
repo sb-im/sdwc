@@ -67,7 +67,8 @@ vim config.json
 ## Update Log
 
 year month day
-
+- 2018.0302
+  - travis-ci
 - 2018.0124
   - start_public
 - 2018.0129
