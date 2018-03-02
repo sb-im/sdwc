@@ -6,6 +6,7 @@
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
     "videos": [
+      {"address": "http://110.10.178.51:7001/live/movie.flv", "video_type_name": "flv"},
       {"address": "http://192.168.101.208:8080/?action=stream", "video_type_name": "img"},
       {"address": "http://192.168.101.208:8080/?action=stream", "video_type_name": "img"}
     ]
@@ -17,8 +18,8 @@
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "localhost:22333",
     "videos": [
-      {"address": "http://127.0.0.1:7001/live/movie.flv", "video_type_name": "flv"},
-      {"address": "http://127.0.0.1:7001/live/movie.flv", "video_type_name": "hls"}
+      {"address": "http://110.10.178.51:7001/live/movie.flv", "video_type_name": "flv"},
+      {"address": "http://110.10.178.51:7001/live/movie.flv", "video_type_name": "flv"}
     ]
   },
   {
@@ -28,6 +29,7 @@
     "address": "http://localhost:22333",
     "websocket": "localhost:22333",
     "videos": [
+      {"address": "http://110.10.178.51:7001/live/movie.flv", "video_type_name": "flv"},
       {"address": "http://127.0.0.1:7001/live/movie.flv", "video_type_name": "flv"}
     ]
   },
