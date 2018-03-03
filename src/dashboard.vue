@@ -42,7 +42,7 @@ import Tabs from './page/tabs.vue'
     },
     methods: {
       getItems () {
-        console.log("GGGGG")
+        console.log("dashboard click menu")
       }
     }
   }
