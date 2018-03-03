@@ -67,7 +67,9 @@ vim config.json
 ## Update Log
 
 year month day
-- 2018.0302
+- 2018.0303
+  - add hls.js
+- 2018.0229
   - travis-ci
 - 2018.0124
   - start_public
@@ -82,7 +84,8 @@ year month day
 ## Todo List
 - [x] English Docs
 - [x] add flv.js
-- [ ] add hls.js
+- [x] add hls.js
+- [ ] add RTSP web player
 - [x] mavlink components
 - [ ] Add vue-i18n
 
