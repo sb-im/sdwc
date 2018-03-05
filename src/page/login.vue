@@ -6,14 +6,14 @@
           <el-col :xs="24" :sm="22" :md="22" :lg="18" :xl="18">
 
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-              <el-form-item label="账号" prop="username">
+              <el-form-item :label="$t('login.username')" prop="username">
                 <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="密码" prop="password">
+              <el-form-item :label="$t('login.password')" prop="password">
                 <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="login">提交</el-button>
+                <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
               </el-form-item>
             </el-form>
 
@@ -28,7 +28,7 @@
     data() {
       var validateUser = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入账号'));
+          callback(new Error('Please enter the username'));
         } else {
           if (this.ruleForm.username !== '') {
             //this.$refs.ruleForm.validateField('username');
@@ -38,7 +38,7 @@
       }
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('Please enter the password'));
         } else {
           if (this.ruleForm.password !== '') {
             //this.$refs.ruleForm.validateField('password');
@@ -107,10 +107,10 @@
         this.$http.post(api_url, {
         client_id: this.$store.state.config.client_id,
         client_secret: this.$store.state.config.client_secret,
-        //username: this.ruleForm.username,
-        //password: this.ruleForm.password,
-        username: 'sb@sb.im',
-        password: '123456',
+        username: this.ruleForm.username,
+        password: this.ruleForm.password,
+        //username: 'sb@sb.im',
+        //password: '123456',
         grant_type: 'password'
       })
         .then((response) => {

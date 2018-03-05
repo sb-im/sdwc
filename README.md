@@ -87,7 +87,7 @@ year month day
 - [x] add hls.js
 - [ ] add RTSP web player
 - [x] mavlink components
-- [ ] Add vue-i18n
+- [x] Add vue-i18n
 
 ## 中文文档
 

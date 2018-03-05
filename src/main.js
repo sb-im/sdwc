@@ -9,6 +9,9 @@ Vue.use(VueRouter)
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
+import VueI18n from 'vue-i18n'
+Vue.use(VueI18n)
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
@@ -24,6 +27,15 @@ Vue.use(ElementUI)
 const router =  new VueRouter({
     routes
 })
+
+const i18n = new VueI18n({
+    locale: 'zh',  // Change Language
+    messages: {
+        'zh': require('./lang/zh'),
+        'en': require('./lang/en')
+    }
+})
+
 
 const store = new Vuex.Store({
   state: {
@@ -79,6 +91,7 @@ const store = new Vuex.Store({
 new Vue({
   el: '#app',
   store,
+  i18n,
   router,
   render: h => h(App)
 })

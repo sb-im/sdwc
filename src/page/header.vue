@@ -8,9 +8,9 @@
     text-color="#fff"
     active-text-color="#ffd04b">
     <el-menu-item index="1">SDWC</el-menu-item>
-    <el-menu-item index="2-1"><router-link to="/app">仪表盘</router-link></el-menu-item>
-    <el-menu-item index="2-2"><router-link to="/login">登出</router-link></el-menu-item>
-    <el-menu-item index="3"><a href="https://www.sb.im" target="_blank">官方网站</a></el-menu-item>
+    <el-menu-item index="2-1"><router-link to="/app">{{ $t('header.dashboard') }}</router-link></el-menu-item>
+    <el-menu-item index="2-2"><router-link to="/login">{{ $t('header.logout') }}</router-link></el-menu-item>
+    <el-menu-item index="3"><a href="https://www.sb.im" target="_blank">{{ $t('header.index') }}</a></el-menu-item>
   </el-menu>
 </template>
 

@@ -13,7 +13,7 @@
       <el-submenu index="air">
         <template slot="title">
           <i class="el-icon-tickets"></i>
-          <span>飞机</span>
+          <span>{{ $t('sidemenu.air') }}</span>
         </template>
         <div v-for="item in items" v-if="item.type_name == 'air'">
           <el-menu-item :index="String(item.id)">{{ item.name }}</el-menu-item>
@@ -22,7 +22,7 @@
       <el-submenu index="depot">
         <template slot="title">
           <i class="el-icon-setting"></i>
-          <span>机场</span>
+          <span>{{ $t('sidemenu.depot') }}</span>
         </template>
 
         <div v-for="item in items" v-if="item.type_name == 'depot'">
@@ -32,7 +32,7 @@
 
       <el-menu-item index="log">
         <i class="el-icon-menu"></i>
-        <span slot="title">日志</span>
+        <span slot="title">{{ $t('sidemenu.log') }}</span>
       </el-menu-item>
 
     </el-menu>
