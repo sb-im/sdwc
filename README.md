@@ -4,7 +4,7 @@ SDWC == S Dashboard Web Console
 
 > Multiple drones and ground station Web consoles
 >
-> vue + vuex + vue-router + axios + element-ui
+> element-ui + vue.js + axios + vuex + vue-router + vue-i18n
 >
 > SDWC is SuperDock Web Console v3.0
 
@@ -67,10 +67,6 @@ vim config.json
 ## Update Log
 
 year month day
-- 2018.0303
-  - add hls.js
-- 2018.0229
-  - travis-ci
 - 2018.0124
   - start_public
 - 2018.0129
@@ -80,12 +76,16 @@ year month day
   - rename type to type_name
 - 2018.0205
   - add oauth 2.0 type: password
+- 2018.0229
+  - Use travis-ci
+- 2018.0304
+  - Add hls.js
+  - Add vue-i18n
 
 ## Todo List
 - [x] English Docs
 - [x] add flv.js
 - [x] add hls.js
-- [ ] add RTSP web player
 - [x] mavlink components
 - [x] Add vue-i18n
 
@@ -111,6 +111,19 @@ year month day
 
 ## ××××× 重要！！！！
 
+为了国际化，默认语言为英文。需要设置成中文
+
+vim src/main.js
+```JavaScript
+const i18n = new VueI18n({
+    locale: 'zh',  // Change Language
+    messages: {
+        'zh': require('./lang/zh'),
+        'en': require('./lang/en')
+    }
+})
+```
+
 程序启动默认加载 / 目录下的 config.json 配置文件
 
 ```
@@ -127,7 +140,7 @@ cp src/config.json ./
 >pass: debug
 
 ## 关于token 认证
-目前支持在url里埋token方式
+支持在url里埋token方式
 
 1. 在suffix 变量里设置好token变量名
 2. 在login 返回json 中设置 url_token 参数为 true

@@ -29,7 +29,7 @@ const router =  new VueRouter({
 })
 
 const i18n = new VueI18n({
-    locale: 'zh',  // Change Language
+    locale: 'en',  // Change Language
     messages: {
         'zh': require('./lang/zh'),
         'en': require('./lang/en')
