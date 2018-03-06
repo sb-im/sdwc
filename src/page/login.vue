@@ -5,8 +5,8 @@
         <el-row :gutter="10" type="flex" justify="center">
           <el-col :xs="24" :sm="22" :md="22" :lg="18" :xl="18">
             <el-select v-model="lang" @change="switchLang( lang )" placeholder="Switch Language Default English">
-              <el-option :value="'en'">English</el-option>
-              <el-option :value="'zh'">中文</el-option>
+              <el-option :value="'en'" label="English"></el-option>
+              <el-option :value="'zh'" label="中文">中文</el-option>
             </el-select>
 
             <br/>
@@ -54,6 +54,7 @@
         }
       }
       return {
+        lang: 'en',
         ruleForm: {
           username: '',
           password: ''
