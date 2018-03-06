@@ -4,6 +4,13 @@
       <el-col :xs="22" :sm="14" :md="12" :lg="8" :xl="6" class="login-bg">
         <el-row :gutter="10" type="flex" justify="center">
           <el-col :xs="24" :sm="22" :md="22" :lg="18" :xl="18">
+            <el-select v-model="lang" @change="switchLang( lang )" placeholder="Switch Language Default English">
+              <el-option :value="'en'">English</el-option>
+              <el-option :value="'zh'">中文</el-option>
+            </el-select>
+
+            <br/>
+            <br/>
 
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
               <el-form-item :label="$t('login.username')" prop="username">
@@ -71,6 +78,9 @@
         .catch((error) => {
           console.log(error)
         })
+      },
+      switchLang()  {
+        this.$i18n.locale = this.lang
       },
       login() {
         let api_url = this.$store.state.config.server + "/user/login"
