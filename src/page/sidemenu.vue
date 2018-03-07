@@ -56,15 +56,12 @@
         this.$emit('select')
         //console.log(key, keyPath)
         for (let item of this.items) {
-          //console.log(String(keyPath))
-          //console.log(typeof(item.id))
           if (keyPath[1] == item.id) {
             //console.log(item.id)
             this.$store.commit("linkadd", item)
           }
         }
         //this.$store.commit("linkadd", response.data)
-        //console.log("SSSSSSSSSSS");
       },
       handleOpen(key, keyPath) {
         //console.log(key, keyPath);
@@ -88,9 +85,8 @@
         })
       },
       getNodeConfig: function () {
-          console.log(this.$store.state.config.token)
-        //var _this = this
-        //this.$http.get(this.config.api_url)
+        console.log(this.$store.state.config.token)
+
         //console.log(location.host)
         //let api_url = "/node_config.json"
         let api_url = this.$store.state.config.server + "/nodes"
@@ -101,18 +97,8 @@
         .catch((error) => {
           console.log(error)
         })
-
-        /*
-        .then(function (response) {
-          //console.log(_this.aaa)
-          console.log(response.data)
-          _this.items = response.data
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-        */
       }
+
     }
   }
 </script>

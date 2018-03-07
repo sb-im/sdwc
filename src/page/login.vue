@@ -70,6 +70,7 @@
       }
     },
     methods: {
+      /*
       test() {
         let api_url = this.$store.state.config.server + "/user/index/"
         this.$http.get(api_url)
@@ -80,6 +81,7 @@
           console.log(error)
         })
       },
+      */
       switchLang()  {
         this.$i18n.locale = this.lang
       },
