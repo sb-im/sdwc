@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    created: function () {
+    created() {
       this.getConfig()
     },
     methods: {
@@ -15,27 +15,20 @@
         console.log(url)
         this.$http.get(url)
         .then((response) => {
-          console.log(this)
-          //console.log(response.data)
-          //this.$store.state.config.server = response.data.server
           this.$store.commit("config", response.data)
-          //this.$store.state.config = response.data
-          //this.$router.push('app')
         })
         .catch((error) => {
           console.log(error)
+          this.$store.commit("config", this.$store.state.config)
         })
       }
     }
   }
-
 </script>
 
-
 <style>
-  body{
+  body {
     margin: 0;
     padding: 0;
   }
-
 </style>

@@ -85,9 +85,6 @@
       getLogin(api_url) {
         this.$http.get(api_url)
         .then((response) => {
-          console.log(this)
-          console.log(response.data)
-          //this.$store.state.config.token = response.data.token
           this.$store.commit("token", response.data)
           if (response.data.token) {
             this.$router.push('app')
