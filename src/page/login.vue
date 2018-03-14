@@ -70,38 +70,19 @@
       }
     },
     methods: {
-      /*
-      test() {
-        let api_url = this.$store.state.config.server + "/user/index/"
-        this.$http.get(api_url)
-        .then((response) => {
-          console.log(response.data)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-      },
-      */
       switchLang()  {
         this.$i18n.locale = this.lang
       },
       login() {
-        let api_url = this.$store.state.config.server + "/user/login"
-
         // local User debug
         if (this.ruleForm.username == "debug" && this.ruleForm.password == "debug") {
-          api_url = this.$store.state.config.server + "/user" + this.$store.state.config.suffix
-          this.getLogin(api_url)
+          this.getLogin(this.$store.state.api.debug)
         } else {
           // remote user login
-
-          //api_url = api_url + "/" + this.ruleForm.username + "/" + this.ruleForm.password
-          api_url = this.$store.state.config.server + "/oauth/token/"
-          this.postLogin(api_url)
+          this.postLogin(this.$store.state.api.login)
         }
       },
       getLogin(api_url) {
-
         this.$http.get(api_url)
         .then((response) => {
           console.log(this)
@@ -137,6 +118,7 @@
           console.log(error)
         })
       }
+
     }
   }
 </script>

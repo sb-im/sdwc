@@ -20,6 +20,7 @@ import App from './App.vue'
 import routes from "./routes.js"
 import Config from "./config.json"
 
+import Api from "./API.js"
 //Vue.component('my-component', Login)
 
 Vue.use(ElementUI)
@@ -39,6 +40,7 @@ const i18n = new VueI18n({
 
 const store = new Vuex.Store({
   state: {
+    api: Api,
     config: Config,
     token: "",
     items:[],
@@ -47,6 +49,10 @@ const store = new Vuex.Store({
   mutations: {
     config (state, config) {
       state.config = config
+
+      Object.keys(state.api).forEach(function(key){
+        state.api[key] = config.server + state.api[key] + config.suffix
+      })
     },
     token (state, config) {
       state.token = config.token
