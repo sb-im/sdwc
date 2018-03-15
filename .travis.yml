@@ -15,7 +15,7 @@ script:
 before_deploy:
   - ls
   - ls | grep -v "`cat Deploylist`" | xargs rm -r
-  - rm .babelrc .editorconfig .eslintrc.js .gitignore .travis.yml
+  - rm .babelrc .editorconfig .eslintrc.js .gitignore
   - ls -a
 
 
