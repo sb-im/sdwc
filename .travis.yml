@@ -12,28 +12,26 @@ script:
   - yarn test
   - yarn build
 
-after_script:
-  #- ls -a |grep -v dist |grep -v index.html | grep -v \\.$ | grep -v .git$ |xargs rm -r
-  - git clone --branch=gh-pages https://github.com/SB-IM/SDWC.git
-  #- ls
-  - cp -r `cat Deploylist` SDWC/
-  - cd SDWC
-    #- cp -r ../dist ../index.html ./
-    #git init
-  - git add .
-    #- tar -cJf tmp.tar.xz dist index.html
-    #- rm -r dist index.html
-    #- git checkout gh-pages
-    #- git pull
-    #- tar -xJf tmp.tar.xz
-    #- rm tmp.tar.xz
-    #git pull
-    #git commit -m "Auto update"
-  - git -c user.name=$GITHUB_NAME -c user.email=$GITHUB_EMAIL commit -am "Auto Deployment"
-    #git push -f -q https://$GITHUB_NAME:$GITHUB_API_KEY@github.com/SB-IM/SDWC gh-pages
-  - git push https://$GITHUB_API_KEY@github.com/SB-IM/SDWC gh-pages
+deploy:
+  #  provider: script
+  #  script:
+  #    - git clone --branch=gh-pages https://github.com/SB-IM/SDWC.git
+  #    - cp -r `cat Deploylist` SDWC/
+  #    - cd SDWC
+  #    - git add .
+  #    - git -c user.name=$GITHUB_NAME -c user.email=$GITHUB_EMAIL commit -am "Auto Deployment"
+  #    - git push https://$GITHUB_API_KEY@github.com/SB-IM/SDWC gh-pages
 
-  #- ls dist/
-  #- git checkout gh-pages
-  #- git commit -m "Auto update"
-  #- git push "https://${GH_TOKEN}@${GH_REF}" gh-pages
+  provider: pages
+  local-dir:
+    - dist/
+    - samples/
+    - index.html
+    - robots.txt
+
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    branch: master
+
