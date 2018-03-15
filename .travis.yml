@@ -12,23 +12,15 @@ script:
   - yarn test
   - yarn build
 
+before_deploy:
+  - ls
+  - ls | grep -v "`cat Deploylist`" | xargs rm -r
+  - rm .babelrc .editorconfig .eslintrc.js .gitignore .travis.yml
+  - ls -a
+
+
 deploy:
-  #  provider: script
-  #  script:
-  #    - git clone --branch=gh-pages https://github.com/SB-IM/SDWC.git
-  #    - cp -r `cat Deploylist` SDWC/
-  #    - cd SDWC
-  #    - git add .
-  #    - git -c user.name=$GITHUB_NAME -c user.email=$GITHUB_EMAIL commit -am "Auto Deployment"
-  #    - git push https://$GITHUB_API_KEY@github.com/SB-IM/SDWC gh-pages
-
   provider: pages
-  local-dir:
-    - dist/
-    - samples/
-    - index.html
-    - robots.txt
-
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
   keep-history: true

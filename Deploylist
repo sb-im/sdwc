@@ -1,4 +1,4 @@
-dist/
-samples/
+dist
+samples
 index.html
 robots.txt
