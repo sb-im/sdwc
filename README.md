@@ -35,6 +35,12 @@ vim config.json
 
 ```
 
+## Packaged as a client
+```sh
+P=linux64 yarn client
+
+# P = ['win32', 'win64', 'osx32', 'osx64', 'linux32', 'linux64']
+```
 
 ### ××××× Important! ! ! !
 
@@ -81,6 +87,8 @@ year month day
 - 2018.0304
   - Add hls.js
   - Add vue-i18n
+- 2018.0316
+  - Add nw-build
 
 ## Todo List
 - [x] English Docs
@@ -98,6 +106,13 @@ year month day
 可以实现同时控制多台设备
 
 有些东西不知道如何中描述～ (￣∇￣) ～ 请参上面的英文文档
+
+## 打包成客户端
+```sh
+P=linux64 yarn client
+
+# P = ['win32', 'win64', 'osx32', 'osx64', 'linux32', 'linux64']
+```
 
 ##### 程序框架父子组件关系图
 

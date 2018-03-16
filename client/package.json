@@ -1,0 +1,11 @@
+{
+  "name": "sdwc",
+  "version": "1.0.0",
+  "main": "index.html",
+  "window": {
+    "frame": true,
+    "width": 1280,
+    "height": 720,
+    "toolbar": true
+  }
+}
