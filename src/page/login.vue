@@ -1,33 +1,28 @@
 <template>
   <div class="background">
-    <el-row :gutter="10" type="flex" justify="center">
-      <el-col :xs="22" :sm="14" :md="12" :lg="8" :xl="6" class="login-bg">
-        <el-row :gutter="10" type="flex" justify="center">
-          <el-col :xs="24" :sm="22" :md="22" :lg="18" :xl="18">
-            <el-select v-model="lang" @change="switchLang( lang )" placeholder="Switch Language Default English">
-              <el-option :value="'en'" label="English"></el-option>
-              <el-option :value="'zh'" label="中文">中文</el-option>
-            </el-select>
+    <div class="login-bg">
+      <h3>SDWC</h3>
+      <el-select v-model="lang" @change="switchLang( lang )" placeholder="Switch Language Default English">
+        <el-option :value="'en'" label="English"></el-option>
+        <el-option :value="'zh'" label="中文">中文</el-option>
+      </el-select>
 
-            <br/>
-            <br/>
+      <br/>
+      <br/>
 
-            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-              <el-form-item :label="$t('login.username')" prop="username">
-                <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item :label="$t('login.password')" prop="password">
-                <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
-              </el-form-item>
-            </el-form>
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
+        <el-form-item :label="$t('login.username')" prop="username">
+          <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('login.password')" prop="password">
+          <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
+        </el-form-item>
+      </el-form>
 
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
+    </div>
   </div>
 </template>
 <script>
@@ -121,18 +116,20 @@
 </script>
 <style scoped>
   .login-bg {
-    border-radius: 4px;
+    text-align: center;
+    border-radius: 5px;
     background: #fff9;
-    margin: 200px 0px;
-    padding: 120px 0px;
+    width: 30%;
+    padding: 2% 2%;
+    margin:10% auto;
   }
 
   .background {
+    background: url(../assets/login-backgound.jpg);
+    background-repeat: repeat-x;
+    width: 100%;
     height: 100%;
-    background: url(../assets/login.jpg);
-    width:100%;
-    height:100%;
-    background-size:100% 100%;
-    position:absolute;
+    background-size: 100% 100%;
+    position: absolute;
   }
 </style>
