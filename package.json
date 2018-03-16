@@ -3,12 +3,13 @@
   "description": "Multiple drones and ground station Web consoles",
   "version": "1.0.0",
   "author": "metal A-wing <shiyongxin@aliyun.com>",
-  "license": "MIT",
+  "license": "MPL-2.0",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "client": "nwbuild -p $P client/",
+    "client": "nwbuild -p $P client",
+    "cdev": "nwbuild -p linux64 -r client",
     "test": "eslint src --ext .vue && eslint src webpack"
   },
   "dependencies": {
