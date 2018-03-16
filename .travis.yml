@@ -21,6 +21,7 @@ before_deploy:
 
 deploy:
   provider: pages
+  fqdn: test.newbe.cc
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
   keep-history: true
