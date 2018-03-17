@@ -47,7 +47,6 @@
           </el-col>
         </el-row>
 
-
         <br/>
         <br/>
         <hr/>
@@ -65,7 +64,6 @@
   </fieldset>
 
 </template>
-
 <script>
 
   export default {
@@ -78,7 +76,6 @@
         content: '',
         display_tmp: '',
         socket: {}
-
       }
     },
     props: {
@@ -95,14 +92,14 @@
         default: true
       }
     },
-    created: function () {
+    created() {
       if (this.websocket != location.hostname) {
         //console.log(this.websocket)
         //console.log("start")
         this.connect()
       }
     },
-    beforeDestroy: function () {
+    beforeDestroy() {
       if (this.connect_status) {
         //console.log("stop")
         this.close()
@@ -119,15 +116,10 @@
         //console.log(host)
         this.socket = new WebSocket(host)
         try {
-            //console.log(this.connect_status)
-
-          this.socket.onopen = () => {
-            //console.log("connect successed")
-            //console.log(this.connect_status)
-            this.connect_status = this.socket.readyState
-          }
+          this.socket.onopen = () => { this.connect_status = this.socket.readyState }
 
           this.socket.onmessage = (msg) => {
+            //console.log(msg)
             if (typeof msg.data == "string") {
               this.msg(msg.data)
             } else {
@@ -135,17 +127,11 @@
             }
           }
 
-          this.socket.onclose = () => {
-            this.connect_status = false
-          }
-        }
-        catch (ex) {
+          this.socket.onclose = () => { this.connect_status = false }
+
+        } catch (ex) {
           console.log(ex)
         }
-      },
-      tarCmd(cmd) {
-        //return cmd + '\n'
-        return cmd
       },
       msg(msg) {
         if (this.autolf) {
@@ -163,12 +149,11 @@
       },
       display(msg = "Not Content") {
         //console.log(msg)
-        this.content += this.tarCmd(msg+ "\n")
+        this.content += msg+ "\n"
       },
       send(msg = this.message) {
-        //alert(msg)
+        //console.log(msg)
         this.socket.send(msg)
-        console.log(msg)
         this.display(msg)
       },
       close() {
@@ -185,7 +170,6 @@
       }
     }
 
-
   }
-
 </script>
+
