@@ -107,6 +107,12 @@ year month day
 
 有些东西不知道如何中描述～ (￣∇￣) ～ 请参上面的英文文档
 
+
+> 本程序属于云控制系统的一部分，可单独使用。并具有良好的扩展性。易于二次开发
+>
+> 大疆司空应该算竞品了～ (￣∇￣) ～  大言不惭的说  ：）逃。
+
+
 ## 打包成客户端
 ```sh
 P=linux64 yarn client
@@ -155,7 +161,8 @@ cp src/config.json ./
 >pass: debug
 
 ## 关于token 认证
-支持在url里埋token方式
+支持两种认证方式：
+在url里埋token方式
 
 1. 在suffix 变量里设置好token变量名
 2. 在login 返回json 中设置 url_token 参数为 true
@@ -191,6 +198,27 @@ cp src/config.json ./
   - webterminal
     - command.json
   - monitor-img
+
+## 远程控制无人机
+
+使用websocketd 把 mavproxy 的 IO 以websocket 的的形式发送
+
+webterminal 模块可以连接websocket 并发送命令
+
+websocket 连接地址在`nodes.json`里指定
+
+内容模型`contexts`里传参可以指定websocket 是否可以自动连接
+
+https://github.com/joewalnes/websocketd
+
+http://ardupilot.github.io/MAVProxy/html/index.html
+
+
+```sh
+pip install mavproxy
+
+./websocketd --port=22333 mavproxy.py --master=udpout:127.0.0.1:14550
+```
 
 ### old
 old 目录下的是 2.0 版本程序 （已废弃）可以拿来做参考（如电源模块）～ (・∀・) ～

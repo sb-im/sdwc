@@ -41,5 +41,14 @@
     "address": "http://192.168.101.208:8080/?action=stream",
     "websocket": "http://192.168.101.208:8080/?action=stream",
     "videos": []
+  },
+  {
+    "id": 5,
+    "name": "Test5",
+    "type_name": "air",
+    "address": "http://192.168.101.208:8080/?action=stream",
+    "websocket": "raspberrypi:22333",
+    "videos": [
+    ]
   }
 ]

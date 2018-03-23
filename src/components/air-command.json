@@ -1,6 +1,10 @@
 [
   { "name": "解锁～ | ω・´) ～", "value": "arm throttle" },
   { "name": "上锁～ (＾o＾)ﾉ ～", "value": "disarm" },
+  { "name": "mode auto", "value": "mode auto" },
+  { "name": "mode loiter", "value": "mode loiter" },
+  { "name": "mode rtl", "value": "mode rtl" },
+  { "name": "land", "value": "land" },
   { "name": "安全开关开～ Σ( ﾟдﾟ) ～", "value": "arm safetyon" },
   { "name": "安全开关关～ Σ( ﾟдﾟ) ～", "value": "arm safetyoff" }
 ]
