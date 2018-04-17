@@ -7,13 +7,7 @@
     </div>
     <hr/>
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
-        <div v-for="cmd in commands">
-          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="margin: 12px 0">
-            <el-button type="success" plain @click="send(cmd.value)">{{ cmd.name }}</el-button>
-          </el-col>
-        </div>
-      </el-col>
+      <command :commands=commands v-on:cmd-send="send"></command>
 
       <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
@@ -65,6 +59,7 @@
 
 </template>
 <script>
+import Command from './command.vue'
 
   export default {
     data() {
@@ -168,6 +163,9 @@
       clean() {
         this.content = ""
       }
+    },
+    components: {
+      'command': Command,
     }
 
   }
