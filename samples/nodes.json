@@ -30,7 +30,7 @@
     "address": "http://localhost:22333",
     "websocket": "localhost:22333",
     "videos": [
-      {"address": "http://110.10.178.51:7001/live/movie.flv", "video_type_name": "flv"},
+      {"address": "http://127.0.0.1:7002/live/movie.m3u8", "video_type_name": "hls"},
       {"address": "http://127.0.0.1:7001/live/movie.flv", "video_type_name": "flv"}
     ]
   },

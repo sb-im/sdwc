@@ -31,6 +31,7 @@ import flvjs from 'flv.js'
           var videoElement = this.$refs.vvv
           var flvPlayer = flvjs.createPlayer({
             type: 'flv',
+            isLive: true,
             url: this.source
           });
           flvPlayer.attachMediaElement(videoElement);
