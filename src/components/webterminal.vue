@@ -7,7 +7,7 @@
     </div>
     <hr/>
     <el-row :gutter="20">
-      <command :commands=commands v-on:cmd-send="send"></command>
+      <command :commands=commands @cmd-send="send"/>
 
       <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
