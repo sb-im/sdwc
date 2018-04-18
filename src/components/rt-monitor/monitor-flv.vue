@@ -32,7 +32,13 @@ import flvjs from 'flv.js'
           var flvPlayer = flvjs.createPlayer({
             type: 'flv',
             isLive: true,
+            hasAudio: false,
+            hasVideo: true,
             url: this.source
+          }, {
+            enableWorker: true,
+            enableStashBuffer: false,
+            stashInitialSize: 128,// 减少首桢显示等待时长
           });
           flvPlayer.attachMediaElement(videoElement);
           flvPlayer.load();
