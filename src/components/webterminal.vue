@@ -45,6 +45,7 @@
         <br/>
         <hr/>
         <el-input
+          id="msgdisplay"
           type="textarea"
           :rows="8"
           readonly
@@ -145,6 +146,9 @@ import Command from './command.vue'
       display(msg = "Not Content") {
         //console.log(msg)
         this.content += msg+ "\n"
+
+        // Auto scrollTop
+        document.getElementById("msgdisplay").scrollTop = document.getElementById("msgdisplay").scrollTopMax
       },
       send(msg = this.message) {
         //console.log(msg)

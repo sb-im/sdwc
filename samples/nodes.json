@@ -25,7 +25,7 @@
   },
   {
     "id": 3,
-    "name": "Test3-drone-2",
+    "name": "本地测试",
     "type_name": "air",
     "address": "http://localhost:22333",
     "websocket": "localhost:22333",
@@ -44,11 +44,10 @@
   },
   {
     "id": 5,
-    "name": "Test5",
+    "name": "单控制台调试",
     "type_name": "air",
-    "address": "http://192.168.101.208:8080/?action=stream",
-    "websocket": "raspberrypi:22333",
-    "videos": [
-    ]
+    "address": "http://localhost:22333",
+    "websocket": "localhost:22333",
+    "videos": []
   }
 ]
