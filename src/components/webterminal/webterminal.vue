@@ -1,7 +1,11 @@
 <template>
   <fieldset>
+    <uavtrack ref="profile" :flightPath=[] />
+
+
     <legend>操作控制</legend>
     <div align="right">
+      <el-button @click="getData" type="warning" plain>Get</el-button>
       <el-button @click="send" type="warning" plain>初始化</el-button>
       <el-button @click="send" type="danger" plain>停止</el-button>
     </div>
@@ -61,6 +65,7 @@
 </template>
 <script>
 import Command from './command.vue'
+import Uavtrack from './uavtrack.vue'
 
   export default {
     data() {
@@ -71,6 +76,7 @@ import Command from './command.vue'
         connect_status: false,
         content: '',
         display_tmp: '',
+        flightPath: [],
         socket: {}
       }
     },
@@ -93,6 +99,7 @@ import Command from './command.vue'
         //console.log(this.websocket)
         //console.log("start")
         this.connect()
+        //window.setInterval(this.getData, 1000);
       }
     },
     beforeDestroy() {
@@ -129,11 +136,42 @@ import Command from './command.vue'
           console.log(ex)
         }
       },
-      msg(msg) {
+      getData() {
+        this.send("status")
+      },
+      msg(msgs) {
+        for (let msg of msgs.split(/[\n]/g)) {
+
+          if (msg.match(/^[0-9]/)) {
+            if (msg.match(/GLOBAL_POSITION_INT/)) {
+              let pPath = msgs.split(/[\{\}]/g)[1].split(/,/g)
+
+              console.log(pPath[1], pPath[2])
+              //console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
+              console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
+
+              this.flightPath.push(
+              {  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
+//parent.$refs.drawMap()
+//var parent = new Vue({ el: '#parent' })
+              //this.$refs.profile.drawMap(
+              this.$refs.profile.send(
+              {  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
+          //    console.log("23333333333333333333333")
+              //console.log(JSON.parse(msg))
+              //console.log(this)
+
+
+            }
+            return
+          }
+        }
+
+
         if (this.autolf) {
-          this.display(msg)
+          this.display(msgs)
         } else {
-          this.pInfo(msg)
+          this.pInfo(msgs)
         }
       },
       pInfo(msg) {
@@ -170,6 +208,7 @@ import Command from './command.vue'
     },
     components: {
       'command': Command,
+      'uavtrack': Uavtrack
     }
 
   }

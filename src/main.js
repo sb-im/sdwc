@@ -14,6 +14,10 @@ Vue.use(VueI18n)
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
+
+import VueJsonp from 'vue-jsonp'
+Vue.use(VueJsonp)
 
 import App from './App.vue'
 
@@ -23,7 +27,6 @@ import Config from "./config.json"
 import Api from "./API.js"
 //Vue.component('my-component', Login)
 
-Vue.use(ElementUI)
 
 const router =  new VueRouter({
     routes

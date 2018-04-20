@@ -5507,6 +5507,10 @@ vue-i18n@^7.4.2:
   version "7.4.2"
   resolved "http://registry.npm.taobao.org/vue-i18n/download/vue-i18n-7.4.2.tgz#ef954f80898bb3609f132f77d51a7053379e03b2"
 
+vue-jsonp@^0.1.7:
+  version "0.1.7"
+  resolved "http://registry.npm.taobao.org/vue-jsonp/download/vue-jsonp-0.1.7.tgz#e18ad268f5f79f53ac46c36860a7fc0a5dafc75b"
+
 vue-loader@^13.0.5:
   version "13.6.2"
   resolved "http://registry.npm.taobao.org/vue-loader/download/vue-loader-13.6.2.tgz#43d9688f2c80400916104d1138941aacd7e389cb"
