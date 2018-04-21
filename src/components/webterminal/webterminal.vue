@@ -156,7 +156,7 @@ import Uavtrack from './uavtrack.vue'
 
           if (msg.match(/^[0-9]/) || msg.match(/Counters: Slave:0/) || msg.match(/MAV Errors: 0/)) {
             if (msg.match(/GLOBAL_POSITION_INT/)) {
-              let pPath = msg.split(/[\{\}]/g)[1].split(/,/g)
+              let pPath = msg.split(/[{}]/g)[1].split(/,/g)
 
               //console.log(pPath[1], pPath[2])
 
