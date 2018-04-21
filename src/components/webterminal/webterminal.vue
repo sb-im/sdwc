@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <uavtrack ref="profile" :flightPath=[] />
+    <uavtrack ref="profile" />
 
 
     <legend>操作控制</legend>
@@ -73,7 +73,8 @@ import Uavtrack from './uavtrack.vue'
         hostname: location.hostname,
         port: '22333',
         message: 'hello',
-        connect_status: false,
+        connect_status: 2,
+        // 0 Link, 1 Only ws link, 2 No link
         content: '',
         display_tmp: '',
         flightPath: [],
@@ -120,7 +121,8 @@ import Uavtrack from './uavtrack.vue'
         this.socket = new WebSocket(host)
         try {
           this.socket.onopen = () => {
-            this.connect_status = this.socket.readyState
+            //this.connect_status = this.socket.readyState
+            this.connect_status = 1
 
             this.intervalID = window.setInterval(this.getData, 1000);
           }
@@ -135,7 +137,8 @@ import Uavtrack from './uavtrack.vue'
           }
 
           this.socket.onclose = () => {
-            this.connect_status = false
+            //this.connect_status = false
+            this.connect_status = 2
 
             clearInterval(this.intervalID)
           }
@@ -156,28 +159,27 @@ import Uavtrack from './uavtrack.vue'
               let pPath = msg.split(/[\{\}]/g)[1].split(/,/g)
 
               //console.log(pPath[1], pPath[2])
-              //console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
-              //console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
 
-              //this.flightPath.push(
-              //{  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
-//parent.$refs.drawMap()
-//var parent = new Vue({ el: '#parent' })
-              //this.$refs.profile.drawMap(
-              this.$refs.profile.send(
-              {  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
-          //    console.log("23333333333333333333333")
-              //console.log(JSON.parse(msg))
-              //console.log(this)
+              // 重新初始化地图
+              if (this.connect_status === 1) {
+                console.log("restart init map")
 
+                this.$refs.profile.clearPath()
+                this.$refs.profile.initMap({
+                  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
+
+                this.connect_status = 0
+              }
+
+
+              this.$refs.profile.drawPath({
+                lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
 
             }
             return
           }
         }
 
-
-        //      console.log(this)
 
         if (msgs === "None") {
             return
