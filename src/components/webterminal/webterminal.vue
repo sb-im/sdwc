@@ -77,6 +77,7 @@ import Uavtrack from './uavtrack.vue'
         content: '',
         display_tmp: '',
         flightPath: [],
+        intervalID: '',
         socket: {}
       }
     },
@@ -99,7 +100,6 @@ import Uavtrack from './uavtrack.vue'
         //console.log(this.websocket)
         //console.log("start")
         this.connect()
-        //window.setInterval(this.getData, 1000);
       }
     },
     beforeDestroy() {
@@ -119,7 +119,11 @@ import Uavtrack from './uavtrack.vue'
         //console.log(host)
         this.socket = new WebSocket(host)
         try {
-          this.socket.onopen = () => { this.connect_status = this.socket.readyState }
+          this.socket.onopen = () => {
+            this.connect_status = this.socket.readyState
+
+            this.intervalID = window.setInterval(this.getData, 1000);
+          }
 
           this.socket.onmessage = (msg) => {
             //console.log(msg)
@@ -130,28 +134,33 @@ import Uavtrack from './uavtrack.vue'
             }
           }
 
-          this.socket.onclose = () => { this.connect_status = false }
+          this.socket.onclose = () => {
+            this.connect_status = false
+
+            clearInterval(this.intervalID)
+          }
 
         } catch (ex) {
           console.log(ex)
         }
       },
       getData() {
-        this.send("status")
+        this.socket.send("status")
+        //this.send("status")
       },
       msg(msgs) {
         for (let msg of msgs.split(/[\n]/g)) {
 
-          if (msg.match(/^[0-9]/)) {
+          if (msg.match(/^[0-9]/) || msg.match(/Counters: Slave:0/) || msg.match(/MAV Errors: 0/)) {
             if (msg.match(/GLOBAL_POSITION_INT/)) {
-              let pPath = msgs.split(/[\{\}]/g)[1].split(/,/g)
+              let pPath = msg.split(/[\{\}]/g)[1].split(/,/g)
 
-              console.log(pPath[1], pPath[2])
+              //console.log(pPath[1], pPath[2])
               //console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
-              console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
+              //console.log(pPath[1].split(' ')[3], pPath[2].split(' ')[3])
 
-              this.flightPath.push(
-              {  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
+              //this.flightPath.push(
+              //{  lat: Number(pPath[1].split(' ')[3])*0.1e-6, lng: Number(pPath[2].split(' ')[3])*0.1e-6 })
 //parent.$refs.drawMap()
 //var parent = new Vue({ el: '#parent' })
               //this.$refs.profile.drawMap(
@@ -167,6 +176,12 @@ import Uavtrack from './uavtrack.vue'
           }
         }
 
+
+        //      console.log(this)
+
+        if (msgs === "None") {
+            return
+        }
 
         if (this.autolf) {
           this.display(msgs)

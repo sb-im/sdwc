@@ -40,9 +40,11 @@
     },
     methods: {
       getData () {
-        let YOUR_API_KEY = ""
-        let url = "https://maps.googleapis.com/maps/api/js"
-        this.$jsonp(url, { key: YOUR_API_KEY }).then(json => {
+        //let YOUR_API_KEY = ""
+        //let url = "https://maps.googleapis.com/maps/api/js"
+        let url = "https://ditu.google.cn/maps/api/js"
+        //this.$jsonp(url, { key: YOUR_API_KEY }).then(json => {
+        this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(json => {
           this.initMap()
           // Success.
         }).catch(err => {
@@ -60,7 +62,7 @@
         this.drawMap()
       },
       drawMap() {
-        console.log("drawMap")
+        //console.log("drawMap")
 
         var flightPath = new google.maps.Polyline({
           //path: this.flightPlanCoordinates,
@@ -75,7 +77,7 @@
 
       },
       send(cmd = {lat: 22.533503, lng: 114.01262}) {
-        console.log("adddddddddddddddddddddd")
+        //console.log("adddddddddddddddddddddd")
         //this.flightPlanCoordinates.push(
         //this.aa.push( {lat: 22.68724, lng: 113.968639} )
         this.aa.push(cmd)
