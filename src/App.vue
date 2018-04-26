@@ -11,7 +11,7 @@
     },
     methods: {
       getConfig() {
-        let url = "http://" + location.host + "/config.json"
+        let url = location.protocol + "//" + location.host + "/config.json"
         console.log(url)
         this.$http.get(url)
         .then((response) => {
