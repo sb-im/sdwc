@@ -115,7 +115,7 @@ import Uavtrack from './uavtrack.vue'
         if (this.websocket == location.hostname) {
           host = "ws://" + this.hostname + ":" + this.port + "/"
         } else {
-          host = "ws://" + this.websocket
+          host = this.websocket
         }
         //console.log(host)
         this.socket = new WebSocket(host)

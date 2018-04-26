@@ -27,8 +27,8 @@
     },
     methods: {
       getGmap() {
-        //let url = "https://maps.googleapis.com/maps/api/js"
-        let url = "https://ditu.google.cn/maps/api/js"
+        let url = "https://maps.googleapis.com/maps/api/js"
+        //let url = "https://ditu.google.cn/maps/api/js"
         //let YOUR_API_KEY = ""
         //this.$jsonp(url, { key: YOUR_API_KEY }).then(json => {
         this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(json => {
