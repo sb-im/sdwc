@@ -15,6 +15,9 @@
         console.log(url)
         this.$http.get(url)
         .then((response) => {
+
+          this.$i18n.locale = response.data.lang ? response.data.lang : this.$store.state.config.lang
+
           this.$store.commit("config", response.data)
         })
         .catch((error) => {

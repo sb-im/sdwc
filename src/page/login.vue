@@ -1,14 +1,7 @@
 <template>
   <div class="background">
     <div class="login-bg">
-      <h3>SDWC</h3>
-      <el-select v-model="lang" @change="switchLang( lang )" placeholder="Switch Language Default English">
-        <el-option :value="'en'" label="English"></el-option>
-        <el-option :value="'zh'" label="中文">中文</el-option>
-      </el-select>
-
-      <br/>
-      <br/>
+      <h1 class="hhh">SDWC</h1>
 
       <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item :label="$t('login.username')" prop="username">
@@ -49,7 +42,6 @@
         }
       }
       return {
-        lang: 'en',
         ruleForm: {
           username: '',
           password: ''
@@ -65,9 +57,6 @@
       }
     },
     methods: {
-      switchLang()  {
-        this.$i18n.locale = this.lang
-      },
       login() {
         // local User debug
         if (this.ruleForm.username == "debug" && this.ruleForm.password == "debug") {
@@ -115,6 +104,10 @@
   }
 </script>
 <style scoped>
+  .hhh {
+    color: #409EFF;
+  }
+
   .login-bg {
     text-align: center;
     border-radius: 5px;

@@ -3,5 +3,6 @@
   "client_id": "",
   "client_secret": "",
   "suffix": ".json",
+  "lang": "en",
   "GMAP_API_KEY": ""
 }
