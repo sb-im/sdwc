@@ -156,9 +156,9 @@ cp src/config.json ./
 
 这样可以启用本地调试账号
 
->user: debug
+> user: debug
 >
->pass: debug
+> pass: debug
 
 ## 关于token 认证
 支持两种认证方式：
@@ -173,7 +173,7 @@ cp src/config.json ./
 
 ### 生命周期异步资源加载过程
 1. load config.json
-2. auth user [post && get]
+2. auth user (post|get)
 3. get nodes list
 4. get node detail && link node
 
@@ -215,7 +215,7 @@ http://ardupilot.github.io/MAVProxy/html/index.html
 
 
 ```sh
-pip install mavproxy
+pip2 install mavproxy --user
 
 ./websocketd --port=22333 mavproxy.py --master=udpout:127.0.0.1:14550
 ```
