@@ -8,6 +8,7 @@
   export default {
     created() {
       this.getConfig()
+      this.$store.commit("token", JSON.parse(localStorage.getItem('login')))
     },
     methods: {
       getConfig() {

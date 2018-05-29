@@ -72,6 +72,7 @@
           this.$store.commit("token", response.data)
           if (response.data.token) {
             this.$router.push('app')
+            localStorage.setItem('login', JSON.stringify(response.data))
           }
         })
         .catch((error) => {
