@@ -8,7 +8,9 @@
 </template>
 <script>
 import Monitor from '../components/rt-monitor/rt-monitor.vue'
-import WebTerminal from '../components/webterminal/webterminal.vue'
+//import WebTerminal from '../components/webterminal/webterminal.vue'
+//import ButtonGroup from '../components/button-group/button-group.vue'
+import ButtonGroup from '../components/button-group/index.vue'
 import Command from '../components/depot-command.json'
 
 
@@ -26,7 +28,7 @@ import Command from '../components/depot-command.json'
     },
     components: {
       'rt-monitor': Monitor,
-      'webterminal': WebTerminal
+      'webterminal': ButtonGroup
     }
   }
 </script>
