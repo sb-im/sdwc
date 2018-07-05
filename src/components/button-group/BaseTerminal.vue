@@ -7,7 +7,7 @@
     </div>
     <hr/>
     <el-row :gutter="20">
-      <command :commands=commands @cmd-send="send"/>
+      <command :commands=buttons @cmd-send="send"/>
 
       <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
@@ -19,11 +19,11 @@
             <el-input placeholder="请输入端口" v-model="port"/>
           </el-col>
           <el-col :xs="6" :sm="4" :md="6" :lg="4" :xl="8">
-            <div v-if="connect_status == 0" >
-              <el-button @click="connect" type="primary" plain>连接</el-button>
+            <div v-if="!connect_status" >
+              <el-button @click="create" type="primary" plain>连接</el-button>
             </div>
             <div v-else>
-              <el-button @click="close" type="success" plain>断开</el-button>
+              <el-button @click="destroy" type="success" plain>断开</el-button>
             </div>
           </el-col>
         </el-row>
@@ -68,9 +68,9 @@ import Command from '../webterminal/command.vue'
         hostname: location.hostname,
         port: '22333',
         message: 'hello',
-        connect_status: 2,
-        // 0 Link, 1 Only ws link, 2 No link
+        connect_status: false,
         content: '',
+        buttons: [],
         display_tmp: ''
       }
     },
@@ -89,6 +89,7 @@ import Command from '../webterminal/command.vue'
       }
     },
     created() {
+      this.buttons = this.commands.map(item => Object.assign({status: false}, item))
       //console.log(this.commands)
       this.address == location.hostname ? null : this.create()
     },
@@ -99,16 +100,14 @@ import Command from '../webterminal/command.vue'
     methods: {
       // C: create, R: display, U: send, D: destroy
       create(address='localhost') {
-        console.log("start")
+        this.connect_status = true
       },
       destroy() {
+        this.connect_status = false
       },
       send(msg = this.message) {
         //console.log(msg)
-        //this.socket.send(msg)
         this.display(msg)
-      },
-      close() {
       },
       pInfo(msg) {
         this.display_tmp += msg

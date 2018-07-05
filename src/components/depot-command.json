@@ -1,4 +1,5 @@
 [
+  { "name": "～ | ω・´) ～", "value": "run/get" },
   { "name": "打开舱门～ | ω・´) ～", "value": "move_door_open" },
   { "name": "关闭舱门～ (＾o＾)ﾉ ～", "value": "move_door_close" },
   { "name": "固定X开始～ (・∀・) ～", "value": "move_x_open" },
