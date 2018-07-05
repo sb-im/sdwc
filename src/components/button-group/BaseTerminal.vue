@@ -11,7 +11,7 @@
 
       <el-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
 
-        <el-row :gutter="20" v-if="this.address == hostname">
+        <el-row :gutter="20" v-if="auto_link">
           <el-col :xs="9" :sm="10" :md="9" :lg="10" :xl="8">
             <el-input placeholder="请输入主机名" v-model="hostname"/>
           </el-col>
@@ -68,9 +68,10 @@ import Command from '../webterminal/command.vue'
         hostname: location.hostname,
         port: '22333',
         message: 'hello',
-        connect_status: false,
         content: '',
         buttons: [],
+        auto_link: false,
+        connect_status: false,
         display_tmp: ''
       }
     },
@@ -91,7 +92,7 @@ import Command from '../webterminal/command.vue'
     created() {
       this.buttons = this.commands.map(item => Object.assign({status: false}, item))
       //console.log(this.commands)
-      this.address == location.hostname ? null : this.create()
+      this.address == location.hostname ? this.auto_link = true : this.create()
     },
     beforeDestroy() {
       this.destroy()
