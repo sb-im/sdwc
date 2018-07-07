@@ -1,22 +1,31 @@
 [
-  { "name": "～ | ω・´) ～", "value": "run/get" },
-  { "name": "打开舱门～ | ω・´) ～", "value": "move_door_open" },
-  { "name": "关闭舱门～ (＾o＾)ﾉ ～", "value": "move_door_close" },
-  { "name": "固定X开始～ (・∀・) ～", "value": "move_x_open" },
-  { "name": "固定X解除～ (*´д`) ～", "value": "move_x_close" },
-  { "name": "固定Y开始～(￣皿￣)～", "value": "move_y_open" },
-  { "name": "固定Y解除～ ( ☉д⊙) ～", "value": "move_x_close" },
-  { "name": "平台飞机～ (°ー°〃) ～", "value": "move_lift_drone" },
-  { "name": "平台平台～ ( ;´д`) ～", "value": "move_lift_plate" },
-  { "name": "平台充电～ (*ﾟーﾟ) ～", "value": "move_lift_charge" },
-  { "name": "平台移动～ (・∀・) ～", "value": "move_lift_convey" },
-  { "name": "电池A～ (╬ﾟдﾟ) ～", "value": "move_convey_adepot" },
-  { "name": "电池B～ (￣∇￣) ～", "value": "move_convey_bdepot" },
-  { "name": "电池A 回～ (>д<) ～", "value": "move_convey_r_lift" },
-  { "name": "电池B 回～(((　ﾟдﾟ)))～", "value": "move_convey_l_lift" },
-  { "name": "A 抓 电池～ ( ☉д⊙) ～", "value": "servo_adepot_grab" },
-  { "name": "A 电池 逃～(￣皿￣)～", "value": "servo_adepot_drop" },
-  { "name": "B 抓 电池～ 唔喵 ～", "value": "servo_bdepot_grab" },
-  { "name": "B 电池 逃～ Σ( ﾟдﾟ) ～", "value": "servo_bdepot_drop" },
-  { "name": "GET ～ (〃∀〃) ～", "value": "get" }
+  { "name": "dock状态～ | ω・´) ～", "value": "run/get" },
+  { "name": "air状态～ | ω・´) ～", "value": "getair/status" },
+
+  { "name": "复位～ (°ー°〃) ～", "value": "dock/reset" }, 
+  { "name": "初始化～ (°ー°〃) ～", "value": "dock/init" }, 
+
+  { "name": "打开舱门～ | ω・´) ～", "value": "door/open" },
+  { "name": "关闭舱门～ (＾o＾)ﾉ ～", "value": "door/close" },
+
+  { "name": "固定飞机～ (°ー°〃) ～", "value": "dock/fixdrone" },
+  { "name": "松开飞机～ (°ー°〃) ～", "value": "dock/freedrone" },
+
+  { "name": "自动换电池～ (°ー°〃) ～", "value": "dock/startchangebattery" },
+  { "name": "===以下为调试===", "value": "run/get" },
+
+  { "name": "取下飞机电池～ (°ー°〃) ～", "value": "dock/pickdronebattery" },
+  { "name": "安装飞机电池～ (°ー°〃) ～", "value": "dock/mountdronebattery" },
+
+  { "name": "更换电池～ (°ー°〃) ～", "value": "dock/exchangebattery" }, 
+  { "name": "平台举平～ (°ー°〃) ～", "value": "dock/riseplate" }, 
+
+  { "name": "$平台升顶～ (°ー°〃) ～", "value": "run/move_lift_drone" }, 
+  { "name": "$平台降底～ (°ー°〃) ～", "value": "run/move_lift_convey" }, 
+
+  { "name": "取下A仓电池～ (°ー°〃) ～", "value": "dock/pickabattery" }, 
+  { "name": "放入A仓电池～ (°ー°〃) ～", "value": "dock/mountabattery" }, 
+
+  { "name": "取下B仓电池～ (°ー°〃) ～", "value": "dock/pickbbattery" }, 
+  { "name": "放入B仓电池～ (°ー°〃) ～", "value": "dock/mountbbattery" }
 ]
