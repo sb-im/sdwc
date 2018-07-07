@@ -1,6 +1,6 @@
 [
-  { "name": "dock状态 ～ | ω・´) ～", "value": "run/get" },
-  { "name": "air状态 ～ | ω・´) ～", "value": "getair/status" },
+  { "name": "dock状态～ | ω・´) ～", "value": "run/get" },
+  { "name": "air状态～ | ω・´) ～", "value": "getair/status" },
 
   { "name": "复位～ (°ー°〃) ～", "value": "dock/reset" }, 
   { "name": "初始化～ (°ー°〃) ～", "value": "dock/init" }, 
@@ -10,6 +10,9 @@
 
   { "name": "固定飞机～ (°ー°〃) ～", "value": "dock/fixdrone" },
   { "name": "松开飞机～ (°ー°〃) ～", "value": "dock/freedrone" },
+
+  { "name": "自动换电池～ (°ー°〃) ～", "value": "dock/startchangebattery" },
+  { "name": "===以下为调试===", "value": "run/get" },
 
   { "name": "取下飞机电池～ (°ー°〃) ～", "value": "dock/pickdronebattery" },
   { "name": "安装飞机电池～ (°ー°〃) ～", "value": "dock/mountdronebattery" },
