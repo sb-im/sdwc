@@ -31,6 +31,7 @@ import Terminal from './BaseTerminal.vue'
           console.log(error)
         })
       }
+
     }
   }
 </script>
