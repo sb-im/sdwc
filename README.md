@@ -89,6 +89,10 @@ year month day
   - Add vue-i18n
 - 2018.0316
   - Add nw-build
+- 2018.0421
+  - Add uavtrack
+- 2018.0712
+  - Add httpTerminal
 
 ## Todo List
 - [x] English Docs
