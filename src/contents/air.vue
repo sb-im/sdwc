@@ -3,10 +3,11 @@
     <div v-for="video in node.videos">
       <rt-monitor :video="video"></rt-monitor>
     </div>
-    <webterminal :websocket=node.websocket :commands=command></webterminal>
+    <webterminal :commands=command></webterminal>
   </div>
 </template>
 <script>
+//    <webterminal :websocket=node.websocket :commands=command></webterminal>
 import Monitor from '../components/rt-monitor/rt-monitor.vue'
 //import WebTerminal from '../components/webterminal/webterminal.vue'
 import WebTerminal from '../components/wsdbus.vue'

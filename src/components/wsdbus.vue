@@ -1,20 +1,19 @@
 <template>
   <div>
   <div>23333333333</div>
-  <!--div>{{ uav_status['RAW_IMU'].time_usec? 0:1 }}</div-->
+  <div>{{ uav_status['RAW_IMU']? 0:1 }}</div>
+    <webterminal :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
   </div>
 
 </template>
 <script>
+import Terminal from '../components/webterminal/socketTerminal.vue'
+
   export default {
     data() {
       return {
-        hostname: location.hostname,
-        port: '22333',
-        message: 'hello',
         uav_status: {},
-        connect_status: 2,
-        // 0 Link, 1 Only ws link, 2 No link
+        connect_status: false,
         intervalID: '',
         socket: {}
       }
@@ -34,12 +33,12 @@
       }
     },
     created() {
-        this.connect()
+        //this.connect()
         console.log("start")
       if (this.websocket != location.hostname) {
         //console.log(this.websocket)
         //console.log("start")
-        this.connect()
+        this.connect(this.websocket)
       }
     },
     beforeDestroy() {
@@ -49,19 +48,21 @@
       }
     },
     methods: {
-      connect() {
-        var host
-        if (this.websocket == location.hostname) {
-          host = "ws://" + this.hostname + ":" + this.port + "/"
-        } else {
-          host = this.websocket
-        }
+      connect(address = "ws://" + location.hostname + ":22333/") {
+        //var host
+        //if (address == location.hostname) {
+        //  host = "ws://" + this.hostname + ":" + this.port + "/"
+        //} else {
+        //  host = address
+        //}
         //console.log(host)
-        this.socket = new WebSocket(host)
+        console.log(address)
+        this.socket = new WebSocket(address)
         try {
           this.socket.onopen = () => {
             //this.connect_status = this.socket.readyState
-            this.connect_status = 1
+            //this.connect_status = 1
+            this.connect_status = true
 
             this.intervalID = window.setInterval(this.getData, 1000);
           }
@@ -76,8 +77,8 @@
           }
 
           this.socket.onclose = () => {
-            //this.connect_status = false
-            this.connect_status = 2
+            this.connect_status = false
+            //this.connect_status = 2
 
             clearInterval(this.intervalID)
           }
@@ -88,10 +89,22 @@
       },
       getData() {
         this.socket.send("status")
-        //this.send("status")
+      },
+      send(msg) {
+        //console.log(msg)
+        this.socket.send(msg)
+      },
+      close() {
+        try {
+          this.socket.close()
+          this.socket = null
+        }
+        catch (ex) {
+          console.log(ex)
+        }
       },
       msg(msgs) {
-        //  console.log(msgs)
+        console.log(msgs)
         for (let msg of msgs.split(/[\n]/g)) {
           //if (msg.match(/^[0-9]/)) {
           if (msg.match(/^\d*:/)) {
@@ -132,6 +145,9 @@
         }
       }
 
+    },
+    components: {
+      'webterminal': Terminal
     }
   }
 </script>
