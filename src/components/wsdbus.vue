@@ -1,6 +1,8 @@
 <template>
   <div>
-  <div>23333333333</div>
+    <uavtrack ref="profile" />
+  <div v-if="uav_status['RAW_IMU']">23333333333</div>
+  <div v-else>0000000000000000000000</div>
   <div>{{ uav_status['RAW_IMU']? 0:1 }}</div>
     <webterminal :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
   </div>
@@ -8,6 +10,7 @@
 </template>
 <script>
 import Terminal from '../components/webterminal/socketTerminal.vue'
+import Uavtrack from './uavtrack.vue'
 
   export default {
     data() {
@@ -49,14 +52,8 @@ import Terminal from '../components/webterminal/socketTerminal.vue'
     },
     methods: {
       connect(address = "ws://" + location.hostname + ":22333/") {
-        //var host
-        //if (address == location.hostname) {
-        //  host = "ws://" + this.hostname + ":" + this.port + "/"
-        //} else {
-        //  host = address
-        //}
-        //console.log(host)
         console.log(address)
+
         this.socket = new WebSocket(address)
         try {
           this.socket.onopen = () => {
@@ -103,23 +100,26 @@ import Terminal from '../components/webterminal/socketTerminal.vue'
           console.log(ex)
         }
       },
+      updateStatus(data) {
+        this.uav_status[data[0]] = data[1]
+        console.log(this.uav_status)
+      },
       msg(msgs) {
-        console.log(msgs)
+        //console.log(msgs)
         for (let msg of msgs.split(/[\n]/g)) {
           //if (msg.match(/^[0-9]/)) {
           if (msg.match(/^\d*:/)) {
-            this.toObj(msg)
-            //console.log(this.uav_status)
+            this.updateStatus(this.toObj(msg))
+          } else {
+            console.log(msg)
           }
         }
       },
       toObj(msg) {
         // 转换成json 再解析
-
         //console.log(msg)
-        //console.log(typeof(msg))
-        try {
 
+        try {
           let aaa = false
 
           // 提取 [ ] 里的数据，暂时替换为'T_ATA_T'
@@ -128,17 +128,13 @@ import Terminal from '../components/webterminal/socketTerminal.vue'
             msg = msg.replace(/\[.*\]/, 'T_ATA_T')
           }
 
-
           let mmm =  msg.split(/[{}]/g)[1].split(',').map(x => '"' + x.split(':')[0].trim() + '" :' + (x.replace(/^.*:/, '').trim().match(/^[A-z]/)? '"'+x.replace(/^.*:/, '').trim()+'"' : x.replace(/^.*:/, '').trim())).join(',')
 
           // 把'T_ATA_T'替换为原来的数据
-          if(aaa) {
-            mmm = mmm.replace(/"T_ATA_T"/, '[' + aaa + ']')
-          }
+          aaa ? mmm = mmm.replace(/"T_ATA_T"/, '[' + aaa + ']') : null
 
-          this.uav_status[msg.split(' ')[1]] = JSON.parse('{' + mmm + '}')
+          return [ msg.split(' ')[1], JSON.parse('{' + mmm + '}') ]
 
-          //console.log(this.uav_status)
         } catch (error) {
           console.log(error)
           console.log(msg)
@@ -147,7 +143,8 @@ import Terminal from '../components/webterminal/socketTerminal.vue'
 
     },
     components: {
-      'webterminal': Terminal
+      'webterminal': Terminal,
+      'uavtrack': Uavtrack
     }
   }
 </script>
