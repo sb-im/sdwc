@@ -1,9 +1,6 @@
 <template>
   <div>
-    <uavtrack ref="profile" />
-  <div v-if="uav_status['RAW_IMU']">23333333333</div>
-  <div v-else>0000000000000000000000</div>
-  <div>{{ uav_status['RAW_IMU']? 0:1 }}</div>
+    <uavtrack ref="map" />
     <webterminal ref="terminal" :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
   </div>
 
@@ -17,6 +14,7 @@ import Uavtrack from './uavtrack.vue'
       return {
         uav_status: {},
         connect_status: false,
+        setTime: '',
         intervalID: '',
         socket: {}
       }
@@ -61,7 +59,9 @@ import Uavtrack from './uavtrack.vue'
             //this.connect_status = 1
             this.connect_status = true
 
-            this.intervalID = window.setInterval(this.getData, 1000);
+            this.intervalID = window.setInterval(this.getData, 1000)
+
+            this.setTime = window.setTimeout(this.initMap, 3000)
           }
 
           this.socket.onmessage = (msg) => {
@@ -100,8 +100,19 @@ import Uavtrack from './uavtrack.vue'
           console.log(ex)
         }
       },
+      initMap() {
+        //console.log("init map")
+        this.$refs.map.clearPath()
+        this.$refs.map.initMap({ lat: this.uav_status["GLOBAL_POSITION_INT"].lat*0.1e-6, lng: this.uav_status["GLOBAL_POSITION_INT"].lon*0.1e-6 })
+      },
       updateStatus(data) {
         this.uav_status[data[0]] = data[1]
+
+
+        if (data[0] == "GLOBAL_POSITION_INT") {
+          //console.log(data[1])
+          this.$refs.map.drawPath({ lat: data[1].lat*0.1e-6, lng: data[1].lon*0.1e-6 })
+        }
         //console.log(this.uav_status)
       },
       display(msg) {
