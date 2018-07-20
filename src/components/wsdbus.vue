@@ -4,7 +4,7 @@
   <div v-if="uav_status['RAW_IMU']">23333333333</div>
   <div v-else>0000000000000000000000</div>
   <div>{{ uav_status['RAW_IMU']? 0:1 }}</div>
-    <webterminal :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
+    <webterminal ref="terminal" :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
   </div>
 
 </template>
@@ -102,17 +102,21 @@ import Uavtrack from './uavtrack.vue'
       },
       updateStatus(data) {
         this.uav_status[data[0]] = data[1]
-        console.log(this.uav_status)
+        //console.log(this.uav_status)
+      },
+      display(msg) {
+
+        // Filter message
+        if (msg.match(/Counters: Slave:0/) || msg.match(/MAV Errors: 0/) || msg.match(/None/)) { return }
+
+        this.$refs.terminal.display(msg)
       },
       msg(msgs) {
         //console.log(msgs)
         for (let msg of msgs.split(/[\n]/g)) {
-          //if (msg.match(/^[0-9]/)) {
-          if (msg.match(/^\d*:/)) {
-            this.updateStatus(this.toObj(msg))
-          } else {
-            console.log(msg)
-          }
+
+          // Status message OR Display message
+          msg.match(/^\d*:/) ? this.updateStatus(this.toObj(msg)) : this.display(msg)
         }
       },
       toObj(msg) {
