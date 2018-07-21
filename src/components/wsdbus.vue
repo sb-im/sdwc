@@ -1,6 +1,13 @@
 <template>
   <div>
-    <uavtrack ref="map" />
+    <el-row :gutter="10">
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="16">
+        <uavtrack ref="map" />
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="8">
+        <uav-status :uav_status=uav_status />
+      </el-col>
+    </el-row>
     <webterminal ref="terminal" :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
   </div>
 
@@ -8,6 +15,7 @@
 <script>
 import Terminal from '../components/webterminal/socketTerminal.vue'
 import Uavtrack from './uavtrack.vue'
+import Uavstatus from './uavstatus.vue'
 
   export default {
     data() {
@@ -102,11 +110,15 @@ import Uavtrack from './uavtrack.vue'
       },
       initMap() {
         //console.log("init map")
+        console.log(this.uav_status['BATTERY_STATUS'])
         this.$refs.map.clearPath()
         this.$refs.map.initMap({ lat: this.uav_status["GLOBAL_POSITION_INT"].lat*0.1e-6, lng: this.uav_status["GLOBAL_POSITION_INT"].lon*0.1e-6 })
       },
       updateStatus(data) {
-        this.uav_status[data[0]] = data[1]
+        //this.uav_status[data[0]] = data[1]
+
+        // https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats
+        this.$set(this.uav_status, data[0], data[1])
 
 
         if (data[0] == "GLOBAL_POSITION_INT") {
@@ -159,6 +171,7 @@ import Uavtrack from './uavtrack.vue'
     },
     components: {
       'webterminal': Terminal,
+      'uav-status': Uavstatus,
       'uavtrack': Uavtrack
     }
   }
