@@ -9,7 +9,6 @@
 <script>
 //    <webterminal :websocket=node.websocket :commands=command></webterminal>
 import Monitor from '../components/rt-monitor/rt-monitor.vue'
-//import WebTerminal from '../components/webterminal/webterminal.vue'
 import WebTerminal from '../components/wsdbus.vue'
 import Command from '../components/air-command.json'
 
