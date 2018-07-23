@@ -5,8 +5,8 @@ import Terminal from './BaseTerminal.vue'
   export default {
     mixins: [Terminal],
     methods: {
-      create() {
-        this.$emit('connect', (location.protocol == "https:" ? "wss://" : "ws://") + this.hostname + ":" + this.port + "/")
+      create(address =  (location.protocol == "https:" ? "wss://" : "ws://") + this.hostname + ":" + this.port + "/") {
+        this.$emit('connect', address)
         this.connect_status = true
       },
       destroy() {

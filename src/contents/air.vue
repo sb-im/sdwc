@@ -3,7 +3,7 @@
     <div v-for="video in node.videos">
       <rt-monitor :video="video"></rt-monitor>
     </div>
-    <webterminal :commands=command></webterminal>
+    <webterminal :websocket=node.websocket :commands=command></webterminal>
   </div>
 </template>
 <script>

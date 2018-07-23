@@ -8,7 +8,7 @@
         <uav-status :uav_status=uav_status />
       </el-col>
     </el-row>
-    <webterminal ref="terminal" :autolf=true :commands=commands @send=send @connect=connect @close=close></webterminal>
+    <webterminal ref="terminal" :autolf=true :commands=commands :address=websocket @send=send @connect=connect @close=close></webterminal>
   </div>
 
 </template>
@@ -41,15 +41,15 @@ import Uavstatus from './uavstatus.vue'
         default: true
       }
     },
-    created() {
+    //created() {
         //this.connect()
-        console.log("start")
-      if (this.websocket != location.hostname) {
+      //  console.log("start")
+      //if (this.websocket != location.hostname) {
         //console.log(this.websocket)
         //console.log("start")
-        this.connect(this.websocket)
-      }
-    },
+        //this.connect(this.websocket)
+      //}
+    //},
     beforeDestroy() {
       if (this.connect_status) {
         //console.log("stop")

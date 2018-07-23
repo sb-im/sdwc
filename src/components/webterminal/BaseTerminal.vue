@@ -92,7 +92,7 @@ import Command from '../webterminal/command.vue'
     created() {
       this.buttons = this.commands.map(item => Object.assign({status: false}, item))
       //console.log(this.commands)
-      this.address == location.hostname ? this.auto_link = true : this.create()
+      this.address == location.hostname ? this.auto_link = true : this.create(this.address)
     },
     beforeDestroy() {
       this.destroy()
