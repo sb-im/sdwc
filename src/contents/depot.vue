@@ -1,5 +1,6 @@
 <template>
   <div>
+    <weather></weather>
     <div v-for="video in node.videos">
       <rt-monitor :video="video"></rt-monitor>
     </div>
@@ -10,6 +11,7 @@
 import Monitor from '../components/rt-monitor/rt-monitor.vue'
 import Terminal from '../components/webterminal/httpTerminal.vue'
 import Command from '../components/depot-command.json'
+import Weather from '../components/weather.vue'
 
 
   export default {
@@ -26,6 +28,7 @@ import Command from '../components/depot-command.json'
     },
     components: {
       'rt-monitor': Monitor,
+      'weather': Weather,
       'webterminal': Terminal
     }
   }
