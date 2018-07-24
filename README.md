@@ -70,6 +70,18 @@ P=linux64 yarn client
     - tabs
       - context
 
+##### Default context components
+context
+- air
+  - rt-monitor
+  - ws-dbus
+    - uavtrack
+    - uavstatus
+    - socketTerminal
+- depot
+  - rt-monitor
+  - httpTerminal
+
 ## Update Log
 
 year month day
@@ -93,6 +105,12 @@ year month day
   - Add uavtrack
 - 2018.0712
   - Add httpTerminal
+- 2018.0723
+  - Add BaseTerminal
+  - Add socketTerminal
+  - Add ws-dbus
+  - Add dbus uav_status lib
+  - Add uavStatus
 
 ## Todo List
 - [x] English Docs
