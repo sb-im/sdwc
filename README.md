@@ -111,6 +111,7 @@ year month day
   - Add ws-dbus
   - Add dbus uav_status lib
   - Add uavStatus
+  - Add weather
 
 ## Todo List
 - [x] English Docs

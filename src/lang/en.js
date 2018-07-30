@@ -10,8 +10,8 @@ module.exports = {
     index: 'Official website'
   },
   sidemenu: {
-    air: 'Air',
-    depot: 'Depot',
+    air: 'Drone',
+    depot: 'Dock',
     log: 'Log'
   }
 }
