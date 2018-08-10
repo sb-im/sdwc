@@ -19,14 +19,15 @@
 export default {
   data() {
     return {
+      video: '',
       vedioCanPlay: false,
       fixStyle: ''
     }
   },
   props: {
-    video: {
-      type: String,
-      default: String
+    videos: {
+      type: Array,
+      default: Array
     },
     image: {
       type: String,
@@ -37,6 +38,11 @@ export default {
     canplay() {
       this.vedioCanPlay = true
     }
+  },
+  created() {
+    //console.log(this.videos.length)
+    this.video = this.videos[Math.floor(Math.random()*(this.videos.length - 1))]
+    //console.log(this.video)
   },
   mounted() {
     window.onresize = () => {
@@ -69,9 +75,6 @@ export default {
   }
 }
 </script>
-
-
-
 
 <style scoped>
 .homepage-hero-module,

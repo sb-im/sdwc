@@ -1,5 +1,5 @@
 <template>
-  <login-bg :video=video image="/static/login-backgound.jpg">
+  <login-bg :videos=video image="/static/login-backgound.jpg">
     <template slot="header">
       <el-row type="flex" justify="space-around">
         <div class="login-bg">
@@ -48,7 +48,7 @@ import Content from './login-bg.vue'
         }
       }
       return {
-        video: '/static/aerial',
+        video: [],
         ruleForm: {
           username: '',
           password: ''
@@ -64,7 +64,12 @@ import Content from './login-bg.vue'
       }
     },
     created() {
-      this.video = this.video + Math.floor(Math.random()*5) + '.mp4'
+      let ivideo= '/static/aerial'
+      //for (var p in [0, 1, 2]) {
+      for (let i = 0; i < 7; i++) {
+        this.video.push(ivideo + i + '.mp4')
+      }
+      //console.log(this.video)
     },
     components: {
       'login-bg': Content
