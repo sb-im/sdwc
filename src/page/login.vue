@@ -1,24 +1,30 @@
 <template>
-  <div class="background">
-    <div class="login-bg">
-      <h1 class="hhh">SDWC</h1>
+  <login-bg :video=video image="/static/login-backgound.jpg">
+    <template slot="header">
+      <el-row type="flex" justify="space-around">
+        <div class="login-bg">
+          <h1 class="hhh">SDWC</h1>
 
-      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
-        <el-form-item :label="$t('login.username')" prop="username">
-          <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('login.password')" prop="password">
-          <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
-        </el-form-item>
-      </el-form>
+          <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
+            <el-form-item :label="$t('login.username')" prop="username">
+              <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item :label="$t('login.password')" prop="password">
+              <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
+            </el-form-item>
+          </el-form>
 
-    </div>
-  </div>
+        </div>
+      </el-row>
+    </template>
+  </login-bg>
 </template>
 <script>
+import Content from './login-bg.vue'
+
   export default {
     data() {
       var validateUser = (rule, value, callback) => {
@@ -42,6 +48,7 @@
         }
       }
       return {
+        video: '/static/aerial',
         ruleForm: {
           username: '',
           password: ''
@@ -55,6 +62,12 @@
           ]
         }
       }
+    },
+    created() {
+      this.video = this.video + Math.floor(Math.random()*5) + '.mp4'
+    },
+    components: {
+      'login-bg': Content
     },
     methods: {
       login() {
@@ -110,20 +123,8 @@
   }
 
   .login-bg {
-    text-align: center;
-    border-radius: 5px;
-    background: #fff9;
-    width: 30%;
     padding: 2% 2%;
-    margin:10% auto;
+    background: #fff9;
   }
 
-  .background {
-    background: url(../assets/login-backgound.jpg);
-    background-repeat: repeat-x;
-    width: 100%;
-    height: 100%;
-    background-size: 100% 100%;
-    position: absolute;
-  }
 </style>
