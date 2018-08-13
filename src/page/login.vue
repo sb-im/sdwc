@@ -23,7 +23,7 @@
   </login-bg>
 </template>
 <script>
-import Content from './login-bg.vue'
+import VueLbgv from 'vue-lbgv'
 
   export default {
     data() {
@@ -67,12 +67,12 @@ import Content from './login-bg.vue'
       let ivideo= '/static/aerial'
       //for (var p in [0, 1, 2]) {
       for (let i = 0; i < 7; i++) {
-        this.video.push(ivideo + i + '.mp4')
+        this.video.push(ivideo + i + '-10s.mp4')
       }
       //console.log(this.video)
     },
     components: {
-      'login-bg': Content
+      'login-bg': VueLbgv
     },
     methods: {
       login() {
