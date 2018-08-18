@@ -13,7 +13,9 @@ import Terminal from './BaseTerminal.vue'
         this.ajaxSend(msg)
       },
       ajaxSend(msg) {
-        let url = location.protocol + "//" + this.hostname + ':' + this.port + '/' + msg
+        //console.log(this.auto_link ? ':' + this.port : '')
+
+        let url = location.protocol + "//" + this.hostname + (this.auto_link ? ':' + this.port : '') + '/' + msg
         console.log(url)
         this.$http.get(url)
         .then((response) => {
