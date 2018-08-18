@@ -4,6 +4,9 @@ import Terminal from './BaseTerminal.vue'
 
   export default {
     mixins: [Terminal],
+    created() {
+      this.hostname = this.address
+    },
     methods: {
       send(msg = this.message) {
         console.log(msg)
