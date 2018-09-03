@@ -1,4 +1,6 @@
 [
+  { "name": "全部开始～ | ω・´) ～", "value": "dock/dooropen" },
+
   { "name": "dock状态～ | ω・´) ～", "value": "run/get" },
   { "name": "air状态～ | ω・´) ～", "value": "getair/status" },
 
