@@ -1,5 +1,6 @@
 [
-  { "name": "全部开始～ | ω・´) ～", "value": "dock/dooropen" },
+  { "name": "测试-开始任务", "value": "dock/startmission" },
+  { "name": "测试-结束任务", "value": "dock/finishmission" },
 
   { "name": "dock状态～ | ω・´) ～", "value": "run/get" },
   { "name": "air状态～ | ω・´) ～", "value": "getair/status" },
