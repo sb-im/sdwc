@@ -5,8 +5,8 @@
   { "name": "dock状态～ | ω・´) ～", "value": "run/get" },
   { "name": "air状态～ | ω・´) ～", "value": "getair/status" },
 
-  { "name": "复位～ (°ー°〃) ～", "value": "dock/reset" },
-  { "name": "初始化～ (°ー°〃) ～", "value": "dock/init" },
+  { "name": "飞机充电～ (°ー°〃) ～", "value": "run/power_chargedrone_on" },
+  { "name": "停止充电～ (°ー°〃) ～", "value": "run/power_chargedrone_off" },
 
   { "name": "打开舱门～ | ω・´) ～", "value": "dock/dooropen" },
   { "name": "关闭舱门～ (＾o＾)ﾉ ～", "value": "dock/doorclose" },
