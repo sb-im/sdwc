@@ -29,6 +29,5 @@
   { "name": "取下A仓电池～ (°ー°〃) ～", "value": "dock/pickabattery" },
   { "name": "放入A仓电池～ (°ー°〃) ～", "value": "dock/mountabattery" },
 
-  { "name": "取下B仓电池～ (°ー°〃) ～", "value": "dock/pickbbattery" },
-  { "name": "放入B仓电池～ (°ー°〃) ～", "value": "dock/mountbbattery" }
+  { "name": "停止 (°ー°〃) ～", "value": "dock/stop" }
 ]
