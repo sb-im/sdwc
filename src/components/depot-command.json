@@ -23,7 +23,7 @@
   { "name": "更换电池～ (°ー°〃) ～", "value": "dock/exchangebattery" },
   { "name": "平台举平～ (°ー°〃) ～", "value": "dock/riseplate" },
 
-  { "name": "$平台升顶～ (°ー°〃) ～", "value": "run/move_lift_drone" },
+  { "name": "$平台升顶～ (°ー°〃) ～", "value": "run/move_lift_droneh" },
   { "name": "$平台降底～ (°ー°〃) ～", "value": "run/move_lift_convey" },
 
   { "name": "取下A仓电池～ (°ー°〃) ～", "value": "dock/pickabattery" },
