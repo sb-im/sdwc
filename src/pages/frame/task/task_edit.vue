@@ -17,7 +17,7 @@
           <li class="info-title"><img src="../../../assets/images/task/task_first.svg"/>首次执行时间：</li>
           <li class="info-title"><img src="../../../assets/images/task/task_file.svg"/>航点任务文件：</li>
         </el-col>
-        <el-col :span="14"  tag="ul">
+        <el-col :span="14" tag="ul">
           <li class="info-text">安防例行巡检</li>
           <li class="info-text">检查厂区有无安全隐患。</li>
           <li class="info-text interval">2018/11/1   11:21</li>
