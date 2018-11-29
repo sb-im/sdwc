@@ -3,4 +3,3 @@ export default {
   login: "/oauth/token",
   nodes: "/nodes"
 }
-

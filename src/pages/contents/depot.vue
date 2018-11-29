@@ -8,10 +8,10 @@
   </div>
 </template>
 <script>
-import Monitor from '../components/rt-monitor/rt-monitor.vue'
-import Terminal from '../components/webterminal/httpTerminal.vue'
-import Command from '../components/depot-command.json'
-import Weather from '../components/weather.vue'
+import Monitor from '../../components/rt-monitor/rt-monitor.vue'
+import Terminal from '../../components/webterminal/httpTerminal.vue'
+import Command from '../../components/depot-command.json'
+import Weather from '../../components/weather.vue'
 
 
   export default {

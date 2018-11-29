@@ -3,8 +3,7 @@
     <template slot="header">
       <el-row type="flex" justify="space-around">
         <div class="login-bg">
-          <h1 class="hhh">SDWC</h1>
-
+          <h1 class="title font-26">SDWC-LOGIN</h1>
           <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
             <el-form-item :label="$t('login.username')" prop="username">
               <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
@@ -16,14 +15,14 @@
               <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
             </el-form-item>
           </el-form>
-
         </div>
       </el-row>
     </template>
   </login-bg>
 </template>
+
 <script>
-import VueLbgv from 'vue-lbgv'
+  import VueLbgv from 'vue-lbgv'
 
   export default {
     data() {
@@ -123,13 +122,13 @@ import VueLbgv from 'vue-lbgv'
   }
 </script>
 <style scoped>
-  .hhh {
-    color: #409EFF;
+  .title {
+    color: #409eff;
+    margin: 20px auto;
   }
 
   .login-bg {
     padding: 2% 2%;
     background: #fff9;
   }
-
 </style>
