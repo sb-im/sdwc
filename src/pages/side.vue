@@ -36,6 +36,7 @@
     methods: {
       menuSelect(key,keyPath){
         this.$store.commit('asideAdd',key);
+        console.log(key, keyPath);
       },
       menuOpen(key,keyPath){
         console.log(key,keyPath);
