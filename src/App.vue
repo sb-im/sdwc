@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <main id="app">
     <router-view></router-view>
-  </div>
+  </main>
 </template>
 
 <script>
@@ -16,9 +16,7 @@
         console.log(url)
         this.$http.get(url)
         .then((response) => {
-
           this.$i18n.locale = response.data.lang ? response.data.lang : this.$store.state.config.lang
-
           this.$store.commit("config", response.data)
         })
         .catch((error) => {
@@ -31,8 +29,7 @@
 </script>
 
 <style>
-  body {
-    margin: 0;
-    padding: 0;
+  #app {
+    height: 100%;
   }
 </style>
