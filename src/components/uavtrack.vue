@@ -39,7 +39,8 @@
 
         //let YOUR_API_KEY = ""
         //this.$jsonp(url, { key: YOUR_API_KEY }).then(json => {
-        this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(json => {
+        this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(() => {
+
           this.initMap()
           this.drawPath()
           // Success.
