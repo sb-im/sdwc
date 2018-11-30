@@ -1,21 +1,21 @@
 <template>
   <el-main class="content">
     <el-header height="70px" class="header font-24">
-      <img src="../../../assets/images/task/task_see.svg"/>查看任务
+      <img src="../../../assets/images/task/t_view.svg"/>查看任务
       <div class="f-r font-16">
-        <el-button type="warning" icon="el-icon-edit">修改任务</el-button>
+        <el-button @click.prevent="editTask" type="warning" icon="el-icon-edit">修改任务</el-button>
         <el-button type="danger" icon="el-icon-check">立即执行</el-button>
       </div>
     </el-header>
     <el-row type="flex" class="infos" tag="section">
       <el-col :md="14" :lg="11" :xl="8">
         <el-col :span="8" tag="ul">
-          <li class="info-title"><img src="../../../assets/images/task/task_info.svg"/>任务名称：</li>
+          <li class="info-title"><img src="../../../assets/images/task/t_info.svg"/>任务名称：</li>
           <li class="info-title">任务描述：</li>
-          <li class="info-title interval"><img src="../../../assets/images/task/task_time.svg"/>创建时间：</li>
-          <li class="info-title"><img src="../../../assets/images/task/task_frequency.svg"/>执行频次：</li>
-          <li class="info-title"><img src="../../../assets/images/task/task_first.svg"/>首次执行时间：</li>
-          <li class="info-title"><img src="../../../assets/images/task/task_file.svg"/>航点任务文件：</li>
+          <li class="info-title interval"><img src="../../../assets/images/task/t_time.svg"/>创建时间：</li>
+          <li class="info-title"><img src="../../../assets/images/task/t_frequency.svg"/>执行频次：</li>
+          <li class="info-title"><img src="../../../assets/images/task/t_first.svg"/>首次执行时间：</li>
+          <li class="info-title"><img src="../../../assets/images/task/t_file.svg"/>航点任务文件：</li>
         </el-col>
         <el-col :span="14" tag="ul">
           <li class="info-text">安防例行巡检</li>
@@ -34,7 +34,7 @@
     </el-row>
 
     <el-header height="70px" class="header font-24">
-      <img src="../../../assets/images/task/task_history.svg"/>任务执行历史
+      <img src="../../../assets/images/task/t_history.svg"/>任务执行历史
     </el-header>
     <el-table
       :data="tableTest"
@@ -69,14 +69,14 @@
         <h4 class="pos-r title">飞行前检查<a class="pos-a close el-icon-close" href="javascript:;"></a></h4>
         <div class="content">
           <div class="head text-c">
-            <img src="../../../assets/images/task/task_flip_check.svg"/>
+            <img src="../../../assets/images/task/t_flip_check.svg"/>
             <p class="font-16">我们需要检查设备情况，确保可以安全执行任务。</p>
           </div>
           <el-row class="body" type="flex" tag="div">
             <el-col :span="8" tag="ul">
-              <li class="label weather"><img src="../../../assets/images/task/task_weather.svg"/>天气</li>
-              <li class="label"><img src="../../../assets/images/task/task_drone.svg"/>无人机</li>
-              <li class="label"><img src="../../../assets/images/task/task_airport.svg"/>机场</li>
+              <li class="label weather"><img src="../../../assets/images/task/t_weather.svg"/>天气</li>
+              <li class="label"><img src="../../../assets/images/task/t_drone.svg"/>无人机</li>
+              <li class="label"><img src="../../../assets/images/task/t_airport.svg"/>机场</li>
             </el-col>
             <el-col :span="16" tag="ul">
               <li class="weather">
@@ -118,6 +118,9 @@
       },
       hCells(cells) {
         return 'font-weight:normal;' + (cells.columnIndex === 3 ? 'border-left: 1px solid #e4eaef;' : '');
+      },
+      editTask(){
+        this.$store.commit('taskLink','edit')
       }
     }
   }

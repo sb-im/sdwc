@@ -1,13 +1,13 @@
 <template>
   <el-main class="content">
     <el-header height="70px" class="header font-24">
-      <img src="../../../assets/images/task/task_add.svg"/>新建任务
+      <img src="../../../assets/images/task/t_add.svg"/>新建任务
     </el-header>
-    <el-row type="flex" class="edit" :gutter="20" tag="section">
-      <el-col :span="8" tag="ul">
+    <el-row type="flex" class="edit" tag="section">
+      <el-col class="edit-box" :span="8" tag="ul">
         <li>
           <div class="edit-item">
-            <img src="../../../assets/images/task/task_info.svg"/>任务名称：
+            <img src="../../../assets/images/task/t_info.svg"/>任务名称：
             <el-input class="d-b"></el-input>
           </div>
           <div class="edit-item">任务描述：
@@ -15,7 +15,7 @@
           </div>
         </li>
         <li class="edit-item">
-          <img src="../../../assets/images/task/task_frequency.svg"/>执行频次：
+          <img src="../../../assets/images/task/t_frequency.svg"/>执行频次：
           <el-select class="d-b" v-model="frequency" placeholder="请选择执行频次">
             <el-option label="手动" value="1"></el-option>
             <el-option label="一次" value="2"></el-option>
@@ -24,25 +24,29 @@
           </el-select>
         </li>
         <li class="edit-item">
-          <img src="../../../assets/images/task/task_first.svg"/>首次执行时间：
+          <img src="../../../assets/images/task/t_first.svg"/>首次执行时间：
           <el-date-picker style="width: 100%" type="datetime" placeholder="请选择首次执行时间" v-model="date"></el-date-picker>
         </li>
         <li class="edit-item">
-          <img src="../../../assets/images/task/task_file.svg"/>航点任务文件：
-          <el-upload class="d-ib">
-            <el-button type="primary" icon="el-icon-upload">上传航点任务文件</el-button>
+          <img src="../../../assets/images/task/t_file.svg"/>航点任务文件：
+          <el-upload action="#" class="d-ib">
+            <el-button type="primary" icon="el-icon-upload">上传文件</el-button>
           </el-upload>
         </li>
       </el-col>
       <el-col :span="16">
         <div class="upload text-c">
-          <el-upload class="upload-box d-ib va-m over-h">
-            <img src="../../../assets/images/task/task_upload.svg" alt=""/>
+          <el-upload action="#" class="upload-box d-ib va-m over-h">
+            <img src="../../../assets/images/task/t_upload.svg"/>
             <el-button type="primary" icon="el-icon-upload">上传预览图(可选)</el-button>
           </el-upload>
         </div>
       </el-col>
     </el-row>
+    <el-footer class="foot-btns">
+      <el-button class="font-16" type="danger" icon="el-icon-plus">创建任务</el-button>
+      <el-button @click.prevent="backEvent" class="font-16" icon="el-icon-close">取消并返回</el-button>
+    </el-footer>
   </el-main>
 </template>
 
@@ -55,7 +59,9 @@
       }
     },
     methods: {
-
+      backEvent(){
+        this.$store.commit('taskLink','view');
+      }
     }
   }
 </script>
@@ -94,13 +100,11 @@
   .upload {
     width: 600px;
     height: 100%;
+    margin-left: 20px;
     border-radius: 5px;
     border: 1px dashed #d8dbe3;
   }
-  .upload .upload-box {
-    /*backface-visibility: hidden;*/
-  }
-  .upload .upload-box:after {
+  .upload:after {
     content: "";
     display: inline-block;
     height: 100%;
@@ -112,5 +116,8 @@
     height: 40px;
     display: block;
     margin: 10px auto 10px;
+  }
+  .foot-btns {
+    margin-top: 20px;
   }
 </style>

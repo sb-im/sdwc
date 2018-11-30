@@ -2,7 +2,7 @@
   <el-container class="wrapper">
     <el-aside class="aside pos-r" width="260px">
       <div class="btn-box pos-a text-c">
-        <el-button class="add-btn font-16" type="primary" icon="el-icon-plus">新建任务</el-button>
+        <el-button @click.prevent="addTask" class="add-btn font-16" type="primary" icon="el-icon-plus">新建任务</el-button>
       </div>
       <el-menu
         :default-active="activeIndex"
@@ -11,7 +11,9 @@
         <el-menu-item class="font-18" index="2">广场施工进展查看</el-menu-item>
       </el-menu>
     </el-aside>
-    <task-view></task-view>
+    <task-view v-if="this.$store.state.taskAction==='view'" v-cloak></task-view>
+    <task-add v-if="this.$store.state.taskAction==='add'" v-cloak></task-add>
+    <task-edit v-if="this.$store.state.taskAction==='edit'" v-cloak></task-edit>
   </el-container>
 </template>
 
@@ -32,7 +34,9 @@
       'task-edit':TaskEdit
     },
     methods: {
-
+      addTask(){
+        this.$store.commit('taskLink','add')
+      }
     }
   }
 </script>
