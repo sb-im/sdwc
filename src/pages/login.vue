@@ -1,5 +1,5 @@
 <template>
-  <login-bg :videos=video image="/static/login-backgound.jpg">
+  <login-bg :videos="video" image="/static/login-backgound.jpg">
     <template slot="header">
       <el-row type="flex" justify="space-around">
         <div class="login-bg">
@@ -63,8 +63,8 @@
       }
     },
     created() {
-      let ivideo= '/static/aerial'
-      //for (var p in [0, 1, 2]) {
+      let ivideo= '/static/aerial';
+
       for (let i = 0; i < 7; i++) {
         this.video.push(ivideo + i + '-10s.mp4')
       }
