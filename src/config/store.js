@@ -12,7 +12,8 @@ export default new Vuex.Store({
     token: '',
     items: [],
     links: [],
-    aside: ''
+    aside: '',
+    taskAction:'view'
   },
   mutations: {
     config(state, config) {
@@ -49,8 +50,11 @@ export default new Vuex.Store({
         }*/
       }
     },
-    asideAdd(state,item){
+    asideLink(state,item){
       state.aside = item;
+    },
+    taskLink(state,item){
+      state.taskAction = item;
     },
     linkdel(state, item) {
       // state.links = state.links.filter(tab => tab.id !== item_id)
