@@ -29,13 +29,12 @@
       }
     },
     created(){
-      // this.$store.commit('asideAdd','task');
       this.activeIndex = this.$store.state.aside?this.$store.state.aside:'task';
-      this.$store.commit('asideAdd',this.activeIndex)
+      this.$store.commit('asideLink',this.activeIndex)
     },
     methods: {
       menuSelect(key,keyPath){
-        this.$store.commit('asideAdd',key);
+        this.$store.commit('asideLink',key);
         console.log(key, keyPath);
       },
       menuOpen(key,keyPath){
