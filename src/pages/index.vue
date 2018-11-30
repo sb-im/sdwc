@@ -19,8 +19,8 @@
   import Header from './header'
   import Aside from './side'
   import Task from './frame/task/index'
-  import Airport from './frame/airport'
-  import Drone from './frame/drone'
+  import Airport from './frame/airport/index'
+  import Drone from './frame/drone/index'
 
   export default {
     data() {
