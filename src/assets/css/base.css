@@ -83,3 +83,8 @@ textarea {resize: none;box-shadow:0 0 0 rgba(0,0,0,0);-webkit-appearance:none;}
 /* E css-base */
 [v-cloak] {display: none;}
 .interval {margin-top: 20px;}
+
+::-webkit-scrollbar-track-piece {background-color:#f5f5f5;}
+::-webkit-scrollbar {width:8px;height:8px;}
+::-webkit-scrollbar-thumb {background-color:#ddd;background-clip:padding-box;min-height:28px;}
+::-webkit-scrollbar-thumb:hover {background-color:#bbb;}
