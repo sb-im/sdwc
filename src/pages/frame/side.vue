@@ -9,13 +9,13 @@
       background-color="#545c64"
       text-color="#ccc">
       <el-menu-item index="task" class="font-18">
-        <img src="../assets/images/aside/task.svg"/>任务管理
+        <img src="../../assets/images/aside/task.svg"/>任务管理
       </el-menu-item>
       <el-menu-item index="airport" class="font-18">
-        <img src="../assets/images/aside/airport.svg"/>机场
+        <img src="../../assets/images/aside/airport.svg"/>机场
       </el-menu-item>
       <el-menu-item index="drone" class="font-18">
-        <img src="../assets/images/aside/drone.svg"/>无人机
+        <img src="../../assets/images/aside/drone.svg"/>无人机
       </el-menu-item>
     </el-menu>
   </el-aside>
@@ -50,7 +50,7 @@
 <style scoped>
   /*侧边菜单*/
   .aside {
-    padding-top: 80px;
+    padding-top: 100px;
     width: 100%;
     min-height: 100%;
     background-color: #545c64;
