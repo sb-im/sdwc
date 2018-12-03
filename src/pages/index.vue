@@ -4,11 +4,9 @@
     <sd-aside></sd-aside>
     <el-container>
       <el-main class="frame">
-        <sd-task v-if="this.$store.state.aside==='task'" v-cloak></sd-task>
-        <sd-airport v-if="this.$store.state.aside==='airport'" v-cloak></sd-airport>
-        <sd-drone v-if="this.$store.state.aside==='drone'" v-cloak></sd-drone>
+        <sd-tabs></sd-tabs>
       </el-main>
-      <el-footer class="footer pos-f text-c">
+      <el-footer class="footer pos-a text-c">
         Copyright © 2017-2018 StrawBerry Tech.
       </el-footer>
     </el-container>
@@ -16,11 +14,9 @@
 </template>
 
 <script>
-  import Header from './header'
-  import Aside from './side'
-  import Task from './frame/task/index'
-  import Airport from './frame/airport/index'
-  import Drone from './frame/drone/index'
+  import Header from './frame/header'
+  import Aside from './frame/side'
+  import Tabs from './frame/tabs'
 
   export default {
     data() {
@@ -29,14 +25,16 @@
       }
     },
     created(){
+      this.$http.get('http://staging.sblab.xyz/api/v1/nodes/').then((res)=>{
+        console.log(res)
+      }).catch((err)=>{
 
+      });
     },
     components: {
       'sd-header':Header,
       'sd-aside':Aside,
-      'sd-task':Task,
-      'sd-airport':Airport,
-      'sd-drone':Drone
+      'sd-tabs':Tabs
     },
     methods: {
 
@@ -47,8 +45,10 @@
 <style scoped>
   /*外部容器*/
   .main {
-    width: 100%;
+    position: relative;
+    width: 1280px;
     height: 100%;
+    margin: auto;
     overflow: hidden;
   }
   /*框架内容区*/
