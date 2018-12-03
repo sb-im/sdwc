@@ -1,6 +1,6 @@
 <template>
   <el-main class="content">
-    <el-header height="70px" class="header font-24">
+    <el-header class="header font-24">
       <img src="../../../assets/images/task/t_view.svg"/>查看任务
       <div class="f-r font-16">
         <el-button @click.prevent="editTask" type="warning" icon="el-icon-edit">修改任务</el-button>
@@ -8,8 +8,8 @@
       </div>
     </el-header>
     <el-row type="flex" class="infos" tag="section">
-      <el-col :md="14" :lg="11" :xl="8">
-        <el-col :span="8" tag="ul">
+      <el-col>
+        <el-col :span="10" tag="ul">
           <li class="info-title"><img src="../../../assets/images/task/t_info.svg"/>任务名称：</li>
           <li class="info-title">任务描述：</li>
           <li class="info-title interval"><img src="../../../assets/images/task/t_time.svg"/>创建时间：</li>
@@ -26,14 +26,14 @@
           <li class="info-text"><el-button type="primary" icon="el-icon-download">下载</el-button></li>
         </el-col>
       </el-col>
-      <el-col :md="10" :lg="13" :xl="16">
+      <el-col>
         <div class="maps">
           <img src="../../../assets/images/task/test.png" alt=""/>
         </div>
       </el-col>
     </el-row>
 
-    <el-header height="70px" class="header font-24">
+    <el-header class="header font-24">
       <img src="../../../assets/images/task/t_history.svg"/>任务执行历史
     </el-header>
     <el-table
@@ -44,22 +44,22 @@
       <el-table-column align="center" prop="time" label="执行时间"></el-table-column>
       <el-table-column align="center" label="原始数据">
         <template slot-scope="scope">
-          <el-button type="primary">查看</el-button>
+          <el-button class="font-16" type="primary">查看</el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" label="自动处理结果">
         <template slot-scope="scope">
-          <el-button type="primary">查看</el-button>
+          <el-button class="font-16" type="primary">查看</el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" border label="飞行日志">
         <template slot-scope="scope">
-          <el-button>查看</el-button>
+          <el-button class="font-16">查看</el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" label="服务器日志">
         <template slot-scope="scope">
-          <el-button>下载</el-button>
+          <el-button class="font-16" icon="el-icon-download">下载</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -108,6 +108,11 @@
         activeIndex:'1',
         tableTest:[
           {time:'2018/11/7  12:00:53'},
+          {time:'2018/11/7  12:00:53'},
+          {time:'2018/11/7  12:00:53'},
+          {time:'2018/11/7  12:00:53'},
+          {time:'2018/11/7  12:00:53'},
+          {time:'2018/11/7  12:00:53'},
           {time:'2018/11/7  12:00:53'}
         ]
       }
@@ -129,7 +134,7 @@
 <style scoped>
   .header {
     line-height: 60px;
-    padding-top: 10px;
+    padding: 0 10px;
     border-bottom: 1px solid #e4eaef;
   }
   .header img {
@@ -138,15 +143,15 @@
     padding-right: 10px;
   }
   .infos {
-    padding: 10px 5px;
+    padding: 10px 10px 10px 5px;
     border-bottom: 1px solid #e4eaef;
   }
 
   .info-text,
   .info-title {
     position: relative;
-    height: 55px;
-    line-height: 55px;
+    height: 50px;
+    line-height: 50px;
   }
   .info-title {
     padding-left: 40px;
@@ -166,9 +171,13 @@
   }
 
   .infos .maps {
+    width: 440px;
+    height: 320px;
+    border-radius: 10px;
+  }
+  .infos .maps img {
     width: 100%;
     height: 100%;
-    border-radius: 10px;
   }
   .flip-mask {
     z-index: 9999;

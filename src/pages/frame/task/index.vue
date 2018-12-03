@@ -1,14 +1,14 @@
 <template>
   <el-container class="wrapper">
-    <el-aside class="aside pos-r" width="260px">
+    <el-aside class="aside pos-r" width="250px">
       <div class="btn-box pos-a text-c">
         <el-button @click.prevent="addTask" class="add-btn font-16" type="primary" icon="el-icon-plus">新建任务</el-button>
       </div>
       <el-menu
         :default-active="activeIndex"
         class="task-list">
-        <el-menu-item class="font-18" index="1">安防例行巡检</el-menu-item>
-        <el-menu-item class="font-18" index="2">广场施工进展查看</el-menu-item>
+        <el-menu-item class="task-item font-16" index="1">安防例行巡检</el-menu-item>
+        <el-menu-item class="task-item font-16" index="2">广场施工进展查看</el-menu-item>
       </el-menu>
     </el-aside>
     <task-view v-if="this.$store.state.taskAction==='view'" v-cloak></task-view>
@@ -42,19 +42,20 @@
 </script>
 
 <style scoped>
-  .wrapper {height:100%;}
   .aside {
     height: 100%;
-    padding-top: 85px;
+    padding-top: 80px;
     border-right: 1px solid #e4eaef;
   }
   .aside .btn-box {
     top: 0;
     left: 0;
     right: 0;
+    z-index: 99;
     margin: auto;
-    line-height: 85px;
+    line-height: 80px;
     background-color: #fff;
+    border-bottom: 1px solid #e4eaef;
   }
   .aside .add-btn {
     width: 220px;
@@ -64,6 +65,10 @@
     border-right: 0;
     height: 100%;
     overflow-y: auto;
+  }
+  .aside .task-item {
+    height: 50px;
+    line-height: 50px;
   }
   .aside .task-list .is-active {
     color: #fff;

@@ -1,10 +1,10 @@
 <template>
   <el-main class="content">
-    <el-header height="70px" class="header font-24">
+    <el-header class="header font-24">
       <img src="../../../assets/images/task/t_edit.svg"/>修改任务
     </el-header>
     <el-row type="flex" class="edit" tag="section">
-      <el-col class="edit-box" :span="8" tag="ul">
+      <el-col class="edit-box" tag="ul">
         <li>
           <div class="edit-item">
             <img src="../../../assets/images/task/t_info.svg"/>任务名称：
@@ -37,7 +37,7 @@
           </div>
         </li>
       </el-col>
-      <el-col :span="16">
+      <el-col>
         <div class="upload text-c">
 
         </div>
@@ -49,7 +49,7 @@
     <el-footer class="foot-btns">
       <el-button class="font-16" type="warning" icon="el-icon-plus">保存任务</el-button>
       <el-button @click.prevent="backEvent" class="font-16" icon="el-icon-close">放弃并返回</el-button>
-      <el-button class="font-16 f-r" type="danger" icon="el-icon-close">删除任务</el-button>
+      <el-button class="font-16 f-r" type="danger" icon="el-icon-delete">删除任务</el-button>
     </el-footer>
   </el-main>
 </template>
@@ -73,7 +73,7 @@
 <style scoped>
   .header {
     line-height: 60px;
-    padding-top: 10px;
+    padding: 0 10px;
     border-bottom: 1px solid #e4eaef;
   }
   .header img {
@@ -82,7 +82,7 @@
     padding-right: 10px;
   }
   .edit {
-    padding: 10px 5px;
+    padding: 10px 10px 10px 5px;
     border-bottom: 1px solid #e4eaef;
   }
   .edit li {margin-bottom: 10px;}
@@ -105,8 +105,8 @@
   }
 
   .upload {
-    width: 600px;
-    height: 84%;
+    width: 440px;
+    height: 320px;
     margin-left: 20px;
     border-radius: 5px;
     background-color: #eee;
@@ -116,6 +116,7 @@
     margin-left: 20px;
   }
   .foot-btns {
+    padding: 0 10px;
     margin-top: 20px;
   }
 </style>
