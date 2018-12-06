@@ -11,9 +11,9 @@
         <el-menu-item class="task-item font-16" index="2">广场施工进展查看</el-menu-item>
       </el-menu>
     </el-aside>
-    <task-view v-if="this.$store.state.taskAction==='view'" v-cloak></task-view>
-    <task-add v-if="this.$store.state.taskAction==='add'" v-cloak></task-add>
-    <task-edit v-if="this.$store.state.taskAction==='edit'" v-cloak></task-edit>
+    <task-view v-if="$store.state.taskPage==='view'" v-cloak></task-view>
+    <task-add v-if="$store.state.taskPage==='add'" v-cloak></task-add>
+    <task-edit v-if="$store.state.taskPage==='edit'" v-cloak></task-edit>
   </el-container>
 </template>
 
@@ -35,7 +35,7 @@
     },
     methods: {
       addTask(){
-        this.$store.commit('taskLink','add')
+        this.$store.commit('taskLink','add');
       }
     }
   }
