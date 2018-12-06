@@ -1,7 +1,7 @@
 <template>
   <el-container class="main">
     <sd-header></sd-header>
-    <sd-aside></sd-aside>
+    <sd-aside :nodes="nodes"></sd-aside>
     <el-container>
       <el-main class="frame">
         <sd-tabs></sd-tabs>
@@ -22,6 +22,15 @@
     data() {
       return {
 
+      }
+    },
+    props:{
+      nodes:{
+        type: Array,
+        required: true,
+        default: () => {
+          return [];
+        }
       }
     },
     created(){
