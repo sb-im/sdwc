@@ -12,14 +12,18 @@ export default new Vuex.Store({
     token: '',
     items: [],
     links: [],
-    aside: '',
-    taskAction:'view'
+    active:'task',
+    taskPage:'view'
   },
   mutations: {
-    config(state, config) {
-      state.config = config
-      Object.keys(state.api).forEach(function (key) {
-        state.api[key] = config.server + state.api[key] + config.suffix
+    config(state, arg) {
+      let keys = Object.keys(state.api);
+      state.config = arg.config;
+      keys.forEach(function (key,index) {
+        let server = (state.api[key].indexOf(arg.config.server)===-1?arg.config.server:''),
+          suffix = (state.api[key].indexOf(arg.config.suffix)===-1?arg.config.suffix:'');
+        state.api[key] = server + state.api[key] + suffix;
+        index === keys.length-1 && arg.callback && typeof arg.callback === 'function' && arg.callback();
       });
     },
     token(state, config) {
@@ -31,34 +35,27 @@ export default new Vuex.Store({
     items(state, items) {
       state.items = items
     },
-    linkadd(state, item) {
+    linkAdd(state, item) {
       if (state.links.length === 0) {
-        state.links.push(item)
-      } else {
-        // 去重
         state.links.push(item);
-        let temp = new Set(state.links);
-        state.links = [...temp];
-        /*let t = 0
-        for (let link of state.links) {
-          if (link.id == item.id) {
-            t = 1
-          }
-        }
-        if (t == 0) {
-          state.links.push(item)
-        }*/
+      } else {
+        // 先判断是否存在然后再添加
+        state.links.findIndex(val => {
+          return (+val.id) === (+item.id);
+        }) === -1 && state.links.push(item);
       }
+      // 激活对应tabs
+      state.active = item.id+'';
     },
-    asideLink(state,item){
-      state.aside = item;
+    tabChange(state, item){
+      state.active = (item.id?item.id:item)+'';
     },
-    taskLink(state,item){
-      state.taskAction = item;
-    },
-    linkdel(state, item) {
+    linkDel(state, id) {
       // state.links = state.links.filter(tab => tab.id !== item_id)
-      state.links = state.links.filter(tab => tab !== item);
+      state.links = state.links.filter(tab => tab.id !== id);
+    },
+    taskLink(state, name){
+      state.taskPage = name;
     }
   }
 })
