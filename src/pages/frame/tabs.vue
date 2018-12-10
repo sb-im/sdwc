@@ -1,30 +1,28 @@
 <template>
   <el-tabs
     class="tabs"
-    v-model="$store.state.active"
-    type="card"
     @tab-remove="tabRemove"
-    @tab-click="tabsClick">
-    <el-tab-pane class="tab-item" label="任务管理" name="task">
-      <sd-task></sd-task>
-    </el-tab-pane>
+    closable
+    @tab-click="tabsClick"
+    v-model="$store.state.active"
+    type="card">
     <el-tab-pane
       v-for="(val,index) in $store.state.links"
       :key="index"
-      :label="val.name"
+      :label="val.item.name"
       class="tab-item"
-      closable
-      :name="val.id+''">
-      <sd-air v-if="val.type_name==='air'" v-cloak></sd-air>
-      <sd-drone v-if="val.type_name==='depot'" v-cloak></sd-drone>
+      :name="val.type+val.item.id">
+      <sd-plan v-if="val.type==='plans'" v-cloak></sd-plan>
+      <sd-depot v-else-if="val.type==='depot'" v-cloak></sd-depot>
+      <sd-air v-else-if="val.type==='air'" :node="val.item" v-cloak></sd-air>
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
-  import Task from './task'
-  import Airport from './airport'
-  import Drone from './drone'
+  import Plans from '../contents/plans/index'
+  import Depot from '../contents/depot'
+  import Air from '../contents/air'
 
   export default {
     data() {
@@ -32,39 +30,44 @@
 
       }
     },
-    props:{
-      /*nodes:{
-        type:Array
-      }*/
-    },
     created(){
 
     },
     components: {
-      'sd-task': Task,
-      'sd-air': Airport,
-      'sd-drone': Drone
+      'sd-plan': Plans,
+      'sd-depot': Depot,
+      'sd-air': Air
     },
     methods: {
-      tabsClick(key,keyPath) {
-        console.log(key,keyPath);
+      tabsClick(component) {
+        let tmp = {type: component.name.replace(/[^a-zA-z]+/ig,''), id: component.name.replace(/[^0-9]/ig,'')};
+        if(tmp.type==='plans') {
+          this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
+        }
       },
-      tabRemove(id) {
-        this.$store.commit('tabChange',this.tabActive(id,this.$store.state.active,this.$store.state.links));
-        this.$store.commit("linkDel", +id);
+      tabRemove(index) {
+        let tmp = {type: index.replace(/[^a-zA-z]+/ig, ''), id: index.replace(/[^0-9]/ig, '')};
+        this.$store.commit('tabChange',this.tabActive(index,this.$store.state.active,this.$store.state.links));
+        this.$store.commit("linkDel", tmp);
+        /*if(tmp.type==='plans') {
+          this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
+        }*/
       },
       tabActive(del,cur,links){
-        if(links.length !== 1) {
-          if(cur === del) {
-            links.forEach((tab, index) => {
-              if(tab.id === (+del)){
-                let next = links[index+1] || links[index-1];
-                cur = next ? next.id : cur;
-                return true;
-              }
-            });
-          }
-        }else cur = 'task';
+        if (del === cur) {
+          del = {type: del.replace(/[^a-zA-z]+/ig, ''), id: del.replace(/[^0-9]/ig, '')};
+          links.forEach((tab, index) => {
+            if(tab.type === del.type && tab.item.id === (+del.id) ){
+              let next = links[index + 1] || links [index - 1];
+              cur = next ? next.type+next.item.id : cur;
+              return true;
+            }
+          });
+        }
+        let tmp = {type: cur.replace(/[^a-zA-z]+/ig, ''), id: cur.replace(/[^0-9]/ig, '')};
+        if(tmp.type==='plans') {
+          this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
+        }
         return cur;
       }
     }
@@ -72,20 +75,20 @@
 </script>
 
 <style>
-  .tabs {height: 100%;}
-  .tabs .el-tabs__header {margin: 0;}
-  .tabs .el-tabs__content {height: calc(100% - 41px);}
+  .tabs { height: 100%; }
+  .tabs .el-tabs__header { margin: 0; }
+  .tabs .el-tabs__content { height: calc(100% - 41px); }
   .tabs .tab-item {
     padding: 5px;
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
   }
   .tabs .wrapper {
-    height: 100%;
-    overflow-y: auto;
+    width: 100%;
+    min-height: 100%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
