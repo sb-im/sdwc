@@ -29,15 +29,13 @@
         </li>
         <li class="edit-item d-f">
           <img src="../../../assets/images/task/t_file.svg"/>航点任务文件：
-          <div class="btns">
-            <el-button class="d-b" type="primary" icon="el-icon-download">下载文件</el-button>
-            <el-upload action="#" class="d-b">
-              <el-button type="primary" icon="el-icon-upload">重新上传</el-button>
-            </el-upload>
-          </div>
+          <el-button type="primary" icon="el-icon-download">下载文件</el-button>
+          <el-upload action="#">
+            <el-button type="primary" icon="el-icon-upload">重新上传</el-button>
+          </el-upload>
         </li>
       </el-col>
-      <el-col>
+      <el-col >
         <div class="upload text-c">
 
         </div>
@@ -64,7 +62,7 @@
     },
     methods: {
       backEvent(){
-        this.$store.commit('taskLink','view');
+        this.$store.commit('planLink','view');
       }
     }
   }
@@ -100,9 +98,7 @@
     width: 30px;
     height: 30px;
   }
-  .edit-item .btns > button{
-    margin-bottom: 10px;
-  }
+  .edit-item > button{margin-right: 15px;}
 
   .upload {
     width: 440px;
