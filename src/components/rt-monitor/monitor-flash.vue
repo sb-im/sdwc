@@ -31,7 +31,6 @@
           flash: { hls: { withCredentials: false } },
           html5: { hls: { withCredentials: false } },
           live: true,
-          autoplay: true,
           sources: [{
             type: 'rtmp/mp4',
             src: 'rtmp://api.sb.im:1935/live/outdoor'
@@ -57,26 +56,6 @@
       // record current time
       onTimeupdate(e) {
         console.log('currentTime', e.cache_.currentTime)
-      },
-      // listen event
-      onPlayerPlay(player) {
-        // console.log('player play!', player)
-      },
-      onPlayerPause(player) {
-        // console.log('player pause!', player)
-      },
-      // ...player event
-
-      // or listen state event
-      playerStateChanged(playerCurrentState) {
-        // console.log('player current update state', playerCurrentState)
-      },
-
-      // player is ready
-      playerReadied(player) {
-        console.log('the player is readied', player)
-        // you can use it to do something...
-        // player.[methods]
       }
     }
   }
