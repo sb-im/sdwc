@@ -13,6 +13,7 @@ import Hls from 'hls.js'
     props: {
       source: {
         type: String,
+        required: true,
         default: 'https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8'
       }
     },
