@@ -98,24 +98,23 @@
       },
       postLogin(api_url) {
         this.$http.post(api_url, {
-        client_id: this.$store.state.config.client_id,
-        client_secret: this.$store.state.config.client_secret,
-        username: this.ruleForm.username,
-        password: this.ruleForm.password,
-        //username: 'sb@sb.im',
-        //password: '123456',
-        grant_type: 'password'
-      })
+          client_id: this.$store.state.config.client_id,
+          client_secret: this.$store.state.config.client_secret,
+          username: this.ruleForm.username,
+          password: this.ruleForm.password,
+          //username: 'sb@sb.im',
+          //password: '123456',
+          grant_type: 'password'
+        })
         .then((response) => {
           if (response.data.access_token) {
-            //console.log(response.data.token_type + ' ' + response.data.access_token)
             this.$http.create().defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token
             this.$router.push('app')
           }
         })
         .catch((error) => {
           console.log(error)
-        })
+        });
       }
 
     }
