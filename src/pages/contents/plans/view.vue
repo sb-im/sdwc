@@ -3,33 +3,44 @@
     <el-header class="header font-24">
       <img src="../../../assets/images/task/t_view.svg"/>查看任务
       <div class="f-r font-16">
+        <el-button @click.prevent="addTask" type="primary" icon="el-icon-plus">新建任务</el-button>
         <el-button @click.prevent="editTask" type="warning" icon="el-icon-edit">修改任务</el-button>
         <el-button type="danger" icon="el-icon-check">立即执行</el-button>
       </div>
     </el-header>
     <el-row type="flex" class="infos" tag="section">
-      <el-col>
-        <el-col :span="10" tag="ul">
-          <li class="info-title"><img src="../../../assets/images/task/t_info.svg"/>任务名称：</li>
-          <li class="info-title">任务描述：</li>
-          <li class="info-title interval"><img src="../../../assets/images/task/t_time.svg"/>创建时间：</li>
-          <li class="info-title"><img src="../../../assets/images/task/t_frequency.svg"/>执行频次：</li>
-          <li class="info-title"><img src="../../../assets/images/task/t_first.svg"/>首次执行时间：</li>
-          <li class="info-title"><img src="../../../assets/images/task/t_file.svg"/>航点任务文件：</li>
-        </el-col>
-        <el-col :span="14" tag="ul">
-          <li class="info-text">安防例行巡检</li>
-          <li class="info-text">检查厂区有无安全隐患。</li>
-          <li class="info-text interval">2018/11/1   11:21</li>
-          <li class="info-text">每周</li>
-          <li class="info-text">2018/7/27  12:00:53</li>
-          <li class="info-text"><el-button type="primary" icon="el-icon-download">下载</el-button></li>
-        </el-col>
+      <el-col tag="ul">
+        <li class="info-item d-f">
+          <p class="label"><img src="../../../assets/images/task/t_info.svg"/>任务名称：</p>
+          <p class="text">{{ $store.state.planInfo.name }}</p>
+        </li>
+        <li class="info-item d-f des">
+          <p class="label">任务描述：</p>
+          <p class="text">{{ $store.state.planInfo.description?$store.state.planInfo.description:'暂无任务描述' }}</p>
+        </li>
+        <li class="info-item d-f">
+          <p class="label"><img src="../../../assets/images/task/t_time.svg"/>创建时间：</p>
+          <p class="text">{{ timeDeal($store.state.planInfo.created_at) }}</p>
+        </li>
+        <li class="info-item d-f">
+          <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>执行频次：</p>
+          <p class="text">{{ cycleTypes($store.state.planInfo.cycle_types_id) }}</p>
+        </li>
+        <li class="info-item d-f">
+          <p class="label"><img src="../../../assets/images/task/t_first.svg"/>首次执行时间：</p>
+          <p class="text">{{ $store.state.planInfo.start_time?timeDeal($store.state.planInfo.start_time):'尚未执行' }}</p>
+        </li>
+        <li class="info-item d-f file">
+          <p class="label"><img src="../../../assets/images/task/t_file.svg"/>航点任务文件：</p>
+          <p class="text">
+            <a :href='downloadPath($store.state.planInfo.map_path)' download class="el-button el-button--primary">
+              <i class="el-icon-download"></i><span>下载航点任务文件</span>
+            </a>
+          </p>
+        </li>
       </el-col>
-      <el-col>
-        <div class="maps">
-          <img src="../../../assets/images/task/test.png" alt=""/>
-        </div>
+      <el-col class="maps text-r">
+        <img src="../../../assets/images/task/test.png" alt=""/>
       </el-col>
     </el-row>
 
@@ -37,8 +48,9 @@
       <img src="../../../assets/images/task/t_history.svg"/>任务执行历史
     </el-header>
     <el-table
-      :data="tableTest"
+      :data="$store.state.planLogs"
       :cell-style="cells"
+      empty-text="'暂无相关数据'"
       :header-row-style="{'font-size':'18px'}"
       :header-cell-style="hCells">
       <el-table-column align="center" prop="time" label="执行时间"></el-table-column>
@@ -63,7 +75,6 @@
         </template>
       </el-table-column>
     </el-table>
-
     <section class="flip-mask d-n pos-f" tag="section">
       <section class="flip-wrapper d-ib va-m over-h text-l">
         <h4 class="pos-r title">飞行前检查<a class="pos-a close el-icon-close" href="javascript:;"></a></h4>
@@ -105,16 +116,7 @@
   export default {
     data() {
       return {
-        activeIndex:'1',
-        tableTest:[
-          {time:'2018/11/7  12:00:53'},
-          {time:'2018/11/7  12:00:53'},
-          {time:'2018/11/7  12:00:53'},
-          {time:'2018/11/7  12:00:53'},
-          {time:'2018/11/7  12:00:53'},
-          {time:'2018/11/7  12:00:53'},
-          {time:'2018/11/7  12:00:53'}
-        ]
+
       }
     },
     methods: {
@@ -125,7 +127,40 @@
         return 'font-weight:normal;' + (cells.columnIndex === 3 ? 'border-left: 1px solid #e4eaef;' : '');
       },
       editTask(){
-        this.$store.commit('taskLink','edit')
+        this.$store.commit('planLink','edit')
+      },
+      addTask(){
+        this.$store.commit('planLink','add');
+      },
+      timeDeal(time) {
+        return this.$utils.timeFomart('YYYY/MM/DD hh:mm:ss',Date.parse(time));
+      },
+      cycleTypes(id) {
+        switch(+id){
+          case 1:return '一次';
+          case 2:return '每小时';
+          case 3:return '每天';
+          case 4:return '每周';
+          case 5:return '每月';
+        }
+      },
+      downloadPath(path) {
+       /* this.$http.get(this.$store.state.config.server+path,{
+            headers: {
+              'Content-type': 'application/octet-stream'
+            }
+          })
+          .then(res => {
+            console.log(res)
+            if (res.status === 200) {
+              /!*context.commit('planInfo',res.data);
+              context.dispatch('getPlanLogs',{_this: arg._this, id: res.data.id});*!/
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });*/
+        return this.$store.state.config.server+path;
       }
     }
   }
@@ -146,18 +181,21 @@
     padding: 10px 10px 10px 5px;
     border-bottom: 1px solid #e4eaef;
   }
-
-  .info-text,
-  .info-title {
+  .info-item {
+    min-height: 30px;
+    line-height: 30px;
+    padding: 8px 0;
+  }
+  .info-item .label {
     position: relative;
-    height: 50px;
-    line-height: 50px;
-  }
-  .info-title {
     padding-left: 40px;
+    width: 32%;
     white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
   }
-  .info-title img {
+  .info-item .label img {
     position: absolute;
     top: 50%;
     left: 0;
@@ -169,15 +207,16 @@
     width: 30px;
     height: 30px;
   }
-
-  .infos .maps {
-    width: 440px;
+  .info-item.des .text{min-height: 60px;}
+  .info-item.file{
+    height: 40px;
+    line-height: 40px;
+  }
+  .info-item .text {width: 68%;}
+  .infos .maps img {
+    width: auto;
     height: 320px;
     border-radius: 10px;
-  }
-  .infos .maps img {
-    width: 100%;
-    height: 100%;
   }
   .flip-mask {
     z-index: 9999;
