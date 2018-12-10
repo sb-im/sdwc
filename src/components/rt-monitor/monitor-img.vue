@@ -2,10 +2,7 @@
   <img :src="source" />
 </template>
 
-
-
 <script>
-
   export default {
     data() {
       return {}
@@ -13,12 +10,9 @@
     props: {
       source: {
         type: String,
-        default: 'vertical'
+        required: true,
+        default: ''
       }
     }
-
-
   }
-
-
 </script>
