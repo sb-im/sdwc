@@ -1,19 +1,22 @@
 <template>
-  <video ref="vvv"></video>
+  <video ref="video"></video>
 </template>
 
 
 
 <script>
-import flvjs from 'flv.js'
+  import flvjs from 'flv.js'
 
   export default {
     data() {
-      return {}
+      return {
+        flvPlayer: null
+      }
     },
     props: {
       source: {
         type: String,
+        required: true,
         default: 'http://127.0.0.1:7001/live/movie.flv'
       }
     },
@@ -26,37 +29,32 @@ import flvjs from 'flv.js'
     methods: {
       play() {
         if (flvjs.isSupported()) {
-          console.log(this)
-          //var videoElement = document.getElementById('videoElement');
-          var videoElement = this.$refs.vvv
-          var flvPlayer = flvjs.createPlayer({
-            type: 'flv',
-            isLive: true,
-            hasAudio: false,
-            hasVideo: true,
-            url: this.source
-          }, {
-            enableWorker: true,
-            enableStashBuffer: false,
-            stashInitialSize: 128,// 减少首桢显示等待时长
-          });
-          flvPlayer.attachMediaElement(videoElement);
+          let videoEl = this.$refs.video,
+            flvPlayer = flvjs.createPlayer({
+              type: 'flv',
+              isLive: true,
+              hasAudio: false,
+              hasVideo: true,
+              url: this.source
+            }, {
+              enableWorker: true,
+              enableStashBuffer: false,
+              stashInitialSize: 128,// 减少首桢显示等待时长
+            });
+          flvPlayer.attachMediaElement(videoEl);
           flvPlayer.load();
           flvPlayer.play();
-          this.flvPlayer = flvPlayer
+          this.flvPlayer = flvPlayer;
         }
       },
       flv_destroy() {
-        var player = this.flvPlayer
+        var player = this.flvPlayer;
         player.pause();
         player.unload();
         player.detachMediaElement();
         player.destroy();
-        player = null;
+        this.flvPlayer = player = null;
       }
     }
-
   }
-
-
 </script>
