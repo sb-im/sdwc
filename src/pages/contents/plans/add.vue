@@ -60,7 +60,7 @@
     },
     methods: {
       backEvent(){
-        this.$store.commit('taskLink','view');
+        this.$store.commit('planLink','view');
       }
     }
   }
