@@ -7,32 +7,41 @@
       @open="menuOpen"
       background-color="#545c64"
       text-color="#ccc">
-      <el-menu-item index="task" class="menu-item">
-        <img src="../../assets/images/aside/task.svg"/><span class="font-18">任务管理</span>
-      </el-menu-item>
-      <el-submenu index="air">
+      <el-submenu index="plans">
         <template slot="title">
-          <img src="../../assets/images/aside/airport.svg"/><span class="font-18">机场</span>
+          <img src="../../assets/images/aside/task.svg"/><span class="font-16">任务管理</span>
         </template>
         <el-menu-item
           class="menu-item"
-          v-for="(val,index) in nodes"
+          v-for="(val,index) in plans"
           :key="index"
-          v-if="val.type_name==='air'"
-          :index="val.id+''">
+          :index="'plans'+val.id">
           {{ val.name }}
         </el-menu-item>
       </el-submenu>
       <el-submenu index="depot">
         <template slot="title">
-          <img src="../../assets/images/aside/drone.svg"/><span class="font-18">无人机</span>
+          <img src="../../assets/images/aside/airport.svg"/><span class="font-16">机场</span>
         </template>
         <el-menu-item
           class="menu-item"
           v-for="(val,index) in nodes"
           :key="index"
           v-if="val.type_name==='depot'"
-          :index="val.id+''">
+          :index="'depot'+val.id">
+          {{ val.name }}
+        </el-menu-item>
+      </el-submenu>
+      <el-submenu index="air">
+        <template slot="title">
+          <img src="../../assets/images/aside/drone.svg"/><span class="font-16">无人机</span>
+        </template>
+        <el-menu-item
+          class="menu-item"
+          v-for="(val,index) in nodes"
+          :key="index"
+          v-if="val.type_name==='air'"
+          :index="'air'+val.id">
           {{ val.name }}
         </el-menu-item>
       </el-submenu>
@@ -51,41 +60,55 @@
       nodes: {
         type: Array,
         required: true,
-        default: () => {
-          return [];
-        }
+        default: () => []
+      },
+      plans: {
+        type: Array,
+        required: true,
+        default: () => []
       }
     },
-    mounted(){
+    created() {
 
     },
     methods: {
-      menuSelect(key) {
-        if(key!=='task'){
-          for(let item of this.nodes) {
-            key === (item.id+'') && this.$store.commit('linkAdd',item);
-          }
-        }else this.$store.commit('tabChange',key);
-      },
-      menuOpen(key) {
-        switch (key) {
-          case 'air':this.openFirst('air');break;
-          case 'depot':this.openFirst('depot');break;
+      menuSelect(key,keyPath) {
+        let id = key.replace(/[^0-9]/ig,'');
+        for(let item of (keyPath[0]!=='plans'?this.nodes:this.plans)) {
+          id === (item.id+'') && this.$store.commit('linkAdd',{item, type: keyPath[0]});
+        }
+        if (keyPath[0]==='plans') {
+          this.$store.dispatch('getPlanInfo', {_this:this,id});
         }
       },
-      /**
-       * 菜单打开时(此项菜单下无子项打开)，默认打开此项菜单下的第一个子项
-       * @param type   类型(air/depot)，须与nodes.json里面的type_name匹配
-       */
-      openFirst(type) {
-        for (let item of this.nodes) {
-          if (item.type_name===type) {
-            this.$store.state.links.findIndex(val => {
-              return (+val.id) === (+item.id);
-            }) === -1 && this.$store.commit('linkAdd',item);
+      // 打开菜单时(此菜单无子项打开时)，默认显示第一项子项
+      menuOpen(key) {
+        for(let item of (key!=='plans'?this.nodes:this.plans)) {
+          if (key === item.type_name) {
+            this.tabsAdd(key,item);
+            return true;
+          } else if (!item.type_name) {
+            this.tabsAdd(key,item,()=>{
+              this.$store.dispatch('getPlanInfo', {_this:this,id:item.id});
+            });
             return true;
           }
         }
+      },
+      /**
+       * 添加并激活对应Tabs
+       * @param key   页面类型
+       * @param item  对应数据
+       * @param callback  回调
+       */
+      tabsAdd(key,item,callback) {
+        // 先判断类型，若不存在对应类型则直接添加，若存在则继续判断是否有相同id存在，不存在则添加
+        this.$store.state.links.findIndex(val => val.type === key) === -1 ?
+          this.$store.commit('linkAdd', {item, type: key}) :
+            (this.$store.state.links.findIndex(val => {
+              return val.type === key && (+val.item.id) === (+item.id);
+            }) === -1 && this.$store.commit('linkAdd', {item, type: key}));
+        callback && callback();
       }
     }
   }
@@ -101,10 +124,11 @@
   }
   .aside .menu {border-right: 0;}
   .aside .menu img {
-    width: 30px;
-    height: 30px;
-    padding-right: 10px;
+    width: 25px;
+    height: 25px;
+    padding-right: 8px;
   }
+
   .aside .menu .menu-item {
     min-width: 0;
     border-top: 1px solid transparent;
