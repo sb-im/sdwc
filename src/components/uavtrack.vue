@@ -19,7 +19,7 @@
     props: {
       commands: {
         type: Array,
-        default: Array
+        default: () => {}
       }
     },
     mounted () {
