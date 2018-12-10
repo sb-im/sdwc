@@ -1,21 +1,16 @@
 <template>
-  <div v-if="video.video_type_name=='img'">
-    <monitor-img :source="video.address"></monitor-img>
-  </div>
-  <div v-else-if="video.video_type_name=='flv'">
-    <monitor-flv :source="video.address"></monitor-flv>
-  </div>
-  <div v-else-if="video.video_type_name=='hls'">
-    <monitor-hls :source="video.address"></monitor-hls>
-  </div>
-  <div v-else>
-    <h1>404 not find type</h1>
-  </div>
+  <monitor-img v-if="video.point_type_name==='livestream_img'" :source="video.name"></monitor-img>
+  <monitor-flv v-else-if="video.point_type_name==='livestream_flv'" :source="video.name"></monitor-flv>
+  <monitor-hls v-else-if="video.point_type_name==='livestream_hls'" :source="video.name"></monitor-hls>
+  <monitor-flash v-else-if="video.point_type_name==='livestream_flash'" :source="video.name"></monitor-flash>
+  <monitor-iframe v-else-if="video.point_type_name==='iframe'" :source="video.name"></monitor-iframe>
 </template>
 <script>
-import MonitorImg from './monitor-img.vue'
-import MonitorFlv from './monitor-flv.vue'
-import MonitorHls from './monitor-hls.vue'
+import MonitorImg from './monitor-img'
+import MonitorFlv from './monitor-flv'
+import MonitorHls from './monitor-hls'
+import MonitorFlash from './monitor-flash'
+import MonitorIframe from './monitor-iframe'
 
 
   export default {
@@ -25,13 +20,19 @@ import MonitorHls from './monitor-hls.vue'
     props: {
       video: {
         type: Object,
-        default: Object
+        required: true,
+        default: () => {}
       }
     },
     components: {
       'monitor-img': MonitorImg,
       'monitor-flv': MonitorFlv,
-      'monitor-hls': MonitorHls
+      'monitor-hls': MonitorHls,
+      'monitor-flash': MonitorFlash,
+      'monitor-iframe': MonitorIframe
+    },
+    created() {
+      console.log(this.video)
     }
   }
 </script>
