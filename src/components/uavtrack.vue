@@ -1,85 +1,72 @@
 <template>
-  <div id="map"></div>
+  <div class="map" ref="map">
+
+  </div>
 </template>
 <script>
 
   export default {
     data() {
       return {
-        map: Object,
-        flightPath:  [
-          {lat: 22.68724, lng: 113.968639},
-          {lat: 22.6876402, lng: 114.2248700},
-          {lat: 22.533503, lng: 114.01262},
-          {lat: 22.748313, lng: 114.140157},
-          {lat: 22.533503, lng: 114.11262}
-        ]
+
       }
     },
     props: {
-      commands: {
-        type: Array,
-        default: () => {}
+      flight: {
+        type: Array|Object,
+        required: true,
+        default: () => []
       }
     },
     mounted () {
-      this.getGmap()
+      this.getGmap();
     },
     methods: {
       getGmap() {
-
         // Reverse proxy corss GWF in China
-        let url = "https://ditu.gdgdocs.org/maps/api/js"
-
+        let url = "https://ditu.gdgdocs.org/maps/api/js";
         // Google official map API
         //let url = "https://maps.googleapis.com/maps/api/js"
-
         // Google China official map API
         //let url = "https://ditu.google.cn/maps/api/js"
-
         //let YOUR_API_KEY = ""
         //this.$jsonp(url, { key: YOUR_API_KEY }).then(json => {
-        this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(() => {
-
-          this.initMap()
-          this.drawPath()
-          // Success.
-        }).catch(err => {
-          console.log(err)
-        })
+        if (typeof google === 'undefined') {
+          this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(() => {
+            this.initMap(this.flight[0]);
+          }).catch(err => {
+            console.log(err);
+          });
+        } else this.initMap(this.flight[0]);
       },
-      initMap(point = {lat: 22.6876402, lng: 114.2248700}) {
-        this.map = new google.maps.Map(document.getElementById('map'), {
+      initMap(point) {
+        this.drawPath(new google.maps.Map(this.$refs.map, {
           zoom: 20,
           center: point,
           mapTypeId: 'terrain'
-        })
+        }));
       },
-      drawPath(point = {lat: 22.68724, lng: 113.968639}) {
-        this.flightPath.push(point)
-
-        var flightPath = new google.maps.Polyline({
-          path: this.flightPath,
+      drawPath(map) {
+        let flightPath = new google.maps.Polyline({
+          path: this.flight,
           geodesic: true,
-          strokeColor: '#FF0000',
+          strokeColor: '#ff0000',
           strokeOpacity: 1.0,
           strokeWeight: 2
-        })
-
-        flightPath.setMap(this.map)
+        });
+        flightPath.setMap(map);
       },
       clearPath() {
-        this.flightPath = []
+        this.flight = [];
       }
-
     }
   }
 </script>
 
 
 <style>
-#map {
-  width: 800px;
-  height: 600px;
-}
+  .map{
+    width: 100%;
+    height: 100%;
+  }
 </style>
