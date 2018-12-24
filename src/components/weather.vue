@@ -1,5 +1,37 @@
 <template>
-  <fieldset>
+  <section class="w-info">
+    <i class="status d-b el-icon-success"></i>
+    <div class="items d-f">
+      <p>天气{{ $store.state.cyRealtime?$store.state.cyRealtime.comfort.desc:'----' }}</p>
+      <p>{{ $store.state.cyRealtime?skycon($store.state.cyRealtime.skycon):'----' }}</p>
+      <p>风速 {{ windSpeed(weather.wind_speed) }}km/h</p>
+    </div>
+    <div class="items d-f">
+      <p>可以起飞</p>
+      <p>气温 {{ tempHumidity(weather.temperature) }}℃</p>
+      <p>湿度 {{ tempHumidity(weather.humidity) }}%</p>
+    </div>
+    <div class="chart">
+      <p>{{ $store.state.cyForecast?$store.state.cyForecast.forecast_keypoint:'----' }}</p>
+      <div class="chart-view">
+        <canvas class="chart-canvas" width="340" height="105"></canvas>
+        <ul class="inner-labels">
+          <li><span class="text">大雨</span></li>
+          <li><span class="text">中雨</span></li>
+          <li><span class="text">小雨</span></li>
+        </ul>
+        <ul class="labels">
+          <li><span class="text">现在</span></li>
+          <li></li>
+          <li></li>
+          <li><span class="text">30分钟</span></li>
+          <li></li>
+          <li><span class="text">60分钟</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <!--<fieldset>
     <legend>实时天气状态</legend>
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
@@ -39,44 +71,135 @@
         </ul>
       </el-col>
     </el-row>
-
-  </fieldset>
+  </fieldset>-->
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      intervalID: '',
-      weather: {}
-    }
-  },
-  props: {
-    url: {
-      type: String,
-      default: "https://weather.sb.im/get"
+  export default {
+    data () {
+      return {
+        cyWeather:{}
+      }
     },
-  },
-  created() {
-    this.intervalID = window.setInterval(this.getData, 1000)
-  },
-  beforeDestroy() {
-    clearInterval(this.intervalID)
-  },
-  methods: {
-    getData() {
-      //let url = location.protocol + "//" + location.host + "/get"
-      //console.log(url)
-      this.$http.get(this.url)
-      .then((response) => {
-        this.weather =  response.data[0]
-        this.weather.date = new Date(Number(this.weather.timestamp))
-        //console.log(response.data[0].wind_direction_AD)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    props: {
+      weather: {
+        type: Object,
+        required: true,
+        default: () => {}
+      },
+    },
+    mounted() {
+      // this.getWeaInfo();
+    },
+    methods: {
+      // 风速
+      windSpeed(val) {
+        return val?parseInt(val)/10*3600/1000:'...';
+      },
+      // 气温/湿度
+      tempHumidity(val) {
+        return val?parseInt(val)/10:'...';
+      },
+      // 天气
+      skycon(val) {
+        switch (val) {
+          case 'CLEAR_DAY':return '晴天';
+          case 'CLEAR_NIGHT':return '晴夜';
+          case 'PARTLY_CLOUDY_DAY':return '多云';
+          case 'PARTLY_CLOUDY_NIGHT':return '多云';
+          case 'CLOUDY':return '阴';
+          case 'RAIN':return '雨';
+          case 'SNOW':return '雪';
+          case 'WIND':return '风';
+          case 'HAZE':return '雾霾沙尘';
+        }
+      }
     }
   }
-}
 </script>
+
+<style>
+  .w-info {padding-left: 15px;}
+  .w-info .status {
+    color: #42a847;
+    font-size: 68px;
+    margin: 15px 0;
+  }
+  .w-info .items {margin: 10px 0;}
+  .w-info .items p {width: calc(100% / 3);}
+  .w-info .chart {margin-top: 20px;}
+  .w-info .chart-view {
+    position: relative;
+    width: 340px;
+    height: 105px;
+    margin: 12px 0 35px;
+  }
+  .w-info .chart-view .chart-canvas {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    border-right: 1px dashed rgba(0, 0, 0, .25);
+  }
+  .w-info .chart-view .labels {
+    position: absolute;
+    display: flex;
+    z-index: 6;
+    height: 4px;
+    bottom: -4px;
+    right: -.2%;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 0;
+    border-top: 2px solid #999;
+  }
+  .w-info .chart-view .labels > li {
+    position: relative;
+    width: calc(100% / 6);
+    height: 100%;
+    padding: 1px;
+    border-right: 1px solid #999;
+    border-left: 1px solid #999;
+    border-radius: 0px;
+  }
+  .w-info .chart-view .labels .text {
+    position: absolute;
+    width: 50px;
+    left: -27px;
+    top: 16px;
+    text-align: center;
+    color: #121212;
+    opacity: 0.9;
+    font-size: 12px;
+  }
+  .w-info .chart-view .labels > li:last-child .text {
+    left: auto;
+    right: -27px;
+  }
+  .w-info .chart-view .inner-labels {
+    position: absolute;
+    z-index: 7;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    line-height: 0;
+  }
+  .w-info .chart-view .inner-labels > li {
+    border-top: 1px solid rgba(3, 3, 3, 0.1);
+    height: calc(100% / 3);
+    width: 100%;
+  }
+  .w-info .chart-view .inner-labels > li:first-child {border-top: 0;}
+  .w-info .chart-view .inner-labels .text {
+    position: relative;
+    display: inline-block;
+    left: 101%;
+    margin: 15px 0 0 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #121212;
+    text-align: left;
+  }
+</style>
