@@ -1,7 +1,7 @@
 <template>
   <el-container class="main">
     <sd-header></sd-header>
-    <sd-aside :nodes="nodes" :plans="plans"></sd-aside>
+    <sd-aside></sd-aside>
     <el-container>
       <el-main class="frame">
         <sd-tabs></sd-tabs>
@@ -22,18 +22,6 @@
     data() {
       return {
 
-      }
-    },
-    props:{
-      nodes: {
-        type: Array,
-        required: true,
-        default: () => []
-      },
-      plans: {
-        type: Array,
-        required: true,
-        default: () => []
       }
     },
     created(){
