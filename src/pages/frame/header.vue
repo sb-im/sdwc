@@ -33,8 +33,7 @@
       }
     },
     methods: {
-      navSelect(key, keyPath) {
-        console.log(key, keyPath);
+      navSelect(key) {
         if(key==='loginout') {
           this.$router.push({ path: '/' });
         }
