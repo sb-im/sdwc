@@ -13,7 +13,7 @@
         </template>
         <el-menu-item
           class="menu-item"
-          v-for="(val,index) in plans"
+          v-for="(val,index) in $store.state.plans"
           :key="index"
           :index="'plans'+val.id">
           {{ val.name }}
@@ -25,7 +25,7 @@
         </template>
         <el-menu-item
           class="menu-item"
-          v-for="(val,index) in nodes"
+          v-for="(val,index) in $store.state.nodes"
           :key="index"
           v-if="val.type_name==='depot'"
           :index="'depot'+val.id">
@@ -38,7 +38,7 @@
         </template>
         <el-menu-item
           class="menu-item"
-          v-for="(val,index) in nodes"
+          v-for="(val,index) in $store.state.nodes"
           :key="index"
           v-if="val.type_name==='air'"
           :index="'air'+val.id">
@@ -56,38 +56,41 @@
 
       }
     },
-    props: {
-      nodes: {
-        type: Array,
-        required: true,
-        default: () => []
-      },
-      plans: {
-        type: Array,
-        required: true,
-        default: () => []
-      }
-    },
     created() {
 
     },
     methods: {
       menuSelect(key,keyPath) {
         let id = key.replace(/[^0-9]/ig,'');
-        for(let item of (keyPath[0]!=='plans'?this.nodes:this.plans)) {
+        for(let item of (keyPath[0]!=='plans'?this.$store.state.nodes:this.$store.state.plans)) {
           id === (item.id+'') && this.$store.commit('linkAdd',{item, type: keyPath[0]});
         }
-        if (keyPath[0]==='plans') {
+        if (keyPath[0] === 'plans') {
+          this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id});
+        } else {
+          this.$store.dispatch('getStatusLive', {_this:this,id,type:keyPath[0]});
+          if (keyPath[0] === 'air') {
+            this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
+          } else {
+            this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+          }
         }
       },
       // 打开菜单时(此菜单无子项打开时)，默认显示第一项子项
       menuOpen(key) {
-        for(let item of (key!=='plans'?this.nodes:this.plans)) {
+        for(let item of (key!=='plans'?this.$store.state.nodes:this.$store.state.plans)) {
           if (key === item.type_name) {
             this.tabsAdd(key,item);
+            this.$store.dispatch('getStatusLive', {_this:this,id:item.id,type:key});
+            if (key === 'air') {
+              this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
+            } else if (key === 'depot') {
+              this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+            }
             return true;
-          } else if (!item.type_name) {
+          } else if (!item.type_name){
+            this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
             this.tabsAdd(key,item,()=>{
               this.$store.dispatch('getPlanInfo', {_this:this,id:item.id});
             });
