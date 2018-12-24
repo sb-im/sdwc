@@ -21,16 +21,14 @@
     "hls.js": "^0.8.9",
     "less": "^3.9.0",
     "nw-builder": "^3.5.1",
+    "papaparse": "^4.6.2",
+    "qs": "^6.6.0",
     "uglifyjs-webpack-plugin": "^1.2.2",
-    "videojs-contrib-hls": "^5.15.0",
-    "videojs-contrib-hls.js": "^3.2.0",
-    "videojs-flash": "^2.1.2",
     "vue": "^2.5.11",
     "vue-i18n": "^7.4.2",
     "vue-jsonp": "^0.1.7",
     "vue-lbgv": "^0.1.0",
     "vue-router": "^3.0.1",
-    "vue-video-player": "^5.0.2",
     "vuex": "^3.0.1"
   },
   "browserslist": [
