@@ -5,7 +5,7 @@
       <div class="f-r font-16">
         <el-button @click.prevent="addTask" type="primary" icon="el-icon-plus">新建任务</el-button>
         <el-button @click.prevent="editTask" type="warning" icon="el-icon-edit">修改任务</el-button>
-        <el-button type="danger" icon="el-icon-check">立即执行</el-button>
+        <el-button @click.prevent="flyCheck" type="danger" icon="el-icon-refresh">立即执行</el-button>
       </div>
     </el-header>
     <el-row type="flex" class="infos" tag="section">
@@ -23,24 +23,34 @@
           <p class="text">{{ timeDeal($store.state.planInfo.created_at) }}</p>
         </li>
         <li class="info-item d-f">
+          <p class="label"><img src="../../../assets/images/task/t_drone.svg"/>执飞无人机：</p>
+          <p class="text">{{ airDepot($store.state.planInfo.node_id,'air') }}</p>
+        </li>
+        <li class="info-item d-f">
+          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>起降机场：</p>
+          <p class="text">{{ airDepot($store.state.planInfo.node_id,'depot') }}</p>
+        </li>
+        <li class="info-item d-f">
           <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>执行频次：</p>
           <p class="text">{{ cycleTypes($store.state.planInfo.cycle_types_id) }}</p>
         </li>
         <li class="info-item d-f">
           <p class="label"><img src="../../../assets/images/task/t_first.svg"/>首次执行时间：</p>
-          <p class="text">{{ $store.state.planInfo.start_time?timeDeal($store.state.planInfo.start_time):'尚未执行' }}</p>
+          <p class="text">{{ $store.state.planInfo.start_time?timeDeal($store.state.planInfo.start_time):'暂无' }}</p>
         </li>
         <li class="info-item d-f file">
           <p class="label"><img src="../../../assets/images/task/t_file.svg"/>航点任务文件：</p>
           <p class="text">
-            <a :href='downloadPath($store.state.planInfo.map_path)' download class="el-button el-button--primary">
-              <i class="el-icon-download"></i><span>下载航点任务文件</span>
+            <a :href="$store.state.planInfo.map_path?$store.state.config.server+$store.state.planInfo.map_path:'javascript:;'" download class="el-button el-button--primary">
+              <i class="el-icon-download"></i><span>下载</span>
             </a>
           </p>
         </li>
       </el-col>
-      <el-col class="maps text-r">
-        <img src="../../../assets/images/task/test.png" alt=""/>
+      <el-col class="maps clear">
+        <div class="f-r way-box">
+          <uactrack v-if="$store.state.planMap.length!==0" :flight="$store.state.planMap"></uactrack>
+        </div>
       </el-col>
     </el-row>
 
@@ -50,34 +60,38 @@
     <el-table
       :data="$store.state.planLogs"
       :cell-style="cells"
-      empty-text="'暂无相关数据'"
+      empty-text="暂无相关数据"
       :header-row-style="{'font-size':'18px'}"
       :header-cell-style="hCells">
-      <el-table-column align="center" prop="time" label="执行时间"></el-table-column>
+      <el-table-column align="center" prop="created_at" label="执行时间"></el-table-column>
       <el-table-column align="center" label="原始数据">
         <template slot-scope="scope">
-          <el-button class="font-16" type="primary">查看</el-button>
+          <a href="javascript:;" class="font-16 el-button el-button--primary">查看</a>
         </template>
       </el-table-column>
       <el-table-column align="center" label="自动处理结果">
         <template slot-scope="scope">
-          <el-button class="font-16" type="primary">查看</el-button>
+          <a :href="scope.row.orthomosaic_path?$store.state.config.server+scope.row.orthomosaic_path:'javascript:;'" target="_blank" class="font-16 el-button el-button--primary">查看</a>
         </template>
       </el-table-column>
       <el-table-column align="center" border label="飞行日志">
         <template slot-scope="scope">
-          <el-button class="font-16">查看</el-button>
+          <a :href="scope.row.air_log_path?$store.state.config.server+scope.row.air_log_path:'javascript:;'" download class="el-button">
+            <i class="el-icon-download"></i><span>下载</span>
+          </a>
         </template>
       </el-table-column>
       <el-table-column align="center" label="服务器日志">
         <template slot-scope="scope">
-          <el-button class="font-16" icon="el-icon-download">下载</el-button>
+          <a href="javascript:;" download class="el-button">
+            <i class="el-icon-download"></i><span>下载</span>
+          </a>
         </template>
       </el-table-column>
     </el-table>
-    <section class="flip-mask d-n pos-f" tag="section">
+    <section v-if="showCheck" class="flip-mask pos-f">
       <section class="flip-wrapper d-ib va-m over-h text-l">
-        <h4 class="pos-r title">飞行前检查<a class="pos-a close el-icon-close" href="javascript:;"></a></h4>
+        <h4 class="pos-r title">飞行前检查<a class="pos-a close el-icon-close" @click.prevent="cancelRunPlan" href="javascript:;"></a></h4>
         <div class="content">
           <div class="head text-c">
             <img src="../../../assets/images/task/t_flip_check.svg"/>
@@ -102,8 +116,8 @@
           <div class="foot">
             <p class="status text-c"><i class="icon el-icon-circle-check"></i>可以起飞</p>
             <div class="foot-btns clear">
-              <el-button class="f-l" type="danger">立即启动</el-button>
-              <el-button class="f-r">取消</el-button>
+              <el-button class="f-l" @click.prevent="runPlan" type="danger">立即启动</el-button>
+              <el-button class="f-r" @click.prevent="cancelRunPlan">取消</el-button>
             </div>
           </div>
         </div>
@@ -113,11 +127,18 @@
 </template>
 
 <script>
+  import uactrack from '../../../components/uavtrack'
   export default {
     data() {
       return {
-
+        showCheck:false
       }
+    },
+    mounted() {
+      console.log(this.$store.state.planLogs)
+    },
+    components: {
+      'uactrack':uactrack
     },
     methods: {
       cells(cells) {
@@ -137,6 +158,7 @@
       },
       cycleTypes(id) {
         switch(+id){
+          case 0:return '手动';
           case 1:return '一次';
           case 2:return '每小时';
           case 3:return '每天';
@@ -144,23 +166,38 @@
           case 5:return '每月';
         }
       },
-      downloadPath(path) {
-       /* this.$http.get(this.$store.state.config.server+path,{
-            headers: {
-              'Content-type': 'application/octet-stream'
-            }
-          })
+      airDepot(id,type) {
+        let name = '';
+        this.$store.state.nodes.forEach(val => {
+          if(val.type_name === type && val.id === id){
+            name = val.name;
+            return true;
+          }
+        });
+        return name!==''?name:'暂无';
+      },
+      // 打开飞行检查
+      flyCheck() {this.showCheck = true;},
+      // 取消执行
+      cancelRunPlan() {this.showCheck = false;},
+      // 确认执行
+      runPlan() {
+        this.$http.get(`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}/plan_logs`)
           .then(res => {
-            console.log(res)
             if (res.status === 200) {
-              /!*context.commit('planInfo',res.data);
-              context.dispatch('getPlanLogs',{_this: arg._this, id: res.data.id});*!/
+              this.showCheck = false;
+              this.$message({
+                message:'当前任务开始执行！',
+                type:'success'
+              });
             }
           })
           .catch(err => {
             console.log(err);
-          });*/
-        return this.$store.state.config.server+path;
+          });
+      },
+      testEv(v) {
+        console.log(v)
       }
     }
   }
@@ -213,10 +250,13 @@
     line-height: 40px;
   }
   .info-item .text {width: 68%;}
-  .infos .maps img {
-    width: auto;
+  .infos .maps .way-box {
+    width: 450px;
     height: 320px;
+    background-color: #eee;
+    border: 1px solid #e4eaef;
     border-radius: 10px;
+    overflow: hidden;
   }
   .flip-mask {
     z-index: 9999;
