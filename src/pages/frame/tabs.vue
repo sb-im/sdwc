@@ -13,7 +13,7 @@
       class="tab-item"
       :name="val.type+val.item.id">
       <sd-plan v-if="val.type==='plans'" v-cloak></sd-plan>
-      <sd-depot v-else-if="val.type==='depot'" v-cloak></sd-depot>
+      <sd-depot v-else-if="val.type==='depot'" :node="val.item" v-cloak></sd-depot>
       <sd-air v-else-if="val.type==='air'" :node="val.item" v-cloak></sd-air>
     </el-tab-pane>
   </el-tabs>
@@ -41,17 +41,22 @@
     methods: {
       tabsClick(component) {
         let tmp = {type: component.name.replace(/[^a-zA-z]+/ig,''), id: component.name.replace(/[^0-9]/ig,'')};
-        if(tmp.type==='plans') {
+        if (tmp.type === 'plans') {
+          this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
+        } else {
+          this.$store.dispatch('getStatusLive', {_this:this,id:tmp.id,type:tmp.type});
+          if (tmp.type === 'air') {
+            this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
+          } else {
+            this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+          }
         }
       },
       tabRemove(index) {
         let tmp = {type: index.replace(/[^a-zA-z]+/ig, ''), id: index.replace(/[^0-9]/ig, '')};
         this.$store.commit('tabChange',this.tabActive(index,this.$store.state.active,this.$store.state.links));
         this.$store.commit("linkDel", tmp);
-        /*if(tmp.type==='plans') {
-          this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
-        }*/
       },
       tabActive(del,cur,links){
         if (del === cur) {
@@ -65,8 +70,16 @@
           });
         }
         let tmp = {type: cur.replace(/[^a-zA-z]+/ig, ''), id: cur.replace(/[^0-9]/ig, '')};
-        if(tmp.type==='plans') {
+        if (tmp.type === 'plans') {
+          this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
+        } else {
+          this.$store.dispatch('getStatusLive', {_this:this,id:tmp.id,type:tmp.type});
+          if (tmp.type === 'air') {
+            this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
+          } else {
+            this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+          }
         }
         return cur;
       }
