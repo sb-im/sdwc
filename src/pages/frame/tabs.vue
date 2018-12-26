@@ -49,7 +49,7 @@
           if (tmp.type === 'air') {
             this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           } else {
-            this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+            this.$store.dispatch('getWeather', this);
           }
         }
       },
@@ -78,7 +78,7 @@
           if (tmp.type === 'air') {
             this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           } else {
-            this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+            this.$store.dispatch('getWeather', this);
           }
         }
         return cur;
