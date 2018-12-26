@@ -2,23 +2,23 @@
   <section class="control">
     <battery :node="node"></battery>
     <el-header class="header font-24">
-      <img src="../../assets/images/airport/a_h_control.svg"/>高级控制
+      <img src="../../assets/images/airport/a_h_control.svg"/>{{ $t('common.advanced_control') }}
     </el-header>
     <el-row type="flex" class="content">
       <el-col tag="ul" class="status">
-        <li class="font-18">状态：</li>
+        <li class="font-18">{{ $t('common.status') }}：</li>
         <li>
           <img src="../../assets/images/airport/a_airport.svg"/>
-          <el-button class="font-16" @click="seeStatus('depot')" type="primary">机场状态</el-button>
+          <el-button class="font-16" @click="seeStatus('depot')" type="primary">{{ $t('common.air_status') }}</el-button>
         </li>
         <li>
           <img src="../../assets/images/airport/a_drone.svg"/>
-          <el-button class="font-16" @click="seeStatus('air')" type="primary">无人机状态</el-button>
+          <el-button class="font-16" @click="seeStatus('air')" type="primary">{{ $t('common.depot_status') }}</el-button>
         </li>
       </el-col>
       <el-col tag="table" class="operate">
         <tr>
-          <td class="font-18">电机运动</td>
+          <td class="font-18">{{ $t('depot.motor_run') }}</td>
           <td class="text-c"><img src="../../assets/images/airport/a_airport.svg"/></td>
           <td class="text-c"><img src="../../assets/images/airport/a_charge.svg"/></td>
           <td class="text-c"><img src="../../assets/images/airport/a_fixed.svg"/></td>
@@ -26,43 +26,43 @@
           <td class="text-c"><img src="../../assets/images/airport/a_reset.svg"/></td>
         </tr>
         <tr class="btns">
-          <td><el-button @click.prevent="doMsission('stop')" class="d-b font-16" type="danger">==急停==</el-button></td>
+          <td><el-button @click.prevent="doMsission('stop')" class="d-b font-16" type="danger">=={{ $t('depot.emergency_stop') }}==</el-button></td>
           <td>
-            <el-button @click.prevent="doMsission('dooropen')" class="d-b font-16" type="warning">打开舱门</el-button>
-            <el-button @click.prevent="doMsission('doorclose')" class="d-b font-16" type="warning">关闭舱门</el-button>
+            <el-button @click.prevent="doMsission('dooropen')" class="d-b font-16" type="warning">{{ $t('depot.open_door') }}</el-button>
+            <el-button @click.prevent="doMsission('doorclose')" class="d-b font-16" type="warning">{{ $t('depot.close_door') }}</el-button>
           </td>
           <td>
-            <el-button @click.prevent="doMsission('power_chargedrone_on')" class="d-b font-16" type="warning">开始充电</el-button>
-            <el-button @click.prevent="doMsission('power_chargedrone_off')" class="d-b font-16" type="warning">停止充电</el-button>
+            <el-button @click.prevent="doMsission('power_chargedrone_on')" class="d-b font-16" type="warning">{{ $t('depot.start_charge') }}</el-button>
+            <el-button @click.prevent="doMsission('power_chargedrone_off')" class="d-b font-16" type="warning">{{ $t('depot.stop_charge') }}</el-button>
           </td>
           <td>
-            <el-button @click.prevent="doMsission('fixdrone')" class="d-b font-16" type="warning">固定无人机</el-button>
-            <el-button @click.prevent="doMsission('freedrone')" class="d-b font-16" type="warning">松开无人机</el-button>
+            <el-button @click.prevent="doMsission('fixdrone')" class="d-b font-16" type="warning">{{ $t('depot.air_fixed') }}</el-button>
+            <el-button @click.prevent="doMsission('freedrone')" class="d-b font-16" type="warning">{{ $t('depot.air_release') }}</el-button>
           </td>
           <td>
-            <el-button @click.prevent="doMsission('pickdronebattery')" class="d-b font-16" type="warning">取下飞机电池</el-button>
-            <el-button @click.prevent="doMsission('mountdronebattery')" class="d-b font-16" type="warning">安装飞机电池</el-button>
+            <el-button @click.prevent="doMsission('pickdronebattery')" class="d-b font-16" type="warning">{{ $t('depot.air_bat_pickout') }}</el-button>
+            <el-button @click.prevent="doMsission('mountdronebattery')" class="d-b font-16" type="warning">{{ $t('depot.air_bat_putin') }}</el-button>
           </td>
-          <td><el-button @click.prevent="doMsission('reset')" class="d-b font-16" type="warning">复位</el-button></td>
+          <td><el-button @click.prevent="doMsission('reset')" class="d-b font-16" type="warning">{{ $t('depot.air_reset') }}</el-button></td>
         </tr>
       </el-col>
     </el-row>
     <section class="logs">
-      <header class="header font-18">日志：</header>
+      <header class="header font-18">{{ $t('common.logs') }}：</header>
       <ul class="logs-content">
         <li v-for="(val,index) in airLogs" :key="index">{{ val }}</li>
         <li v-for="(val,index) in depotLogs" :key="index">{{ val }}</li>
       </ul>
     </section>
     <section class="debug">
-      <p>以下命令仅限开发人员调试使用</p>
-      <el-button class="font-16" @click.prevent="doMsission('move_lift_drone')" type="danger">平台升顶</el-button>
-      <el-button class="font-16" @click.prevent="doMsission('move_lift_convey')" type="danger">平台降底</el-button>
-      <el-button class="font-16" @click.prevent="doMsission('riseplate')" type="danger">平台举平</el-button>
+      <p>{{ $t('common.debug_tips') }}</p>
+      <el-button class="font-16" @click.prevent="doMsission('move_lift_drone')" type="danger">{{ $t('depot.platform_rise') }}</el-button>
+      <el-button class="font-16" @click.prevent="doMsission('move_lift_convey')" type="danger">{{ $t('depot.platform_bottom') }}</el-button>
+      <el-button class="font-16" @click.prevent="doMsission('riseplate')" type="danger">{{ $t('depot.platform_level') }}</el-button>
       <div class="btns f-r">
         <el-input class="f-l inp"></el-input>
-        <el-button class="f-l font-16" type="danger">发送</el-button>
-        <el-button class="f-l font-16">清空</el-button>
+        <el-button class="f-l font-16" type="danger">{{ $t('common.send') }}</el-button>
+        <el-button class="f-l font-16">{{ $t('common.clear') }}</el-button>
       </div>
     </section>
   </section>
@@ -99,13 +99,14 @@
       doMsission(name) {
         this.sendMission(name,() => {
           this.$message({
-            message: '操作成功！',
+            message: this.$t('common.operate_success'),
             type: 'success'
           });
         });
       },
       sendMission(name,callback) {
-        this.$http.post(`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`,Qs.stringify({
+        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`;
+        this.$http.post(url,Qs.stringify({
           name:name,
           level:0,
           mission_queues_id:0
@@ -113,10 +114,10 @@
           .then(res => {
             if (res.status === 200) {
               callback && callback();
-            } else this.$message.error('操作失败！');
+            } else this.$message.error(this.$t('common.operate_error'));
           })
           .catch(err => {
-            this.$message.error('操作失败！');
+            this.$message.error(this.$t('common.operate_error'));
             console.log(err);
           });
       }
