@@ -12,11 +12,11 @@
           </div>
           <div class="pitch">
             <div class="pitch-slider d-f">
-              <p class="label font-16">云台俯仰角</p><el-slider class="slider"></el-slider>
+              <p class="label font-16">{{ $t('air.pitch_angle') }}</p><el-slider class="slider"></el-slider>
             </div>
             <div class="btns">
-              <el-button type="primary" class="font-16">截图</el-button>
-              <el-button type="primary" class="font-16">录制屏幕</el-button>
+              <el-button type="primary" class="font-16">{{ $t('air.screenshot') }}</el-button>
+              <el-button type="primary" class="font-16">{{ $t('air.recording') }}</el-button>
             </div>
           </div>
         </el-col>
