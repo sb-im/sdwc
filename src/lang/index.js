@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 Vue.use(VueI18n)
 export default new VueI18n({
-  locale: 'zh-cn',
+  locale: 'en',
   messages: {
     'en': require('./locale/en'),
     'zh': require('./locale/zh'),
