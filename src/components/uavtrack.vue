@@ -23,16 +23,8 @@
     },
     methods: {
       getGmap() {
-        // Reverse proxy corss GWF in China
-        let url = "https://ditu.gdgdocs.org/maps/api/js";
-        // Google official map API
-        //let url = "https://maps.googleapis.com/maps/api/js"
-        // Google China official map API
-        //let url = "https://ditu.google.cn/maps/api/js"
-        //let YOUR_API_KEY = ""
-        //this.$jsonp(url, { key: YOUR_API_KEY }).then(json => {
         if (typeof google === 'undefined') {
-          this.$jsonp(url, { key: this.$store.state.config.GMAP_API_KEY }).then(() => {
+          this.$jsonp(this.$store.state.api.remote.gMap, { key: this.$store.state.config.GMAP_API_KEY }).then(() => {
             this.initMap(this.flight[0]);
           }).catch(err => {
             console.log(err);
