@@ -174,9 +174,9 @@
         form.append('cycle_types_id',this.planCycle);
         let url = '';
         if (this.plan === 'add') {
-          url = this.$store.state.config.suffix!==''?this.$store.state.api.plans+this.$store.state.config.suffix:this.$store.state.api.plans;
+          url = this.$store.state.config.suffix!==''?this.$store.state.api.local.plans+this.$store.state.config.suffix:this.$store.state.api.local.plans;
         } else {
-          url = this.$store.state.config.suffix!==''?`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`;
+          url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`;
         }
         this.$http[method](url, form,{
           headers: {'Content-Type': 'multipart/form-data'}
