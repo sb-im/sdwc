@@ -3,7 +3,7 @@
     <el-row class="head">
       <el-col class="monitor">
         <el-header class="header font-24">
-          <img src="../../assets/images/airport/a_monitor.svg"/>实时监控
+          <img src="../../assets/images/airport/a_monitor.svg"/>{{ $t('depot.monitor') }}
         </el-header>
         <section class="video">
           <rt-moniter :video="node.points[0]"></rt-moniter>
@@ -12,23 +12,23 @@
       <el-col class="other">
         <section class="weather">
           <el-header class="header font-24">
-            <img src="../../assets/images/airport/a_weather.svg"/>室外天气
+            <img src="../../assets/images/airport/a_weather.svg"/>{{ $t('depot.weather') }}
           </el-header>
           <weather :weather="$store.state.weaInfo"></weather>
         </section>
         <section class="infos">
           <el-header class="header font-24">
-            <img src="../../assets/images/airport/a_infos.svg"/>机场信息
+            <img src="../../assets/images/airport/a_infos.svg"/>{{ $t('depot.depot_info') }}
           </el-header>
           <table class="info-tab">
             <tr>
-              <td class="id-num">编号</td>
+              <td class="id-num">{{ $t('depot.depot_id') }}</td>
               <td>{{ node.id }}</td>
               <td>
-                <el-button class="font-16" type="primary">查看历史监控</el-button>
+                <el-button class="font-16" type="primary">{{ $t('depot.view_old_monitor') }}</el-button>
               </td>
               <td>
-                <el-button class="font-16" type="primary">查看飞行任务</el-button>
+                <el-button class="font-16" type="primary">{{ $t('depot.view_fly_plan') }}</el-button>
               </td>
             </tr>
           </table>
