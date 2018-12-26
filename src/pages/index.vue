@@ -25,11 +25,7 @@
       }
     },
     created(){
-      /*this.$http.get('http://staging.sblab.xyz/api/v1/nodes/').then((res)=>{
-        console.log(res)
-      }).catch((err)=>{
 
-      });*/
     },
     components: {
       'sd-header':Header,
