@@ -29,19 +29,18 @@ export default new Vuex.Store({
   },
   mutations: {
     config(state, arg) {
-      let keys = Object.keys(state.api);
+      let keys = Object.keys(state.api.local);
       state.config = arg.config;
       keys.forEach(function (key,index) {
-        let server = (state.api[key].indexOf(arg.config.server)===-1?arg.config.server:''),
-          suffix = (state.api[key].indexOf(arg.config.suffix)===-1?arg.config.suffix:'');
-        state.api[key] = server + state.api[key] + suffix;
+        let server = (state.api.local[key].indexOf(arg.config.server)===-1 ? arg.config.server : '');
+        state.api.local[key] = server + state.api.local[key];
         index === keys.length-1 && arg.callback && typeof arg.callback === 'function' && arg.callback();
       });
     },
     token(state, config) {
-      state.token = config.token
+      state.token = config.token;
       if (config.url_token != undefined) {
-        state.config.suffix = state.config.suffix + config.token
+        state.config.suffix = state.config.suffix + config.token;
       }
     },
     itemAdd(state, arg) {
@@ -143,16 +142,16 @@ export default new Vuex.Store({
     },
     // 获取
     getSideMenu(context,arg) {
-      let _this = arg._this;
+      let url = context.state.config.suffix!==''?context.state.api.local[arg.type]+context.state.config.suffix:context.state.api.local[arg.type];
       // 获取plans/nodes
-      _this.$http.get(context.state.api[arg.type])
+      arg._this.$http.get(url)
         .then(res => {
           if (res.status === 200) {
             context.commit('itemAdd', {
               type: arg.type,
               data: res.data,
               callback: () => {
-                context.dispatch('initShow',_this);
+                context.dispatch('initShow',arg._this);
               }
             });
           }
@@ -173,7 +172,7 @@ export default new Vuex.Store({
           if (init === 'air') {
             context.state.weaTimer && clearInterval(context.state.weaTimer);
           } else if (init === 'depot') {
-            context.dispatch('getWeather', {_this,url:'https://weather.sb.im/get'});
+            context.dispatch('getWeather', _this);
           }
           return true;
         } else if (!item.type_name) {
@@ -194,7 +193,8 @@ export default new Vuex.Store({
     // 获取任务信息
     getPlanInfo(context,arg) {
       context.commit('planLink','view');// 先将任务界面切回'查看任务'
-      arg._this.$http.get(`${context.state.api.plans}/${arg.id}`)
+      let url = context.state.config.suffix!==''?`${context.state.api.local.plans}/${arg.id}`+context.state.config.suffix:`${context.state.api.local.plans}/${arg.id}`;
+      arg._this.$http.get(url)
         .then(res => {
           if (res.status === 200) {
             context.commit('planInfo',res.data);
@@ -208,7 +208,8 @@ export default new Vuex.Store({
     },
     // 获取任务历史日志
     getPlanLogs(context,arg) {
-      arg._this.$http.get(`${context.state.api.plans}/${arg.id}/plan_logs`)
+      let url = context.state.config.suffix!==''?`${context.state.api.local.plans}/${arg.id}/plan_logs`+context.state.config.suffix:`${context.state.api.local.plans}/${arg.id}/plan_logs`;
+      arg._this.$http.get(url)
         .then(res => {
           if (res.status === 200) {
             for (let val of res.data) {
@@ -242,7 +243,8 @@ export default new Vuex.Store({
     },
     // 获取status_live
     getStatusLive(context,arg) {
-      arg._this.$http.get(`${context.state.api.nodes}/${arg.id}/status_lives`)
+      let url = context.state.config.suffix!==''?`${context.state.api.local.nodes}/${arg.id}/status_lives`+context.state.config.suffix:`${context.state.api.local.nodes}/${arg.id}/status_lives`;
+      arg._this.$http.get(url)
         .then(res => {
           if (!res.data.payload.code || res.data.payload.code !== -1) {
             context.commit('statusLive',res.data);
@@ -268,28 +270,30 @@ export default new Vuex.Store({
     },
     // 获取彩云APP天气信息
     getCyWeather(context, arg) {
-      arg._this.$jsonp(`https://api.caiyunapp.com/v2/Lczn9EiN0OBoG4dw/${arg.lng},${arg.lat}/forecast`)
+      let forecast = `${context.state.api.remote.cyApi}/${context.state.config.CY_API_TOKEN}/${arg.lng},${arg.lat}/forecast`,
+        realtime = `${context.state.api.remote.cyApi}/${context.state.config.CY_API_TOKEN}/${arg.lng},${arg.lat}/realtime`;
+      arg._this.$jsonp(forecast)
         .then(res => {
           res.status === 'ok' && context.commit('cyForecast',res.result);
         })
         .catch(err => {console.log(err);});
-      arg._this.$jsonp(`https://api.caiyunapp.com/v2/Lczn9EiN0OBoG4dw/${arg.lng},${arg.lat}/realtime`)
+      arg._this.$jsonp(realtime)
         .then(res => {
           res.status === 'ok' && context.commit('cyRealtime',res.result);
         })
         .catch(err => {console.log(err);});
     },
     // 获取天气信息
-    getWeather(context, arg) {
+    getWeather(context, _this) {
       context.state.weaTimer && clearInterval(context.state.weaTimer);
-      context.dispatch('getWeaInfo',{_this:arg._this, url:arg.url});
+      context.dispatch('getWeaInfo',_this);
       context.commit('weatherTimer',
         setInterval(() => {
-          context.dispatch('getWeaInfo',{_this:arg._this, url:arg.url});
+          context.dispatch('getWeaInfo',_this);
         }, 1000*60));
     },
-    getWeaInfo(context, arg) {
-      arg._this.$http.get(arg.url)
+    getWeaInfo(context, _this) {
+      _this.$http.get(context.state.api.remote.weather)
         .then(res => {
           res.status === 200 && context.commit('weatherInfo', res.data[0]);
         })
