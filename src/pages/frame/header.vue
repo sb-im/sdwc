@@ -1,7 +1,7 @@
 <template>
   <el-header class="header pos-a">
     <img class="logo pos-a" src="../../assets/images/header/logo.png"/>
-    <h1 class="title font-20">Superdock无人机自动机场</h1>
+    <h1 class="title font-20">{{ $t('header.title') }}</h1>
     <el-menu
       class="menu pos-a font-14"
       mode="horizontal"
@@ -10,16 +10,16 @@
       text-color="#fff"
       active-text-color="#ffd04b">
       <el-menu-item index="1">
-        <img src="../../assets/images/header/h_drone.svg"/>无人机通讯正常
+        <img src="../../assets/images/header/h_drone.svg"/>{{ $t('header.air',{status:$t('header.normal')}) }}
       </el-menu-item>
       <el-menu-item index="2">
-        <img src="../../assets/images/header/h_airport.svg"/>机场通讯正常
+        <img src="../../assets/images/header/h_airport.svg"/>{{ $t('header.depot',{status:$t('header.normal')}) }}
       </el-menu-item>
       <el-submenu index="3">
         <template slot="title">
           <img src="../../assets/images/header/user.svg"/>调试人员
         </template>
-        <el-menu-item index="loginout">退出</el-menu-item>
+        <el-menu-item index="loginout">{{ $t('header.logout') }}</el-menu-item>
       </el-submenu>
     </el-menu>
   </el-header>
