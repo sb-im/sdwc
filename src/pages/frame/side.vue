@@ -9,7 +9,7 @@
       text-color="#ccc">
       <el-submenu index="plans">
         <template slot="title">
-          <img src="../../assets/images/aside/task.svg"/><span class="font-16">任务管理</span>
+          <img src="../../assets/images/aside/task.svg"/><span class="font-16">{{ $t('sidemenu.plan') }}</span>
         </template>
         <el-menu-item
           class="menu-item"
@@ -21,7 +21,7 @@
       </el-submenu>
       <el-submenu index="depot">
         <template slot="title">
-          <img src="../../assets/images/aside/airport.svg"/><span class="font-16">机场</span>
+          <img src="../../assets/images/aside/airport.svg"/><span class="font-16">{{ $t('sidemenu.depot') }}</span>
         </template>
         <el-menu-item
           class="menu-item"
@@ -34,7 +34,7 @@
       </el-submenu>
       <el-submenu index="air">
         <template slot="title">
-          <img src="../../assets/images/aside/drone.svg"/><span class="font-16">无人机</span>
+          <img src="../../assets/images/aside/drone.svg"/><span class="font-16">{{ $t('sidemenu.air') }}</span>
         </template>
         <el-menu-item
           class="menu-item"
@@ -73,7 +73,7 @@
           if (keyPath[0] === 'air') {
             this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           } else {
-            this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+            this.$store.dispatch('getWeather', this);
           }
         }
       },
@@ -86,7 +86,7 @@
             if (key === 'air') {
               this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
             } else if (key === 'depot') {
-              this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+              this.$store.dispatch('getWeather', this);
             }
             return true;
           } else if (!item.type_name){
