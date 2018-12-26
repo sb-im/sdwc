@@ -1,17 +1,17 @@
 <template>
-  <monitor-img v-if="video.point_type_name==='livestream_img'" :source="video.name"></monitor-img>
-  <monitor-flv v-else-if="video.point_type_name==='livestream_flv'" :source="video.name"></monitor-flv>
-  <monitor-hls v-else-if="video.point_type_name==='livestream_hls'" :source="video.name"></monitor-hls>
-  <monitor-flash v-else-if="video.point_type_name==='livestream_flash'" :source="video.name"></monitor-flash>
-  <monitor-iframe v-else-if="video.point_type_name==='iframe'" :source="video.name"></monitor-iframe>
+  <monitor-img v-if="video&&video.point_type_name==='livestream_img'" :source="video.name"></monitor-img>
+  <monitor-flv v-else-if="video&&video.point_type_name==='livestream_flv'" :source="video.name"></monitor-flv>
+  <monitor-hls v-else-if="video&&video.point_type_name==='livestream_hls'" :source="video.name"></monitor-hls>
+  <monitor-flash v-else-if="video&&video.point_type_name==='livestream_flash'" :source="video.name"></monitor-flash>
+  <monitor-iframe v-else-if="video&&video.point_type_name==='iframe'" :source="video.name"></monitor-iframe>
+  <div class="empty" v-else>{{ $t('common.no_video') }}</div>
 </template>
 <script>
-import MonitorImg from './monitor-img'
-import MonitorFlv from './monitor-flv'
-import MonitorHls from './monitor-hls'
-import MonitorFlash from './monitor-flash'
-import MonitorIframe from './monitor-iframe'
-
+  import MonitorImg from './monitor-img'
+  import MonitorFlv from './monitor-flv'
+  import MonitorHls from './monitor-hls'
+  import MonitorFlash from './monitor-flash'
+  import MonitorIframe from './monitor-iframe'
 
   export default {
     data() {
@@ -20,7 +20,6 @@ import MonitorIframe from './monitor-iframe'
     props: {
       video: {
         type: Object,
-        required: true,
         default: () => {}
       }
     },
@@ -32,7 +31,12 @@ import MonitorIframe from './monitor-iframe'
       'monitor-iframe': MonitorIframe
     },
     created() {
-      console.log(this.video)
+
     }
   }
 </script>
+<style scoped>
+  .empty {
+    color: #fff;
+  }
+</style>
