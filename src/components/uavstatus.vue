@@ -34,21 +34,21 @@
     computed: {
       flightMode() {
         switch (+(this.$store.state.statusLive.payload.flight.mode)) {
-          case 3:return '自动模式';
-          case 4:return '引导模式';
-          case 5:return '定点模式';
-          case 6:return '返航模式';
-          case 9:return '降落模式';
-          default:return '--模式';
+          case 3:return this.$t('air.mode_auto');
+          case 4:return this.$t('air.mode_guide');
+          case 5:return this.$t('air.mode_fixed');
+          case 6:return this.$t('air.mode_back');
+          case 9:return this.$t('air.mode_land');
+          default:return this.$t('air.mode_');
         }
       },
-      flightTime() {return this.$store.state.statusLive.payload.flight.time ? `飞行${this.secTime(this.$store.state.statusLive.payload.flight.time)}` : '飞行--:--';},
-      flightSpeed() {return this.$store.state.statusLive.payload.flight.speed ? `速度${parseFloat(this.$store.state.statusLive.payload.flight.speed).toFixed(2)}m/s` : '速度--m/s';},
-      flightHeight() {return this.$store.state.statusLive.payload.gps.height ? `高度${parseFloat(this.$store.state.statusLive.payload.gps.height).toFixed(2)}m` : '高度--m';},
-      batteryRemain() {return this.$store.state.statusLive.payload.battery.remain ? `电量${this.$store.state.statusLive.payload.battery.remain}%` : '电量--%';},
-      batteryVoltage() {return this.$store.state.statusLive.payload.battery.voltage ? `电压${(this.$store.state.statusLive.payload.battery.voltage*Math.pow(10,-3)).toFixed(2)}V` : '电压--V';},
+      flightTime() {return this.$store.state.statusLive.payload.flight.time ? this.$t('air.flight_time',{t:this.secTime(this.$store.state.statusLive.payload.flight.time)}) : this.$t('air.flight_time',{t:'--:--'});},
+      flightSpeed() {return this.$store.state.statusLive.payload.flight.speed ? this.$t('air.flight_speed',{s:parseFloat(this.$store.state.statusLive.payload.flight.speed).toFixed(2)+'m/s'}) : this.$t('air.flight_speed',{s:'--m/s'});},
+      flightHeight() {return this.$store.state.statusLive.payload.gps.height ? this.$t('air.flight_height',{h:parseFloat(this.$store.state.statusLive.payload.gps.height).toFixed(2)+'m'}) : this.$t('air.flight_height',{h:'--m'});},
+      batteryRemain() {return this.$store.state.statusLive.payload.battery.remain ? this.$t('air.battery_remain',{num:this.$store.state.statusLive.payload.battery.remain+'%'}) : this.$t('air.battery_remain',{num:'--%'});},
+      batteryVoltage() {return this.$store.state.statusLive.payload.battery.voltage ? this.$t('air.battery_voltage',{num:(this.$store.state.statusLive.payload.battery.voltage*Math.pow(10,-3)).toFixed(2)+'V'}) : this.$t('air.battery_voltage',{num:'--V'});},
       gpsInfo() {
-        return (this.$store.state.statusLive.payload.gps.satellites ? `${this.$store.state.statusLive.payload.gps.satellites}星 ` : '--星 ') +
+        return (this.$store.state.statusLive.payload.gps.satellites ? this.$t('air.gps_satellites',{num:this.$store.state.statusLive.payload.gps.satellites}) : this.$t('air.gps_satellites',{num:'--'})) +
           (this.$store.state.statusLive.payload.gps.type ? `${this.gpsType[this.$store.state.statusLive.payload.gps.type]}` : '--');
       }
     },
