@@ -2,19 +2,19 @@
   <section class="w-info">
     <i class="status d-b el-icon-success"></i>
     <div class="items d-f">
-      <p>天气{{ $store.state.cyRealtime?$store.state.cyRealtime.comfort.desc:'----' }}</p>
+      <p>{{ $t('depot.weather_feel',{feel:$store.state.cyRealtime?$store.state.cyRealtime.comfort.desc:'----'}) }}</p>
       <p>{{ $store.state.cyRealtime?skycon($store.state.cyRealtime.skycon):'----' }}</p>
-      <p>风速 {{ windSpeed(weather.wind_speed) }}km/h</p>
+      <p>{{ $t('depot.wind_speed',{s:windSpeed(weather.wind_speed)}) }} km/h</p>
     </div>
     <div class="items d-f">
-      <p>可以起飞</p>
-      <p>气温 {{ tempHumidity(weather.temperature) }}℃</p>
-      <p>湿度 {{ tempHumidity(weather.humidity) }}%</p>
+      <p>{{ $t('common.fly_yes') }}</p>
+      <p>{{ $t('depot.temperature',{num:tempHumidity(weather.temperature)}) }}℃</p>
+      <p>{{ $t('depot.humidity',{num:tempHumidity(weather.temperature)}) }}%</p>
     </div>
     <div class="chart">
       <p>{{ $store.state.cyForecast?$store.state.cyForecast.forecast_keypoint:'----' }}</p>
-      <div class="chart-view">
-        <canvas class="chart-canvas" width="340" height="105"></canvas>
+      <div ref="charts" class="chart-view">
+        <!--<canvas ref="weaMinute" class="chart-canvas" width="340" height="105"></canvas>
         <ul class="inner-labels">
           <li><span class="text">大雨</span></li>
           <li><span class="text">中雨</span></li>
@@ -27,7 +27,7 @@
           <li><span class="text">30分钟</span></li>
           <li></li>
           <li><span class="text">60分钟</span></li>
-        </ul>
+        </ul>-->
       </div>
     </div>
   </section>
@@ -75,10 +75,13 @@
 </template>
 
 <script>
+  const Echarts = require('echarts/lib/echarts')
+  require('echarts/lib/component/title');
+  require('echarts/lib/chart/line')
   export default {
     data () {
       return {
-        cyWeather:{}
+
       }
     },
     props: {
@@ -89,30 +92,84 @@
       },
     },
     mounted() {
-      // this.getWeaInfo();
+      this.$store.state.cyForecast ? this.drawWeather(this.$store.state.cyForecast.minutely.precipitation) : this.drawWeather();
     },
     methods: {
       // 风速
-      windSpeed(val) {
-        return val?parseInt(val)/10*3600/1000:'...';
-      },
+      windSpeed(val) {return val?parseInt(val)/10*3600/1000:'...';},
       // 气温/湿度
-      tempHumidity(val) {
-        return val?parseInt(val)/10:'...';
-      },
+      tempHumidity(val) {return val?parseInt(val)/10:'...';},
       // 天气
       skycon(val) {
         switch (val) {
-          case 'CLEAR_DAY':return '晴天';
-          case 'CLEAR_NIGHT':return '晴夜';
-          case 'PARTLY_CLOUDY_DAY':return '多云';
-          case 'PARTLY_CLOUDY_NIGHT':return '多云';
-          case 'CLOUDY':return '阴';
-          case 'RAIN':return '雨';
-          case 'SNOW':return '雪';
-          case 'WIND':return '风';
-          case 'HAZE':return '雾霾沙尘';
+          case 'CLEAR_DAY':return this.$t('weather.clear_day');
+          case 'CLEAR_NIGHT':return this.$t('weather.clear_night');
+          case 'PARTLY_CLOUDY_DAY':return this.$t('weather.partly_cloudy');
+          case 'PARTLY_CLOUDY_NIGHT':return this.$t('weather.partly_cloudy');
+          case 'CLOUDY':return this.$t('weather.cloudy');
+          case 'RAIN':return this.$t('weather.rain');
+          case 'SNOW':return this.$t('weather.snow');
+          case 'WIND':return this.$t('weather.wind');
+          case 'HAZE':return this.$t('weather.haze');
         }
+      },
+      // 绘制折线面积图
+      drawWeather(data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) {
+        let _this = this,
+          charts = Echarts.init(this.$refs.charts);
+        charts.setOption({
+          title : {
+            top: '-5%',
+            subtext: _this.$t('depot.charts',{a:0.25,b:0.35})
+          },
+          grid: {
+            top: '20%',
+            left: '5%',
+            right: '0',
+            bottom: '0',
+            containLabel: true
+          },
+          xAxis : [
+            {
+              type : 'category',
+              boundaryGap : false,
+              splitNumber: 1,
+              axisLabel:{
+                formatter(val,index) {
+                  let texts = [];
+                  switch (index) {
+                    case 0:texts.push(_this.$t('depot.charts_label_now'));break;
+                    case 30:texts.push(_this.$t('depot.charts_label_30m'));break;
+                  }
+                  return texts;
+                }
+              },
+              data
+            }
+          ],
+          yAxis : [
+            {
+              position:'right',
+              type : 'value',
+              splitNumber: 3
+            },
+          ],
+          series : [
+            {
+              type:'line',
+              smooth:true,
+              color:['#87aeed'],
+              itemStyle: {
+                normal: {
+                  areaStyle: {
+                    type: 'default'
+                  }
+                }
+              },
+              data
+            },
+          ]
+        });
       }
     }
   }
@@ -130,9 +187,9 @@
   .w-info .chart {margin-top: 20px;}
   .w-info .chart-view {
     position: relative;
-    width: 340px;
-    height: 105px;
-    margin: 12px 0 35px;
+    width: 360px;
+    height: 140px;
+    margin-bottom: 15px;
   }
   .w-info .chart-view .chart-canvas {
     position: absolute;
