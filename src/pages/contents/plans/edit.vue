@@ -1,61 +1,68 @@
 <template>
   <el-main class="content">
-    <el-header class="header font-24">
-      <img src="../../../assets/images/task/t_edit.svg"/>修改任务
+    <el-header v-if="plan==='add'" class="header font-24">
+      <img src="../../../assets/images/task/t_add.svg"/>{{ $t('plan.edit.add') }}
       <div class="f-r font-16">
-        <el-button @click.prevent="submitPlan" type="warning" icon="el-icon-document">保存任务</el-button>
-        <el-button @click.prevent="deletePlan" type="danger" icon="el-icon-delete">删除任务</el-button>
-        <el-button @click.prevent="backEvent" icon="el-icon-close">取消并返回</el-button>
+        <el-button @click.prevent="submitPlan" type="danger" icon="el-icon-plus">{{ $t('plan.edit.create') }}</el-button>
+        <el-button @click.prevent="backEvent" icon="el-icon-close">{{ $t('common.back') }}</el-button>
+      </div>
+    </el-header>
+    <el-header v-if="plan==='edit'" class="header font-24">
+      <img src="../../../assets/images/task/t_edit.svg"/>{{ $t('plan.edit.alter') }}
+      <div class="f-r font-16">
+        <el-button @click.prevent="submitPlan" type="warning" icon="el-icon-document">{{ $t('plan.edit.save_plan') }}</el-button>
+        <el-button @click.prevent="deletePlan" type="danger" icon="el-icon-delete">{{ $t('plan.edit.save_plan') }}</el-button>
+        <el-button @click.prevent="backEvent" icon="el-icon-close">{{ $t('common.back') }}</el-button>
       </div>
     </el-header>
     <el-row type="flex" class="edit" tag="section">
       <el-col class="edit-box" tag="ul">
         <li class="edit-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_info.svg"/>任务名称：</p>
-          <p class="text"><el-input v-model="planName" placeholder="输入任务名称"></el-input></p>
+          <p class="label"><img src="../../../assets/images/task/t_info.svg"/>{{ $t('plan.plan_name') }}：</p>
+          <p class="text"><el-input v-model="planName" :placeholder="$t('plan.edit.name_inp')"></el-input></p>
         </li>
         <li class="edit-item d-f des">
-          <p class="label">任务描述：</p>
-          <p class="text"><el-input v-model="planDesc" type="textarea" placeholder="输入任务描述"></el-input></p>
+          <p class="label">{{ $t('plan.plan_desc') }}：</p>
+          <p class="text"><el-input v-model="planDesc" type="textarea" :placeholder="$t('plan.edit.desc_inp')"></el-input></p>
         </li>
         <li class="edit-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_drone.svg"/>执飞无人机：</p>
+          <p class="label"><img src="../../../assets/images/task/t_drone.svg"/>{{ $t('plan.plan_air') }}：</p>
           <p class="text">
-            <el-select class="d-b" v-model="planNode" placeholder="选择执飞无人机">
+            <el-select class="d-b" v-model="planNode" :placeholder="$t('plan.edit.air_inp')">
               <el-option v-for="(val,index) in $store.state.nodes" v-if="val.type_name==='air'" :key="index" :label="val.name" :value="val.id"></el-option>
             </el-select>
           </p>
         </li>
         <li class="edit-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>起降机场：</p>
+          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>{{ $t('plan.plan_depot') }}：</p>
           <p class="text">
-            <el-select class="d-b" v-model="planDepot" placeholder="选择起降机场">
+            <el-select class="d-b" v-model="planDepot" :placeholder="$t('plan.edit.depot_inp')">
               <el-option v-for="(val,index) in $store.state.nodes" v-if="val.type_name==='depot'" :key="index" :label="val.name" :value="val.id"></el-option>
             </el-select>
           </p>
         </li>
         <li class="edit-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>执行频次：</p>
+          <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>{{ $t('plan.plan_cycle') }}：</p>
           <p class="text">
-            <el-select class="d-b" v-model="planCycle" placeholder="选择执行频次">
+            <el-select class="d-b" v-model="planCycle" :placeholder="$t('plan.edit.cycle_inp')">
               <el-option v-for="(val,index) in cycleTypes" :key="index" :label="val.name" :value="val.id"></el-option>
             </el-select>
           </p>
         </li>
         <li class="edit-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_first.svg"/>首次执行时间：</p>
+          <p class="label"><img src="../../../assets/images/task/t_first.svg"/>{{ $t('plan.plan_first_time') }}：</p>
           <p class="text">
-            <el-date-picker v-model="planStart" style="width: 100%" type="datetime" @change="startTime" placeholder="选择首次执行时间"></el-date-picker>
+            <el-date-picker v-model="planStart" style="width: 100%" type="datetime" @change="startTime" :placeholder="$t('plan.edit.first_time_inp')"></el-date-picker>
           </p>
         </li>
         <li class="edit-item d-f file">
-          <p class="label"><img src="../../../assets/images/task/t_file.svg"/>航点任务文件：</p>
+          <p class="label"><img src="../../../assets/images/task/t_file.svg"/>{{ $t('plan.plan_mapfile') }}：</p>
           <p class="text">
-            <a :href="$store.state.planInfo.map_path?$store.state.config.server+$store.state.planInfo.map_path:'javascript:;'" download class="el-button el-button--primary">
-              <i class="el-icon-download"></i><span>下载</span>
+            <a v-if="plan === 'edit'" :href="$store.state.planInfo.map_path?$store.state.config.server+$store.state.planInfo.map_path:'javascript:;'" download class="el-button el-button--primary" :class="{'is-disabled':!$store.state.planInfo.map_path}">
+              <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
             </a>
             <a href="javascript:;" class="pos-r el-button el-button--primary">
-              <i class="el-icon-upload"></i><span>重新上传</span>
+              <i class="el-icon-upload"></i><span>{{ plan === 'edit'?$t('common.re_upload'):$t('common.upload') }}</span>
               <input @change="mapFlie($event)" class="pos-a" name="file" type="file"/>
             </a>
           </p>
@@ -77,29 +84,42 @@
     data() {
       return {
         cycleTypes:[
-          {id:0,name:'手动'},
-          {id:1,name:'一次'},
-          {id:2,name:'每小时'},
-          {id:3,name:'每天'},
-          {id:4,name:'每周'},
-          {id:5,name:'每月'}
+          {id:0,name:this.$t('plan.edit.cycle_type_1')},
+          {id:1,name:this.$t('plan.edit.cycle_type_2')},
+          {id:2,name:this.$t('plan.edit.cycle_type_3')},
+          {id:3,name:this.$t('plan.edit.cycle_type_4')},
+          {id:4,name:this.$t('plan.edit.cycle_type_5')},
+          {id:5,name:this.$t('plan.edit.cycle_type_6')}
         ],
-        planName: this.$store.state.planInfo.name,
-        planDesc: this.$store.state.planInfo.description,
+        planName: '',
+        planDesc: '',
         planFile: '',
-        planNode: this.$store.state.planInfo.node_id,
-        planDepot: this.$store.state.planInfo.depot_id,
-        planCycle: this.$store.state.planInfo.cycle_types_id,
-        planStart: this.$store.state.planInfo.start_time,
-        showMap: true,
-        pathResult:this.$store.state.planMap
+        planNode: '',
+        planDepot: '',
+        planCycle: '',
+        planStart: '',
+        showMap: false,
+        pathResult: []
+      }
+    },
+    props:{
+      plan:{
+        type:String,
+        default:''
       }
     },
     components: {
       'map-way':MapWay
     },
     created() {
-
+      this.planName = this.plan === 'add' ? '' : this.$store.state.planInfo.name;
+      this.planDesc = this.plan === 'add' ? '' : this.$store.state.planInfo.description;
+      this.planNode = this.plan === 'add' ? '' : this.$store.state.planInfo.node_id;
+      this.planDepot = this.plan === 'add' ? '' : this.$store.state.planInfo.depot_id;
+      this.planCycle = this.plan === 'add' ? '' : this.$store.state.planInfo.cycle_types_id;
+      this.planStart = this.plan === 'add' ? '' : this.$store.state.planInfo.start_time;
+      this.showMap = !this.plan === 'add';
+      this.pathResult = this.plan === 'add' ? [] : this.$store.state.planMap;
     },
     methods: {
       backEvent(){
@@ -109,10 +129,10 @@
         this.planFile = ev.target.files[0];
         PaPaParse.parse(ev.target.files[0],{
           complete:res => {
-            res.data.forEach(val=>{
-              val[3]==='16' && this.pathResult.push({lat:(+val[8]),lng:(+val[9])});
-            });
-            this.showMap = this.pathResult.length!==0;
+            let temp = [];
+            res.data.forEach(val => {val[3]==='16' && temp.push({lat:(+val[8]),lng:(+val[9])});});
+            this.pathResult = temp;
+            this.showMap = temp.length!==0;
           }
         });
       },
@@ -124,38 +144,58 @@
           if (this.planNode!=='') {
             if (this.planDepot!=='') {
               if (this.planCycle!=='') {
-                let form = new FormData();
-                form.append('name',this.planName);
-                form.append('description',this.planDesc);
-                this.planFile && form.append('file',this.planFile);
-                form.append('node_id',this.planNode);
-                form.append('depot_id',this.planDepot);
-                form.append('start_time',this.planStart);
-                form.append('cycle_types_id',this.planCycle);
-                this.$http.patch(`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`,form,{
-                  headers: {'Content-Type': 'multipart/form-data'}
-                })
-                  .then(res => {
-                    if(res.status===200 && typeof res.data === 'object') {
-                      this.$store.commit("planSave", {data:res.data, _this:this});
-                      this.$store.dispatch('getPlanInfo', {_this:this, id:res.data.id});
-                    }
-                  })
-                  .catch(err => {
-                    console.log(err);
+                if (this.plan === 'add') {
+                  if (this.planFile !== '') {
+                    this.submitData('post',data=>{
+                      this.$store.commit("planAdd", data);
+                      this.$store.commit("linkAdd", {item:data,type:'plans'});
+                      this.$store.dispatch('getPlanInfo', {_this:this,id:data.id});
+                    });
+                  } else this.$message.error(this.$t('plan.edit.please_file'));
+                } else {
+                  this.submitData('patch',data=>{
+                    this.$store.commit("planSave", {data, _this:this});
+                    this.$store.dispatch('getPlanInfo', {_this:this, id:data.id});
                   });
-              } else this.$message.error('请选择执行频次！');
-            } else this.$message.error('请选择起降机场！');
-          } else this.$message.error('请选择执飞无人机！');
-        } else this.$message.error('请输入任务名称！');
+                }
+              } else this.$message.error(this.$t('plan.edit.please_cycle'));
+            } else this.$message.error(this.$t('plan.edit.please_depot'));
+          } else this.$message.error(this.$t('plan.edit.please_air'));
+        } else this.$message.error(this.$t('plan.edit.please_name'));
+      },
+      submitData(method,callback) {
+        let form = new FormData();
+        form.append('name',this.planName);
+        form.append('description',this.planDesc);
+        this.plan === 'add' && form.append('file',this.planFile);
+        form.append('node_id',this.planNode);
+        form.append('depot_id',this.planDepot);
+        form.append('start_time',this.planStart);
+        form.append('cycle_types_id',this.planCycle);
+        let url = '';
+        if (this.plan === 'add') {
+          url = this.$store.state.config.suffix!==''?this.$store.state.api.plans+this.$store.state.config.suffix:this.$store.state.api.plans;
+        } else {
+          url = this.$store.state.config.suffix!==''?`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`;
+        }
+        this.$http[method](url, form,{
+          headers: {'Content-Type': 'multipart/form-data'}
+        })
+          .then(res => {
+            res.status===200 && typeof res.data === 'object' && callback && callback(res.data);
+          })
+          .catch(err => {
+            console.log(err);
+          });
       },
       deletePlan() {
-        this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm(this.$t('plan.edit.delete_tips'), this.$t('common.system_tips'), {
+          confirmButtonText: this.$t('common.comfirm'),
+          cancelButtonText: this.$t('common.cancel'),
           type: 'warning'
         }).then(() => {
-          this.$http.delete(`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`)
+          let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`;
+          this.$http.delete(url)
             .then(res => {
               if (res.status===200) {
                 let tmp = {type: 'plans', id: res.data.id};
@@ -185,7 +225,7 @@
           this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
         }else if(tmp.type==='depot') {
-          this.$store.dispatch('getWeather', {_this:this,url:'https://weather.sb.im/get'});
+          this.$store.dispatch('getWeather', this);
         }
         return cur;
       }
@@ -249,9 +289,7 @@
     opacity: 0;
   }
   .edit-item .text {width: 68%;}
-  .edit .maps {
-    padding: 20px 0;
-  }
+  .edit .maps {padding: 20px 0;}
   .edit .maps .way-box {
     width: 450px;
     height: 320px;

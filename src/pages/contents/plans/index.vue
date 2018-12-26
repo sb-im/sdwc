@@ -1,13 +1,11 @@
 <template>
   <el-container class="wrapper">
     <plan-view v-if="$store.state.planPage==='view'" v-cloak></plan-view>
-    <plan-add v-if="$store.state.planPage==='add'" v-cloak></plan-add>
-    <plan-edit v-if="$store.state.planPage==='edit'" v-cloak></plan-edit>
+    <plan-edit v-if="$store.state.planPage!=='view'" v-cloak :plan="$store.state.planPage"></plan-edit>
   </el-container>
 </template>
 
 <script>
-  import Add from './add'
   import View from './view'
   import Edit from './edit'
 
@@ -18,7 +16,6 @@
       }
     },
     components: {
-      'plan-add':Add,
       'plan-view':View,
       'plan-edit':Edit
     },

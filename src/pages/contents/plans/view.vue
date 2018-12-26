@@ -1,48 +1,48 @@
 <template>
   <el-main class="content">
     <el-header class="header font-24">
-      <img src="../../../assets/images/task/t_view.svg"/>查看任务
+      <img src="../../../assets/images/task/t_view.svg"/>{{ $t('plan.view.title') }}
       <div class="f-r font-16">
-        <el-button @click.prevent="addTask" type="primary" icon="el-icon-plus">新建任务</el-button>
-        <el-button @click.prevent="editTask" type="warning" icon="el-icon-edit">修改任务</el-button>
-        <el-button @click.prevent="flyCheck" type="danger" icon="el-icon-refresh">立即执行</el-button>
+        <el-button @click.prevent="addTask" type="primary" icon="el-icon-plus">{{ $t('plan.edit.add') }}</el-button>
+        <el-button @click.prevent="editTask" type="warning" icon="el-icon-edit">{{ $t('plan.edit.alter') }}</el-button>
+        <el-button @click.prevent="flyCheck" type="danger" icon="el-icon-refresh">{{ $t('plan.view.run') }}</el-button>
       </div>
     </el-header>
     <el-row type="flex" class="infos" tag="section">
       <el-col tag="ul">
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_info.svg"/>任务名称：</p>
+          <p class="label"><img src="../../../assets/images/task/t_info.svg"/>{{ $t('plan.plan_name') }}：</p>
           <p class="text">{{ $store.state.planInfo.name }}</p>
         </li>
         <li class="info-item d-f des">
-          <p class="label">任务描述：</p>
-          <p class="text">{{ $store.state.planInfo.description?$store.state.planInfo.description:'暂无任务描述' }}</p>
+          <p class="label">{{ $t('plan.plan_desc') }}：</p>
+          <p class="text">{{ $store.state.planInfo.description?$store.state.planInfo.description:$t('plan.plan_desc_no') }}</p>
         </li>
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_time.svg"/>创建时间：</p>
+          <p class="label"><img src="../../../assets/images/task/t_time.svg"/>{{ $t('plan.plan_createtime') }}：</p>
           <p class="text">{{ timeDeal($store.state.planInfo.created_at) }}</p>
         </li>
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_drone.svg"/>执飞无人机：</p>
+          <p class="label"><img src="../../../assets/images/task/t_drone.svg"/>{{ $t('plan.plan_air') }}：</p>
           <p class="text">{{ airDepot($store.state.planInfo.node_id,'air') }}</p>
         </li>
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>起降机场：</p>
+          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>{{ $t('plan.plan_depot') }}：</p>
           <p class="text">{{ airDepot($store.state.planInfo.node_id,'depot') }}</p>
         </li>
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>执行频次：</p>
+          <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>{{ $t('plan.plan_cycle') }}：</p>
           <p class="text">{{ cycleTypes($store.state.planInfo.cycle_types_id) }}</p>
         </li>
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_first.svg"/>首次执行时间：</p>
-          <p class="text">{{ $store.state.planInfo.start_time?timeDeal($store.state.planInfo.start_time):'暂无' }}</p>
+          <p class="label"><img src="../../../assets/images/task/t_first.svg"/>{{ $t('plan.plan_first_time') }}：</p>
+          <p class="text">{{ $store.state.planInfo.start_time?timeDeal($store.state.planInfo.start_time):$t('common.none') }}</p>
         </li>
         <li class="info-item d-f file">
-          <p class="label"><img src="../../../assets/images/task/t_file.svg"/>航点任务文件：</p>
+          <p class="label"><img src="../../../assets/images/task/t_file.svg"/>{{ $t('plan.plan_mapfile') }}：</p>
           <p class="text">
-            <a :href="$store.state.planInfo.map_path?$store.state.config.server+$store.state.planInfo.map_path:'javascript:;'" download class="el-button el-button--primary">
-              <i class="el-icon-download"></i><span>下载</span>
+            <a :href="$store.state.planInfo.map_path?$store.state.config.server+$store.state.planInfo.map_path:'javascript:;'" download class="el-button el-button--primary" :class="{'is-disabled':!$store.state.planInfo.map_path}">
+              <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
             </a>
           </p>
         </li>
@@ -55,53 +55,53 @@
     </el-row>
 
     <el-header class="header font-24">
-      <img src="../../../assets/images/task/t_history.svg"/>任务执行历史
+      <img src="../../../assets/images/task/t_history.svg"/>{{ $t('plan.view.history') }}
     </el-header>
     <el-table
       :data="$store.state.planLogs"
       :cell-style="cells"
-      empty-text="暂无相关数据"
+      :empty-text="$t('common.data_none')"
       :header-row-style="{'font-size':'18px'}"
       :header-cell-style="hCells">
-      <el-table-column align="center" prop="created_at" label="执行时间"></el-table-column>
-      <el-table-column align="center" label="原始数据">
+      <el-table-column align="center" prop="created_at" :label="$t('plan.view.run_time')"></el-table-column>
+      <el-table-column align="center" :label="$t('plan.view.raw_data')">
         <template slot-scope="scope">
-          <a href="javascript:;" class="font-16 el-button el-button--primary">查看</a>
+          <a href="javascript:;" class="font-16 el-button el-button--primary">{{ $t('common.view') }}</a>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="自动处理结果">
+      <el-table-column align="center" :label="$t('plan.view.auto_run')">
         <template slot-scope="scope">
-          <a :href="scope.row.orthomosaic_path?$store.state.config.server+scope.row.orthomosaic_path:'javascript:;'" target="_blank" class="font-16 el-button el-button--primary">查看</a>
+          <a :href="scope.row.orthomosaic_path?$store.state.config.server+scope.row.orthomosaic_path:'javascript:;'" target="_blank" class="font-16 el-button el-button--primary" :class="{'is-disabled':!scope.row.orthomosaic_path}">{{ $t('common.view') }}</a>
         </template>
       </el-table-column>
-      <el-table-column align="center" border label="飞行日志">
+      <el-table-column align="center" border :label="$t('plan.view.logs')">
         <template slot-scope="scope">
-          <a :href="scope.row.air_log_path?$store.state.config.server+scope.row.air_log_path:'javascript:;'" download class="el-button">
-            <i class="el-icon-download"></i><span>下载</span>
+          <a :href="scope.row.air_log_path?$store.state.config.server+scope.row.air_log_path:'javascript:;'" download class="el-button" :class="{'is-disabled':!scope.row.air_log_path}">
+            <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
           </a>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="服务器日志">
+      <el-table-column align="center" :label="$t('plan.view.sever_logs')">
         <template slot-scope="scope">
-          <a href="javascript:;" download class="el-button">
-            <i class="el-icon-download"></i><span>下载</span>
+          <a :href="scope.row.sever_log_path?$store.state.config.server+scope.row.sever_log_path:'javascript:;'" download class="el-button" :class="{'is-disabled':!scope.row.sever_log_path}">
+            <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
           </a>
         </template>
       </el-table-column>
     </el-table>
     <section v-if="showCheck" class="flip-mask pos-f">
       <section class="flip-wrapper d-ib va-m over-h text-l">
-        <h4 class="pos-r title">飞行前检查<a class="pos-a close el-icon-close" @click.prevent="cancelRunPlan" href="javascript:;"></a></h4>
+        <h4 class="pos-r title">{{ $t('plan.fly_check') }}<a class="pos-a close el-icon-close" @click.prevent="cancelRunPlan" href="javascript:;"></a></h4>
         <div class="content">
           <div class="head text-c">
             <img src="../../../assets/images/task/t_flip_check.svg"/>
-            <p class="font-16">我们需要检查设备情况，确保可以安全执行任务。</p>
+            <p class="font-16">{{ $t('plan.fly_check_desc') }}</p>
           </div>
           <el-row class="body" type="flex" tag="div">
             <el-col :span="8" tag="ul">
-              <li class="label weather"><img src="../../../assets/images/task/t_weather.svg"/>天气</li>
-              <li class="label"><img src="../../../assets/images/task/t_drone.svg"/>无人机</li>
-              <li class="label"><img src="../../../assets/images/task/t_airport.svg"/>机场</li>
+              <li class="label weather"><img src="../../../assets/images/task/t_weather.svg"/>{{ $t('plan.weather') }}</li>
+              <li class="label"><img src="../../../assets/images/task/t_drone.svg"/>{{ $t('common.air') }}</li>
+              <li class="label"><img src="../../../assets/images/task/t_airport.svg"/>{{ $t('common.depot') }}</li>
             </el-col>
             <el-col :span="16" tag="ul">
               <li class="weather">
@@ -114,10 +114,10 @@
             </el-col>
           </el-row>
           <div class="foot">
-            <p class="status text-c"><i class="icon el-icon-circle-check"></i>可以起飞</p>
+            <p class="status text-c"><i class="icon el-icon-circle-check"></i>{{ $t('common.fly_yes') }}</p>
             <div class="foot-btns clear">
-              <el-button class="f-l" @click.prevent="runPlan" type="danger">立即启动</el-button>
-              <el-button class="f-r" @click.prevent="cancelRunPlan">取消</el-button>
+              <el-button class="f-l" @click.prevent="runPlan" type="danger">{{ $t('plan.start_now') }}</el-button>
+              <el-button class="f-r" @click.prevent="cancelRunPlan">{{ $t('common.cancel') }}</el-button>
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@
       }
     },
     mounted() {
-      console.log(this.$store.state.planLogs)
+
     },
     components: {
       'uactrack':uactrack
@@ -147,23 +147,19 @@
       hCells(cells) {
         return 'font-weight:normal;' + (cells.columnIndex === 3 ? 'border-left: 1px solid #e4eaef;' : '');
       },
-      editTask(){
-        this.$store.commit('planLink','edit')
-      },
-      addTask(){
-        this.$store.commit('planLink','add');
-      },
+      editTask(){this.$store.commit('planLink','edit')},
+      addTask(){this.$store.commit('planLink','add');},
       timeDeal(time) {
         return this.$utils.timeFomart('YYYY/MM/DD hh:mm:ss',Date.parse(time));
       },
       cycleTypes(id) {
         switch(+id){
-          case 0:return '手动';
-          case 1:return '一次';
-          case 2:return '每小时';
-          case 3:return '每天';
-          case 4:return '每周';
-          case 5:return '每月';
+          case 0:return this.$t('plan.edit.cycle_type_1');
+          case 1:return this.$t('plan.edit.cycle_type_2');
+          case 2:return this.$t('plan.edit.cycle_type_3');
+          case 3:return this.$t('plan.edit.cycle_type_4');
+          case 4:return this.$t('plan.edit.cycle_type_5');
+          case 5:return this.$t('plan.edit.cycle_type_6');
         }
       },
       airDepot(id,type) {
@@ -174,7 +170,7 @@
             return true;
           }
         });
-        return name!==''?name:'暂无';
+        return name!==''?name:this.$t('common.none');
       },
       // 打开飞行检查
       flyCheck() {this.showCheck = true;},
@@ -182,12 +178,13 @@
       cancelRunPlan() {this.showCheck = false;},
       // 确认执行
       runPlan() {
-        this.$http.get(`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}/plan_logs`)
+        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}/plan_logs`+this.$store.state.config.suffix:`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}/plan_logs`;
+        this.$http.post(url)
           .then(res => {
             if (res.status === 200) {
               this.showCheck = false;
               this.$message({
-                message:'当前任务开始执行！',
+                message:this.$t('plan.view.start_run'),
                 type:'success'
               });
             }
