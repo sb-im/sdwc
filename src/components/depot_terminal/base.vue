@@ -105,7 +105,7 @@
         });
       },
       sendMission(name,callback) {
-        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`;
+        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`;
         this.$http.post(url,Qs.stringify({
           name:name,
           level:0,
