@@ -11,7 +11,7 @@
       <img src="../../../assets/images/task/t_edit.svg"/>{{ $t('plan.edit.alter') }}
       <div class="f-r font-16">
         <el-button @click.prevent="submitPlan" type="warning" icon="el-icon-document">{{ $t('plan.edit.save_plan') }}</el-button>
-        <el-button @click.prevent="deletePlan" type="danger" icon="el-icon-delete">{{ $t('plan.edit.save_plan') }}</el-button>
+        <el-button @click.prevent="deletePlan" type="danger" icon="el-icon-delete">{{ $t('plan.edit.delete_plan') }}</el-button>
         <el-button @click.prevent="backEvent" icon="el-icon-close">{{ $t('common.back') }}</el-button>
       </div>
     </el-header>
@@ -194,7 +194,7 @@
           cancelButtonText: this.$t('common.cancel'),
           type: 'warning'
         }).then(() => {
-          let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}`;
+          let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`;
           this.$http.delete(url)
             .then(res => {
               if (res.status===200) {
