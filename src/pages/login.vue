@@ -107,9 +107,10 @@
           grant_type: 'password'
         })
         .then((response) => {
+          console.log(response)
           if (response.data.access_token) {
-            this.$http.create().defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token
-            this.$router.push('app')
+            this.$http.create().defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token;
+            this.$router.push('app');
           }
         })
         .catch((error) => {
