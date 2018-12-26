@@ -1,41 +1,29 @@
 <template>
-
-  <!--<video :src="source"></video>-->
-  <video-player class="vjs-custom-skin" ref="videoPlayer" :options="playerOptions" @timeupdate="onTimeupdate">
-  </video-player>
-  <!--customEventName="customstatechangedeventname"
-
-    @play="onPlayerPlay($event)"
-    @pause="onPlayerPause($event)"
-    @ended="onPlayerEnded($event)"
-    @waiting="onPlayerWaiting($event)"
-    @playing="onPlayerPlaying($event)"
-    @loadeddata="onPlayerLoadeddata($event)"
-    @timeupdate="onPlayerTimeupdate($event)"
-    @canplay="onPlayerCanplay($event)"
-    @canplaythrough="onPlayerCanplaythrough($event)"
-
-    @statechanged="playerStateChanged($event)"
-    @ready="playerReadied"-->
+  <div id="StrobeMediaPlayer"></div>
 </template>
 
 <script>
-
   export default {
     data() {
       return {
-        playerOptions: {
-          autoplay: false,
-          controls: true,
-          techOrder: ['flash'],
-          flash: { hls: { withCredentials: false } },
-          html5: { hls: { withCredentials: false } },
-          live: true,
-          sources: [{
-            type: 'rtmp/mp4',
-            src: 'rtmp://api.sb.im:1935/live/outdoor'
-          }],
-          poster: '/src/assets/images/header/logo.png'
+        player: null,
+        originTime: null,
+        timeoutTimer: null,
+        mediaTimeout: 2000,
+        delayTolerance: 1000,
+        playerConfig: {
+          src: this.source,
+          width: 750,
+          height: 428,
+          autoPlay: true,  // start playing the media after page load
+          initialBufferTime : 0,  // buffer to fill before play begins
+          expandedBufferTime : this.delayTolerance / 1000,  // maximum buffer size
+          minContinuousPlayback : 0,  // minimum playback time without pausing
+          liveBufferTime: 0,  // buffer time for live content
+          streamType: 'live',
+          scaleMode: 'none', // don't scale the video width and height
+          verbose: true,  // display detailed error messages for debugging
+          // javascriptCallbackFunction: this.onPlayerEvent
         }
       }
     },
@@ -46,16 +34,56 @@
         default: ''
       }
     },
-    created() {
-
+    mounted() {
+      swfobject.embedSWF(
+        '/static/strobe/StrobeMediaPlayback.swf',
+        'StrobeMediaPlayer',
+        750, 428, '10.1.0', 'expressInstall.swf',
+        this.playerConfig, {
+          allowFullScreen: 'true', wmode: 'opaque'
+        },{
+          name:'StrobeMediaPlayer'
+        });
     },
     components:{
       // 'video-player':videoPlayer
     },
     methods: {
-      // record current time
-      onTimeupdate(e) {
-        console.log('currentTime', e.cache_.currentTime)
+      onPlayerEvent(playerId, eventName, eventObj) {
+        if (this.player === null) this.player = document.getElementById(playerId);
+        if (eventName === 'timeupdate') {
+          if (isNaN(eventObj.currentTime) || eventObj.currentTime === 0) return false;
+
+          let currentMediaTime = eventObj.currentTime * 1000,
+            now = new Date().getTime();
+          if (this.originTime === null) {
+            this.originTime = now - currentMediaTime;
+          }
+          let projectedMediaTime = now - this.originTime,
+            mediadTimeDiff = projectedMediaTime - currentMediaTime;
+          if (mediadTimeDiff > this.delayTolerance) {
+            this.player.pause();
+            this.player.play2();
+          } else if (mediadTimeDiff < 0) {
+            this.originTime = now - currentMediaTime;
+          }
+          this.scheduleMediaTimeout();
+        } else if (eventName === 'play') {
+          this.cancelMediaTimeout();
+          this.originTime = null;
+        }
+      },
+      scheduleMediaTimeout() {
+        this.cancelMediaTimeout();
+        this.timeoutTimer = setTimeout(this.onMediaTimeout,this.mediaTimeout);
+      },
+      cancelMediaTimeout() {
+        this.timeoutTimer !== null && clearTimeout(this.timeoutTimer);
+      },
+      onMediaTimeout() {
+        if (this.player.getState() === 'paused') return false;
+        this.player.pause();
+        this.player.play2();
       }
     }
   }
