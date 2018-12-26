@@ -1,23 +1,23 @@
 <template>
   <section class="control">
     <el-header class="header font-24">
-      <img src="../../assets/images/drone/d_control.svg"/>高级控制
+      <img src="../../assets/images/drone/d_control.svg"/>{{ $t('common.advanced_control') }}
     </el-header>
     <el-row type="flex" class="high-content">
       <el-col tag="ul" class="status">
-        <li class="font-18">状态：</li>
+        <li class="font-18">{{ $t('common.status') }}：</li>
         <li>
           <img src="../../assets/images/drone/d_drone.svg"/>
-          <el-button class="font-16" @click="seeStatus('air')" type="primary">无人机状态</el-button>
+          <el-button class="font-16" @click="seeStatus('air')" type="primary">{{ $t('common.air_status') }}</el-button>
         </li>
         <li>
           <img src="../../assets/images/drone/d_airport.svg"/>
-          <el-button class="font-16" @click="seeStatus('depot')" type="primary">机场状态</el-button>
+          <el-button class="font-16" @click="seeStatus('depot')" type="primary">{{ $t('common.depot_status') }}</el-button>
         </li>
       </el-col>
       <el-col class="operate">
         <ul class="d-f">
-          <li class="font-18">无人机控制</li>
+          <li class="font-18">{{ $t('air.air_control') }}</li>
           <li class="text-c"><img src="../../assets/images/drone/d_fly.svg"/></li>
           <li class="text-c"><img src="../../assets/images/drone/d_return.svg"/></li>
           <li class="text-c"><img src="../../assets/images/drone/d_task.svg"/></li>
@@ -25,34 +25,34 @@
           <li class="text-c"><img src="../../assets/images/drone/d_spare.svg"/></li>
         </ul>
         <ul class="d-f btns">
-          <li><el-button @click.prevent="doMsission('mode_loiter')" class="d-b font-16" type="danger">==悬停==</el-button></li>
-          <li><el-button @click.prevent="doMsission('take_off')" class="d-b font-16" type="danger">起飞</el-button></li>
-          <li><el-button @click.prevent="doMsission('model_rtl')" class="d-b font-16" type="danger">返航</el-button></li>
-          <li><el-button @click.prevent="readyMsission" class="d-b font-16" type="danger">开始任务</el-button></li>
+          <li><el-button @click.prevent="doMsission('mode_loiter')" class="d-b font-16" type="danger">=={{ $t('air.air_hover') }}==</el-button></li>
+          <li><el-button @click.prevent="doMsission('take_off')" class="d-b font-16" type="danger">{{ $t('air.air_takeoff') }}</el-button></li>
+          <li><el-button @click.prevent="doMsission('model_rtl')" class="d-b font-16" type="danger">{{ $t('air.air_return') }}</el-button></li>
+          <li><el-button @click.prevent="readyMsission" class="d-b font-16" type="danger">{{ $t('air.air_runplan') }}</el-button></li>
           <li>
-            <el-button @click.prevent="doMsission('up_5')" class="d-b font-16" type="danger">上升5米</el-button>
-            <el-button @click.prevent="doMsission('down_5')" class="d-b font-16" type="danger">下降5米</el-button>
+            <el-button @click.prevent="doMsission('up_5')" class="d-b font-16" type="danger">{{ $t('air.air_up',{num:5}) }}</el-button>
+            <el-button @click.prevent="doMsission('down_5')" class="d-b font-16" type="danger">{{ $t('air.air_down',{num:5}) }}</el-button>
           </li>
-          <li><el-button @click.prevent="doMsission('land_bakup')" class="d-b font-16" type="danger">降落到备用点</el-button></li>
+          <li><el-button @click.prevent="doMsission('land_bakup')" class="d-b font-16" type="danger">{{ $t('air.air_landpoint') }}</el-button></li>
         </ul>
       </el-col>
     </el-row>
     <section class="logs">
-      <header class="header font-18">日志：</header>
+      <header class="header font-18">{{ $t('common.logs') }}：</header>
       <ul class="logs-content">
         <li v-for="(val,index) in airLogs" :key="index">{{ val }}</li>
         <li v-for="(val,index) in depotLogs" :key="index">{{ val }}</li>
       </ul>
     </section>
     <el-collapse class="debug">
-      <el-collapse-item title="以下命令仅限开发人员调试使用" name="1">
-        <el-button class="font-16" @click.prevent="doMsission('land')" type="danger">直接降落</el-button>
-        <span class="font-14">桨叶急停，需特别小心--></span>
-        <el-button class="font-16" @click.prevent="doMsission('emergency_stop')" type="danger">急停</el-button>
+      <el-collapse-item :title="$t('common.debug_tips')" name="1">
+        <el-button class="font-16" @click.prevent="doMsission('land')" type="danger">{{ $t('air.air_land') }}</el-button>
+        <span class="font-14">{{ $t('air.air_emergency_stop_tips') }}</span>
+        <el-button class="font-16" @click.prevent="doMsission('emergency_stop')" type="danger">{{ $t('air.air_emergency_stop') }}</el-button>
         <div class="btns f-r">
           <el-input class="f-l inp"></el-input>
-          <el-button class="f-l font-16" type="danger">发送</el-button>
-          <el-button class="f-l font-16">清空</el-button>
+          <el-button class="f-l font-16" type="danger">{{ $t('common.send') }}</el-button>
+          <el-button class="f-l font-16">{{ $t('common.clear') }}</el-button>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -85,26 +85,25 @@
           case 'air':this.$store.state.statusLive && this.airLogs.push(this.$store.state.statusLive.payload);break;
           case 'depot':this.$store.state.statusLive && this.depotLogs.push(this.$store.state.statusLive.payload);break;
         }
-        console.log(this.airLogs,this.depotLogs);
       },
       doMsission(name) {
         this.sendMission(name,() => {
           this.$message({
-            message: '操作成功！',
+            message: this.$t('common.operate_success'),
             type: 'success'
           });
         });
       },
       readyMsission() {
         this.sendMission('startmission_ready',() => {
-          this.$confirm('任务准备就绪，是否继续?', '系统提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+          this.$confirm(this.$t('common.plan_ready'), this.$t('common.system_tips'), {
+            confirmButtonText: this.$t('common.comfirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }).then(() => {
             this.sendMission('startmission',() => {
               this.$message({
-                message: '操作成功！',
+                message: this.$t('common.operate_success'),
                 type: 'success'
               });
             });
@@ -112,7 +111,8 @@
         });
       },
       sendMission(name,callback) {
-        this.$http.post(`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`,Qs.stringify({
+        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`;
+        this.$http.post(url,Qs.stringify({
           name:name,
           level:0,
           mission_queues_id:0
@@ -120,10 +120,10 @@
           .then(res => {
             if (res.status === 200) {
               callback && callback();
-            } else this.$message.error('操作失败！');
+            } else this.$message.error(this.$t('common.operate_error'));
           })
           .catch(err => {
-            this.$message.error('操作失败！');
+            this.$message.error(this.$t('common.operate_error'));
             console.log(err);
           });
       }
