@@ -66,7 +66,7 @@
       <el-table-column align="center" prop="created_at" :label="$t('plan.view.run_time')"></el-table-column>
       <el-table-column align="center" :label="$t('plan.view.raw_data')">
         <template slot-scope="scope">
-          <a href="javascript:;" class="font-16 el-button el-button--primary">{{ $t('common.view') }}</a>
+          <a :href="scope.row.raw_data?$store.state.config.server+scope.row.raw_data:'javascript:;'" class="font-16 el-button el-button--primary" :class="{'is-disabled':!scope.row.raw_data}">{{ $t('common.view') }}</a>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('plan.view.auto_run')">
@@ -76,14 +76,14 @@
       </el-table-column>
       <el-table-column align="center" border :label="$t('plan.view.logs')">
         <template slot-scope="scope">
-          <a :href="scope.row.air_log_path?$store.state.config.server+scope.row.air_log_path:'javascript:;'" download class="el-button" :class="{'is-disabled':!scope.row.air_log_path}">
+          <a :href="scope.row.air_log_path?$store.state.config.server+scope.row.air_log_path:'javascript:;'" download class="font-16 el-button" :class="{'is-disabled':!scope.row.air_log_path}">
             <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
           </a>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('plan.view.sever_logs')">
         <template slot-scope="scope">
-          <a :href="scope.row.sever_log_path?$store.state.config.server+scope.row.sever_log_path:'javascript:;'" download class="el-button" :class="{'is-disabled':!scope.row.sever_log_path}">
+          <a :href="scope.row.sever_log_path?$store.state.config.server+scope.row.sever_log_path:'javascript:;'" download class="font-16 el-button" :class="{'is-disabled':!scope.row.sever_log_path}">
             <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
           </a>
         </template>
@@ -178,7 +178,7 @@
       cancelRunPlan() {this.showCheck = false;},
       // 确认执行
       runPlan() {
-        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}/plan_logs`+this.$store.state.config.suffix:`${this.$store.state.api.plans}/${this.$store.state.planInfo.id}/plan_logs`;
+        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}/plan_logs`+this.$store.state.config.suffix:`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}/plan_logs`;
         this.$http.post(url)
           .then(res => {
             if (res.status === 200) {
