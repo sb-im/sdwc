@@ -1,42 +1,42 @@
 <template>
   <section class="battery">
     <el-header class="header font-24">
-      <img src="../../assets/images/airport/a_control.svg"/>控制
+      <img src="../../assets/images/airport/a_control.svg"/>{{ $t('common.control') }}
     </el-header>
     <el-row>
       <el-col :span="12" class="bat-left">
         <el-col :span="5" class="bat-box text-c">
           <img src="../../assets/images/airport/a_battery.svg"/>
-          <p>A仓电池</p>
+          <p>{{ $t('depot.battery',{i:'A'}) }}</p>
         </el-col>
         <el-col :span="19" class="infos" tag="ul">
           <li class="d-f">
-            <div class="item-label">循环次数</div>
+            <div class="item-label">{{ $t('depot.cycle') }}</div>
             <div class="item-text">
               <span>100</span>
-              <span>状态正常</span>
+              <span>{{ $t('depot.status_normal') }}</span>
             </div>
           </li>
           <li class="d-f">
-            <div class="item-label">状态</div>
+            <div class="item-label">{{ $t('common.status') }}</div>
             <div class="item-text status">
               <el-progress :text-inside="true" :stroke-width="20" :percentage="100" status="success"></el-progress>
             </div>
           </li>
           <li class="d-f">
-            <div class="item-label">维护</div>
+            <div class="item-label">{{ $t('depot.maintain') }}</div>
             <div class="item-text pos-r">
               <img class="pos-a" src="../../assets/images/airport/a_maintain.svg"/>
-              <el-button class="font-16" @click.prevent="doMsission('pickabattery')" type="danger">放入电池</el-button>
-              <el-button class="font-16" @click.prevent="doMsission('mountabattery')" type="danger">取下电池</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('pickabattery')" type="danger">{{ $t('depot.putin') }}</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('mountabattery')" type="danger">{{ $t('depot.pickout') }}</el-button>
             </div>
           </li>
           <li class="d-f">
-            <div class="item-label">调试命令</div>
+            <div class="item-label">{{ $t('depot.debug') }}</div>
             <div class="item-text debug pos-r">
               <img class="pos-a" src="../../assets/images/airport/a_charging.svg"/>
-              <el-button class="font-16" @click.prevent="doMsission('pickbbattery')" type="warning">开始充电</el-button>
-              <el-button class="font-16" @click.prevent="doMsission('pickbbattery')" type="warning">停止充电</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('power_chargedrone_on')" type="warning">{{ $t('depot.start_charge') }}</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('power_chargedrone_off')" type="warning">{{ $t('depot.stop_charge') }}</el-button>
             </div>
           </li>
         </el-col>
@@ -44,36 +44,36 @@
       <el-col :span="12">
         <el-col :span="5" class="bat-box text-c">
           <img src="../../assets/images/airport/a_battery.svg"/>
-          <p>B仓电池</p>
+          <p>{{ $t('depot.battery',{i:'B'}) }}</p>
         </el-col>
         <el-col :span="19" class="infos" tag="ul">
           <li class="d-f">
-            <div class="item-label">循环次数</div>
+            <div class="item-label">{{ $t('depot.cycle') }}</div>
             <div class="item-text">
               <span>100</span>
-              <span>状态正常</span>
+              <span>{{ $t('depot.status_normal') }}</span>
             </div>
           </li>
           <li class="d-f">
-            <div class="item-label">状态</div>
+            <div class="item-label">{{ $t('common.status') }}</div>
             <div class="item-text status">
               <el-progress :text-inside="true" :stroke-width="20" :percentage="100" status="success"></el-progress>
             </div>
           </li>
           <li class="d-f">
-            <div class="item-label">维护</div>
+            <div class="item-label">{{ $t('depot.debug') }}</div>
             <div class="item-text pos-r">
               <img class="pos-a" src="../../assets/images/airport/a_maintain.svg"/>
-              <el-button class="font-16" @click.prevent="doMsission('pickbbattery')" type="danger">放入电池</el-button>
-              <el-button class="font-16" @click.prevent="doMsission('mountbbattery')" type="danger">取下电池</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('pickbbattery')" type="danger">{{ $t('depot.putin') }}</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('mountbbattery')" type="danger">{{ $t('depot.pickout') }}</el-button>
             </div>
           </li>
           <li class="d-f">
-            <div class="item-label">调试命令</div>
+            <div class="item-label">{{ $t('depot.debug') }}</div>
             <div class="item-text debug pos-r">
               <img class="pos-a" src="../../assets/images/airport/a_charging.svg"/>
-              <el-button class="font-16" @click.prevent="doMsission('pickbbattery')" type="warning">开始充电</el-button>
-              <el-button class="font-16" @click.prevent="doMsission('pickbbattery')" type="warning">停止充电</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('power_chargedrone_on')" type="warning">{{ $t('depot.start_charge') }}</el-button>
+              <el-button class="font-16" @click.prevent="doMsission('power_chargedrone_off')" type="warning">{{ $t('depot.stop_charge') }}</el-button>
             </div>
           </li>
         </el-col>
@@ -97,13 +97,14 @@
       doMsission(name) {
         this.sendMission(name,() => {
           this.$message({
-            message: '操作成功！',
+            message: this.$t('common.operate_success'),
             type: 'success'
           });
         });
       },
       sendMission(name,callback) {
-        this.$http.post(`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`,Qs.stringify({
+        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.nodes}/${this.node.id}/mission_queues`;
+        this.$http.post(url,Qs.stringify({
           name:name,
           level:0,
           mission_queues_id:0
@@ -111,10 +112,10 @@
           .then(res => {
             if (res.status === 200) {
               callback && callback();
-            } else this.$message.error('操作失败！');
+            } else this.$message.error(this.$t('common.operate_error'));
           })
           .catch(err => {
-            this.$message.error('操作失败！');
+            this.$message.error(this.$t('common.operate_error'));
             console.log(err);
           });
       }
