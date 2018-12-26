@@ -77,10 +77,10 @@
       login() {
         // local User debug
         if (this.ruleForm.username == "debug" && this.ruleForm.password == "debug") {
-          this.getLogin(this.$store.state.api.debug)
+          this.getLogin(this.$store.state.api.local.debug)
         } else {
           // remote user login
-          this.postLogin(this.$store.state.api.login)
+          this.postLogin(this.$store.state.api.local.login)
         }
       },
       getLogin(api_url) {
