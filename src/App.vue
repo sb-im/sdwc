@@ -12,7 +12,7 @@
       }
     },
     created() {
-      this.$store.commit('token', JSON.parse(localStorage.getItem('login')));
+      localStorage.getItem('login') ? this.$store.commit('token', JSON.parse(localStorage.getItem('login'))) : null ;
       this.$store.dispatch('appInit',this);
     },
     methods: {
