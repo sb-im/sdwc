@@ -124,19 +124,11 @@ export default new Vuex.Store({
           _this.$i18n.locale = res.data.lang ? res.data.lang : context.state.config.lang;
           context.commit('config',{
             config: res.data,
-            callback: () => {
-              context.dispatch('getSideMenu',{_this,type:'plans'});
-              context.dispatch('getSideMenu',{_this,type:'nodes'});
-            }
           });
         })
         .catch(() => {
           context.commit('config',{
             config: context.state.config,
-            callback: () => {
-              context.dispatch('getSideMenu',{_this,type:'plans'});
-              context.dispatch('getSideMenu',{_this,type:'nodes'});
-            }
           });
         });
     },

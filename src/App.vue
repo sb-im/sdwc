@@ -12,7 +12,6 @@
       }
     },
     created() {
-      localStorage.getItem('login') ? this.$store.commit('token', JSON.parse(localStorage.getItem('login'))) : null ;
       this.$store.dispatch('appInit',this);
     },
     methods: {

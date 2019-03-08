@@ -89,7 +89,6 @@
           this.$store.commit("token", response.data)
           if (response.data.token) {
             this.$router.push('app')
-            localStorage.setItem('login', JSON.stringify(response.data))
           }
         })
         .catch((error) => {
@@ -107,10 +106,11 @@
           grant_type: 'password'
         })
         .then((response) => {
-          console.log(response)
           if (response.data.access_token) {
-            this.$http.create().defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token;
+            this.$http.defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token;
             this.$router.push('app');
+            this.$store.dispatch('getSideMenu',{_this: this,type:'plans'});
+            this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'});
           }
         })
         .catch((error) => {
