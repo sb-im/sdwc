@@ -14,11 +14,19 @@
 </template>
 
 <script>
+  import axios from 'axios';
   import Header from './frame/header'
   import Aside from './frame/side'
   import Tabs from './frame/tabs'
 
   export default {
+    beforeRouteEnter(to, from, next) {
+      if (!axios.defaults.headers.common['Authorization']) {
+        next('/login');
+      } else {
+        next();
+      }
+    },
     data() {
       return {
 
