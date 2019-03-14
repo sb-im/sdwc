@@ -69,6 +69,7 @@
 </template>
 
 <script>
+  import mqttClient from '../../config/mqtt';
   import battery from './battery'
   import Qs from 'qs'
   export default {
@@ -104,7 +105,7 @@
           });
         });
       },
-      sendMission(name,callback) {
+      sendMission__legacy(name,callback) {
         let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`;
         this.$http.post(url,Qs.stringify({
           name:name,
@@ -119,6 +120,15 @@
           .catch(err => {
             this.$message.error(this.$t('common.operate_error'));
             console.log(err);
+          });
+      },
+      sendMission(name, callback = () => {}) {
+        mqttClient.invoke(this.node.id, name, [])
+          .then(() => {
+            callback()
+          })
+          .catch(() => {
+            this.$message.error(this.$t('common.operate_error'));
           });
       }
     }
