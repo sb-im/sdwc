@@ -23,6 +23,7 @@
 
 <script>
   import VueLbgv from 'vue-lbgv'
+  import mqttClient from '../config/mqtt';
 
   export default {
     data() {
@@ -110,7 +111,12 @@
             this.$http.defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token;
             this.$router.push('app');
             this.$store.dispatch('getSideMenu',{_this: this,type:'plans'});
-            this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'});
+            this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'})
+              .then(() => {
+                this.$store.state.nodes.forEach(n => {
+                  mqttClient.subscribeNode(n.id);
+                });
+              });
           }
         })
         .catch((error) => {

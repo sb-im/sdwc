@@ -136,7 +136,7 @@ export default new Vuex.Store({
     getSideMenu(context,arg) {
       let url = context.state.config.suffix!==''?context.state.api.local[arg.type]+context.state.config.suffix:context.state.api.local[arg.type];
       // 获取plans/nodes
-      arg._this.$http.get(url)
+      return arg._this.$http.get(url)
         .then(res => {
           if (res.status === 200) {
             context.commit('itemAdd', {
@@ -235,7 +235,7 @@ export default new Vuex.Store({
     },
     // 获取status_live
     getStatusLive(context,arg) {
-      let url = context.state.config.suffix!==''?`${context.state.api.local.nodes}/${arg.id}/status_lives`+context.state.config.suffix:`${context.state.api.local.nodes}/${arg.id}/status_lives`;
+      let url = `${context.state.api.local.nodes}/${arg.id}/status_lives${context.state.config.suffix}`;
       arg._this.$http.get(url)
         .then(res => {
           if (!res.data.payload.code || res.data.payload.code !== -1) {
