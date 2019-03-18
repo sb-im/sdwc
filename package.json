@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "cross-env NODE_ENV=production webpack --hide-modules",
     "client": "nwbuild -p $P client",
     "cdev": "nwbuild -v 0.30.0 -p linux64 -r client",
     "test": "eslint src --ext .vue && eslint src webpack"
