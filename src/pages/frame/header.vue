@@ -9,13 +9,17 @@
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#ffd04b">
-      <el-menu-item index="1">
-        <img src="../../assets/images/header/h_drone.svg"/>{{ $t('header.air',{status:$t('header.normal')}) }}
-      </el-menu-item>
-      <el-menu-item index="2">
-        <img src="../../assets/images/header/h_airport.svg"/>{{ $t('header.depot',{status:$t('header.normal')}) }}
-      </el-menu-item>
-      <el-submenu index="3">
+      <el-submenu index="1">
+        <template slot="title">
+          <img src="../../assets/images/header/h_drone.svg"/>通讯状态
+        </template>
+        <el-menu-item v-for="(node, index) in $store.state.nodes" :key="node.id" :index="`1-${index + 1}`">
+          {{ node.name }}
+          <template v-if="node.type_name === 'air'">{{ $t('header.air',{status:$t('header.normal')}) }}</template>
+          <template v-else-if="node.type_name === 'depot'">{{ $t('header.depot',{status:$t('header.normal')}) }}</template>
+        </el-menu-item>
+      </el-submenu>
+      <el-submenu index="2">
         <template slot="title">
           <img src="../../assets/images/header/user.svg"/>调试人员
         </template>
