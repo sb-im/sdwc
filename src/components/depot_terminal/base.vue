@@ -9,11 +9,11 @@
         <li class="font-18">{{ $t('common.status') }}：</li>
         <li>
           <img src="../../assets/images/airport/a_airport.svg"/>
-          <el-button class="font-16" @click="seeStatus('depot')" type="primary">{{ $t('common.air_status') }}</el-button>
+          <el-button class="font-16" @click="seeStatus('air')" type="primary">{{ $t('common.air_status') }}</el-button>
         </li>
         <li>
           <img src="../../assets/images/airport/a_drone.svg"/>
-          <el-button class="font-16" @click="seeStatus('air')" type="primary">{{ $t('common.depot_status') }}</el-button>
+          <el-button class="font-16" @click="seeStatus('depot')" type="primary">{{ $t('common.depot_status') }}</el-button>
         </li>
       </el-col>
       <el-col tag="table" class="operate">
