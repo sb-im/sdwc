@@ -1,10 +1,14 @@
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
-import config from '../../config.json';
 
 class MqttClient {
-  constructor(addr) {
+  constructor() {
     this.topics = [];
+    this._callId = 0;
+    this.resolveMap = new Map();
+  }
+
+  connect(addr) {
     this.mqtt = mqtt.connect(addr);
     this.mqtt.on('connect', () => console.log('[MQTT] connected to', addr));
     this.mqtt.on('message', (topic, message) => {
@@ -21,8 +25,6 @@ class MqttClient {
       }
       this.resolveMap.delete(result.payload.id);
     });
-    this._callId = 0;
-    this.resolveMap = new Map();
   }
 
   nextCallId() {
@@ -63,6 +65,6 @@ class MqttClient {
   }
 }
 
-const client = new MqttClient(config.mqtt_url);
+const client = new MqttClient();
 
 export default client;
