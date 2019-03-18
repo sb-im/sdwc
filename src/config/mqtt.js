@@ -30,19 +30,33 @@ class MqttClient {
   }
 
   /**
+   * subscirbe to `/nodes/:id/rpc/recv`
+   * @param {string} id node id
+   */
+  subscribeNode(id) {
+    [
+      `/nodes/${id}/rpc/recv`,
+      `/nodes/${id}/message`,
+      `/nodes/${id}/status`
+    ].forEach(topic => {
+      if (this.topics.indexOf(topic) < 0) {
+        this.mqtt.subscribe(topic);
+      }
+    });
+  }
+
+  /**
    * invoke rpc method
    * @param {string} target
    * @param {string} method method name
    * @param {any[]} argArray argument array
    */
   invoke(target, method, argArray) {
-    const topicRecv = `/nodes/${target}/rpc/recv`;
-    if (this.topics.indexOf(topicRecv) < 0) {
-      this.mqtt.subscribe(topicRecv);
-    }
     const id = this.nextCallId();
+    const topicSend = `/nodes/${target}/rpc/send`;
     const payload = jsonrpc.request(id, method, argArray);
-    this.mqtt.publish(`/nodes/${target}/rpc/send`, JSON.stringify(payload));
+    this.mqtt.publish(topicSend, JSON.stringify(payload));
+    console.log('[MQTT] pub:', payload);
     return new Promise((resolve, reject) => {
       this.resolveMap.set(id, { resolve, reject });
     });
