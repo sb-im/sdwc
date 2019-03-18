@@ -119,7 +119,7 @@ export default new Vuex.Store({
   actions: {
     // 项目全局初始化
     appInit(context,_this) {
-      _this.$http.get(`${location.protocol}//${location.host}/config.json`)
+      return _this.$http.get(`${location.protocol}//${location.host}/config.json`)
         .then(res => {
           _this.$i18n.locale = res.data.lang ? res.data.lang : context.state.config.lang;
           context.commit('config',{

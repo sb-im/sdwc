@@ -5,6 +5,7 @@
 </template>
 
 <script>
+  import mqttClient from './config/mqtt';
   export default {
     data(){
       return {
@@ -12,7 +13,10 @@
       }
     },
     created() {
-      this.$store.dispatch('appInit',this);
+      this.$store.dispatch('appInit',this)
+        .then(() => {
+          mqttClient.connect(this.$store.state.config.mqtt_url);
+        });
     },
     methods: {
 
