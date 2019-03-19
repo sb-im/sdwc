@@ -35,9 +35,9 @@ class MqttClient {
    */
   subscribeNode(id) {
     [
-      `/nodes/${id}/rpc/recv`,
-      `/nodes/${id}/message`,
-      `/nodes/${id}/status`
+      `nodes/${id}/rpc/recv`,
+      `nodes/${id}/message`,
+      `nodes/${id}/status`
     ].forEach(topic => {
       if (this.topics.indexOf(topic) < 0) {
         this.mqtt.subscribe(topic);
@@ -53,7 +53,7 @@ class MqttClient {
    */
   invoke(target, method, argArray) {
     const id = this.nextCallId();
-    const topicSend = `/nodes/${target}/rpc/send`;
+    const topicSend = `nodes/${target}/rpc/send`;
     const payload = jsonrpc.request(id, method, argArray);
     this.mqtt.publish(topicSend, JSON.stringify(payload));
     console.log('[MQTT] pub:', payload);
