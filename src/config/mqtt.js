@@ -4,8 +4,12 @@ import jsonrpc from 'jsonrpc-lite';
 class MqttClient {
   constructor() {
     this.topics = [];
-    this._callId = 0;
+    this.rpcIdPrefix = null;
     this.resolveMap = new Map();
+  }
+
+  setIdPrefix(prefix) {
+    this.rpcIdPrefix = prefix;
   }
 
   connect(addr) {
@@ -28,7 +32,7 @@ class MqttClient {
   }
 
   nextCallId() {
-    return `${this.mqtt.options.clientId}-${this._callId++}`;
+    return `sdwc-${this.rpcIdPrefix}-${Date.now()}`;
   }
 
   /**
@@ -54,6 +58,7 @@ class MqttClient {
    * @param {any[]} argArray argument array
    */
   invoke(target, method, argArray) {
+    if (this.rpcIdPrefix === null) return;
     const id = this.nextCallId();
     const topicSend = `nodes/${target}/rpc/send`;
     const payload = jsonrpc.request(id, method, argArray);
