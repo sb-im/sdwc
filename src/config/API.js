@@ -5,6 +5,7 @@ export default {
     login: '/oauth/token',
     nodes: '/api/v1/nodes',
     plans: '/api/v1/plans',
+    user: '/api/v1/user/'
   },
   // 服务器远端
   remote: {
