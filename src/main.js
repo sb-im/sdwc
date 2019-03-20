@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
-Vue.prototype.$http = axios
+Vue.prototype.$http = axios.create();
 import VueJsonp from 'vue-jsonp'
 Vue.use(VueJsonp)
 import ElementUI from 'element-ui'

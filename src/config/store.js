@@ -281,17 +281,18 @@ export default new Vuex.Store({
         .catch(err => {console.log(err);});
     },
     // 获取天气信息
-    getWeather(context, _this) {
+    getWeather(context) {
       context.state.weaTimer && clearInterval(context.state.weaTimer);
-      context.dispatch('getWeaInfo',_this);
+      context.dispatch('getWeaInfo');
       context.commit('weatherTimer',
         setInterval(() => {
-          context.dispatch('getWeaInfo',_this);
+          context.dispatch('getWeaInfo');
         }, 1000*60));
     },
-    getWeaInfo(context, _this) {
-      _this.$http.get(context.state.api.remote.weather)
-        .then(res => {
+    getWeaInfo(context) {
+      axios.get(context.state.api.remote.weather, {
+        withCredentials: true
+      }).then(res => {
           res.status === 200 && context.commit('weatherInfo', res.data[0]);
         })
         .catch(err => {
