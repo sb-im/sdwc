@@ -114,19 +114,20 @@
             this.$http = axios.create({
               headers: {Authorization: token}
             });
-            this.$http.get(this.$store.state.api.local.user).then(res => {
-              this.$store.commit('userInfo', res.data);
-              mqttClient.setIdPrefix(this.res.data.userInfo.id);
-              mqttClient.connect(this.$store.state.config.mqtt_url);
-            });
             this.$router.push('app');
             this.$store.dispatch('getSideMenu',{_this: this,type:'plans'});
-            this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'})
-              .then(() => {
-                this.$store.state.nodes.forEach(n => {
-                  mqttClient.subscribeNode(n.id);
+            this.$http.get(this.$store.state.api.local.user).then(res => {
+              this.$store.commit('userInfo', res.data);
+              mqttClient.setIdPrefix(res.data.id);
+              mqttClient.connect(this.$store.state.config.mqtt_url);
+            }).then(() => {
+              this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'})
+                .then(() => {
+                  this.$store.state.nodes.forEach(n => {
+                    mqttClient.subscribeNode(n.id);
+                  });
                 });
-              });
+            })
           }
         })
         .catch((error) => {
