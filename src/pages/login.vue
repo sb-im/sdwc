@@ -22,6 +22,7 @@
 </template>
 
 <script>
+  import axios from 'axios';
   import VueLbgv from 'vue-lbgv'
   import mqttClient from '../config/mqtt';
 
@@ -108,7 +109,16 @@
         })
         .then((response) => {
           if (response.data.access_token) {
-            this.$http.defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token;
+            const token = response.data.token_type + ' ' + response.data.access_token;
+            this.$store.commit('token', {token});
+            this.$http = axios.create({
+              headers: {Authorization: token}
+            });
+            this.$http.get(this.$store.state.api.local.user).then(res => {
+              this.$store.commit('userInfo', res.data);
+              mqttClient.setIdPrefix(this.res.data.userInfo.id);
+              mqttClient.connect(this.$store.state.config.mqtt_url);
+            });
             this.$router.push('app');
             this.$store.dispatch('getSideMenu',{_this: this,type:'plans'});
             this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'})

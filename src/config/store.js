@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios';
 import PaPaParse from 'papaparse'
 import Config from './config.json'
 import API from './API.js'
@@ -11,6 +12,7 @@ export default new Vuex.Store({
     api: API,
     config: Config,
     token: '',
+    userInfo: {},
     nodes: [],
     plans: [],
     links: [],
@@ -42,6 +44,9 @@ export default new Vuex.Store({
       if (config.url_token != undefined) {
         state.config.suffix = state.config.suffix + config.token;
       }
+    },
+    userInfo(state, payload) {
+      state.userInfo = payload;
     },
     itemAdd(state, arg) {
       switch (arg.type) {
