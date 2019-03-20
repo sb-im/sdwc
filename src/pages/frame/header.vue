@@ -21,7 +21,8 @@
       </el-submenu>
       <el-submenu index="2">
         <template slot="title">
-          <img src="../../assets/images/header/user.svg"/>调试人员
+          <img src="../../assets/images/header/user.svg"/>
+          {{ $store.state.userInfo.email }}
         </template>
         <el-menu-item index="loginout">{{ $t('header.logout') }}</el-menu-item>
       </el-submenu>
