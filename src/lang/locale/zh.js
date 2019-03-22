@@ -1,8 +1,11 @@
 module.exports = {
   login: {
     username:'账号',
+    error_username: '请输入账号',
     password:'密码',
-    button:'登录'
+    error_password: '请输入密码',
+    button:'登录',
+    failed: '登录失败：用户名或密码错误'
   },
   header: {
     title:'Superdock无人机自动机场',

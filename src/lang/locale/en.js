@@ -1,8 +1,11 @@
 module.exports = {
   login: {
     username:'Username',
+    error_username: 'Please enter the username',
     password:'Password',
-    button:'Login'
+    error_password: 'Please enter the password',
+    button:'Login',
+    failed: 'Failed: Invalid Username or Password'
   },
   header: {
     title:'Superdock Drone Automatic Airport',

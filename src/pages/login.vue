@@ -30,7 +30,7 @@
     data() {
       var validateUser = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please enter the username'));
+          callback(new Error(this.$t('login.error_username')));
         } else {
           if (this.ruleForm.username !== '') {
             //this.$refs.ruleForm.validateField('username');
@@ -40,7 +40,7 @@
       }
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please enter the password'));
+          callback(new Error(this.$t('login.error_password')));
         } else {
           if (this.ruleForm.password !== '') {
             //this.$refs.ruleForm.validateField('password');
@@ -130,8 +130,8 @@
             })
           }
         })
-        .catch((error) => {
-          console.log(error)
+        .catch(() => {
+          this.$message.error(this.$t('login.failed'));
         });
       }
 
