@@ -13,10 +13,9 @@
         <template slot="title">
           <img src="../../assets/images/header/h_drone.svg"/>通讯状态
         </template>
-        <el-menu-item v-for="(node, index) in $store.state.nodes" :key="node.id" :index="`1-${index + 1}`">
-          {{ node.name }}
-          <template v-if="node.type_name === 'air'">{{ $t('header.air',{status:$t('header.normal')}) }}</template>
-          <template v-else-if="node.type_name === 'depot'">{{ $t('header.depot',{status:$t('header.normal')}) }}</template>
+        <el-menu-item v-for="(st, index) in nodeStatus" :key="`1-${index}`" :index="`1-${index}`">
+          <i :class="st.icon" :style="{color: st.color}"></i>
+          {{ st.text }}
         </el-menu-item>
       </el-submenu>
       <el-submenu index="2">
@@ -31,23 +30,50 @@
 </template>
 
 <script>
+const StatusIcon = {
+  0: 'el-icon-success',
+  1: 'el-icon-info',
+  2: 'el-icon-error'
+};
+
+const StatusColor= {
+  0: '#67C23A',
+  1: '#909399',
+  2: '#F56C6C'
+};
+
   export default {
-    data() {
-      return {
-        activeIndex: '1'
+    computed: {
+      nodeStatus() {
+        return this.$store.state.nodeStatus.map(st => {
+          const node = this.$store.state.nodes.find(node => st.id == node.id);
+          return {
+            icon: StatusIcon[st.status] || 'el-icon-warning',
+            color: StatusColor[st.status] || '#E6A23C',
+            text: `${this.getTypeText(node.type_name)} ${node.name} ${this.getStatusText(st.status)}`
+          };
+        })
       }
     },
     methods: {
+      getTypeText(type){
+        switch (type) {
+          case 'air': return this.$t('header.air');
+          case 'depot': return this.$t('header.depot');
+        }
+      },
+      getStatusText(status) {
+        switch (status) {
+          case 0: return this.$t('header.normal');
+          case 1: return this.$t('header.shutdown');
+          case 2: return this.$t('header.net_error');
+          default: return this.$t('header.never_online');
+        }
+      },
       navSelect(key) {
         if(key==='loginout') {
           this.$router.push({ path: '/' });
         }
-      },
-      navOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      navClose(key, keyPath) {
-        console.log(key, keyPath);
       }
     }
   }

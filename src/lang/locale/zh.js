@@ -10,9 +10,12 @@ module.exports = {
   header: {
     title:'Superdock无人机自动机场',
     logout:'退出',
-    air:'无人机通讯{status}',
-    depot:'机场通讯{status}',
+    air:'无人机',
+    depot:'机场',
     normal:'正常',
+    shutdown: '已关闭',
+    net_error: '网络错误',
+    never_online: '未连接',
     abnormal:'异常'
   },
   sidemenu: {

@@ -10,9 +10,12 @@ module.exports = {
   header: {
     title:'Superdock Drone Automatic Airport',
     logout:'Logout',
-    air:'Drone {status}',
-    depot:'Depot {status}',
+    air:'Drone',
+    depot:'Depot',
     normal:'Normal',
+    shutdown: 'Powered Off',
+    net_error: 'Network Error',
+    never_online: 'Not Connected',
     abnormal:'Abnormal'
   },
   sidemenu: {
