@@ -6,7 +6,7 @@
   "license": "MPL-2.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server",
     "build": "cross-env NODE_ENV=production webpack --hide-modules",
     "client": "nwbuild -p $P client",
     "cdev": "nwbuild -v 0.30.0 -p linux64 -r client",
@@ -35,9 +35,9 @@
     "vuex": "^3.0.1"
   },
   "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+    "last 2 Chrome versions",
+    "Firefox esr",
+    "Edge >= 14"
   ],
   "devDependencies": {
     "@babel/core": "^7.4.0",

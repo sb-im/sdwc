@@ -1,8 +1,8 @@
-var path = require('path')
-var webpack = require('webpack')
+const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
+  mode: 'development',
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -16,8 +16,9 @@ module.exports = {
         use: [
           'vue-style-loader',
           'css-loader'
-        ],
-      },      {
+        ]
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
@@ -45,32 +46,16 @@ module.exports = {
     new VueLoaderPlugin()
   ],
   devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true
+    hot: true,
+    stats: 'errors-only'
   },
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  devtool: 'cheap-module-eval-source-map'
 }
 
 if (process.env.NODE_ENV === 'production') {
-
-  const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new UglifyJSPlugin({
-      sourceMap: true
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
+  module.exports.mode = 'production';
+  module.exports.devtool = 'source-map';
 }
