@@ -164,6 +164,7 @@ module.exports = {
     logs:'Logs',
     no_video:'No video source found, please try again later~',
     system_tips:'System',
+    operate_pending: 'Pending...',
     operate_success:'Successful!',
     operate_error:'Failed！',
     plan_ready:'The plan is ready, is it run immediately?'

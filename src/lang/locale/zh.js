@@ -162,6 +162,7 @@ module.exports = {
     none:'暂无',
     logs:'日志',
     no_video:'未找到视频源，请稍后再试~',
+    operate_pending: '操作执行中 ...',
     operate_success:'操作成功！',
     operate_error:'操作失败！',
     system_tips:'系统提示',

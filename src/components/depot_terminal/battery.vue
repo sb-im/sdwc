@@ -83,7 +83,6 @@
 </template>
 
 <script>
-  import Qs from 'qs'
   import mqttClient from '../../config/mqtt';
   export default {
     name: "Battery",
@@ -96,37 +95,22 @@
     },
     methods: {
       doMsission(name) {
-        this.sendMission(name,() => {
-          this.$message({
-            message: this.$t('common.operate_success'),
-            type: 'success'
-          });
+        const notification = this.$notify({
+          duration: 0,
+          type: 'info',
+          title: name,
+          message: this.$t('common.operate_pending')
         });
-      },
-      sendMission__legacy(name,callback) {
-        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`;
-        this.$http.post(url,Qs.stringify({
-          name:name,
-          level:0,
-          mission_queues_id:0
-        }))
-          .then(res => {
-            if (res.status === 200) {
-              callback && callback();
-            } else this.$message.error(this.$t('common.operate_error'));
-          })
-          .catch(err => {
-            this.$message.error(this.$t('common.operate_error'));
-            console.log(err);
-          });
-      },
-      sendMission(name, callback = () => {}) {
         mqttClient.invoke(this.node.id, name, [])
           .then(() => {
-            callback()
+            notification.$data.type = 'success';
+            notification.$data.message = this.$t('common.operate_success');
+            notification.$data.duration = 2000;
+            notification.startTimer();
           })
           .catch(() => {
-            this.$message.error(this.$t('common.operate_error'));
+            notification.$data.type = 'error';
+            notification.$data.message = this.$t('common.operate_error');
           });
       }
     }
