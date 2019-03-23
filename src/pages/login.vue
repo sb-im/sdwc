@@ -126,6 +126,7 @@
                   this.$store.state.nodes.forEach(n => {
                     mqttClient.subscribeNode(n.id);
                   });
+                  this.$store.dispatch('subscribeNodeStatus');
                 });
             })
           }

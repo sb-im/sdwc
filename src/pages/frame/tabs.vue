@@ -45,7 +45,6 @@
           this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
         } else {
-          this.$store.dispatch('getStatusLive', {_this:this,id:tmp.id,type:tmp.type});
           if (tmp.type === 'air') {
             this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           } else {
@@ -74,7 +73,6 @@
           this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id:tmp.id});
         } else {
-          this.$store.dispatch('getStatusLive', {_this:this,id:tmp.id,type:tmp.type});
           if (tmp.type === 'air') {
             this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           } else {

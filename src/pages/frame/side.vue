@@ -69,7 +69,6 @@
           this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           this.$store.dispatch('getPlanInfo', {_this:this,id});
         } else {
-          this.$store.dispatch('getStatusLive', {_this:this,id,type:keyPath[0]});
           if (keyPath[0] === 'air') {
             this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
           } else {
@@ -82,7 +81,6 @@
         for(let item of (key!=='plans'?this.$store.state.nodes:this.$store.state.plans)) {
           if (key === item.type_name) {
             this.tabsAdd(key,item);
-            this.$store.dispatch('getStatusLive', {_this:this,id:item.id,type:key});
             if (key === 'air') {
               this.$store.state.weaTimer && clearInterval(this.$store.state.weaTimer);
             } else if (key === 'depot') {

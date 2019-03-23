@@ -4,6 +4,7 @@ import axios from 'axios';
 import PaPaParse from 'papaparse'
 import Config from './config.json'
 import API from './API.js'
+import mqttClient from './mqtt';
 
 Vue.use(Vuex);
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     token: '',
     userInfo: {},
     nodes: [],
+    nodeStatus: [],
     plans: [],
     links: [],
     active: '',
@@ -26,8 +28,7 @@ export default new Vuex.Store({
     cyForecast: false,
     cyRealtime: false,
     cyTimer: null,
-    weaTimer: null,
-    statusLive: false
+    weaTimer: null
   },
   mutations: {
     config(state, arg) {
@@ -54,6 +55,14 @@ export default new Vuex.Store({
         case 'plans':state.plans = arg.data;break;
       }
       arg.callback && arg.callback();
+    },
+    nodeStatus(state, { id, status }) {
+      const st = state.nodeStatus.find(s => s.id == id);
+      if (st) {
+        st.status = status;
+      } else {
+        state.nodeStatus.push({ id, status });
+      }
     },
     linkAdd(state, arg) {
       if (state.links.length === 0) {
@@ -116,9 +125,6 @@ export default new Vuex.Store({
     },
     weatherTimer(state, timer) {
       state.weaTimer = timer;
-    },
-    statusLive(state, status) {
-      state.statusLive = status;
     }
   },
   actions: {
@@ -165,7 +171,6 @@ export default new Vuex.Store({
       for (let item of (init!=='plans'?nodeList:planList)) {
         if (init === item.type_name) {
           context.dispatch('tabsAdd',{key:init,item});
-          context.dispatch('getStatusLive', {_this,id:item.id,type:init});
           if (init === 'air') {
             context.state.weaTimer && clearInterval(context.state.weaTimer);
           } else if (init === 'depot') {
@@ -238,32 +243,13 @@ export default new Vuex.Store({
           context.commit('planMap',[]);
         });
     },
-    // 获取status_live
-    getStatusLive(context,arg) {
-      let url = `${context.state.api.local.nodes}/${arg.id}/status_lives${context.state.config.suffix}`;
-      arg._this.$http.get(url)
-        .then(res => {
-          if (!res.data.payload.code || res.data.payload.code !== -1) {
-            context.commit('statusLive',res.data);
-            if (arg.type === 'depot') {
-              let temp = {_this:arg._this, lng:(+res.data.payload.gps.lon)*Math.pow(10,-7), lat:(+res.data.payload.gps.lat)*Math.pow(10,-7)};
-              context.dispatch('getCyWeather',temp);
-              context.commit('weatherTimer',
-                setInterval(() => {
-                  context.dispatch('getCyWeather',temp)
-                },1000*60)
-              );
-            }
-          } else {
-            context.state.cyTimer && clearInterval(context.state.cyTimer);
-            context.commit('statusLive',false);
-            context.commit('cyForecast',false);
-            context.commit('cyRealtime',false);
-          }
-        })
-        .catch(err => {
-          console.log(err);
+    // 获取节点状态
+    subscribeNodeStatus({state, commit}) {
+      state.nodes.forEach(node => {
+        mqttClient.on(`nodes/${node.id}/status`, (status) => {
+          commit('nodeStatus', { id: node.id, status });
         });
+      });
     },
     // 获取彩云APP天气信息
     getCyWeather(context, arg) {
