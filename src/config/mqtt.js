@@ -1,8 +1,11 @@
+import { EventEmitter } from 'events';
+
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
 
-class MqttClient {
+class MqttClient extends EventEmitter {
   constructor() {
+    super();
     this.topics = [];
     this.rpcIdPrefix = null;
     this.resolveMap = new Map();
@@ -13,13 +16,17 @@ class MqttClient {
   }
 
   connect(addr) {
-    this.mqtt = mqtt.connect(addr);
+    this.mqtt = mqtt.connect(addr, {
+      clientId: `sdwc-${this.rpcIdPrefix}`
+    });
     this.mqtt.on('connect', () => console.log('[MQTT] connected to', addr));
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
       console.log('[MQTT] msg:', topic, str); // message is Buffer
+      this.emit(topic, JSON.parse(str));
       const result = jsonrpc.parse(str);
       const handler = this.resolveMap.get(result.payload.id);
+      if (!handler) return;
       if (result.type === 'success') {
         if (handler.resolve) handler.resolve(result.payload.result);
       } else if (result.type === 'error') {
