@@ -100,7 +100,7 @@ import Command from '../webterminal/command.vue'
     },
     methods: {
       // C: create, R: display, U: send, D: destroy
-      create(address='localhost') {
+      create(/*address='localhost'*/) {
         this.connect_status = true
       },
       destroy() {

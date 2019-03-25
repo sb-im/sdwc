@@ -25,9 +25,8 @@
         </template>
         <el-menu-item
           class="menu-item"
-          v-for="(val,index) in $store.state.nodes"
+          v-for="(val,index) in depotNodes"
           :key="index"
-          v-if="val.type_name==='depot'"
           :index="'depot'+val.id">
           {{ val.name }}
         </el-menu-item>
@@ -38,9 +37,8 @@
         </template>
         <el-menu-item
           class="menu-item"
-          v-for="(val,index) in $store.state.nodes"
+          v-for="(val,index) in airNodes"
           :key="index"
-          v-if="val.type_name==='air'"
           :index="'air'+val.id">
           {{ val.name }}
         </el-menu-item>
@@ -50,6 +48,7 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
   export default {
     data() {
       return {
@@ -58,6 +57,12 @@
     },
     created() {
 
+    },
+    computed: {
+      ...mapGetters([
+        'depotNodes',
+        'airNodes'
+      ])
     },
     methods: {
       menuSelect(key,keyPath) {

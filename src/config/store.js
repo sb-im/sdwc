@@ -285,5 +285,13 @@ export default new Vuex.Store({
           console.log(err);
         });
     }
+  },
+  getters: {
+    depotNodes(state) {
+      return state.nodes.filter(node => node.type_name === 'depot');
+    },
+    airNodes(state) {
+      return state.nodes.filter(node => node.type_name === 'air');
+    }
   }
 });

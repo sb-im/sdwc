@@ -13,7 +13,7 @@
     },
     props: {
       flight: {
-        type: Array|Object,
+        type: Array,
         required: true,
         default: () => []
       }

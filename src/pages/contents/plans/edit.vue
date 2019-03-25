@@ -29,7 +29,7 @@
           <p class="label"><img src="../../../assets/images/task/t_drone.svg"/>{{ $t('plan.plan_air') }}：</p>
           <p class="text">
             <el-select class="d-b" v-model="planNode" :placeholder="$t('plan.edit.air_inp')">
-              <el-option v-for="(val,index) in $store.state.nodes" v-if="val.type_name==='air'" :key="index" :label="val.name" :value="val.id"></el-option>
+              <el-option v-for="(val,index) in airNodes" :key="index" :label="val.name" :value="val.id"></el-option>
             </el-select>
           </p>
         </li>
@@ -37,7 +37,7 @@
           <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>{{ $t('plan.plan_depot') }}：</p>
           <p class="text">
             <el-select class="d-b" v-model="planDepot" :placeholder="$t('plan.edit.depot_inp')">
-              <el-option v-for="(val,index) in $store.state.nodes" v-if="val.type_name==='depot'" :key="index" :label="val.name" :value="val.id"></el-option>
+              <el-option v-for="(val,index) in depotNodes" :key="index" :label="val.name" :value="val.id"></el-option>
             </el-select>
           </p>
         </li>
@@ -78,6 +78,7 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
   import PaPaParse from 'papaparse'
   import MapWay from '../../../components/uavtrack'
   export default {
@@ -120,6 +121,12 @@
       this.planStart = this.plan === 'add' ? '' : this.$store.state.planInfo.start_time;
       this.showMap = !this.plan === 'add';
       this.pathResult = this.plan === 'add' ? [] : this.$store.state.planMap;
+    },
+    computed: {
+      ...mapGetters([
+        'depotNodes',
+        'airNodes'
+      ])
     },
     methods: {
       backEvent(){
