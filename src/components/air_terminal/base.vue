@@ -40,19 +40,21 @@
     <section class="logs">
       <header class="header font-18">{{ $t('common.logs') }}：</header>
       <ul class="logs-content">
-        <li v-for="(val,index) in airLogs" :key="index">{{ val }}</li>
-        <li v-for="(val,index) in depotLogs" :key="index">{{ val }}</li>
+        <li v-for="(val,index) in logs" :key="index">{{ val }}</li>
       </ul>
     </section>
     <el-collapse class="debug">
       <el-collapse-item :title="$t('common.debug_tips')" name="1">
-        <el-button class="font-16" @click.prevent="doMsission('land')" type="danger">{{ $t('air.air_land') }}</el-button>
-        <span class="font-14">{{ $t('air.air_emergency_stop_tips') }}</span>
-        <el-button class="font-16" @click.prevent="doMsission('emergency_stop')" type="danger">{{ $t('air.air_emergency_stop') }}</el-button>
-        <div class="btns f-r">
-          <el-input class="f-l inp"></el-input>
-          <el-button class="f-l font-16" type="danger">{{ $t('common.send') }}</el-button>
-          <el-button class="f-l font-16">{{ $t('common.clear') }}</el-button>
+        <div class="collapse-content">
+          <el-button class="font-16" @click.prevent="doMsission('land')" type="danger">{{ $t('air.air_land') }}</el-button>
+          <el-tooltip class="item" effect="dark" :content="$t('air.air_emergency_stop_tips')" placement="top">
+            <el-button class="font-16" @click.prevent="doMsission('emergency_stop')" type="danger">{{ $t('air.air_emergency_stop') }}</el-button>
+          </el-tooltip>
+          <div class="side">
+            <el-input v-model="command" clearable>
+              <el-button type="danger" slot="append">{{ $t('common.send') }}</el-button>
+            </el-input>
+          </div>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -65,8 +67,7 @@
     name: "AirTerminal",
     data() {
       return {
-        airLogs:[],
-        depotLogs:[]
+        command: ''
       }
     },
     props: {
@@ -76,8 +77,14 @@
         default: () => {}
       }
     },
-    mounted() {
-
+    computed: {
+      logs() {
+        const nodeMsg = this.$store.state.nodeMessage.find(m => m.id == this.node.id);
+        if (nodeMsg) {
+          return nodeMsg.message;
+        }
+        return [];
+      }
     },
     methods: {
       seeStatus(type) {
@@ -229,8 +236,10 @@
     line-height: 18px;
     color: #999;
   }
-  .debug .btns > .inp{
-    width: auto;
-    margin-right: 10px;
+  .debug .collapse-content {
+    display: flex;
+  }
+  .debug .collapse-content .side {
+    margin-left: auto;
   }
 </style>
