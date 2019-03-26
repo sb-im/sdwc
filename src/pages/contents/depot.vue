@@ -107,6 +107,11 @@
     height: 460px;
     background-color: #000;
   }
+  .video video {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+  }
 
   .infos .info-tab{width: 100%;}
   .infos .info-tab td {
