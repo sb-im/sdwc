@@ -17,7 +17,7 @@ class MqttClient extends EventEmitter {
 
   connect(addr) {
     this.mqtt = mqtt.connect(addr, {
-      clientId: `sdwc-${this.rpcIdPrefix}`
+      clientId: `sdwc-${this.rpcIdPrefix}-${Date.now()}`
     });
     this.mqtt.on('connect', () => console.log('[MQTT] connected to', addr));
     this.mqtt.on('message', (topic, message) => {
