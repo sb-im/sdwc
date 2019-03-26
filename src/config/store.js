@@ -276,14 +276,12 @@ export default new Vuex.Store({
         }, 1000*60));
     },
     getWeaInfo(context) {
-      axios.get(context.state.api.remote.weather, {
-        withCredentials: true
-      }).then(res => {
+      axios.get(context.state.api.remote.weather)
+        .then(res => {
           res.status === 200 && context.commit('weatherInfo', res.data[0]);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      }).catch(err => {
+        console.log(err);
+      });
     }
   },
   getters: {
