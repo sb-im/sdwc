@@ -11,6 +11,14 @@ class MqttClient extends EventEmitter {
     this.resolveMap = new Map();
   }
 
+  /**
+   * @param {string} topic
+   */
+  static parseNodeId(topic) {
+    const [_, id] = /^nodes\/(\d+)\//.exec(topic);
+    return id;
+  }
+
   setIdPrefix(prefix) {
     this.rpcIdPrefix = prefix;
   }
@@ -22,19 +30,27 @@ class MqttClient extends EventEmitter {
     this.mqtt.on('connect', () => console.log('[MQTT] connected to', addr));
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
-      console.log('[MQTT] msg:', topic, str); // message is Buffer
-      this.emit(topic, JSON.parse(str));
-      const result = jsonrpc.parse(str);
-      const handler = this.resolveMap.get(result.payload.id);
-      if (!handler) return;
-      if (result.type === 'success') {
-        if (handler.resolve) handler.resolve(result.payload.result);
-      } else if (result.type === 'error') {
-        if (handler.reject) handler.reject(result.payload.error);
-      } else {
-        if (handler.reject) handler.reject(result.payload);
+      const id = MqttClient.parseNodeId(topic);
+      console.log('[MQTT] msg:', topic, str);
+      if (topic.endsWith('/rpc/recv')) {
+        const result = jsonrpc.parse(str);
+        if (topic.endsWith('/rpc/recv')) {
+          const handler = this.resolveMap.get(result.payload.id);
+          if (!handler) return;
+          if (result.type === 'success') {
+            if (handler.resolve) handler.resolve(result.payload.result);
+          } else if (result.type === 'error') {
+            if (handler.reject) handler.reject(result.payload.error);
+          } else {
+            if (handler.reject) handler.reject(result.payload);
+          }
+          this.resolveMap.delete(result.payload.id);
+        }
+      } else if (topic.endsWith('/status')) {
+        this.emit('status', { id, status: Number.parseInt(str, 10) });
+      } else if (topic.endsWith('/message')) {
+        this.emit('message', { id, message: str });
       }
-      this.resolveMap.delete(result.payload.id);
     });
   }
 
