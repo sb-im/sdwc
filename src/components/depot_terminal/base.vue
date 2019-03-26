@@ -4,18 +4,7 @@
     <el-header class="header font-24">
       <img src="../../assets/images/airport/a_h_control.svg"/>{{ $t('common.advanced_control') }}
     </el-header>
-    <el-row type="flex" class="content">
-      <el-col tag="ul" class="status">
-        <li class="font-18">{{ $t('common.status') }}：</li>
-        <li>
-          <img src="../../assets/images/airport/a_airport.svg"/>
-          <el-button class="font-16" @click="seeStatus('air')" type="primary">{{ $t('common.air_status') }}</el-button>
-        </li>
-        <li>
-          <img src="../../assets/images/airport/a_drone.svg"/>
-          <el-button class="font-16" @click="seeStatus('depot')" type="primary">{{ $t('common.depot_status') }}</el-button>
-        </li>
-      </el-col>
+    <el-row class="content">
       <el-col tag="table" class="operate">
         <tr>
           <td class="font-18">{{ $t('depot.motor_run') }}</td>
@@ -50,21 +39,23 @@
     <section class="logs">
       <header class="header font-18">{{ $t('common.logs') }}：</header>
       <ul class="logs-content">
-        <li v-for="(val,index) in airLogs" :key="index">{{ val }}</li>
-        <li v-for="(val,index) in depotLogs" :key="index">{{ val }}</li>
+        <li v-for="(val,index) in logs" :key="index">{{ val }}</li>
       </ul>
     </section>
-    <section class="debug">
-      <p>{{ $t('common.debug_tips') }}</p>
-      <el-button class="font-16" @click.prevent="doMsission('move_lift_drone')" type="danger">{{ $t('depot.platform_rise') }}</el-button>
-      <el-button class="font-16" @click.prevent="doMsission('move_lift_convey')" type="danger">{{ $t('depot.platform_bottom') }}</el-button>
-      <el-button class="font-16" @click.prevent="doMsission('riseplate')" type="danger">{{ $t('depot.platform_level') }}</el-button>
-      <div class="btns f-r">
-        <el-input class="f-l inp"></el-input>
-        <el-button class="f-l font-16" type="danger">{{ $t('common.send') }}</el-button>
-        <el-button class="f-l font-16">{{ $t('common.clear') }}</el-button>
-      </div>
-    </section>
+    <el-collapse>
+      <el-collapse-item class="debug" :title="$t('common.debug_tips')" name="1">
+        <div class="collapse-content">
+          <el-button class="font-16" @click="doMsission('move_lift_drone')" type="danger">{{ $t('depot.platform_rise') }}</el-button>
+          <el-button class="font-16" @click="doMsission('move_lift_convey')" type="danger">{{ $t('depot.platform_bottom') }}</el-button>
+          <el-button class="font-16" @click="doMsission('riseplate')" type="danger">{{ $t('depot.platform_level') }}</el-button>
+          <div class="side">
+            <el-input v-model="command" clearable>
+              <el-button type="danger" slot="append">{{ $t('common.send') }}</el-button>
+            </el-input>
+          </div>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
   </section>
 </template>
 
@@ -75,8 +66,7 @@
     name: "DepotTerminal",
     data() {
       return {
-        airLogs:[],
-        depotLogs:[]
+        command: ''
       }
     },
     components: {
@@ -84,18 +74,20 @@
     },
     props: {
       node:{
-        type:Object,
-        required: true,
-        default: () => {}
+        type: Object,
+        required: true
+      }
+    },
+    computed: {
+      logs() {
+        const nodeMsg = this.$store.state.nodeMessage.find(m => m.id == this.node.id);
+        if (nodeMsg) {
+          return nodeMsg.message;
+        }
+        return [];
       }
     },
     methods: {
-      seeStatus(type) {
-        switch (type) {
-          case 'air':this.$store.state.statusLive && this.airLogs.push(this.$store.state.statusLive.payload);break;
-          case 'depot':this.$store.state.statusLive && this.depotLogs.push(this.$store.state.statusLive.payload);break;
-        }
-      },
       doMsission(name) {
         const notification = this.$notify({
           duration: 0,
@@ -148,7 +140,6 @@
     padding-right: 10px;
   }
   .control .operate {
-    width: calc(100% - 200px);
     margin-left: 20px;
   }
   .control .status li:first-child,
@@ -194,29 +185,10 @@
     line-height: 18px;
     color: #999;
   }
-  .debug > p {
-    position: relative;
-    color: #999;
-    margin-top: 10px;
-    font-size: 14px;
-    line-height: 26px;
+  .debug .collapse-content {
+    display: flex;
   }
-  .debug > p:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 0;
-    height: 1px;
-    width: 81%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    background-color: #e4eaef
-  }
-  .debug .btns > .inp{
-    width: auto;
-    margin-right: 10px;
+  .debug .collapse-content .side {
+    margin-left: auto;
   }
 </style>
