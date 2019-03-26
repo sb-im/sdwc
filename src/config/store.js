@@ -16,6 +16,7 @@ export default new Vuex.Store({
     userInfo: {},
     nodes: [],
     nodeStatus: [],
+    nodeMessage: [],
     plans: [],
     links: [],
     active: '',
@@ -62,6 +63,14 @@ export default new Vuex.Store({
         st.status = status;
       } else {
         state.nodeStatus.push({ id, status });
+      }
+    },
+    nodeMessage(state, { id, message }) {
+      const st = state.nodeMessage.find(s => s.id == id);
+      if (st) {
+        st.message.push(message);
+      } else {
+        state.nodeMessage.push({ id, message: [message] });
       }
     },
     linkAdd(state, arg) {
@@ -244,11 +253,12 @@ export default new Vuex.Store({
         });
     },
     // 获取节点状态
-    subscribeNodeStatus({state, commit}) {
-      state.nodes.forEach(node => {
-        mqttClient.on(`nodes/${node.id}/status`, (status) => {
-          commit('nodeStatus', { id: node.id, status });
-        });
+    subscribeNodeStatus({commit}) {
+      mqttClient.on('status', status => {
+        commit('nodeStatus', status);
+      });
+      mqttClient.on('message', message => {
+        commit('nodeMessage', message);
       });
     },
     // 获取彩云APP天气信息
