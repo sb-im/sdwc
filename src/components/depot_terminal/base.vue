@@ -1,6 +1,6 @@
 <template>
   <section class="control">
-    <battery :node="node"></battery>
+    <!-- <battery :node="node"></battery> -->
     <el-header class="header font-24">
       <img src="../../assets/images/airport/a_h_control.svg"/>{{ $t('common.advanced_control') }}
     </el-header>
@@ -70,7 +70,7 @@
 
 <script>
   import mqttClient from '../../config/mqtt';
-  import battery from './battery'
+  // import battery from './battery'
   export default {
     name: "DepotTerminal",
     data() {
@@ -80,7 +80,7 @@
       }
     },
     components: {
-      'battery': battery
+      // 'battery': battery
     },
     props: {
       node:{
