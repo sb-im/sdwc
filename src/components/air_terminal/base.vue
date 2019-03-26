@@ -61,7 +61,6 @@
 
 <script>
   import mqttClient from '../../config/mqtt';
-  import Qs from 'qs'
   export default {
     name: "AirTerminal",
     data() {
@@ -88,53 +87,65 @@
         }
       },
       doMsission(name) {
-        this.sendMission(name,() => {
-          this.$message({
-            message: this.$t('common.operate_success'),
-            type: 'success'
-          });
+        // store reference of notification
+        const notification = this.$notify({
+          duration: 0,
+          type: 'info',
+          title: name,
+          message: this.$t('common.operate_pending')
         });
+        return mqttClient.invoke(this.node.id, name, [])
+          .then(() => {
+            // modify notification icon and text
+            notification.$data.type = 'success';
+            notification.$data.message = this.$t('common.operate_success');
+            // disappear after 2000ms
+            // @see https://github.com/ElemeFE/element/blob/5ef3d0ec8d02872fc5de51d16ffe36af2700b11c/packages/notification/src/main.js#L11
+            notification.$data.duration = 2000;
+            notification.startTimer();
+          })
+          .catch(e => {
+            notification.$data.type = 'error';
+            notification.$data.message = this.$t('common.operate_error');
+            return e;
+          });
       },
       readyMsission() {
-        this.sendMission('startmission_ready',() => {
-          this.$confirm(this.$t('common.plan_ready'), this.$t('common.system_tips'), {
-            confirmButtonText: this.$t('common.comfirm'),
-            cancelButtonText: this.$t('common.cancel'),
-            type: 'warning'
-          }).then(() => {
-            this.sendMission('startmission',() => {
-              this.$message({
-                message: this.$t('common.operate_success'),
-                type: 'success'
-              });
-            });
-          });
+        // msgbox's reference can't be stored
+        this.$msgbox({
+          type: 'info',
+          title: this.$t('common.system_tips'),
+          message: this.$t('common.operate_pending'),
+          confirmButtonText: this.$t('common.comfirm')
         });
-      },
-      sendMission__legacy(name,callback) {
-        let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`+this.$store.state.config.suffix:`${this.$store.state.api.local.nodes}/${this.node.id}/mission_queues`;
-        this.$http.post(url,Qs.stringify({
-          name:name,
-          level:0,
-          mission_queues_id:0
-        }))
-          .then(res => {
-            if (res.status === 200) {
-              callback && callback();
-            } else this.$message.error(this.$t('common.operate_error'));
-          })
-          .catch(err => {
-            this.$message.error(this.$t('common.operate_error'));
-            console.log(err);
-          });
-      },
-      sendMission(name, callback = () => {}) {
-        mqttClient.invoke(this.node.id, name, [])
+        mqttClient.invoke(this.node.id, 'startmission_ready', [])
           .then(() => {
-            callback()
+            // 'startmission_ready' returns 'OK'
+            this.$msgbox.close();
+            this.$confirm(this.$t('common.plan_ready'), {
+              type: 'warning',
+              title: this.$t('common.system_tips'),
+              confirmButtonText: this.$t('common.comfirm'),
+              cancelButtonText: this.$t('common.cancel')
+            }).then(() => {
+              // startmission when user confirm
+              this.doMsission('startmission');
+            });
           })
-          .catch(() => {
-            this.$message.error(this.$t('common.operate_error'));
+          .catch(e => {
+            // 'startmission_ready' failed
+            this.$msgbox.close();
+            const h = this.$createElement;
+            // message can be VNode
+            const message = h('div', [
+              h('p', this.$t('common.operate_error')),
+              h('p', `${e.code}: ${e.message}`)
+            ]);
+            this.$alert(message, {
+              type: 'error',
+              title: this.$t('common.system_tips'),
+              confirmButtonText: this.$t('common.comfirm')
+            }).catch(() => { /* noop */ });
           });
       }
     }
