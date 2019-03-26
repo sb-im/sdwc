@@ -101,7 +101,7 @@ module.exports = {
     air_landpoint:'降落到备用点',
     air_land:'直接降落',
     air_emergency_stop:'急停',
-    air_emergency_stop_tips:'桨叶急停，需特别小心-->',
+    air_emergency_stop_tips:'桨叶急停，需特别小心',
   },
   depot:{
     monitor:'实时监控',

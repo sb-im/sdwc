@@ -102,7 +102,7 @@ module.exports = {
     air_landpoint:'Landing',
     air_land:'Landing directly',
     air_emergency_stop:'Emergency stop',
-    air_emergency_stop_tips:'Paddle blade stop, to be very careful -->',
+    air_emergency_stop_tips:'Paddle blade stop, to be very careful',
   },
   depot:{
     monitor:'Realtime monitor',
