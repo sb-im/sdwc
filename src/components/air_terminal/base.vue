@@ -4,17 +4,6 @@
       <img src="../../assets/images/drone/d_control.svg"/>{{ $t('common.advanced_control') }}
     </el-header>
     <el-row type="flex" class="high-content">
-      <el-col tag="ul" class="status">
-        <li class="font-18">{{ $t('common.status') }}：</li>
-        <li>
-          <img src="../../assets/images/drone/d_drone.svg"/>
-          <el-button class="font-16" @click="seeStatus('air')" type="primary">{{ $t('common.air_status') }}</el-button>
-        </li>
-        <li>
-          <img src="../../assets/images/drone/d_airport.svg"/>
-          <el-button class="font-16" @click="seeStatus('depot')" type="primary">{{ $t('common.depot_status') }}</el-button>
-        </li>
-      </el-col>
       <el-col class="operate">
         <ul class="d-f">
           <li class="font-18">{{ $t('air.air_control') }}</li>
@@ -87,12 +76,6 @@
       }
     },
     methods: {
-      seeStatus(type) {
-        switch (type) {
-          case 'air':this.$store.state.statusLive && this.airLogs.push(this.$store.state.statusLive.payload);break;
-          case 'depot':this.$store.state.statusLive && this.depotLogs.push(this.$store.state.statusLive.payload);break;
-        }
-      },
       doMsission(name) {
         // store reference of notification
         const notification = this.$notify({
@@ -178,19 +161,11 @@
     width: 200px;
     border-right: 1px solid #e4eaef;
   }
-  .control .operate ul:first-child,
-  .control .status li {
+  .control .operate ul:first-child {
     height: 52px;
     line-height: 52px;
   }
-  .control .status li button {width: 120px;}
-  .control .status img{
-    width: 40px;
-    height: 40px;
-    padding-right: 10px;
-  }
   .control .operate {
-    width: calc(100% - 200px);
     margin-left: 20px;
   }
   .control .status li:first-child,
