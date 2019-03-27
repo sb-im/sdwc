@@ -9,6 +9,7 @@ module.exports = {
   },
   header: {
     title:'Superdock无人机自动机场',
+    status: '通讯状态',
     logout:'退出',
     air:'无人机',
     depot:'机场',

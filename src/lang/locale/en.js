@@ -9,6 +9,7 @@ module.exports = {
   },
   header: {
     title:'Superdock Drone Automatic Airport',
+    status: 'Communication Status',
     logout:'Logout',
     air:'Drone',
     depot:'Depot',

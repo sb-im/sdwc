@@ -11,7 +11,7 @@
       active-text-color="#ffd04b">
       <el-submenu index="1">
         <template slot="title">
-          <img src="../../assets/images/header/h_drone.svg"/>通讯状态
+          <img src="../../assets/images/header/h_drone.svg"/>{{ $t('header.status') }}
         </template>
         <el-menu-item v-for="(st, index) in nodeStatus" :key="`1-${index}`" :index="`1-${index}`">
           <i :class="st.icon" :style="{color: st.color}"></i>
