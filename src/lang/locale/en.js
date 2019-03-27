@@ -164,6 +164,7 @@ module.exports = {
     status:'Statu',
     air_status:'UAV',
     depot_status:'Depot',
+    not_operational: 'Abnormal communication status, unable to opreate.',
     none:'None',
     logs:'Logs',
     no_video:'No video source found, please try again later~',

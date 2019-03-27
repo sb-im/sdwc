@@ -163,6 +163,7 @@ module.exports = {
     status:'状态',
     air_status:'无人机状态',
     depot_status:'机场状态',
+    not_operational: '通讯状态异常，无法发送控制指令。',
     none:'暂无',
     logs:'日志',
     no_video:'未找到视频源，请稍后再试~',

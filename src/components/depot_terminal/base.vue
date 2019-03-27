@@ -88,7 +88,20 @@
       }
     },
     methods: {
+      checkNodeStatus() {
+        const { status } = this.$store.state.nodeStatus.find(st => st.id == this.node.id);
+        if (status == 0) {
+          return true;
+        }
+        this.$alert(this.$t('common.not_operational'), {
+          type: 'warning',
+          title: this.$t('common.system_tips'),
+          confirmButtonText: this.$t('common.comfirm')
+        });
+        return false;
+      },
       doMsission(name) {
+        if (!this.checkNodeStatus()) return;
         const notification = this.$notify({
           duration: 0,
           type: 'info',
