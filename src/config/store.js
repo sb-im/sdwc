@@ -205,7 +205,8 @@ export default new Vuex.Store({
     getPlanInfo(context,arg) {
       context.commit('planLink','view');// 先将任务界面切回'查看任务'
       let url = context.state.config.suffix!==''?`${context.state.api.local.plans}/${arg.id}`+context.state.config.suffix:`${context.state.api.local.plans}/${arg.id}`;
-      arg._this.$http.get(url)
+      const headers = { authorization: context.state.token };
+      arg._this.$http.get(url, {headers})
         .then(res => {
           if (res.status === 200) {
             context.commit('planInfo',res.data);
@@ -220,7 +221,8 @@ export default new Vuex.Store({
     // 获取任务历史日志
     getPlanLogs(context,arg) {
       let url = context.state.config.suffix!==''?`${context.state.api.local.plans}/${arg.id}/plan_logs`+context.state.config.suffix:`${context.state.api.local.plans}/${arg.id}/plan_logs`;
-      arg._this.$http.get(url)
+      const headers = { authorization: context.state.token };
+      arg._this.$http.get(url, {headers})
         .then(res => {
           if (res.status === 200) {
             for (let val of res.data) {
@@ -236,7 +238,8 @@ export default new Vuex.Store({
     },
     // 解析(任务)地图位点
     getWayPoints(context,arg) {
-      arg._this.$http.get(context.state.config.server+arg.path)
+      const headers = { authorization: context.state.token };
+      arg._this.$http.get(context.state.config.server+arg.path, {headers})
         .then(res => {
           if (res.status===200) {
             let result = [],
