@@ -22,6 +22,7 @@ export default new Vuex.Store({
     active: '',
     initPage: 'depot',// 初始页面'plans'/'depot'/'air'
     planMap: [],
+    planMapFile: { name: '', url: '' },
     planInfo: {},
     planLogs: [],
     planPage:'view',
@@ -119,6 +120,10 @@ export default new Vuex.Store({
     },
     planMap(state, maps) {
       state.planMap = maps;
+    },
+    planMapFile(state, {name, url}) {
+      state.planMapFile.name = name;
+      state.planMapFile.url = url;
     },
     weatherInfo(state, info) {
       state.weaInfo = info;
@@ -237,23 +242,46 @@ export default new Vuex.Store({
         });
     },
     // 解析(任务)地图位点
-    getWayPoints(context,arg) {
+    getWayPoints(context, arg) {
+      if (this.state.planMapFile.url) {
+        URL.revokeObjectURL(this.state.planMapFile.url);
+        context.commit('planMapFile', { url: null, name: null });
+      }
       const headers = { authorization: context.state.token };
-      arg._this.$http.get(context.state.config.server+arg.path, {headers})
+      arg._this.$http.get(context.state.config.server+arg.path, {headers, responseType:'blob'})
         .then(res => {
           if (res.status===200) {
-            let result = [],
-              parseData = PaPaParse.parse(res.data)['data'];
-            parseData.forEach((val,index) => {
-              val[3]==='16' && result.push({lat:(+val[8]),lng:(+val[9])});
-              parseData.length-1 === index && context.commit('planMap',result);
+            const reader = new FileReader();
+            reader.addEventListener('loadend', () => {
+              let result = [],
+                parseData = PaPaParse.parse(reader.result)['data'];
+              parseData.forEach((val,index) => {
+                val[3]==='16' && result.push({lat:(+val[8]),lng:(+val[9])});
+                parseData.length-1 === index && context.commit('planMap',result);
+              });
             });
+            reader.readAsText(res.data);
+            const url = URL.createObjectURL(res.data);
+            let name = `plan_${context.state.planInfo.id}.waypoints`;
+            try {
+              name = contentDisposition.parse(res.headers['Content-Disposition']).parameters.filename;
+            } catch (e) { /* ignore */ }
+            context.commit('planMapFile', { url, name });
           }
         })
         .catch(err => {
           console.log(err);
           context.commit('planMap',[]);
         });
+    },
+    downloadPlanFile({state}) {
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = state.planMapFile.url;
+      a.download = state.planMapFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     },
     // 获取节点状态
     subscribeNodeStatus({commit}) {

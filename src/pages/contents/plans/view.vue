@@ -41,9 +41,9 @@
         <li class="info-item d-f file">
           <p class="label"><img src="../../../assets/images/task/t_file.svg"/>{{ $t('plan.plan_mapfile') }}：</p>
           <p class="text">
-            <a :href="$store.state.planInfo.map_path?$store.state.config.server+$store.state.planInfo.map_path:'javascript:;'" download class="el-button el-button--primary" :class="{'is-disabled':!$store.state.planInfo.map_path}">
-              <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
-            </a>
+            <el-button type="primary" icon="el-icon-download" :disabled="!$store.state.planInfo.map_path" @click="downloadPlanFile">
+              {{ $t('common.download') }}
+            </el-button>
           </p>
         </li>
       </el-col>
@@ -66,26 +66,22 @@
       <el-table-column align="center" prop="created_at" :label="$t('plan.view.run_time')"></el-table-column>
       <el-table-column align="center" :label="$t('plan.view.raw_data')">
         <template slot-scope="scope">
-          <a :href="scope.row.raw_data?$store.state.config.server+scope.row.raw_data:'javascript:;'" class="font-16 el-button el-button--primary" :class="{'is-disabled':!scope.row.raw_data}">{{ $t('common.view') }}</a>
+          <el-button type="primary" :disabled="!scope.row.raw_data" @click="downloadFile(scope.row.raw_data, 'raw_data')">{{ $t('common.view') }}</el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('plan.view.auto_run')">
         <template slot-scope="scope">
-          <a :href="scope.row.orthomosaic_path?$store.state.config.server+scope.row.orthomosaic_path:'javascript:;'" target="_blank" class="font-16 el-button el-button--primary" :class="{'is-disabled':!scope.row.orthomosaic_path}">{{ $t('common.view') }}</a>
+          <el-button type="primary" :disabled="!scope.row.orthomosaic_path" @click="downloadFile(scope.row.orthomosaic_path, 'orthomosaic.tif')">{{ $t('common.view') }}</el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" border :label="$t('plan.view.logs')">
         <template slot-scope="scope">
-          <a :href="scope.row.air_log_path?$store.state.config.server+scope.row.air_log_path:'javascript:;'" download class="font-16 el-button" :class="{'is-disabled':!scope.row.air_log_path}">
-            <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
-          </a>
+          <el-button icon="el-icon-download" :disabled="!scope.row.air_log_path" @click="downloadFile(scope.row.air_log_path, 'air_log.bin')">{{ $t('common.download') }}</el-button>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('plan.view.sever_logs')">
         <template slot-scope="scope">
-          <a :href="scope.row.sever_log_path?$store.state.config.server+scope.row.sever_log_path:'javascript:;'" download class="font-16 el-button" :class="{'is-disabled':!scope.row.sever_log_path}">
-            <i class="el-icon-download"></i><span>{{ $t('common.download') }}</span>
-          </a>
+          <el-button icon="el-icon-download" :disabled="!scope.row.sever_log_path" @click="downloadFile(scope.row.sever_log_path, 'sever_log.bin')">{{ $t('common.download') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -127,6 +123,7 @@
 </template>
 
 <script>
+  import contentDisposition from 'content-disposition';
   import uactrack from '../../../components/uavtrack'
   export default {
     data() {
@@ -193,8 +190,26 @@
             console.log(err);
           });
       },
-      testEv(v) {
-        console.log(v)
+      downloadPlanFile() {
+        this.$store.dispatch('downloadPlanFile');
+      },
+      downloadFile(path, name) {
+        this.$http.get(this.$store.state.config.server + path, {
+          headers: { Authorization: this.$store.state.token },
+          responseType: 'blob'
+        }).then(res => {
+          const url = URL.createObjectURL(res.data);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = name;
+          try {
+            a.download = contentDisposition.parse(res.headers['Content-Disposition']).parameters.filename;
+          } catch (e) { /* ignore */ }
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        });
       }
     }
   }
