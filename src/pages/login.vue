@@ -1,19 +1,27 @@
 <template>
-  <login-bg :videos="video" image="/static/login-backgound.jpg">
+  <login-bg :videos="video" image="/assets/images/login-backgound.jpg">
     <template slot="header">
       <el-row type="flex" justify="space-around">
         <div class="login-bg">
-          <h1 class="title font-26">SDWC-LOGIN</h1>
-          <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
-            <el-form-item :label="$t('login.username')" prop="username">
-              <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
+          <h1 class="login-title">S Dashboard Web Console</h1>
+          <el-form label-width="80px" label-position="left">
+            <el-form-item :label="$t('login.username')" :error="errorUsername">
+              <el-input type="text" v-model="username" autofocus></el-input>
             </el-form-item>
-            <el-form-item :label="$t('login.password')" prop="password">
-              <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+            <el-form-item :label="$t('login.password')" :error="errorPassword">
+              <el-input
+                ref="inputPwd"
+                type="password"
+                show-password
+                v-model="password"
+              ></el-input>
             </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
-            </el-form-item>
+            <el-button
+              type="primary"
+              icon="el-icon-minus"
+              @click="handleLogin"
+              :loading="pending"
+            >{{ $t('login.button') }}</el-button>
           </el-form>
         </div>
       </el-row>
@@ -22,131 +30,79 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import VueLbgv from 'vue-lbgv'
-  import mqttClient from '../config/mqtt';
+import { mapActions } from 'vuex';
+import VueLbgv from 'vue-lbgv';
 
-  export default {
-    data() {
-      var validateUser = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error(this.$t('login.error_username')));
-        } else {
-          if (this.ruleForm.username !== '') {
-            //this.$refs.ruleForm.validateField('username');
-          }
-          callback();
-        }
-      }
-      var validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error(this.$t('login.error_password')));
-        } else {
-          if (this.ruleForm.password !== '') {
-            //this.$refs.ruleForm.validateField('password');
-          }
-          callback();
-        }
-      }
-      return {
-        video: [],
-        ruleForm: {
-          username: '',
-          password: ''
-        },
-        rules: {
-          username: [
-            { validator: validateUser, trigger: 'blur' }
-          ],
-          password: [
-            { validator: validatePass, trigger: 'blur' }
-          ]
-        }
-      }
-    },
-    created() {
-      let ivideo= '/static/aerial';
-
-      for (let i = 0; i < 7; i++) {
-        this.video.push(ivideo + i + '-10s.mp4')
-      }
-      //console.log(this.video)
-    },
-    components: {
-      'login-bg': VueLbgv
-    },
-    methods: {
-      login() {
-        // local User debug
-        if (this.ruleForm.username == "debug" && this.ruleForm.password == "debug") {
-          this.getLogin(this.$store.state.api.local.debug)
-        } else {
-          // remote user login
-          this.postLogin(this.$store.state.api.local.login)
-        }
-      },
-      getLogin(api_url) {
-        this.$http.get(api_url)
-        .then((response) => {
-          this.$store.commit("token", response.data)
-          if (response.data.token) {
-            this.$router.push('app')
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-      },
-      postLogin(api_url) {
-        this.$http.post(api_url, {
-          client_id: this.$store.state.config.client_id,
-          client_secret: this.$store.state.config.client_secret,
-          username: this.ruleForm.username,
-          password: this.ruleForm.password,
-          //username: 'sb@sb.im',
-          //password: '123456',
-          grant_type: 'password'
-        })
-        .then((response) => {
-          if (response.data.access_token) {
-            const token = response.data.token_type + ' ' + response.data.access_token;
-            this.$store.commit('token', {token});
-            this.$http = axios.create({
-              headers: {Authorization: token}
-            });
-            this.$router.push('app');
-            this.$store.dispatch('getSideMenu',{_this: this,type:'plans'});
-            this.$http.get(this.$store.state.api.local.user).then(res => {
-              this.$store.commit('userInfo', res.data);
-              mqttClient.setIdPrefix(res.data.id);
-              mqttClient.connect(this.$store.state.config.mqtt_url);
-            }).then(() => {
-              this.$store.dispatch('getSideMenu',{_this: this,type:'nodes'})
-                .then(() => {
-                  this.$store.state.nodes.forEach(n => {
-                    mqttClient.subscribeNode(n.id);
-                  });
-                  this.$store.dispatch('subscribeNodeStatus');
-                });
-            })
-          }
-        })
-        .catch(() => {
-          this.$message.error(this.$t('login.failed'));
-        });
-      }
-
+export default {
+  name: 'sd-login',
+  data() {
+    return {
+      username: '',
+      errorUsername: '',
+      password: '',
+      errorPassword: '',
+      pending: false
+    };
+  },
+  computed: {
+    video() {
+      return Array(7).fill(0).map((_, i) => `/assets/videos/aerial${i}-10s.mp4`);
     }
+  },
+  methods: {
+    ...mapActions([
+      'login'
+    ]),
+    async handleLogin() {
+      if (!this.username) {
+        this.errorUsername = this.$t('login.error_username');
+      } else {
+        this.errorUsername = '';
+      }
+      if (!this.password) {
+        this.errorPassword = this.$t('login.error_username');
+      } else {
+        this.errorPassword = '';
+      }
+      if (this.errorUsername || this.errorPassword) return;
+      this.pending = true;
+      try {
+        await this.login({ username: this.username, password: this.password });
+        this.$router.push({ name: 'app' });
+      } catch (e) {
+        this.$message.error(this.$t('login.failed'));
+      }
+      this.pending = false;
+    }
+  },
+  mounted() {
+    /** @type {HTMLInputElement} */
+    const inputPwd = this.$refs.inputPwd.$el.getElementsByTagName('input')[0];
+    if (inputPwd) {
+      inputPwd.addEventListener('keypress', (ev) => {
+        if (ev.keyCode === 13 || ev.key === 'Enter') {
+          this.handleLogin();
+        }
+      });
+    }
+  },
+  components: {
+    'login-bg': VueLbgv
   }
+};
 </script>
-<style scoped>
-  .title {
-    color: #409eff;
-    margin: 20px auto;
-  }
 
-  .login-bg {
-    padding: 2% 2%;
-    background: #fff9;
-  }
+<style>
+.login-title {
+  color: #409eff;
+  margin: 0 0 20px;
+  font-size: 26px;
+}
+
+.login-bg {
+  width: 320px;
+  height: 230px;
+  padding: 36px;
+  background: #fff9;
+}
 </style>
