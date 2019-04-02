@@ -6,10 +6,17 @@ import enLocale from './locale/en';
 
 Vue.use(I18n);
 
-export default new I18n({
+const i18n = new I18n({
   locale: 'en',
   messages: {
     'en': enLocale,
     'zh-cn': zhLocale
   }
 });
+
+export default i18n;
+
+export function setLocale(locale) {
+  i18n.locale = locale;
+  document.body.lang = locale;
+}

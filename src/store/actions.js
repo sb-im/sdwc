@@ -1,5 +1,7 @@
 // @ts-check
 
+import { setLocale } from '../i18n';
+
 import * as SuperDock from '../api/super-dock';
 // import * as Weather3s from '../api/weather3s';
 import * as GoogleMap from '../api/google-map';
@@ -30,6 +32,7 @@ export async function configure({ state, commit }) {
   SuperDock.setBaseURL(config.super_dock_api_server);
   GoogleMap.setApiKey(config.gmap_key);
   CaiYun.setApiKey(config.caiyun_key);
+  setLocale(config.lang);
 }
 
 /**
