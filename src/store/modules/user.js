@@ -24,7 +24,7 @@ const mutations = {
     state.token = token;
     state.due = due;
   },
-  [MutationTypes.SET_USER_TOKEN](state, { id, email }) {
+  [MutationTypes.SET_USER_INFO](state, { id, email }) {
     state.id = id;
     state.email = email;
   }
