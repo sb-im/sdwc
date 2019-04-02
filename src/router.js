@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+import store from './store/index';
+
 import Login from './pages/login.vue';
-import Index from './pages/index.vue';
+import Panel from './pages/panel/panel.vue';
 
 Vue.use(Router);
 
@@ -22,10 +24,18 @@ const routes = [
     component: Login
   },
   {
-    path: '/app',
-    title: '首页',
-    name: 'index',
-    component: Index
+    path: '/panel',
+    title: '控制台',
+    name: 'panel',
+    component: Panel,
+    beforeEnter(to, from, next) {
+      const { token, due } = store.state.user;
+      if (token && due > Date.now()) {
+        next();
+      } else {
+        next({ name: 'login' });
+      }
+    }
   }
 ];
 

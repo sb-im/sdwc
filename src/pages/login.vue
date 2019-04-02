@@ -68,7 +68,7 @@ export default {
       this.pending = true;
       try {
         await this.login({ username: this.username, password: this.password });
-        this.$router.push({ name: 'app' });
+        this.$router.push({ name: 'panel' });
       } catch (e) {
         this.$message.error(this.$t('login.failed'));
       }
