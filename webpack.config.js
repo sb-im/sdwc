@@ -1,7 +1,12 @@
-const path = require('path')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+/* eslint-disable */
 
-module.exports = {
+const path = require('path');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
+/**
+ * @type {import('webpack').Configuration}
+ */
+const cfg = {
   mode: 'development',
   entry: './src/main.js',
   output: {
@@ -40,7 +45,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.vue', '.json']
+    // extensions: ['*', '.js', '.vue', '.json']
   },
   plugins: [
     new VueLoaderPlugin()
@@ -56,6 +61,8 @@ module.exports = {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.mode = 'production';
-  module.exports.devtool = 'source-map';
+  cfg.mode = 'production';
+  cfg.devtool = 'source-map';
 }
+
+module.exports = cfg;
