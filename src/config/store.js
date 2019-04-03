@@ -331,6 +331,9 @@ export default new Vuex.Store({
     },
     airNodes(state) {
       return state.nodes.filter(node => node.type_name === 'air');
+    },
+    authHeader(state) {
+      return { Authorization: state.token };
     }
   }
 });

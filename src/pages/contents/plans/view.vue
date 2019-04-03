@@ -176,7 +176,9 @@
       // 确认执行
       runPlan() {
         let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}/plan_logs`+this.$store.state.config.suffix:`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}/plan_logs`;
-        this.$http.post(url)
+        const headers = this.$store.getters.authHeader;
+        // axios.post(url[, data[, config]])
+        this.$http.post(url, '', { headers })
           .then(res => {
             if (res.status === 200) {
               this.showCheck = false;
@@ -195,7 +197,7 @@
       },
       downloadFile(path, name) {
         this.$http.get(this.$store.state.config.server + path, {
-          headers: { Authorization: this.$store.state.token },
+          headers: this.$store.getters.authHeader,
           responseType: 'blob'
         }).then(res => {
           const url = URL.createObjectURL(res.data);

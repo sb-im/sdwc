@@ -186,7 +186,10 @@
           url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`;
         }
         this.$http[method](url, form,{
-          headers: {'Content-Type': 'multipart/form-data'}
+          headers: {
+            Authorization: this.$store.state.token,
+            'Content-Type': 'multipart/form-data'
+          }
         })
           .then(res => {
             res.status===200 && typeof res.data === 'object' && callback && callback(res.data);
