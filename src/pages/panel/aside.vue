@@ -1,9 +1,14 @@
 <template>
   <el-aside class="aside" width="200px">
     <div class="aside-header">
-      <img class="aside-logo" src="/assets/images/header/logo.png">`
+      <img class="aside-logo" src="/assets/images/header/logo.png">
     </div>
-    <el-menu class="aside-menu" background-color="#545c64" text-color="#ccc">
+    <el-menu
+      class="aside-menu"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#fff"
+    >
       <el-submenu index="plan">
         <template slot="title">
           <sd-icon value="aside/task"></sd-icon>
@@ -81,5 +86,9 @@ export default {
 
 .aside-menu {
   border: none;
+}
+
+.aside .el-menu-item.is-active {
+  box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 rgba(0, 0, 0, 0.2);
 }
 </style>
