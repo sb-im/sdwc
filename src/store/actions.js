@@ -56,9 +56,33 @@ export async function login({ state, commit }, { username, password }) {
 /**
  * @param {Context} context
  */
-export async function getUserInfo({ commit }) {
+export async function getUserInfo({ commit, dispatch }) {
   const data = await SuperDock.user();
   commit(USER.SET_USER_INFO, data);
+  dispatch('storeUser');
+}
+
+/**
+ * @param {Context} context
+ */
+export function storeUser({ state }) {
+  sessionStorage.setItem('user', JSON.stringify(state.user));
+}
+
+/**
+ * restore user session after page refresh, if token still valid
+ * @param {Context} context
+ */
+export async function reconfigure({ commit }) {
+  const str = sessionStorage.getItem('user');
+  if (!str) return;
+  /** @type {import('./modules/user').State} */
+  let json;
+  try { json = JSON.parse(str); } catch (e) { /* ignore it */ }
+  if (!json.token) return;
+  commit(USER.SET_USER_TOKEN, json);
+  commit(USER.SET_USER_INFO, json);
+  SuperDock.setAuth(json.token);
 }
 
 /**
