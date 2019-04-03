@@ -3,7 +3,7 @@ import wretch from 'wretch';
 let wr = wretch();
 
 export function setBaseURL(url = '') {
-  wr = wretch(url.replace(/\/$/, ''));
+  wr = wr.url(url.replace(/\/$/, ''), true);
 }
 
 export function config() {
