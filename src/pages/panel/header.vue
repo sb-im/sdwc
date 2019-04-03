@@ -1,34 +1,35 @@
 <template>
   <el-header class="header">
+    <!-- title -->
     <span class="header-title">{{ $t('header.title') }}</span>
-    <el-menu
-      mode="horizontal"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b"
-    >
-      <el-submenu index="status">
-        <template slot="title">
-          <sd-icon value="header/h_drone"/>
-          {{ $t('header.status') }}
-        </template>
-        <el-menu-item
-          v-for="st in status"
-          :key="st.id"
-          :index="`status-${st.id}`"
-        >
+    <!-- node status dropdown -->
+    <el-dropdown class="header-dropdown">
+      <span class="header-dropdown-content">
+        <sd-icon value="header/h_drone"/>
+        <span class="header-dropdown-text">{{ $t('header.status') }}</span>
+        <i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item v-for="st in status" :key="st.id">
           <i :class="st.icon" :style="{color: st.color}"></i>
-          {{ st.text }}
-        </el-menu-item>
-      </el-submenu>
-      <el-submenu index="user">
-        <template slot="title">
-          <sd-icon value="header/user"/>
-          {{ $store.state.user.email }}
-        </template>
-        <el-menu-item index="loginout">{{ $t('header.logout') }}</el-menu-item>
-      </el-submenu>
-    </el-menu>
+          <span>{{ st.text }}</span>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+    <!-- user info dropdown -->
+    <el-dropdown class="header-dropdown">
+      <span class="header-dropdown-content">
+        <sd-icon value="header/user"/>
+        <span>{{ $store.state.user.email }}</span>
+        <i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item class="header-dropdown-item">
+          <i class="el-icon-back"></i>
+          <span>{{ $t('header.logout') }}</span>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
   </el-header>
 </template>
 
@@ -118,5 +119,31 @@ export default {
   font-size: 20px;
   font-weight: bold;
   margin-right: auto;
+}
+
+.header-dropdown {
+  padding: 0 14px;
+  cursor: pointer;
+  height: 100%;
+  transition: background-color 0.3s;
+}
+
+.header-dropdown:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.header-dropdown-content {
+  color: white;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header-dropdown-text {
+  margin-left: 5px;
+}
+
+.header-dropdown-item {
+  width: 180px;
 }
 </style>
