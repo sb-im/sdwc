@@ -11,6 +11,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { config } from '@/api/sdwc';
 
 import Aside from './aside.vue';
 import Header from './header.vue';
@@ -25,9 +26,12 @@ export default {
     ])
   },
   created() {
-    this.getUserInfo();
-    this.getNodes();
-    this.getPlans();
+    // ensure config was loaded
+    config().then(() => {
+      this.getUserInfo();
+      this.getNodes();
+      this.getPlans();
+    });
   },
   components: {
     'sd-aside': Aside,

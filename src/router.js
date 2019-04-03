@@ -8,33 +8,34 @@ import Panel from './pages/panel/panel.vue';
 
 Vue.use(Router);
 
+function checkUser() {
+  const { token, due } = store.state.user;
+  if (token && due > Date.now()) return true;
+  return false;
+}
+
 /**
  * @type {import('vue-router').RouteConfig[]}
  */
 const routes = [
   {
     path: '/',
-    title: 'S Dashboard Web Console',
-    redirect: { name: 'login' },
+    redirect: () => checkUser() ? '/panel' : '/login'
   },
   {
     path: '/login',
-    title: '登录',
     name: 'login',
-    component: Login
+    component: Login,
+    beforeEnter(to, from, next) {
+      next(checkUser() ? '/panel' : undefined);
+    }
   },
   {
     path: '/panel',
-    title: '控制台',
     name: 'panel',
     component: Panel,
     beforeEnter(to, from, next) {
-      const { token, due } = store.state.user;
-      if (token && due > Date.now()) {
-        next();
-      } else {
-        next({ name: 'login' });
-      }
+      next(checkUser() ? undefined : '/login');
     }
   }
 ];
