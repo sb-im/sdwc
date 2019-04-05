@@ -296,12 +296,12 @@ export default new Vuex.Store({
     getCyWeather(context, arg) {
       let forecast = `${context.state.api.remote.cyApi}/${context.state.config.CY_API_TOKEN}/${arg.lng},${arg.lat}/forecast`,
         realtime = `${context.state.api.remote.cyApi}/${context.state.config.CY_API_TOKEN}/${arg.lng},${arg.lat}/realtime`;
-      arg._this.$jsonp(forecast)
+      Vue.prototype.$jsonp(forecast)
         .then(res => {
           res.status === 'ok' && context.commit('cyForecast',res.result);
         })
         .catch(err => {console.log(err);});
-      arg._this.$jsonp(realtime)
+      Vue.prototype.$jsonp(realtime)
         .then(res => {
           res.status === 'ok' && context.commit('cyRealtime',res.result);
         })

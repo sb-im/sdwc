@@ -25,10 +25,7 @@
               <td class="id-num">{{ $t('depot.depot_id') }}</td>
               <td>{{ node.id }}</td>
               <td>
-                <el-button class="font-16" type="primary">{{ $t('depot.view_old_monitor') }}</el-button>
-              </td>
-              <td>
-                <el-button class="font-16" type="primary">{{ $t('depot.view_fly_plan') }}</el-button>
+                <el-button class="font-16" type="primary" @click="viewOldMonitor()">{{ $t('depot.view_old_monitor') }}</el-button>
               </td>
             </tr>
           </table>
@@ -40,6 +37,7 @@
 </template>
 
 <script>
+  import mqttClient from '../../config/mqtt';
   import monitor from '../../components/rt-monitor/rt-monitor.vue'
   import weather from '../../components/weather.vue'
   import terminal from '../../components/depot_terminal/base.vue'
@@ -47,18 +45,26 @@
   export default {
     data() {
       return {
-        activeIndex:'1'
+        positionKnown: false,
+        position: {
+          lat: 0,
+          lng: 0,
+          alt: 0
+        }
       }
     },
     props: {
       node: {
         type: Object,
-        required: true,
-        default: () => {}
+        required: true
       }
     },
     mounted() {
-
+      if (this.positionKnown) {
+        this.getWeather();
+        return;
+      }
+      this.getNodePosition().then(() => this.getWeather());
     },
     components: {
       'rt-moniter':monitor,
@@ -66,7 +72,30 @@
       'terminal': terminal
     },
     methods: {
-
+      getNodePosition() {
+        return mqttClient.invoke(this.node.id, 'ncp', ['status']).then(res => {
+          this.positionKnown = true;
+          this.position.lat = res.lat;
+          this.position.lng = res.lng;
+          this.position.alt = res.alt;
+        })
+      },
+      getWeather() {
+        this.$store.dispatch('getCyWeather', this.position);
+      },
+      viewOldMonitor() {
+        const point = this.node.points.find(p => p.point_type_name === 'history_livestream');
+        if (!point) {
+          this.$msgbox({
+            type: 'error',
+            title: this.$t('common.system_tips'),
+            message: this.$t('depot.no_old_monitor'),
+            confirmButtonText: this.$t('common.comfirm')
+          });
+          return;
+        }
+        window.open(point.name);
+      }
     }
   }
 </script>

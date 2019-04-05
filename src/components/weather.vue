@@ -171,6 +171,11 @@
           ]
         });
       }
+    },
+    watch:{
+      ['$store.state.cyForecast']() {
+        this.drawWeather(this.$store.state.cyForecast.minutely.precipitation);
+      }
     }
   }
 </script>

@@ -118,6 +118,7 @@ module.exports = {
     depot_info:"机场信息",
     depot_id:'编号',
     view_old_monitor:'查看历史监控',
+    no_old_monitor:'找不到历史监控',
     view_fly_plan:'查看飞行任务',
     battery:'{i}仓电池',
     cycle:'循环次数',

@@ -119,6 +119,7 @@ module.exports = {
     depot_info:"Information",
     depot_id:'Id',
     view_old_monitor:'Historical monitor',
+    no_old_monitor:'Historical monitor not found',
     view_fly_plan:'Fly plan',
     battery:'{i} Battery',
     cycle:'Cycles',
