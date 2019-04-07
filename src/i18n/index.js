@@ -10,6 +10,7 @@ const i18n = new I18n({
   locale: 'en',
   messages: {
     'en': enLocale,
+    'zh': zhLocale,
     'zh-cn': zhLocale
   }
 });
