@@ -34,6 +34,7 @@ const mutations = {
     if (state.info.findIndex(node => node.id === payload.id) >= 0) return;
     state.info.push(payload);
     state.status.push({ id: payload.id, status: -1 });
+    state.message.push({ id: payload.id, msg: [] });
   },
   [MutationTypes.SET_NODE_STATUS](state, { id, status }) {
     const st = state.status.find(node => node.id === id);
@@ -43,11 +44,9 @@ const mutations = {
   },
   [MutationTypes.ADD_NODE_MSG](state, { id, msg }) {
     let nodeMsg = state.message.find(node => node.id === id);
-    if (!nodeMsg) {
-      nodeMsg = { id, msg: [] };
-      state.message.push(nodeMsg);
+    if (nodeMsg) {
+      nodeMsg.msg.push(msg);
     }
-    nodeMsg.msg.push(msg);
   }
 };
 
