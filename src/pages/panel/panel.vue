@@ -22,16 +22,18 @@ export default {
     ...mapActions([
       'getUserInfo',
       'getNodes',
+      'subscribeNodes',
       'getPlans'
     ])
   },
   created() {
     // ensure config was loaded
-    config().then(() => {
-      this.getUserInfo();
-      this.getNodes();
-      this.getPlans();
-    });
+    config()
+      .then(() => this.getUserInfo())
+      .then(() => {
+        this.getNodes().then(() => this.subscribeNodes());
+        this.getPlans();
+      });
   },
   components: {
     'sd-aside': Aside,
