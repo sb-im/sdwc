@@ -11,8 +11,10 @@
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item v-for="st in status" :key="st.id">
-          <i :class="st.icon" :style="{color: st.color}"></i>
-          <span>{{ st.text }}</span>
+          <router-link tag="span" :to="{ name: 'node', params: { id: st.id } }">
+            <i :class="st.icon" :style="{color: st.color}"></i>
+            <span>{{ st.text }}</span>
+          </router-link>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
