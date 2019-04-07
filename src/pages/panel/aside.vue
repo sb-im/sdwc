@@ -8,6 +8,8 @@
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#fff"
+      :default-active="activeIndex"
+      router
     >
       <el-submenu index="plan">
         <template slot="title">
@@ -18,6 +20,7 @@
           v-for="plan in plans"
           :key="plan.id"
           :index="`plan-${plan.id}`"
+          :route="{ name: 'plan', params: { id: plan.id } }"
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
       <el-submenu index="depot">
@@ -28,7 +31,8 @@
         <el-menu-item
           v-for="depot in depots"
           :key="depot.id"
-          :index="`depot-${depot.id}`"
+          :index="`node-${depot.id}`"
+          :route="{ name: 'node', params: { id: depot.id } }"
         >{{ depot.name }}</el-menu-item>
       </el-submenu>
       <el-submenu index="drone">
@@ -39,7 +43,8 @@
         <el-menu-item
           v-for="drone in drones"
           :key="drone.id"
-          :index="`drone-${drone.id}`"
+          :index="`node-${drone.id}`"
+          :route="{ name: 'node', params: { id: drone.id } }"
         >{{ drone.name }}</el-menu-item>
       </el-submenu>
     </el-menu>
@@ -48,7 +53,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import Icon from '../../components/sd-icon.vue';
+import Icon from '@/components/sd-icon.vue';
 
 export default {
   computed: {
@@ -58,10 +63,14 @@ export default {
     ...mapGetters([
       'drones',
       'depots'
-    ])
+    ]),
+    activeIndex() {
+      const { name, params: { id } } = this.$route;
+      return `${name}-${id}`;
+    }
   },
   components: {
-    'sd-icon': Icon
+    [Icon.name]: Icon
   }
 };
 </script>
