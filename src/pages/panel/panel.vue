@@ -3,7 +3,9 @@
     <sd-aside></sd-aside>
     <el-container direction="vertical">
       <sd-header></sd-header>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
       <sd-footer></sd-footer>
     </el-container>
   </el-container>

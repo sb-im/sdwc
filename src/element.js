@@ -5,6 +5,7 @@
 
 import Vue from 'vue';
 import {
+  Card,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -39,6 +40,7 @@ import i18n from './i18n';
  */
 ElementLocale.i18n((key, value) => i18n.t(key, value));
 
+Vue.use(Card);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
