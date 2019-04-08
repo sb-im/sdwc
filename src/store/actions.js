@@ -125,8 +125,8 @@ export async function getPlans({ commit }) {
 /**
  * @param {Context} context
  */
-export async function getPlanLogs({ commit }) {
-  const data = await SuperDock.planLogs();
+export async function getPlanLogs({ commit }, id) {
+  const data = await SuperDock.planLogs(id);
   data.forEach(log => {
     commit(PLAN.ADD_PLAN_LOG, log);
   });
