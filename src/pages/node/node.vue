@@ -62,4 +62,7 @@ export default {
   font-weight: bold;
   font-size: 1.1rem;
 }
+.sd-node-card__action {
+  margin-left: auto;
+}
 </style>
