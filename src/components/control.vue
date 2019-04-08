@@ -68,14 +68,14 @@ export default {
       });
       return false;
     },
-    handleControl({ name, mission }) {
+    handleControl({ name, values, mission }) {
       if (!this.checkNodeStatus()) {
         return;
       }
       const notification = this.$notify({
         duration: 0,
         type: 'info',
-        title: this.$t(name),
+        title: this.$t(name, values),
         message: this.$t('common.operate_pending')
       });
       MqttClient.invoke(this.node.id, mission, {})
