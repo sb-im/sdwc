@@ -90,3 +90,9 @@ export function retrievePlanLog(planId, logId) {
     .get()
     .json();
 }
+
+export function getFile(url) {
+  return wr.url(url)
+    .get()
+    .res();
+}
