@@ -49,7 +49,8 @@ export function plans() {
 
 export function createPlan(plan) {
   return wr.url('/api/v1/plans/')
-    .post(plan)
+    .formData(plan)
+    .post()
     .json();
 }
 
@@ -61,7 +62,8 @@ export function retrievePlan(id) {
 
 export function updatePlan(id, plan) {
   return wr.url(`/api/v1/plans/${id}`)
-    .patch(plan)
+    .formData(plan)
+    .patch()
     .json();
 }
 
