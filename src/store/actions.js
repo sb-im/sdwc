@@ -8,6 +8,7 @@ import * as GoogleMap from '../api/google-map';
 import * as CaiYun from '../api/caiyun';
 import * as SDWC from '../api/sdwc';
 import MqttClient from '../api/mqtt';
+import ContentDisposition from 'content-disposition';
 
 import { MutationTypes as CONFIG } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
@@ -171,4 +172,28 @@ export async function updatePlan({ commit }, plan) {
 export async function deletePlan({ commit }, id) {
   await SuperDock.deletePlan(id);
   commit(PLAN.DELETE_PLAN, id);
+}
+
+/**
+ * @param {Context} _
+ * @param {{url: string, name: string}} url
+ */
+export async function downloadFile(_, { url, name }) {
+  const res = await SuperDock.getFile(url);
+  const cd = res.headers.get('content-disposition');
+  const blob = await res.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  if (typeof cd === 'string') {
+    a.download = ContentDisposition.parse(cd).parameters.filename;
+  } else {
+    a.download = name;
+  }
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  Promise.resolve().then(() => {
+    URL.revokeObjectURL(a.href);
+    document.body.removeChild(a);
+  });
 }
