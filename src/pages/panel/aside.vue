@@ -16,6 +16,10 @@
           <sd-icon value="aside/task"></sd-icon>
           <span>{{ $t('sidemenu.plan') }}</span>
         </template>
+        <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
+          <i class="el-icon-plus"></i>
+          <span>{{ $t('plan.edit.add') }}</span>
+        </el-menu-item>
         <el-menu-item
           v-for="plan in plans"
           :key="plan.id"
@@ -66,7 +70,16 @@ export default {
     ]),
     activeIndex() {
       const { name, params: { id } } = this.$route;
-      return `${name}-${id}`;
+      switch (name) {
+        case 'node':
+          return `${name}-${id}`;
+        case 'plan/view':
+        case 'plan/edit':
+          return `plan-${id}`;
+        case 'plan/new':
+          return 'plan-new';
+      }
+      return '';
     }
   },
   components: {

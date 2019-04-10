@@ -6,6 +6,7 @@
 import Vue from 'vue';
 import {
   Card,
+  DatePicker,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -16,12 +17,17 @@ import {
   InputNumber,
   Button,
   ButtonGroup,
+  Table,
+  TableColumn,
+  Select,
+  Option,
   Form,
   FormItem,
   Icon,
   Row,
   Col,
   Container,
+  Upload,
   Header,
   Aside,
   Main,
@@ -41,6 +47,7 @@ import i18n from './i18n';
 ElementLocale.i18n((key, value) => i18n.t(key, value));
 
 Vue.use(Card);
+Vue.use(DatePicker);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
@@ -51,12 +58,17 @@ Vue.use(Input);
 Vue.use(InputNumber);
 Vue.use(Button);
 Vue.use(ButtonGroup);
+Vue.use(Table);
+Vue.use(TableColumn);
+Vue.use(Select);
+Vue.use(Option);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Icon);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Container);
+Vue.use(Upload);
 Vue.use(Header);
 Vue.use(Aside);
 Vue.use(Main);

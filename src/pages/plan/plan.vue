@@ -1,8 +1,15 @@
 <template>
-  <div>This is Plan#{{this.id}}</div>
+  <div class="plan" v-loading="!this.plan">
+    <router-view v-if="this.plan" v-bind="componentProps" :key="key"></router-view>
+  </div>
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex';
+import Icon from '@/components/sd-icon.vue';
+import Edit from './edit.vue';
+import View from './view.vue';
+
 export default {
   name: 'sd-plan',
   props: {
@@ -10,10 +17,53 @@ export default {
       type: Number,
       required: true
     }
+  },
+  computed: {
+    ...mapState({
+      plans: state => state.plan.info,
+      logs: state => state.plan.log
+    }),
+    ...mapGetters([
+      'depots',
+      'drones'
+    ]),
+    plan() {
+      return this.plans.find(p => p.id === this.id);
+    },
+    log() {
+      return this.logs.filter(l => l.plan_id === this.id);
+    },
+    key() {
+      const { name, params: { id } } = this.$route;
+      return `${name}-${id}`;
+    },
+    componentProps() {
+      if (!this.plan) {
+        return { plan: {}, log: [], initial: {} };
+      }
+      switch (this.$route.name) {
+        case 'plan/view': return { plan: this.plan, log: this.log };
+        case 'plan/edit': return { initial: this.plan };
+      }
+      return {};
+    }
+  },
+  methods: {
+    ...mapActions([
+      'getPlanLogs'
+    ])
+  },
+  components: {
+    [Icon.name]: Icon,
+    [Edit.name]: Edit,
+    [View.name]: View
   }
 };
 </script>
 
 <style>
-
+.plan {
+  width: 100%;
+  height: 100%;
+}
 </style>
