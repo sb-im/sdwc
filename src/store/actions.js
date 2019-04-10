@@ -124,10 +124,51 @@ export async function getPlans({ commit }) {
 
 /**
  * @param {Context} context
+ * @param {number} id
  */
 export async function getPlanLogs({ commit }, id) {
   const data = await SuperDock.planLogs(id);
   data.forEach(log => {
     commit(PLAN.ADD_PLAN_LOG, log);
   });
+}
+
+/**
+ * @typedef {import('./modules/plan').PlanInfo} Plan
+ * @param {Context} context
+ * @param {Plan} plan
+ */
+export async function createPlan({ commit }, plan) {
+  const data = await SuperDock.createPlan(plan);
+  commit(PLAN.ADD_PLAN, data);
+  return data;
+}
+
+/**
+ * @param {Context} context
+ * @param {number} id
+ */
+export async function retrievePlan({ commit }, id) {
+  const data = await SuperDock.retrievePlan(id);
+  commit(PLAN.UPDATE_PLAN, data);
+  return data;
+}
+
+/**
+ * @param {Context} context
+ * @param {Plan} plan
+ */
+export async function updatePlan({ commit }, plan) {
+  const data = await SuperDock.updatePlan(plan.id, plan);
+  commit(PLAN.UPDATE_PLAN, data);
+  return data;
+}
+
+/**
+ * @param {Context} context
+ * @param {number} id
+ */
+export async function deletePlan({ commit }, id) {
+  await SuperDock.deletePlan(id);
+  commit(PLAN.DELETE_PLAN, id);
 }

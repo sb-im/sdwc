@@ -19,6 +19,7 @@ const state = {
 export const MutationTypes = {
   ADD_PLAN: 'ADD_PLAN',
   UPDATE_PLAN: 'UPDATE_PLAN',
+  DELETE_PLAN: 'DELETE_PLAN',
   ADD_PLAN_LOG: 'ADD_PLAN_LOG'
 };
 
@@ -34,6 +35,16 @@ const mutations = {
     const index = state.info.findIndex(plan => plan.id === payload.id);
     if (index < 0) return;
     state.info.splice(index, 1, payload);
+  },
+  [MutationTypes.DELETE_PLAN](state, /** @type {number} */ id) {
+    const index = state.info.findIndex(p => p.id === id);
+    if (index > 0) {
+      state.info.splice(index, 1);
+    }
+    let logIndex;
+    while ((logIndex = state.log.findIndex(l => l.plan_id === id)) > 0) {
+      state.log.splice(logIndex, 1);
+    }
   },
   [MutationTypes.ADD_PLAN_LOG](state, /** @type {PlanLog} */ payload) {
     if (state.log.findIndex(log => log.id === payload.id) >= 0) return;
