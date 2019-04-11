@@ -88,7 +88,7 @@
         });
         return false;
       },
-      doMsission(name) {
+      doMsission(name, ...args) {
         if (!this.checkNodeStatus()) return;
         // store reference of notification
         const notification = this.$notify({
@@ -97,7 +97,7 @@
           title: name,
           message: this.$t('common.operate_pending')
         });
-        return mqttClient.invoke(this.node.id, name, [])
+        return mqttClient.invoke(this.node.id, name, args)
           .then(() => {
             // modify notification icon and text
             notification.$data.type = 'success';

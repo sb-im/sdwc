@@ -100,7 +100,7 @@
         });
         return false;
       },
-      doMsission(name) {
+      doMsission(name, ...args) {
         if (!this.checkNodeStatus()) return;
         const notification = this.$notify({
           duration: 0,
@@ -108,7 +108,7 @@
           title: name,
           message: this.$t('common.operate_pending')
         });
-        mqttClient.invoke(this.node.id, name, [])
+        mqttClient.invoke(this.node.id, name, args)
           .then(() => {
             notification.$data.type = 'success';
             notification.$data.message = this.$t('common.operate_success');
