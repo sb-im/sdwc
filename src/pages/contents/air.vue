@@ -8,7 +8,7 @@
         </el-col>
         <el-col class="right">
           <div class="maps">
-            <uactrack v-if="$store.state.statusLive && $store.state.statusLive.payload && $store.state.statusLive.payload.gps" :flight="uavFlight"></uactrack>
+            <uactrack :flight="uavFlight"></uactrack>
           </div>
           <div class="pitch">
             <div class="pitch-slider d-f">
@@ -54,8 +54,15 @@
       'uactrack': uactrack,
     },
     computed: {
+      message() {
+        const nm = this.$store.state.nodeMessage.find(msg => msg.id == this.node.id) || {message: []};
+        return nm.message;
+      },
       uavFlight() {
-        return [{lat:(+this.$store.state.statusLive.payload.gps.lat)*Math.pow(10,-7),lng:(+this.$store.state.statusLive.payload.gps.lon)*Math.pow(10,-7)}]
+        return this.message.map(msg => {
+          const {status: {gps: {lat, lon}}} = JSON.parse(msg);
+          return {lat, lng: lon};
+        })
       }
     },
     methods: {

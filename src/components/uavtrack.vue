@@ -8,7 +8,8 @@
   export default {
     data() {
       return {
-
+        poly: null,
+        map: null
       }
     },
     props: {
@@ -32,24 +33,40 @@
         } else this.initMap(this.flight[0]);
       },
       initMap(point) {
-        this.drawPath(new google.maps.Map(this.$refs.map, {
+        this.map = new google.maps.Map(this.$refs.map, {
           zoom: 20,
           center: point,
           mapTypeId: 'terrain'
-        }));
+        });
+        this.drawPath();
       },
-      drawPath(map) {
-        let flightPath = new google.maps.Polyline({
+      drawPath() {
+        this.poly = new google.maps.Polyline({
           path: this.flight,
           geodesic: true,
           strokeColor: '#ff0000',
           strokeOpacity: 1.0,
           strokeWeight: 2
         });
-        flightPath.setMap(map);
+        this.poly.setMap(this.map);
+      },
+      redrawPath() {
+        const mvcArray = this.poly.getPath();
+        const start = mvcArray.getLength();
+        if (start === 0) {
+          this.map.setCenter(this.flight[0]);
+        }
+        for (let i = start === 0 ? start : start - 1; i < this.flight.length; i++) {
+          mvcArray.push(new google.maps.LatLng(this.flight[i].lat, this.flight[i].lng));
+        }
       },
       clearPath() {
         this.flight = [];
+      }
+    },
+    watch: {
+      flight() {
+        this.redrawPath();
       }
     }
   }
