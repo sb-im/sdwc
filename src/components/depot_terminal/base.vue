@@ -82,7 +82,7 @@
       logs() {
         const nodeMsg = this.$store.state.nodeMessage.find(m => m.id == this.node.id);
         if (nodeMsg) {
-          return nodeMsg.message;
+          return nodeMsg.log;
         }
         return [];
       }

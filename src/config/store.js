@@ -67,11 +67,15 @@ export default new Vuex.Store({
       }
     },
     nodeMessage(state, { id, message }) {
-      const st = state.nodeMessage.find(s => s.id == id);
-      if (st) {
-        st.message.push(message);
-      } else {
-        state.nodeMessage.push({ id, message: [message] });
+      let st = state.nodeMessage.find(s => s.id == id);
+      if (!st) {
+        st = { id, message: [], log: [] };
+        state.nodeMessage.push(st);
+      }
+      try {
+        st.message.push(JSON.parse(message))
+      } catch (e) {
+        st.log.push(message);
       }
     },
     linkAdd(state, arg) {
