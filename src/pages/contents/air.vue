@@ -10,19 +10,37 @@
           <div class="maps">
             <uactrack :flight="uavFlight"></uactrack>
           </div>
-          <div class="pitch">
-            <div class="pitch-slider d-f">
-              <p class="label font-16">{{ $t('air.pitch_angle') }}</p><el-slider class="slider"></el-slider>
-            </div>
-            <div class="btns">
-              <el-button type="primary" class="font-16">{{ $t('air.screenshot') }}</el-button>
-              <el-button type="primary" class="font-16">{{ $t('air.recording') }}</el-button>
+          <div class="angle">
+            <div class="sliders">
+              <div>
+                <span>{{ $t('air.pitch_angle') }}</span>
+                <el-slider
+                  v-model="gimbal.yaw"
+                  :max="90"
+                  :min="-90"
+                  :disabled="gimbalDisabled"
+                  @change="doGimbalCtl('yaw', $event)"
+                  style="width:225px;margin:8px 0;" />
+                <el-radio-group v-model="gimbalMode" @change="doGimbalMode">
+                  <el-radio-button label="mavlink">{{ $t('air.gimbal_mode_mavlink') }}</el-radio-button>
+                  <el-radio-button label="gps">{{ $t('air.gimbal_mode_gps') }}</el-radio-button>
+                  <el-radio-button label="rc">{{ $t('air.gimbal_mode_rc') }}</el-radio-button>
+                </el-radio-group>
+              </div>
+              <el-slider
+                vertical
+                v-model="gimbal.pitch"
+                :max="90"
+                :min="-45"
+                :disabled="gimbalDisabled"
+                @change="doGimbalCtl('pitch', $event)"
+                height="108px" />
             </div>
           </div>
         </el-col>
       </el-row>
     </section>
-    <terminal :node="node"></terminal>
+    <terminal :node="node" ref="term"></terminal>
   </section>
 </template>
 
@@ -34,17 +52,17 @@
   export default {
     data() {
       return {
-        activeIndex:'1',
-        tableTest:[{
-          id:'A007'
-        }]
+        gimbalMode: '',
+        gimbal: {
+          yaw: 0,
+          pitch: 0
+        }
       }
     },
     props: {
       node: {
         type: Object,
-        required: true,
-        default: () => {}
+        required: true
       }
     },
     components: {
@@ -54,23 +72,45 @@
       'uactrack': uactrack,
     },
     computed: {
+      gimbalDisabled() {
+        const { status } = this.$store.state.nodeStatus.find(st => st.id == this.node.id);
+        return status != 0 || this.gimbalMode !== 'mavlink';
+      },
       message() {
         const nm = this.$store.state.nodeMessage.find(msg => msg.id == this.node.id) || {message: []};
         return nm.message;
       },
       uavFlight() {
         return this.message.map(msg => {
-          const {status: {gps: {lat, lon}}} = JSON.parse(msg);
+          const {status: {gps: {lat, lon}}} = msg;
           return {lat, lng: lon};
-        })
+        });
       },
       uavStatus() {
-        const {status} = JSON.parse(this.message[this.message.length - 1] || '{}');
+        const {status} = this.message[this.message.length - 1] || {};
         return status;
       }
     },
     methods: {
-
+      doGimbalMode(mode) {
+        this.gimbalMode = '';
+        this.$refs.term.doMsission('gimbalmode', [mode])
+          .then(() => this.gimbalMode = mode)
+          .catch(() => {/* noop */});
+      },
+      doGimbalCtl(prop, value) {
+        let argument = Object.assign({}, this.gimbal);
+        argument[prop] = value;
+        this.$refs.term.doMsission('gimbal', argument);
+      }
+    },
+    watch: {
+      uavStatus(value) {
+        if (value.mount) {
+          this.gimbal.yaw = value.mount.yaw;
+          this.gimbal.pitch = value.mount.pitch;
+        }
+      }
     }
   }
 </script>
@@ -93,13 +133,13 @@
     height: 310px;
     background-color: #eee;
   }
-  .map-video .pitch {padding: 10px 28px;}
-  .map-video .pitch-slider .label {
-    height: 40px;
-    line-height: 40px;
-    width: 36%;
+  .angle,
+  .angle .sliders {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .map-video .pitch-slider .slider {width: 64%;}
-  .map-video .right .btns{margin-top: 8px;}
-  .map-video .right .btns button{width: 125px;}
+  .angle {
+    height: 150px;
+  }
 </style>
