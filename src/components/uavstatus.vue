@@ -1,14 +1,12 @@
 <template>
   <el-header height="45px" class="header">
-    <ul class="f-r d-f">
-      <li><img src="../assets/images/drone/d_mode.svg"/><span>{{ flightMode }}</span></li>
-      <li><img src="../assets/images/drone/d_time.svg"/>{{ flightTime }}</li>
-      <li><img src="../assets/images/drone/d_electricity.svg"/>{{ batteryRemain }}</li>
-      <li><img src="../assets/images/drone/d_voltage.svg"/>{{ batteryVoltage }}</li>
-      <li><img src="../assets/images/drone/d_speed.svg"/>{{ flightSpeed }}</li>
-      <li><img src="../assets/images/drone/d_height.svg"/>{{ flightHeight }}</li>
-      <li><img src="../assets/images/drone/d_satellite.svg"/>{{ gpsInfo }}</li>
-    </ul>
+    <div><img src="../assets/images/drone/d_mode.svg"/><span>{{ flightMode }}</span></div>
+    <div><img src="../assets/images/drone/d_time.svg"/>{{ flightTime }}</div>
+    <div><img src="../assets/images/drone/d_electricity.svg"/>{{ batteryRemain }}</div>
+    <div><img src="../assets/images/drone/d_voltage.svg"/>{{ batteryVoltage }}</div>
+    <div><img src="../assets/images/drone/d_speed.svg"/>{{ flightSpeed }}</div>
+    <div><img src="../assets/images/drone/d_height.svg"/>{{ flightHeight }}</div>
+    <div><img src="../assets/images/drone/d_satellite.svg"/>{{ gpsInfo }}</div>
   </el-header>
 </template>
 <script>
@@ -56,8 +54,8 @@
       flightTime() {return this.status.flight.time ? this.$t('air.flight_time',{t:this.secTime(this.status.flight.time)}) : this.$t('air.flight_time',{t:'--:--'});},
       flightSpeed() {return this.status.flight.speed ? this.$t('air.flight_speed',{s:parseFloat(this.status.flight.speed).toFixed(2)+'m/s'}) : this.$t('air.flight_speed',{s:'--m/s'});},
       flightHeight() {return this.status.gps.height ? this.$t('air.flight_height',{h:parseFloat(this.status.gps.height).toFixed(2)+'m'}) : this.$t('air.flight_height',{h:'--m'});},
-      batteryRemain() {return this.status.battery.remain ? this.$t('air.battery_remain',{num:this.status.battery.remain+'%'}) : this.$t('air.battery_remain',{num:'--%'});},
-      batteryVoltage() {return this.status.battery.voltage ? this.$t('air.battery_voltage',{num:(this.status.battery.voltage*Math.pow(10,-3)).toFixed(2)+'V'}) : this.$t('air.battery_voltage',{num:'--V'});},
+      batteryRemain() {return this.status.battery.remain ? this.$t('air.battery_remain',{num:parseFloat(this.status.battery.remain).toFixed(1)+'%'}) : this.$t('air.battery_remain',{num:'--%'});},
+      batteryVoltage() {return this.status.battery.voltage ? this.$t('air.battery_voltage',{num:(parseFloat(this.status.battery.voltage)).toFixed(2)+'V'}) : this.$t('air.battery_voltage',{num:'--V'});},
       gpsInfo() {
         return (this.status.gps.satellites ? this.$t('air.gps_satellites',{num:this.status.gps.satellites}) : this.$t('air.gps_satellites',{num:'--'})) +
           (this.status.gps.type ? `${this.gpsType[this.status.gps.type]}` : '--');
@@ -76,14 +74,15 @@
 <style scoped>
   .header {border-bottom: 1px solid #e4eaef;}
   .header {
+    display: flex;
+    justify-content: space-evenly;
     padding: 0 10px;
     line-height: 45px;
   }
   .header img{
     width: 30px;
     height: 30px;
-    padding-right: 8px;
+    margin-right: 8px;
   }
-  .header li {padding-right: 12px;}
 </style>
 
