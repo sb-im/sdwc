@@ -1,5 +1,5 @@
 <template>
-  <el-header height="45px" class="header">
+  <el-header height="60px" class="header">
     <div><img src="../assets/images/drone/d_mode.svg"/><span>{{ flightMode }}</span></div>
     <div><img src="../assets/images/drone/d_time.svg"/>{{ flightTime }}</div>
     <div><img src="../assets/images/drone/d_electricity.svg"/>{{ batteryRemain }}</div>
@@ -77,7 +77,7 @@
     display: flex;
     justify-content: space-evenly;
     padding: 0 10px;
-    line-height: 45px;
+    line-height: 60px;
   }
   .header img{
     width: 30px;

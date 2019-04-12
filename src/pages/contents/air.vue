@@ -79,7 +79,7 @@
   .head {border-bottom: 1px solid #e4eaef;}
   .map-video .left {
     width: 750px;
-    height: 428px;
+    height: 460px;
     background-color: #000;
     border-right: 1px solid #e4eaef;
   }
