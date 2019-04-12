@@ -36,7 +36,8 @@
         this.map = new google.maps.Map(this.$refs.map, {
           zoom: 20,
           center: point,
-          mapTypeId: 'terrain'
+          mapTypeId: 'hybrid',
+          streetViewControl: false
         });
         this.drawPath();
       },
