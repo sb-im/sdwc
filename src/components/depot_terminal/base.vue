@@ -60,10 +60,11 @@
 </template>
 
 <script>
-  import mqttClient from '../../config/mqtt';
   // import battery from './battery'
+  import base from '../base_terminal.vue';
   export default {
     name: "DepotTerminal",
+    extends: base,
     data() {
       return {
         command: ''
@@ -85,40 +86,6 @@
           return nodeMsg.log;
         }
         return [];
-      }
-    },
-    methods: {
-      checkNodeStatus() {
-        const { status } = this.$store.state.nodeStatus.find(st => st.id == this.node.id);
-        if (status == 0) {
-          return true;
-        }
-        this.$alert(this.$t('common.not_operational'), {
-          type: 'warning',
-          title: this.$t('common.system_tips'),
-          confirmButtonText: this.$t('common.comfirm')
-        });
-        return false;
-      },
-      doMsission(name, ...args) {
-        if (!this.checkNodeStatus()) return;
-        const notification = this.$notify({
-          duration: 0,
-          type: 'info',
-          title: name,
-          message: this.$t('common.operate_pending')
-        });
-        mqttClient.invoke(this.node.id, name, args)
-          .then(() => {
-            notification.$data.type = 'success';
-            notification.$data.message = this.$t('common.operate_success');
-            notification.$data.duration = 2000;
-            notification.startTimer();
-          })
-          .catch(() => {
-            notification.$data.type = 'error';
-            notification.$data.message = this.$t('common.operate_error');
-          });
       }
     }
   }
