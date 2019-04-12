@@ -1,7 +1,7 @@
 <template>
   <section class="wrapper">
     <section class="head font-14">
-      <uav-status></uav-status>
+      <uav-status :status="uavStatus"></uav-status>
       <el-row class="map-video">
         <el-col class="left">
           <rt-moniter :video="node.points[0]"></rt-moniter>
@@ -63,6 +63,10 @@
           const {status: {gps: {lat, lon}}} = JSON.parse(msg);
           return {lat, lng: lon};
         })
+      },
+      uavStatus() {
+        const {status} = JSON.parse(this.message[this.message.length - 1] || '{}');
+        return status;
       }
     },
     methods: {

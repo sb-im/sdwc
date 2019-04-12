@@ -1,19 +1,30 @@
 <template>
   <el-header height="45px" class="header">
-    <img src="../assets/images/drone/d_tname.svg"/>安防例行巡检
-    <ul v-if="$store.state.statusLive && $store.state.statusLive.payload" v-cloak class="f-r d-f">
-      <li v-if="$store.state.statusLive.payload.flight" v-cloak><img src="../assets/images/drone/d_mode.svg"/><span>{{ flightMode }}</span></li>
-      <li v-if="$store.state.statusLive.payload.flight" v-cloak><img src="../assets/images/drone/d_time.svg"/>{{ flightTime }}</li>
-      <li v-if="$store.state.statusLive.payload.battery" v-cloak><img src="../assets/images/drone/d_electricity.svg"/>{{ batteryRemain }}</li>
-      <li v-if="$store.state.statusLive.payload.battery" v-cloak><img src="../assets/images/drone/d_voltage.svg"/>{{ batteryVoltage }}</li>
-      <li v-if="$store.state.statusLive.payload.flight" v-cloak><img src="../assets/images/drone/d_speed.svg"/>{{ flightSpeed }}</li>
-      <li v-if="$store.state.statusLive.payload.gps" v-cloak><img src="../assets/images/drone/d_height.svg"/>{{ flightHeight }}</li>
-      <li v-if="$store.state.statusLive.payload.gps" v-cloak><img src="../assets/images/drone/d_satellite.svg"/>{{ gpsInfo }}</li>
+    <ul class="f-r d-f">
+      <li><img src="../assets/images/drone/d_mode.svg"/><span>{{ flightMode }}</span></li>
+      <li><img src="../assets/images/drone/d_time.svg"/>{{ flightTime }}</li>
+      <li><img src="../assets/images/drone/d_electricity.svg"/>{{ batteryRemain }}</li>
+      <li><img src="../assets/images/drone/d_voltage.svg"/>{{ batteryVoltage }}</li>
+      <li><img src="../assets/images/drone/d_speed.svg"/>{{ flightSpeed }}</li>
+      <li><img src="../assets/images/drone/d_height.svg"/>{{ flightHeight }}</li>
+      <li><img src="../assets/images/drone/d_satellite.svg"/>{{ gpsInfo }}</li>
     </ul>
   </el-header>
 </template>
 <script>
   export default {
+    props: {
+      status: {
+        type: Object,
+        required: false,
+        default: () => ({
+          battery: { voltage: 0, remain: 0 },
+          gps: { satellites: 0, height: 0, lat: 0, type: 0, lon: 0 },
+          mount: { yaw: 0, pitch: 0 },
+          flight: { status: 0, mode: 0, speed: 0, time: 0 }
+        })
+      }
+    },
     data() {
       return {
         gpsType: {
@@ -33,7 +44,7 @@
     },
     computed: {
       flightMode() {
-        switch (+(this.$store.state.statusLive.payload.flight.mode)) {
+        switch (+(this.status.flight.mode)) {
           case 3:return this.$t('air.mode_auto');
           case 4:return this.$t('air.mode_guide');
           case 5:return this.$t('air.mode_fixed');
@@ -42,14 +53,14 @@
           default:return this.$t('air.mode_');
         }
       },
-      flightTime() {return this.$store.state.statusLive.payload.flight.time ? this.$t('air.flight_time',{t:this.secTime(this.$store.state.statusLive.payload.flight.time)}) : this.$t('air.flight_time',{t:'--:--'});},
-      flightSpeed() {return this.$store.state.statusLive.payload.flight.speed ? this.$t('air.flight_speed',{s:parseFloat(this.$store.state.statusLive.payload.flight.speed).toFixed(2)+'m/s'}) : this.$t('air.flight_speed',{s:'--m/s'});},
-      flightHeight() {return this.$store.state.statusLive.payload.gps.height ? this.$t('air.flight_height',{h:parseFloat(this.$store.state.statusLive.payload.gps.height).toFixed(2)+'m'}) : this.$t('air.flight_height',{h:'--m'});},
-      batteryRemain() {return this.$store.state.statusLive.payload.battery.remain ? this.$t('air.battery_remain',{num:this.$store.state.statusLive.payload.battery.remain+'%'}) : this.$t('air.battery_remain',{num:'--%'});},
-      batteryVoltage() {return this.$store.state.statusLive.payload.battery.voltage ? this.$t('air.battery_voltage',{num:(this.$store.state.statusLive.payload.battery.voltage*Math.pow(10,-3)).toFixed(2)+'V'}) : this.$t('air.battery_voltage',{num:'--V'});},
+      flightTime() {return this.status.flight.time ? this.$t('air.flight_time',{t:this.secTime(this.status.flight.time)}) : this.$t('air.flight_time',{t:'--:--'});},
+      flightSpeed() {return this.status.flight.speed ? this.$t('air.flight_speed',{s:parseFloat(this.status.flight.speed).toFixed(2)+'m/s'}) : this.$t('air.flight_speed',{s:'--m/s'});},
+      flightHeight() {return this.status.gps.height ? this.$t('air.flight_height',{h:parseFloat(this.status.gps.height).toFixed(2)+'m'}) : this.$t('air.flight_height',{h:'--m'});},
+      batteryRemain() {return this.status.battery.remain ? this.$t('air.battery_remain',{num:this.status.battery.remain+'%'}) : this.$t('air.battery_remain',{num:'--%'});},
+      batteryVoltage() {return this.status.battery.voltage ? this.$t('air.battery_voltage',{num:(this.status.battery.voltage*Math.pow(10,-3)).toFixed(2)+'V'}) : this.$t('air.battery_voltage',{num:'--V'});},
       gpsInfo() {
-        return (this.$store.state.statusLive.payload.gps.satellites ? this.$t('air.gps_satellites',{num:this.$store.state.statusLive.payload.gps.satellites}) : this.$t('air.gps_satellites',{num:'--'})) +
-          (this.$store.state.statusLive.payload.gps.type ? `${this.gpsType[this.$store.state.statusLive.payload.gps.type]}` : '--');
+        return (this.status.gps.satellites ? this.$t('air.gps_satellites',{num:this.status.gps.satellites}) : this.$t('air.gps_satellites',{num:'--'})) +
+          (this.status.gps.type ? `${this.gpsType[this.status.gps.type]}` : '--');
       }
     },
     methods:{
