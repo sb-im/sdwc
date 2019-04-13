@@ -92,7 +92,7 @@ module.exports = {
     gps_satellites:'{num} Stars',
     pitch_angle:'PTZ angle',
     gimbal_mode_mavlink: 'Manual',
-    gimbal_mode_gps: 'Auto',
+    gimbal_mode_neutral: 'Auto',
     gimbal_mode_rc: 'Remote-Control',
     screenshot:'Screenshot',
     recording:'Recording',

@@ -91,7 +91,7 @@ module.exports = {
     gps_satellites:'{num}星',
     pitch_angle:'云台俯仰角',
     gimbal_mode_mavlink: '手动',
-    gimbal_mode_gps: '自动',
+    gimbal_mode_neutral: '自动',
     gimbal_mode_rc: '遥控器',
     screenshot:'截图',
     recording:'录制屏幕',

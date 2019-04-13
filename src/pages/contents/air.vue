@@ -23,7 +23,7 @@
                   style="width:225px;margin:8px 0;" />
                 <el-radio-group v-model="gimbalMode" @change="doGimbalMode">
                   <el-radio-button label="mavlink">{{ $t('air.gimbal_mode_mavlink') }}</el-radio-button>
-                  <el-radio-button label="gps">{{ $t('air.gimbal_mode_gps') }}</el-radio-button>
+                  <el-radio-button label="neutral">{{ $t('air.gimbal_mode_neutral') }}</el-radio-button>
                   <el-radio-button label="rc">{{ $t('air.gimbal_mode_rc') }}</el-radio-button>
                 </el-radio-group>
               </div>
