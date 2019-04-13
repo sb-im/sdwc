@@ -30,8 +30,8 @@
               <el-slider
                 vertical
                 v-model="gimbal.pitch"
-                :max="90"
-                :min="-45"
+                :max="45"
+                :min="-90"
                 :disabled="gimbalDisabled"
                 @change="doGimbalCtl('pitch', $event)"
                 height="108px" />
