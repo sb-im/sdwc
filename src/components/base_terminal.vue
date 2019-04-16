@@ -21,7 +21,7 @@ export default {
       });
       return false;
     },
-    doMsission(name, args = {}) {
+    doMsission(name, mission, args = []) {
       if (!this.checkNodeStatus()) return Promise.reject();
       // store reference of notification
       const notification = this.$notify({
@@ -30,7 +30,7 @@ export default {
         title: name,
         message: this.$t('common.operate_pending')
       });
-      return mqttClient.invoke(this.node.id, name, args)
+      return mqttClient.invoke(this.node.id, mission, args)
         .then(() => {
           // modify notification icon and text
           notification.$data.type = 'success';

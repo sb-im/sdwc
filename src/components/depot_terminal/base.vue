@@ -15,24 +15,24 @@
           <td class="text-c"><img src="../../assets/images/airport/a_reset.svg"/></td>
         </tr>
         <tr class="btns">
-          <td><el-button @click.prevent="doMsission('stop')" class="d-b font-16" type="danger">=={{ $t('depot.emergency_stop') }}==</el-button></td>
+          <td><el-button @click.prevent="doMsission($t('depot.emergency_stop'), 'stop')" class="d-b font-16" type="danger">=={{ $t('depot.emergency_stop') }}==</el-button></td>
           <td>
-            <el-button @click.prevent="doMsission('dooropen')" class="d-b font-16" type="warning">{{ $t('depot.open_door') }}</el-button>
-            <el-button @click.prevent="doMsission('doorclose')" class="d-b font-16" type="warning">{{ $t('depot.close_door') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.open_door'), 'dooropen')" class="d-b font-16" type="warning">{{ $t('depot.open_door') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.close_door'), 'doorclose')" class="d-b font-16" type="warning">{{ $t('depot.close_door') }}</el-button>
           </td>
           <td>
-            <el-button @click.prevent="doMsission('power_chargedrone_on')" class="d-b font-16" type="warning">{{ $t('depot.start_charge') }}</el-button>
-            <el-button @click.prevent="doMsission('power_chargedrone_off')" class="d-b font-16" type="warning">{{ $t('depot.stop_charge') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.start_charge'), 'power_chargedrone_on')" class="d-b font-16" type="warning">{{ $t('depot.start_charge') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.stop_charge'), 'power_chargedrone_off')" class="d-b font-16" type="warning">{{ $t('depot.stop_charge') }}</el-button>
           </td>
           <td>
-            <el-button @click.prevent="doMsission('fixdrone')" class="d-b font-16" type="warning">{{ $t('depot.air_fixed') }}</el-button>
-            <el-button @click.prevent="doMsission('freedrone')" class="d-b font-16" type="warning">{{ $t('depot.air_release') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.air_fixed'), 'fixdrone')" class="d-b font-16" type="warning">{{ $t('depot.air_fixed') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.air_release'), 'freedrone')" class="d-b font-16" type="warning">{{ $t('depot.air_release') }}</el-button>
           </td>
           <td>
-            <el-button @click.prevent="doMsission('pickdronebattery')" class="d-b font-16" type="warning">{{ $t('depot.air_bat_pickout') }}</el-button>
-            <el-button @click.prevent="doMsission('mountdronebattery')" class="d-b font-16" type="warning">{{ $t('depot.air_bat_putin') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.air_bat_pickout'), 'pickdronebattery')" class="d-b font-16" type="warning">{{ $t('depot.air_bat_pickout') }}</el-button>
+            <el-button @click.prevent="doMsission($t('depot.air_bat_putin'), 'mountdronebattery')" class="d-b font-16" type="warning">{{ $t('depot.air_bat_putin') }}</el-button>
           </td>
-          <td><el-button @click.prevent="doMsission('reset')" class="d-b font-16" type="warning">{{ $t('depot.air_reset') }}</el-button></td>
+          <td><el-button @click.prevent="doMsission($t('depot.air_reset'), 'reset')" class="d-b font-16" type="warning">{{ $t('depot.air_reset') }}</el-button></td>
         </tr>
       </el-col>
     </el-row>
@@ -45,9 +45,9 @@
     <el-collapse>
       <el-collapse-item class="debug" :title="$t('common.debug_tips')" name="1">
         <div class="collapse-content">
-          <el-button class="font-16" @click="doMsission('move_lift_drone')" type="danger">{{ $t('depot.platform_rise') }}</el-button>
-          <el-button class="font-16" @click="doMsission('move_lift_convey')" type="danger">{{ $t('depot.platform_bottom') }}</el-button>
-          <el-button class="font-16" @click="doMsission('riseplate')" type="danger">{{ $t('depot.platform_level') }}</el-button>
+          <el-button class="font-16" @click="doMsission($t('depot.platform_rise'), 'move_lift_drone')" type="danger">{{ $t('depot.platform_rise') }}</el-button>
+          <el-button class="font-16" @click="doMsission($t('depot.platform_bottom'), 'move_lift_convey')" type="danger">{{ $t('depot.platform_bottom') }}</el-button>
+          <el-button class="font-16" @click="doMsission($t('depot.platform_level'), 'riseplate')" type="danger">{{ $t('depot.platform_level') }}</el-button>
           <div class="side">
             <el-input v-model="command" clearable>
               <el-button type="danger" slot="append">{{ $t('common.send') }}</el-button>

@@ -14,15 +14,15 @@
           <li class="text-c"><img src="../../assets/images/drone/d_spare.svg"/></li>
         </ul>
         <ul class="d-f btns">
-          <li><el-button @click.prevent="doMsission('mode_loiter')" class="d-b font-16" type="danger">=={{ $t('air.air_hover') }}==</el-button></li>
-          <li><el-button @click.prevent="doMsission('take_off')" class="d-b font-16" type="danger">{{ $t('air.air_takeoff') }}</el-button></li>
-          <li><el-button @click.prevent="doMsission('model_rtl')" class="d-b font-16" type="danger">{{ $t('air.air_return') }}</el-button></li>
+          <li><el-button @click.prevent="doMsission($t('air.air_hover'), 'mode_loiter')" class="d-b font-16" type="danger">=={{ $t('air.air_hover') }}==</el-button></li>
+          <li><el-button @click.prevent="doMsission($t('air.air_takeoff'), 'take_off')" class="d-b font-16" type="danger">{{ $t('air.air_takeoff') }}</el-button></li>
+          <li><el-button @click.prevent="doMsission($t('air.air_return'), 'model_rtl')" class="d-b font-16" type="danger">{{ $t('air.air_return') }}</el-button></li>
           <li><el-button @click.prevent="readyMsission" class="d-b font-16" type="danger">{{ $t('air.air_runplan') }}</el-button></li>
           <li>
-            <el-button @click.prevent="doMsission('up_5')" class="d-b font-16" type="danger">{{ $t('air.air_up',{num:5}) }}</el-button>
-            <el-button @click.prevent="doMsission('down_5')" class="d-b font-16" type="danger">{{ $t('air.air_down',{num:5}) }}</el-button>
+            <el-button @click.prevent="doMsission($t('air.air_up',{num:5}), 'up_5')" class="d-b font-16" type="danger">{{ $t('air.air_up',{num:5}) }}</el-button>
+            <el-button @click.prevent="doMsission($t('air.air_down',{num:5}), 'down_5')" class="d-b font-16" type="danger">{{ $t('air.air_down',{num:5}) }}</el-button>
           </li>
-          <li><el-button @click.prevent="doMsission('land_bakup')" class="d-b font-16" type="danger">{{ $t('air.air_landpoint') }}</el-button></li>
+          <li><el-button @click.prevent="doMsission($t('air.air_landpoint'), 'land_bakup')" class="d-b font-16" type="danger">{{ $t('air.air_landpoint') }}</el-button></li>
         </ul>
       </el-col>
     </el-row>
@@ -35,9 +35,9 @@
     <el-collapse class="debug">
       <el-collapse-item :title="$t('common.debug_tips')" name="1">
         <div class="collapse-content">
-          <el-button class="font-16" @click.prevent="doMsission('land')" type="danger">{{ $t('air.air_land') }}</el-button>
+          <el-button class="font-16" @click.prevent="doMsission('land', $t('air.air_land'))" type="danger">{{ $t('air.air_land') }}</el-button>
           <el-tooltip class="item" effect="dark" :content="$t('air.air_emergency_stop_tips')" placement="top">
-            <el-button class="font-16" @click.prevent="doMsission('emergency_stop')" type="danger">{{ $t('air.air_emergency_stop') }}</el-button>
+            <el-button class="font-16" @click.prevent="doMsission($t('air.air_emergency_stop'), 'ncp', ['shell', 'stop'])" type="danger">{{ $t('air.air_emergency_stop') }}</el-button>
           </el-tooltip>
           <div class="side">
             <el-input v-model="command" clearable>
@@ -98,7 +98,7 @@
               cancelButtonText: this.$t('common.cancel')
             }).then(() => {
               // startmission when user confirm
-              this.doMsission('startmission');
+              this.doMsission($t('air.air_runplan'), 'startmission');
             });
           })
           .catch(e => {
