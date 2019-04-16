@@ -53,25 +53,26 @@ export default new Vuex.Store({
     },
     itemAdd(state, arg) {
       switch (arg.type) {
-        case 'nodes':state.nodes = arg.data;break;
+        case 'nodes':
+          state.nodes = arg.data;
+          arg.data.forEach(node => {
+            const { id } = node;
+            state.nodeStatus.push({ id, status: 3 });
+            state.nodeMessage.push({ id, message: [], log: [] });
+          })
+          break;
         case 'plans':state.plans = arg.data;break;
       }
       arg.callback && arg.callback();
     },
     nodeStatus(state, { id, status }) {
       const st = state.nodeStatus.find(s => s.id == id);
-      if (st) {
-        st.status = status;
-      } else {
-        state.nodeStatus.push({ id, status });
-      }
+      if (!st) return;
+      st.status = status;
     },
     nodeMessage(state, { id, message }) {
       let st = state.nodeMessage.find(s => s.id == id);
-      if (!st) {
-        st = { id, message: [], log: [] };
-        state.nodeMessage.push(st);
-      }
+      if (!st) return;
       try {
         st.message.push(JSON.parse(message))
       } catch (e) {
