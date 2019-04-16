@@ -34,17 +34,9 @@
           </p>
         </li>
         <li class="edit-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>{{ $t('plan.plan_depot') }}：</p>
-          <p class="text">
-            <el-select class="d-b" v-model="planDepot" :placeholder="$t('plan.edit.depot_inp')">
-              <el-option v-for="(val,index) in depotNodes" :key="index" :label="val.name" :value="val.id"></el-option>
-            </el-select>
-          </p>
-        </li>
-        <li class="edit-item d-f">
           <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>{{ $t('plan.plan_cycle') }}：</p>
           <p class="text">
-            <el-select class="d-b" v-model="planCycle" :placeholder="$t('plan.edit.cycle_inp')">
+            <el-select disabled class="d-b" v-model="planCycle" :placeholder="$t('plan.edit.cycle_inp')">
               <el-option v-for="(val,index) in cycleTypes" :key="index" :label="val.name" :value="val.id"></el-option>
             </el-select>
           </p>
@@ -52,7 +44,7 @@
         <li class="edit-item d-f">
           <p class="label"><img src="../../../assets/images/task/t_first.svg"/>{{ $t('plan.plan_first_time') }}：</p>
           <p class="text">
-            <el-date-picker v-model="planStart" style="width: 100%" type="datetime" @change="startTime" :placeholder="$t('plan.edit.first_time_inp')"></el-date-picker>
+            <el-date-picker disabled v-model="planStart" style="width: 100%" type="datetime" @change="startTime" :placeholder="$t('plan.edit.first_time_inp')"></el-date-picker>
           </p>
         </li>
         <li class="edit-item d-f file">
@@ -96,7 +88,6 @@
         planDesc: '',
         planFile: '',
         planNode: '',
-        planDepot: '',
         planCycle: '',
         planStart: '',
         showMap: false,
@@ -116,7 +107,6 @@
       this.planName = this.plan === 'add' ? '' : this.$store.state.planInfo.name;
       this.planDesc = this.plan === 'add' ? '' : this.$store.state.planInfo.description;
       this.planNode = this.plan === 'add' ? '' : this.$store.state.planInfo.node_id;
-      this.planDepot = this.plan === 'add' ? '' : this.$store.state.planInfo.depot_id;
       this.planCycle = this.plan === 'add' ? '' : this.$store.state.planInfo.cycle_types_id;
       this.planStart = this.plan === 'add' ? '' : this.$store.state.planInfo.start_time;
       this.showMap = !this.plan === 'add';
@@ -124,7 +114,6 @@
     },
     computed: {
       ...mapGetters([
-        'depotNodes',
         'airNodes'
       ])
     },
@@ -149,8 +138,7 @@
       submitPlan() {
         if (this.planName!=='') {
           if (this.planNode!=='') {
-            if (this.planDepot!=='') {
-              if (this.planCycle!=='') {
+              // if (this.planCycle!=='') {
                 if (this.plan === 'add') {
                   if (this.planFile !== '') {
                     this.submitData('post',data=>{
@@ -165,8 +153,7 @@
                     this.$store.dispatch('getPlanInfo', {_this:this, id:data.id});
                   });
                 }
-              } else this.$message.error(this.$t('plan.edit.please_cycle'));
-            } else this.$message.error(this.$t('plan.edit.please_depot'));
+              // } else this.$message.error(this.$t('plan.edit.please_cycle'));
           } else this.$message.error(this.$t('plan.edit.please_air'));
         } else this.$message.error(this.$t('plan.edit.please_name'));
       },
@@ -176,7 +163,6 @@
         form.append('description',this.planDesc);
         this.plan === 'add' && form.append('file',this.planFile);
         form.append('node_id',this.planNode);
-        form.append('depot_id',this.planDepot);
         form.append('start_time',this.planStart);
         form.append('cycle_types_id',this.planCycle);
         let url = '';
@@ -205,7 +191,7 @@
           type: 'warning'
         }).then(() => {
           let url = this.$store.state.config.suffix!==''?`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`+this.$store.state.config.suffix:`${this.$store.state.api.local.plans}/${this.$store.state.planInfo.id}`;
-          this.$http.delete(url)
+          this.$http.delete(url, { headers: { Authorization: this.$store.state.token } })
             .then(res => {
               if (res.status===200) {
                 let tmp = {type: 'plans', id: res.data.id};

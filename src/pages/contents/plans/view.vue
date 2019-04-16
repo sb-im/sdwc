@@ -27,10 +27,6 @@
           <p class="text">{{ airDepot($store.state.planInfo.node_id,'air') }}</p>
         </li>
         <li class="info-item d-f">
-          <p class="label"><img src="../../../assets/images/task/t_airport.svg"/>{{ $t('plan.plan_depot') }}：</p>
-          <p class="text">{{ airDepot($store.state.planInfo.node_id,'depot') }}</p>
-        </li>
-        <li class="info-item d-f">
           <p class="label"><img src="../../../assets/images/task/t_frequency.svg"/>{{ $t('plan.plan_cycle') }}：</p>
           <p class="text">{{ cycleTypes($store.state.planInfo.cycle_types_id) }}</p>
         </li>
