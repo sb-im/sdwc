@@ -106,6 +106,9 @@ module.exports = {
     air_land:'直接降落',
     air_emergency_stop:'急停',
     air_emergency_stop_tips:'桨叶急停，需特别小心',
+    start_record:'开始录像',
+    stop_record:'停止录像',
+    take_photo:'拍照',
   },
   depot:{
     monitor:'实时监控',
@@ -144,7 +147,17 @@ module.exports = {
     platform_bottom:'平台降底',
     platform_level:'平台举平',
     status_normal:'状态正常',
-    status_abnormal:'状态异常'
+    get_status:'状态',
+    move_x_open:'打开X',
+    move_x_close:'关闭X',
+    move_y_open:'打开Y',
+    move_y_close:'关闭Y',
+    power_ir_on:'开信标',
+    power_ir_off:'闭信标',
+    power_doorlock_f_on:'前锁开',
+    power_doorlock_f_off:'前锁关',
+    power_doorlock_b_on:'后锁开',
+    power_doorlock_b_off:'后锁关',
   },
   common:{
     air:'无人机',
