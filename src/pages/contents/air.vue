@@ -94,14 +94,18 @@
     methods: {
       doGimbalMode(mode) {
         this.gimbalMode = '';
-        this.$refs.term.doMsission('gimbalmode', [mode])
-          .then(() => this.gimbalMode = mode)
+        this.$refs.term.doMsission(this.$t('air.gimbal_mode_' + mode), 'gimbalmode', [mode])
+          .then(err =>  {
+            if (!err) {
+              this.gimbalMode = mode;
+            }
+          })
           .catch(() => {/* noop */});
       },
       doGimbalCtl(prop, value) {
         let argument = Object.assign({}, this.gimbal);
         argument[prop] = value;
-        this.$refs.term.doMsission('gimbal', argument);
+        this.$refs.term.doMsission(this.$t('air.pitch_angle'), 'gimbal', argument);
       }
     },
     watch: {
