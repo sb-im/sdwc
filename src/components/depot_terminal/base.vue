@@ -15,7 +15,7 @@
           <td class="text-c"><img src="../../assets/images/airport/a_reset.svg"/></td> -->
         </tr>
         <tr class="btns">
-          <td><el-button @click.prevent="doMsission($t('depot.emergency_stop'), 'stop')" class="d-b font-16" type="danger">=={{ $t('depot.emergency_stop') }}==</el-button></td>
+          <td><el-button @click.prevent="doMsission($t('depot.emergency_stop'), 'ncp', ['shell', 'stop'])" class="d-b font-16" type="danger">=={{ $t('depot.emergency_stop') }}==</el-button></td>
           <td>
             <el-button @click.prevent="doMsission($t('depot.open_door'), 'dooropen')" class="d-b font-16" type="warning">{{ $t('depot.open_door') }}</el-button>
             <el-button @click.prevent="doMsission($t('depot.close_door'), 'doorclose')" class="d-b font-16" type="warning">{{ $t('depot.close_door') }}</el-button>
