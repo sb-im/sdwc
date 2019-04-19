@@ -213,6 +213,7 @@ export default new Vuex.Store({
     },
     // 获取任务信息
     getPlanInfo(context,arg) {
+      context.commit('planMap',[]);
       context.commit('planLink','view');// 先将任务界面切回'查看任务'
       let url = context.state.config.suffix!==''?`${context.state.api.local.plans}/${arg.id}`+context.state.config.suffix:`${context.state.api.local.plans}/${arg.id}`;
       const headers = { authorization: context.state.token };
