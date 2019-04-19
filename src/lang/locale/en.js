@@ -83,6 +83,7 @@ module.exports = {
     mode_fixed:'Fixed Point',
     mode_back:'Return',
     mode_land:'Landing',
+    mode_stabilize:'Stabilize',
     mode_:'--Mode',
     flight_time:'Fly {t}',
     flight_speed:'Speed {s}',

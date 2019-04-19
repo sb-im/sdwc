@@ -82,6 +82,7 @@ module.exports = {
     mode_fixed:'定点模式',
     mode_back:'返航模式',
     mode_land:'降落模式',
+    mode_stabilize:'自稳模式',
     mode_:'--模式',
     flight_time:'飞行{t}',
     flight_speed:'速度{s}',

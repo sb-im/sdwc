@@ -43,6 +43,7 @@
     computed: {
       flightMode() {
         switch (+(this.status.flight.mode)) {
+          case 0:return this.$t('air.mode_stabilize');
           case 3:return this.$t('air.mode_auto');
           case 4:return this.$t('air.mode_guide');
           case 5:return this.$t('air.mode_fixed');
