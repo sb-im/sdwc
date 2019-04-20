@@ -26,11 +26,11 @@
     data() {
       return {
         gpsType: {
-          0: '--',
-          1: '--',
-          2: '--',
-          3: 'GPS FIX',
-          4: 'RTK DGPS',
+          0: 'NO GPS',
+          1: 'NO FIX',
+          2: '2D FIX',
+          3: '3D FIX',
+          4: 'DGPS',
           5: 'RTK FLOAT',
           6: 'RTK FIX'
         }
