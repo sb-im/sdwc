@@ -112,6 +112,12 @@ year month day
   - Add dbus uav_status lib
   - Add uavStatus
   - Add weather
+- 2018.1226
+  - Delete console_ws
+- 2019.0330
+  - Add mqtt
+- 2019.0420
+  - Add webrtc
 
 ## Todo List
 - [x] English Docs
@@ -223,25 +229,7 @@ cp src/config.json ./
   - monitor-img
 
 ## 远程控制无人机
-
-使用websocketd 把 mavproxy 的 IO 以websocket 的的形式发送
-
-webterminal 模块可以连接websocket 并发送命令
-
-websocket 连接地址在`nodes.json`里指定
-
-内容模型`contexts`里传参可以指定websocket 是否可以自动连接
-
-https://github.com/joewalnes/websocketd
-
-http://ardupilot.github.io/MAVProxy/html/index.html
-
-
-```sh
-pip2 install mavproxy --user
-
-./websocketd --port=22333 mavproxy.py --master=udpout:127.0.0.1:14550
-```
+[API Doc](doc/mqtt_doc.md)
 
 ### old
 old 目录下的是 2.0 版本程序 （已废弃）可以拿来做参考（如电源模块）～ (・∀・) ～
