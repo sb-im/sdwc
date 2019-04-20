@@ -176,13 +176,11 @@
         // axios.post(url[, data[, config]])
         this.$http.post(url, '', { headers })
           .then(res => {
-            if (res.status === 200) {
-              this.showCheck = false;
-              this.$message({
-                message:this.$t('plan.view.start_run'),
-                type:'success'
-              });
-            }
+            this.showCheck = false;
+            this.$message({
+              message:this.$t('plan.view.start_run'),
+              type:'success'
+            });
           })
           .catch(err => {
             console.log(err);
