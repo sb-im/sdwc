@@ -18,15 +18,16 @@ class PeerConnectionClient {
   /**
    * @param {HTMLVideoElement} videoElem
    * @param {Function} doSendPeerMessage
+   * @param {string} iceServer
    */
-  constructor(videoElem, doSendPeerMessage) {
+  constructor(videoElem, doSendPeerMessage, iceServer) {
     /**
      * configuration for peerconnection
      * @type {RTCConfiguration}
      */
     this.pcConfig = {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' }
+        { urls: iceServer || 'stun:stun.l.google.com:19302' }
       ]
     };
     this.messageCounter = 0;
@@ -140,10 +141,12 @@ export class WebSocketSignalingChannel {
   /**
    * @param {string} url
    * @param {HTMLVideoElement} videoElem
+   * @param {string} iceServer
    */
-  constructor(url, videoElem) {
+  constructor(url, videoElem, iceServer) {
     this.url = url;
-    this.pc = new PeerConnectionClient(videoElem, this.sendPeerMessage.bind(this));
+    this.iceServer = iceServer;
+    this.pc = new PeerConnectionClient(videoElem, this.sendPeerMessage.bind(this), this.iceServer);
     this.ws = new WebSocket(url);
     this.ws.onopen = () => {
       trace('Websocket connnected:', this.ws.url);

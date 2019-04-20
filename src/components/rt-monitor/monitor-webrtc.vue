@@ -18,7 +18,7 @@ export default {
     }
   },
   mounted() {
-    this.channel = new WebSocketSignalingChannel(this.source, this.$refs.video);
+    this.channel = new WebSocketSignalingChannel(this.source, this.$refs.video, this.$store.state.config.ice_server);
   },
   beforeDestroy() {
     this.channel.closeSingal();
