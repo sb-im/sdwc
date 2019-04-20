@@ -4,5 +4,8 @@
   "client_secret": "",
   "suffix": ".json",
   "lang": "en",
-  "GMAP_API_KEY": ""
+  "GMAP_API_KEY": "",
+  "CY_API_TOKEN": "",
+  "mqtt_url": "",
+  "ice_server": ""
 }
