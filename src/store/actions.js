@@ -109,7 +109,13 @@ export async function subscribeNodes({ state, commit }) {
     commit(NODE.SET_NODE_STATUS, { id, status });
   });
   MqttClient.on('message', ({ id, message }) => {
-    commit(NODE.ADD_NODE_MSG, { id, msg: message });
+    let parsed;
+    try {
+      parsed = JSON.parse(message);
+      commit(NODE.ADD_NODE_MSG, { id, msg: parsed });
+    } catch (e) {
+      commit(NODE.ADD_NODE_LOG, { id, log: message });
+    }
   });
 }
 
