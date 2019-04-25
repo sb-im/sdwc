@@ -1,6 +1,29 @@
 import elMsg from 'element-ui/lib/locale/lang/zh-CN';
 
-export default {
+export const zhDtFormat = {
+  short: {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  },
+  long: {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  },
+  time: {
+    timeZone: 'UTC',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }
+};
+
+export const zhLocale = {
   ...elMsg,
   login: {
     username: '账号',
@@ -80,13 +103,17 @@ export default {
     start_now: '立即启动'
   },
   air: {
+    status_standby: '待机',
+    status_flying: '飞行中',
+    status_error: '错误',
+    status_: '--',
     mode_auto: '自动模式',
     mode_guide: '引导模式',
     mode_fixed: '定点模式',
     mode_back: '返航模式',
     mode_land: '降落模式',
     mode_: '--模式',
-    flight_time: '飞行 {t}',
+    flight_time: '时长 {t}',
     flight_speed: '速度 {s}',
     flight_height: '高度 {h}',
     battery_remain: '电量 {num}',

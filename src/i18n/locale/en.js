@@ -1,6 +1,29 @@
 import elMsg from 'element-ui/lib/locale/lang/en';
 
-export default {
+export const enDtFormat = {
+  short: {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  },
+  long: {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  },
+  time: {
+    timeZone: 'UTC',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }
+};
+
+export const enLocale = {
   ...elMsg,
   login: {
     username: 'Username',
@@ -81,18 +104,22 @@ export default {
     start_now: 'Start Now'
   },
   air: {
+    status_standby: 'Standby',
+    status_flying: 'Flying',
+    status_error: 'Error',
+    status_: '--',
     mode_auto: 'Automatic',
     mode_guide: 'Boot',
     mode_fixed: 'Fixed Point',
     mode_back: 'Return',
     mode_land: 'Landing',
     mode_: '--Mode',
-    flight_time: 'Fly {t}',
+    flight_time: 'Flying for {t}',
     flight_speed: 'Speed {s}',
     flight_height: 'Height {h}',
-    battery_remain: 'Elec {num}',
-    battery_voltage: 'Vol {num}',
-    gps_satellites: '{num} Stars',
+    battery_remain: 'Battery {num}',
+    battery_voltage: 'Voltage {num}',
+    gps_satellites: '{num} Satellite(s)',
     pitch_angle: 'PTZ angle',
     screenshot: 'Screenshot',
     recording: 'Recording',

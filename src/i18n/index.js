@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import I18n from 'vue-i18n';
 
-import zhLocale from './locale/zh';
-import enLocale from './locale/en';
+import {zhLocale, zhDtFormat} from './locale/zh';
+import {enLocale, enDtFormat} from './locale/en';
 
 Vue.use(I18n);
 
@@ -12,6 +12,11 @@ const i18n = new I18n({
     'en': enLocale,
     'zh': zhLocale,
     'zh-cn': zhLocale
+  },
+  dateTimeFormats: {
+    'en': enDtFormat,
+    'zh': zhDtFormat,
+    'zh-cn': zhDtFormat
   }
 });
 
