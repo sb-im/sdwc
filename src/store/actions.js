@@ -124,8 +124,8 @@ export async function subscribeNodes({ state, commit }) {
  */
 export async function getPlans({ commit }) {
   const data = await SuperDock.plans();
-  data.forEach(node => {
-    commit(PLAN.ADD_PLAN, node);
+  data.forEach(plan => {
+    commit(PLAN.ADD_PLAN, plan);
   });
 }
 
@@ -182,7 +182,7 @@ export async function deletePlan({ commit }, id) {
 
 /**
  * @param {Context} _
- * @param {{url: string, name: string}} url
+ * @param {{url: string, name: string}} payload
  */
 export async function downloadFile(_, { url, name }) {
   const res = await SuperDock.getFile(url);
