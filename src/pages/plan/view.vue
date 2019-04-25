@@ -1,30 +1,34 @@
 <template>
   <div class="plan__view">
     <el-card shadow="never">
-      <div class="sd-node-card__head" slot="header">
-        <sd-icon value="task/t_view"></sd-icon>
-        <span class="sd-node-card__title">{{ $t('plan.view.title') }}</span>
-        <div class="sd-node-card__action">
-          <el-button
-            type="primary"
-            size="medium"
-            icon="el-icon-edit"
-            @click="handleEdit"
-          >{{ $t('plan.edit.alter') }}</el-button>
-          <el-button
-            type="danger"
-            size="medium"
-            icon="el-icon-refresh"
-          >{{ $t('plan.view.run') }}</el-button>
+      <template #header>
+        <div class="sd-node-card__head">
+          <sd-icon value="task/t_view"></sd-icon>
+          <span class="sd-node-card__title">{{ $t('plan.view.title') }}</span>
+          <div class="sd-node-card__action">
+            <el-button
+              type="primary"
+              size="medium"
+              icon="el-icon-edit"
+              @click="handleEdit"
+            >{{ $t('plan.edit.alter') }}</el-button>
+            <el-button
+              type="danger"
+              size="medium"
+              icon="el-icon-refresh"
+            >{{ $t('plan.view.run') }}</el-button>
+          </div>
         </div>
-      </div>
+      </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </el-card>
     <el-card shadow="never" body-style="padding: 0">
-      <div class="sd-node-card__head" slot="header">
-        <sd-icon value="task/t_history"></sd-icon>
-        <span class="sd-node-card__title">{{ $t('plan.view.history') }}</span>
-      </div>
+      <template #header>
+        <div class="sd-node-card__head">
+          <sd-icon value="task/t_history"></sd-icon>
+          <span class="sd-node-card__title">{{ $t('plan.view.history') }}</span>
+        </div>
+      </template>
       <el-table :data="log">
         <el-table-column
           align="center"
@@ -32,42 +36,42 @@
           :label="$t('plan.view.run_time')"
         ></el-table-column>
         <el-table-column align="center" :label="$t('plan.view.raw_data')">
-          <template slot-scope="scope">
+          <template v-slot="{row}">
             <el-button
               type="primary"
               size="mini"
-              :disabled="!scope.row.raw_data"
-              @click="handleDownload(scope.row.raw_data, `${scope.row.id}_raw_data.bin`)"
+              :disabled="!row.raw_data"
+              @click="handleDownload(row.raw_data, `${row.id}_raw_data.bin`)"
             >{{ $t('common.view') }}</el-button>
           </template>
         </el-table-column>
         <el-table-column align="center" :label="$t('plan.view.auto_run')">
-          <template slot-scope="scope">
+          <template v-slot="{row}">
             <el-button
               type="primary"
               size="mini"
-              :disabled="!scope.row.orthomosaic_path"
-              @click="handleDownload(scope.row.orthomosaic_path, `${scope.row.id}_orthomosaic.tif`)"
+              :disabled="!row.orthomosaic_path"
+              @click="handleDownload(row.orthomosaic_path, `${row.id}_orthomosaic.tif`)"
             >{{ $t('common.view') }}</el-button>
           </template>
         </el-table-column>
         <el-table-column align="center" border :label="$t('plan.view.logs')">
-          <template slot-scope="scope">
+          <template v-slot="{row}">
             <el-button
               icon="el-icon-download"
               size="mini"
-              :disabled="!scope.row.air_log_path"
-              @click="handleDownload(scope.row.air_log_path, `${scope.row.id}_air_log.bin`)"
+              :disabled="!row.air_log_path"
+              @click="handleDownload(row.air_log_path, `${row.id}_air_log.bin`)"
             >{{ $t('common.download') }}</el-button>
           </template>
         </el-table-column>
         <el-table-column align="center" :label="$t('plan.view.sever_logs')">
-          <template slot-scope="scope">
+          <template v-slot="{row}">
             <el-button
               icon="el-icon-download"
               size="mini"
-              :disabled="!scope.row.sever_log_path"
-              @click="handleDownload(scope.row.sever_log_path, `${scope.row.id}_sever_log.bin`)"
+              :disabled="!row.sever_log_path"
+              @click="handleDownload(row.sever_log_path, `${row.id}_sever_log.bin`)"
             >{{ $t('common.download') }}</el-button>
           </template>
         </el-table-column>

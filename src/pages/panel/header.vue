@@ -9,14 +9,16 @@
         <span class="header-dropdown-text">{{ $t('header.status') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="st in status" :key="st.id">
-          <router-link tag="span" :to="{ name: 'node', params: { id: st.id } }">
-            <i :class="st.icon" :style="{color: st.color}"></i>
-            <span>{{ st.text }}</span>
-          </router-link>
-        </el-dropdown-item>
-      </el-dropdown-menu>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item v-for="st in status" :key="st.id">
+            <router-link tag="span" :to="{name: 'node', params: { id: st.id }}">
+              <i :class="st.icon" :style="{color: st.color}"></i>
+              <span>{{ st.text }}</span>
+            </router-link>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
     </el-dropdown>
     <!-- user info dropdown -->
     <el-dropdown class="header-dropdown">
@@ -25,12 +27,14 @@
         <span>{{ $store.state.user.email }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item class="header-dropdown-item">
-          <i class="el-icon-back"></i>
-          <span>{{ $t('header.logout') }}</span>
-        </el-dropdown-item>
-      </el-dropdown-menu>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item class="header-dropdown-item">
+            <i class="el-icon-back"></i>
+            <span>{{ $t('header.logout') }}</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
     </el-dropdown>
   </el-header>
 </template>

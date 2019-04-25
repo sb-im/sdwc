@@ -1,10 +1,12 @@
 <template>
   <div class="sd-control">
     <el-card shadow="never">
-      <div class="sd-node-card__head" slot="header">
-        <sd-icon value="airport/a_h_control" :size="36"></sd-icon>
-        <span class="sd-node-card__title">{{ $t('common.advanced_control') }}</span>
-      </div>
+      <template #header>
+        <div class="sd-node-card__head">
+          <sd-icon value="airport/a_h_control" :size="36"></sd-icon>
+          <span class="sd-node-card__title">{{ $t('common.advanced_control') }}</span>
+        </div>
+      </template>
 
       <div class="sd-control-body">
         <div

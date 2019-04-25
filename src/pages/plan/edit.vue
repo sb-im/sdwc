@@ -1,29 +1,31 @@
 <template>
   <el-card class="plan__edit" shadow="never">
-    <div class="sd-node-card__head" slot="header">
-      <sd-icon value="task/t_edit"></sd-icon>
-      <span class="sd-node-card__title">{{ $t('plan.edit.alter') }}</span>
-      <div class="sd-node-card__action">
-        <el-button
-          type="success"
-          size="medium"
-          icon="el-icon-document"
-          @click="handleUpdate"
-        >{{ $t('plan.edit.save_plan') }}</el-button>
-        <el-button
-          type="danger"
-          size="medium"
-          icon="el-icon-delete"
-          @click="handleDelete"
-        >{{ $t('plan.edit.delete_plan') }}</el-button>
-        <el-button
-          type="info"
-          size="medium"
-          icon="el-icon-close"
-          @click="handleCancel"
-        >{{ $t('common.back') }}</el-button>
+    <template #header>
+      <div class="sd-node-card__head">
+        <sd-icon value="task/t_edit"></sd-icon>
+        <span class="sd-node-card__title">{{ $t('plan.edit.alter') }}</span>
+        <div class="sd-node-card__action">
+          <el-button
+            type="success"
+            size="medium"
+            icon="el-icon-document"
+            @click="handleUpdate"
+          >{{ $t('plan.edit.save_plan') }}</el-button>
+          <el-button
+            type="danger"
+            size="medium"
+            icon="el-icon-delete"
+            @click="handleDelete"
+          >{{ $t('plan.edit.delete_plan') }}</el-button>
+          <el-button
+            type="info"
+            size="medium"
+            icon="el-icon-close"
+            @click="handleCancel"
+          >{{ $t('common.back') }}</el-button>
+        </div>
       </div>
-    </div>
+    </template>
     <sd-plan-editable :initial="plan" ref="edit"></sd-plan-editable>
   </el-card>
 </template>

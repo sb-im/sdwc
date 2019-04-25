@@ -1,6 +1,6 @@
 <template>
   <login-bg :videos="video" image="/assets/images/login-backgound.jpg">
-    <template slot="header">
+    <template #header>
       <el-row type="flex" justify="space-around">
         <div class="login-bg">
           <h1 class="login-title">S Dashboard Web Console</h1>

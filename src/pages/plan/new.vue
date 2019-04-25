@@ -1,17 +1,19 @@
 <template>
   <el-card class="plan__edit" shadow="never">
-    <div class="sd-node-card__head" slot="header">
-      <sd-icon value="task/t_add"></sd-icon>
-      <span class="sd-node-card__title">{{ $t('plan.edit.create') }}</span>
-      <div class="sd-node-card__action">
-        <el-button
-          type="success"
-          size="medium"
-          icon="el-icon-document"
-          @click="handleCreate"
-        >{{ $t('plan.edit.save_plan') }}</el-button>
+    <template #header>
+      <div class="sd-node-card__head">
+        <sd-icon value="task/t_add"></sd-icon>
+        <span class="sd-node-card__title">{{ $t('plan.edit.create') }}</span>
+        <div class="sd-node-card__action">
+          <el-button
+            type="success"
+            size="medium"
+            icon="el-icon-document"
+            @click="handleCreate"
+          >{{ $t('plan.edit.save_plan') }}</el-button>
+        </div>
       </div>
-    </div>
+    </template>
     <sd-plan-editable :initial="initial" ref="edit"></sd-plan-editable>
   </el-card>
 </template>

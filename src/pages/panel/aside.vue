@@ -12,7 +12,7 @@
       router
     >
       <el-submenu index="plan">
-        <template slot="title">
+        <template #title>
           <sd-icon value="aside/task"></sd-icon>
           <span>{{ $t('sidemenu.plan') }}</span>
         </template>
@@ -28,7 +28,7 @@
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
       <el-submenu index="depot">
-        <template slot="title">
+        <template #title>
           <sd-icon value="aside/airport"></sd-icon>
           <span>{{ $t('sidemenu.depot') }}</span>
         </template>
@@ -40,7 +40,7 @@
         >{{ depot.name }}</el-menu-item>
       </el-submenu>
       <el-submenu index="drone">
-        <template slot="title">
+        <template #title>
           <sd-icon value="aside/drone"></sd-icon>
           <span>{{ $t('sidemenu.air') }}</span>
         </template>
