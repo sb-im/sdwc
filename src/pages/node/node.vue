@@ -39,7 +39,8 @@ export default {
       return {
         node: this.selectedNode,
         status: this.node.status.find(n => n.id === this.id).status,
-        message: this.node.message.find(n => n.id === this.id).msg
+        message: this.node.message.find(n => n.id === this.id).msg,
+        log: this.node.log.find(n => n.id === this.id).log
       };
     }
   },
