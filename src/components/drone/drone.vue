@@ -1,20 +1,12 @@
 <template>
   <div class="drone">
-    <el-card shadow="never">
-      <div class="sd-node-card__head" slot="header">
-        <sd-icon value="airport/a_infos"></sd-icon>
-        <span class="sd-node-card__title">节点信息 ##需要翻译</span>
-      </div>
-      <div>
-        <p>id: {{this.node.id}} name: {{this.node.name}}</p>
-      </div>
-    </el-card>
+    <sd-node-drone-status :node="node" :message="message"></sd-node-drone-status>
     <sd-node-drone-control :node="node" :status="status"></sd-node-drone-control>
   </div>
 </template>
 
 <script>
-import Icon from '@/components/sd-icon.vue';
+import Status from './status.vue';
 import Control from './control.vue';
 
 export default {
@@ -24,21 +16,22 @@ export default {
       type: Object,
       required: true
     },
+    status: {
+      type: Number,
+      required: true
+    },
     message: {
       type: Array,
       required: true
     },
-    status: {
-      type: Number,
+    log : {
+      type: Array,
       required: true
     }
   },
   components: {
-    [Icon.name]: Icon,
+    [Status.name]: Status,
     [Control.name]: Control
   }
 };
 </script>
-
-<style>
-</style>
