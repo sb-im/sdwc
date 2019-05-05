@@ -1,11 +1,11 @@
 <template>
   <div class="plan__view">
-    <el-card shadow="never">
+    <el-card class="sd-card" shadow="never">
       <template #header>
-        <div class="sd-node-card__head">
+        <div class="sd-card__head">
           <sd-icon value="task/t_view"></sd-icon>
-          <span class="sd-node-card__title">{{ $t('plan.view.title') }}</span>
-          <div class="sd-node-card__action">
+          <span class="sd-card__title">{{ $t('plan.view.title') }}</span>
+          <div class="sd-card__action">
             <el-button
               type="primary"
               size="medium"
@@ -22,14 +22,8 @@
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </el-card>
-    <el-card shadow="never" body-style="padding: 0">
-      <template #header>
-        <div class="sd-node-card__head">
-          <sd-icon value="task/t_history"></sd-icon>
-          <span class="sd-node-card__title">{{ $t('plan.view.history') }}</span>
-        </div>
-      </template>
-      <el-table :data="log">
+    <sd-card icon="task/t_history" :title="$t('plan.view.history')" dense>
+      <el-table stripe :data="log">
         <el-table-column
           align="center"
           prop="created_at"
@@ -76,12 +70,14 @@
           </template>
         </el-table-column>
       </el-table>
-    </el-card>
+    </sd-card>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+
+import Card from '@/components/card.vue';
 import Icon from '@/components/sd-icon.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 
@@ -134,6 +130,7 @@ export default {
     this.getPlanLogs(this.plan.id);
   },
   components: {
+    [Card.name]: Card,
     [Icon.name]: Icon,
     [PlanReadonly.name]: PlanReadonly
   }

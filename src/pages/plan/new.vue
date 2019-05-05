@@ -1,10 +1,10 @@
 <template>
-  <el-card class="plan__edit" shadow="never">
+  <el-card class="sd-card" shadow="never">
     <template #header>
-      <div class="sd-node-card__head">
+      <div class="sd-card__head">
         <sd-icon value="task/t_add"></sd-icon>
-        <span class="sd-node-card__title">{{ $t('plan.edit.create') }}</span>
-        <div class="sd-node-card__action">
+        <span class="sd-card__title">{{ $t('plan.edit.create') }}</span>
+        <div class="sd-card__action">
           <el-button
             type="success"
             size="medium"

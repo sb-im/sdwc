@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="never">
+  <el-card class="sd-card" shadow="never">
     <div class="sd-drone-status">
       <div class="sd-drone-status_item">
         <sd-icon value="drone/d_drone"/>

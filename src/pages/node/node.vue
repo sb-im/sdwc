@@ -5,10 +5,14 @@
 <script>
 import { mapState } from 'vuex';
 
-import Icon from '@/components/sd-icon.vue';
 import Depot from '@/components/depot/depot.vue';
 import Drone from '@/components/drone/drone.vue';
 import Loading from './loading.vue';
+
+const ComponentName = {
+  'air': Drone.name,
+  'depot': Depot.name
+};
 
 export default {
   name: 'sd-node',
@@ -26,13 +30,8 @@ export default {
       return this.node.info.find(n => n.id === this.id);
     },
     componentName() {
-      if (this.selectedNode) {
-        switch (this.selectedNode.type_name) {
-          case 'air': return Drone.name;
-          case 'depot': return Depot.name;
-        }
-      }
-      return Loading.name;
+      if (!this.selectedNode) return Loading.name;
+      return ComponentName[this.selectedNode.type_name];
     },
     componentProps() {
       if (!this.selectedNode) return {};
@@ -45,25 +44,9 @@ export default {
     }
   },
   components: {
-    [Icon.name]: Icon,
     [Depot.name]: Depot,
     [Drone.name]: Drone,
     [Loading.name]: Loading
   }
 };
 </script>
-
-<style>
-.sd-node-card__head {
-  display: flex;
-  align-items: center;
-}
-.sd-node-card__title {
-  margin-left: 8px;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-.sd-node-card__action {
-  margin-left: auto;
-}
-</style>
