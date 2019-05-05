@@ -1,5 +1,5 @@
 <template>
-  <el-aside class="aside" width="200px">
+  <div class="aside">
     <div class="aside-header">
       <img class="aside-logo" src="/assets/images/header/logo.png">
     </div>
@@ -52,7 +52,7 @@
         >{{ drone.name }}</el-menu-item>
       </el-submenu>
     </el-menu>
-  </el-aside>
+  </div>
 </template>
 
 <script>
@@ -90,12 +90,14 @@ export default {
 
 <style>
 .aside {
-  min-height: 100vh;
+  height: 100%;
   background-color: #545c64;
+  display: flex;
+  flex-direction: column;
 }
 
 .aside-header {
-  height: 100px;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,6 +110,8 @@ export default {
 
 .aside-menu {
   border: none;
+  overflow: hidden auto;
+  flex-grow: 1;
 }
 
 .aside .el-menu-item.is-active {

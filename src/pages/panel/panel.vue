@@ -1,14 +1,16 @@
 <template>
-  <el-container class="panel">
-    <sd-aside></sd-aside>
-    <el-container direction="vertical">
+  <div class="sd-panel">
+    <div class="sd-panel__side">
+      <sd-aside></sd-aside>
+    </div>
+    <div class="sd-panel__main">
       <sd-header></sd-header>
-      <el-main>
+      <div class="sd-panel__view">
         <router-view></router-view>
-      </el-main>
-      <sd-footer></sd-footer>
-    </el-container>
-  </el-container>
+      </div>
+      <div class="sd-panel__footer">Copyright © 2017-2019 StrawBerry Tech.</div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -17,7 +19,6 @@ import { config } from '@/api/sdwc';
 
 import Aside from './aside.vue';
 import Header from './header.vue';
-import Footer from './footer.vue';
 
 export default {
   methods: {
@@ -39,8 +40,37 @@ export default {
   },
   components: {
     'sd-aside': Aside,
-    'sd-header': Header,
-    'sd-footer': Footer
+    'sd-header': Header
   }
 };
 </script>
+
+<style>
+.sd-panel {
+  height: 100vh;
+  display: flex;
+}
+.sd-panel__side {
+  height: 100%;
+  width: 200px;
+}
+.sd-panel__main {
+  height: 100%;
+  overflow: hidden auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.sd-panel__view {
+  padding: 10px;
+  flex-grow: 1;
+}
+.sd-panel__footer {
+  margin-top: auto;
+  padding-left: 10px;
+  height: 60px;
+  color: #333;
+  background-color: #b3c0d1;
+  line-height: 60px;
+}
+</style>

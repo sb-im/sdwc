@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import './element';
+import './util/element';
 import i18n from './i18n';
 import store from './store';
 import router from './router';

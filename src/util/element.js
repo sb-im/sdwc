@@ -29,16 +29,13 @@ import {
   Container,
   Upload,
   Header,
-  Aside,
-  Main,
-  Footer,
   Loading,
   MessageBox,
   Message,
   Notification
 } from 'element-ui';
 import ElementLocale from 'element-ui/lib/locale';
-import i18n from './i18n';
+import i18n from '@/i18n';
 
 /**
  * `element-ui` and `vue-i18n` integration with load on demand
@@ -70,9 +67,6 @@ Vue.use(Col);
 Vue.use(Container);
 Vue.use(Upload);
 Vue.use(Header);
-Vue.use(Aside);
-Vue.use(Main);
-Vue.use(Footer);
 
 Vue.use(Loading.directive);
 
