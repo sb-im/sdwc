@@ -6,7 +6,9 @@ import jsonrpc from 'jsonrpc-lite';
 class MqttClient extends EventEmitter {
   constructor() {
     super();
+    this.queue = [];
     this.topics = [];
+    this.rpcCount = 0;
     this.rpcIdPrefix = null;
     this.resolveMap = new Map();
   }
@@ -39,7 +41,16 @@ class MqttClient extends EventEmitter {
     this.mqtt = mqtt.connect(addr, {
       clientId: `sdwc-${this.rpcIdPrefix}-${Date.now()}`
     });
-    this.mqtt.on('connect', () => MqttClient.log('connected to', addr));
+    this.mqtt.on('connect', () => {
+      MqttClient.log('connected to', addr);
+      this.emit('connect');
+      this.queue.forEach(task => {
+        this._invoke.apply(this, task.arg)
+          .then(task.resolve)
+          .catch(task.reject);
+      });
+      this.queue = [];
+    });
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
       const id = MqttClient.parseNodeId(topic);
@@ -64,8 +75,8 @@ class MqttClient extends EventEmitter {
     });
   }
 
-  nextCallId() {
-    return `sdwc-${this.rpcIdPrefix}-${Date.now()}`;
+  nextRpcId() {
+    return `${this.mqtt.options.clientId}-${this.rpcCount++}`;
   }
 
   /**
@@ -85,20 +96,35 @@ class MqttClient extends EventEmitter {
   }
 
   /**
+   * invoke rpc method, or add to queue if connection not ready.
+   * @param {number|string} target target node id
+   * @param {string} method method name
+   * @param {any[]} arg argument array
+   */
+  invoke(target, method, arg) {
+    if (this.mqtt === undefined || this.mqtt.connected === false) {
+      return new Promise((resolve, reject) => {
+        this.queue.push({ arg: [target, method, arg], resolve, reject });
+      });
+    } else {
+      return this._invoke.apply(this, arguments);
+    }
+  }
+
+  /**
    * invoke rpc method
    * @param {number|string} target target node id
    * @param {string} method method name
-   * @param {any[]} argArray argument array
+   * @param {any[]} arg argument array
    */
-  invoke(target, method, argArray) {
-    if (this.rpcIdPrefix === null) return;
-    const id = this.nextCallId();
+  _invoke(target, method, arg) {
+    const rpcId = this.nextRpcId();
     const topicSend = `nodes/${target}/rpc/send`;
-    const payload = jsonrpc.request(id, method, argArray);
+    const payload = jsonrpc.request(rpcId, method, arg);
     this.mqtt.publish(topicSend, JSON.stringify(payload));
     MqttClient.log('pub:', payload);
     return new Promise((resolve, reject) => {
-      this.resolveMap.set(id, { resolve, reject });
+      this.resolveMap.set(rpcId, { resolve, reject });
     });
   }
 }
