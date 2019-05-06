@@ -13,15 +13,26 @@ export function setApiKey(key) {
 }
 
 /**
+ * @param {string} url
+ */
+function get(url) {
+  return wr.url(url)
+    .get()
+    .json()
+    .then(res => {
+      if (res.status === 'ok') return res;
+      else throw res;
+    });
+}
+
+/**
  * 实况天气
  * @see https://open.caiyunapp.com/实况天气接口/v2.2
  * @param lng
  * @param lat
  */
 export function realtime(lng, lat) {
-  return wr.url(`/${lng},${lat}/realtime`)
-    .get()
-    .json();
+  return get(`/${lng},${lat}/realtime`);
 }
 
 /**
@@ -31,7 +42,5 @@ export function realtime(lng, lat) {
  * @param lat
  */
 export function minutely(lng, lat) {
-  return wr.url(`/${lng},${lat}/forecast`)
-    .get()
-    .json();
+  return get(`/${lng},${lat}/minutely`);
 }
