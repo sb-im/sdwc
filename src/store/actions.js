@@ -1,14 +1,13 @@
 // @ts-check
 
-import { setLocale } from '../i18n';
-
-import * as SuperDock from '../api/super-dock';
-// import * as Weather3s from '../api/weather3s';
-import * as GoogleMap from '../api/google-map';
-import * as CaiYun from '../api/caiyun';
-import * as SDWC from '../api/sdwc';
-import MqttClient from '../api/mqtt';
 import ContentDisposition from 'content-disposition';
+
+import { setLocale } from '@/i18n';
+import * as SDWC from '@/api/sdwc';
+import MqttClient from '@/api/mqtt';
+import * as CaiYun from '@/api/caiyun';
+import * as SuperDock from '@/api/super-dock';
+import * as GoogleMap from '@/api/google-map';
 
 import { MutationTypes as CONFIG } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
