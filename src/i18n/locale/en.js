@@ -27,9 +27,9 @@ export const enLocale = {
   ...elMsg,
   login: {
     username: 'Username',
-    error_username: 'Please enter the username',
+    error_username: 'Username is required',
     password: 'Password',
-    error_password: 'Please enter the password',
+    error_password: 'Password is required',
     button: 'Login',
     failed: 'Failed: Invalid Username or Password'
   },
@@ -60,8 +60,7 @@ export const enLocale = {
       auto_run: 'Automatic processing',
       logs: 'Fly logs',
       sever_logs: 'Sever logs',
-      start_run: 'The plan starts run!',
-
+      start_run: 'Plan started'
     },
     edit: {
       add: 'Create',
@@ -138,14 +137,11 @@ export const enLocale = {
   depot: {
     monitor: 'Realtime monitor',
     weather: 'Outdoor weather',
-    weather_feel: 'Weather {feel}',
-    wind_speed: 'Wind {s}',
-    humidity: 'Hum {num}',
-    temperature: 'Tem {num}',
+    weather_feel: 'Weather',
+    wind_speed: 'Wind',
+    humidity: 'Hum',
+    temperature: 'Tem',
     charts: '<{a} light rain, {a}-{b} moderate rain, >{b} heavy rain',
-    charts_label_now: 'Now',
-    charts_label_30m: '30 minutes',
-    charts_label_60m: '60 minutes',
     depot_info: 'Information',
     depot_id: 'Id',
     view_old_monitor: 'Historical monitor',
@@ -187,8 +183,6 @@ export const enLocale = {
     debug_tips: 'The commands are for developers only',
     send: 'Send',
     clear: 'Clear',
-    fly_yes: 'Can take off',
-    fly_no: 'Can\'t take off',
     control: 'Control',
     advanced_control: 'Advance Control',
     status: 'Statu',
@@ -197,11 +191,11 @@ export const enLocale = {
     not_operational: 'Abnormal communication status, unable to opreate.',
     none: 'None',
     logs: 'Logs',
-    no_video: 'No video source found, please try again later~',
+    no_video: 'No video source',
     system_tips: 'System',
     operate_pending: 'Pending...',
-    operate_success: 'Successful!',
-    operate_error: 'Failed！',
+    operate_success: 'Success',
+    operate_error: 'Failed',
     plan_ready: 'The plan is ready, is it run immediately?'
   },
   weather: {
