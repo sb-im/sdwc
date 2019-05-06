@@ -49,7 +49,7 @@ const cfg = {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      'assets': path.resolve(__dirname, 'src')
+      'assets': path.resolve(__dirname, 'assets')
     }
   },
   plugins: [
@@ -57,6 +57,7 @@ const cfg = {
   ],
   devServer: {
     hot: true,
+    overlay: true,
     stats: 'errors-only'
   },
   performance: {
