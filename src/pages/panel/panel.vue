@@ -21,6 +21,7 @@ import Aside from './aside.vue';
 import Header from './header.vue';
 
 export default {
+  name: 'sd-panel',
   methods: {
     ...mapActions([
       'getUserInfo',
@@ -39,8 +40,8 @@ export default {
       });
   },
   components: {
-    'sd-aside': Aside,
-    'sd-header': Header
+    [Aside.name]: Aside,
+    [Header.name]: Header
   }
 };
 </script>

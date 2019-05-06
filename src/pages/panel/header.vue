@@ -58,6 +58,7 @@ const StatusColor = {
 };
 
 export default {
+  name: 'sd-header',
   computed: {
     ...mapState({
       nodeInfo: state => state.node.info,

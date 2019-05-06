@@ -60,6 +60,7 @@ import { mapState, mapGetters } from 'vuex';
 import Icon from '@/components/sd-icon.vue';
 
 export default {
+  name: 'sd-aside',
   computed: {
     ...mapState({
       plans: state => state.plan.info
