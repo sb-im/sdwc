@@ -60,37 +60,8 @@ export default {
     }
   },
   methods: {
-    checkNodeStatus() {
-      if (this.status == 0) {
-        return true;
-      }
-      this.$alert(this.$t('common.not_operational'), {
-        type: 'warning',
-        title: this.$t('common.system_tips')
-      });
-      return false;
-    },
-    handleControl({ name, values, mission }) {
-      if (!this.checkNodeStatus()) {
-        return;
-      }
-      const notification = this.$notify({
-        duration: 0,
-        type: 'info',
-        title: this.$t(name, values),
-        message: this.$t('common.operate_pending')
-      });
-      MqttClient.invoke(this.node.id, mission, {})
-        .then(() => {
-          notification.$data.type = 'success';
-          notification.$data.message = this.$t('common.operate_success');
-          notification.$data.duration = 2000;
-          notification.startTimer();
-        })
-        .catch(() => {
-          notification.$data.type = 'error';
-          notification.$data.message = this.$t('common.operate_error');
-        });
+    handleControl(ctl) {
+      this.$mqtt(this.node.id, ctl).catch(() => { /* noop */ });
     }
   },
   components: {

@@ -2,6 +2,7 @@ import Vue from 'vue';
 
 import './util/element';
 import i18n from './i18n';
+import './util/plugin-mqtt';
 import store from './store';
 import router from './router';
 
