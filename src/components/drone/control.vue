@@ -53,7 +53,6 @@ export default {
   methods: {
     readyMission(name) {
       return new Promise((resolve, reject) => {
-        if (!this.checkNodeStatus()) reject();
         // msgbox's reference can't be stored
         this.$msgbox({
           type: 'info',
