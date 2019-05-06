@@ -26,9 +26,10 @@
       <el-table stripe :data="log">
         <el-table-column
           align="center"
-          prop="created_at"
           :label="$t('plan.view.run_time')"
-        ></el-table-column>
+        >
+          <template v-slot="{row}">{{ $d(new Date(row.created_at), 'long') }}</template>
+        </el-table-column>
         <el-table-column align="center" :label="$t('plan.view.raw_data')">
           <template v-slot="{row}">
             <el-button
