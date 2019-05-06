@@ -58,21 +58,22 @@ class MqttClient extends EventEmitter {
         /** @type {import('jsonrpc-lite').IParsedObjectRequest} */
         const request = jsonrpc.parse(str);
         if (request.type === 'request') {
-          this.emit('rpc:request', { id, request: request });
+          const res = this.resolveMap.get(request.payload.id);
+          this.emit('rpc:request', { id, request, meta: res.meta });
         }
       } else if (topic.endsWith('/rpc/recv')) {
-        const result = jsonrpc.parse(str);
-        this.emit('rpc:response', { id, response: result });
-        const handler = this.resolveMap.get(result.payload.id);
-        if (!handler) return;
-        if (result.type === 'success') {
-          if (handler.resolve) handler.resolve(result.payload.result);
-        } else if (result.type === 'error') {
-          if (handler.reject) handler.reject(result.payload.error);
+        const response = jsonrpc.parse(str);
+        this.emit('rpc:response', { id, response });
+        const res = this.resolveMap.get(response.payload.id);
+        if (!res) return;
+        if (response.type === 'success') {
+          res.resolve(response.payload.result);
+        } else if (response.type === 'error') {
+          res.reject(response.payload.error);
         } else {
-          if (handler.reject) handler.reject(result.payload);
+          res.reject(response.payload);
         }
-        this.resolveMap.delete(result.payload.id);
+        this.resolveMap.delete(response.payload.id);
       } else if (topic.endsWith('/status')) {
         this.emit('status', { id, status: Number.parseInt(str, 10) });
       } else if (topic.endsWith('/message')) {
@@ -106,12 +107,13 @@ class MqttClient extends EventEmitter {
    * invoke rpc method, or add to queue if connection not ready.
    * @param {number|string} target target node id
    * @param {string} method method name
-   * @param {any[]} arg argument array
+   * @param {any} arg method argument
+   * @param {any} meta mission metadata, such as name, etc
    */
-  invoke(target, method, arg) {
+  invoke(target, method, arg, meta) {
     if (this.mqtt === undefined || this.mqtt.connected === false) {
       return new Promise((resolve, reject) => {
-        this.queue.push({ arg: [target, method, arg], resolve, reject });
+        this.queue.push({ arg: [target, method, arg], resolve, reject, meta });
       });
     } else {
       return this._invoke.apply(this, arguments);
@@ -119,19 +121,21 @@ class MqttClient extends EventEmitter {
   }
 
   /**
+   * @private
    * invoke rpc method
    * @param {number|string} target target node id
    * @param {string} method method name
-   * @param {any[]} arg argument array
+   * @param {any} arg method argument
+   * @param {any} meta mission metadata, such as name, etc
    */
-  _invoke(target, method, arg) {
+  _invoke(target, method, arg, meta) {
     const rpcId = this.nextRpcId();
     const topicSend = `nodes/${target}/rpc/send`;
     const payload = jsonrpc.request(rpcId, method, arg);
     this.mqtt.publish(topicSend, JSON.stringify(payload));
     MqttClient.log('pub:', payload);
     return new Promise((resolve, reject) => {
-      this.resolveMap.set(rpcId, { resolve, reject });
+      this.resolveMap.set(rpcId, { resolve, reject, meta });
     });
   }
 }
