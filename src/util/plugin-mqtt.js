@@ -1,5 +1,11 @@
 import Vue from 'vue';
+import Notification from 'element-ui/lib/notification';
+
+import i18n from '@/i18n';
+import store from '@/store';
 import MqttClient from '@/api/mqtt';
+
+const NotifyMap = new Map();
 
 /**
  * @this {Vue}
@@ -7,38 +13,66 @@ import MqttClient from '@/api/mqtt';
  * @param {SDWC.ControlItem} ctl
  */
 async function mqtt(id, { name, values, mission, arg = [] }) {
-  const node = this.$store.state.node.info.find(n => n.id === id);
-  if (!node) {
-    this.$notify({
+  const meta = {
+    name: this.$t(name, values)
+  };
+  return MqttClient.invoke(id, mission, arg, meta);
+}
+
+function stringifyMission({ method, params }) {
+  const a = JSON.stringify(params);
+  if (a === '[]' || a === '{}') {
+    return method;
+  }
+  return `${method} ${a}`;
+}
+
+function registerMqttListener() {
+  MqttClient.on('rpc:request', ({ id, request, meta = {} }) => {
+    let prefix = request.payload.id.split('-')[0];
+    if (prefix.startsWith('sdwc')) {
+      prefix = '';
+    } else {
+      prefix = `(${prefix}) `;
+    }
+    const node = store.state.node.info.find(n => n.id === id);
+    const name = meta.name || stringifyMission(request.payload);
+    if (!node) {
+      Notification({
+        duration: 0,
+        type: 'error',
+        title: `${prefix}node#${id} : ${name}`,
+        message: 'ERR: NO_SUCH_NODE'
+      });
+      return;
+    }
+    const n = Notification({
       duration: 0,
-      type: 'error',
-      title: `node#${id} : ${this.$t(name, values)}`,
-      message: 'ERR: NO_SUCH_NODE'
+      type: 'info',
+      title: `${prefix}${node.name} : ${name}`,
+      message: i18n.t('common.operate_pending')
     });
-    return;
-  }
-  const notification = this.$notify({
-    duration: 0,
-    type: 'info',
-    title: `${node.name} : ${this.$t(name, values)}`,
-    message: this.$t('common.operate_pending')
+    NotifyMap.set(request.payload.id, n);
   });
-  try {
-    const res = await MqttClient.invoke(id, mission, arg);
-    notification.$data.type = 'success';
-    notification.$data.message = this.$t('common.operate_success');
-    notification.$data.duration = 2000;
-    notification.startTimer();
-    return res;
-  } catch (err) {
-    notification.$data.type = 'error';
-    notification.$data.message = this.$t('common.operate_error');
-    throw err;
-  }
+  MqttClient.on('rpc:response', ({ response }) => {
+    if (!NotifyMap.has(response.payload.id)) return;
+    const n = NotifyMap.get(response.payload.id);
+    if (response.type === 'success') {
+      n.$data.type = 'success';
+      n.$data.message = i18n.t('common.operate_success');
+      n.$data.duration = 2000;
+      n.startTimer();
+    } else {
+      n.$data.type = 'error';
+      n.$data.message = i18n.t('common.operate_error');
+    }
+    NotifyMap.delete(response.payload.id);
+  });
 }
 
 Vue.use({
   install(Vue) {
     Vue.prototype.$mqtt = mqtt;
+    registerMqttListener();
   }
 });
