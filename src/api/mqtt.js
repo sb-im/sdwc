@@ -8,7 +8,6 @@ class MqttClient extends EventEmitter {
     super();
     this.queue = [];
     this.topics = [];
-    this.rpcCount = 0;
     this.rpcIdPrefix = null;
     this.resolveMap = new Map();
   }
@@ -39,7 +38,7 @@ class MqttClient extends EventEmitter {
    */
   connect(addr) {
     this.mqtt = mqtt.connect(addr, {
-      clientId: `sdwc-${this.rpcIdPrefix}-${Date.now()}`
+      clientId: `sdwc.${this.rpcIdPrefix}-${Date.now()}`
     });
     this.mqtt.on('connect', () => {
       MqttClient.log('connected to', addr);
@@ -55,8 +54,15 @@ class MqttClient extends EventEmitter {
       const str = message.toString();
       const id = MqttClient.parseNodeId(topic);
       MqttClient.log('msg:', topic, str);
-      if (topic.endsWith('/rpc/recv')) {
+      if (topic.endsWith('/rpc/send')) {
+        /** @type {import('jsonrpc-lite').IParsedObjectRequest} */
+        const request = jsonrpc.parse(str);
+        if (request.type === 'request') {
+          this.emit('rpc:request', { id, request: request });
+        }
+      } else if (topic.endsWith('/rpc/recv')) {
         const result = jsonrpc.parse(str);
+        this.emit('rpc:response', { id, response: result });
         const handler = this.resolveMap.get(result.payload.id);
         if (!handler) return;
         if (result.type === 'success') {
@@ -76,15 +82,16 @@ class MqttClient extends EventEmitter {
   }
 
   nextRpcId() {
-    return `${this.mqtt.options.clientId}-${this.rpcCount++}`;
+    return `sdwc.${this.rpcIdPrefix}-${Date.now()}`;
   }
 
   /**
-   * subscirbe `/nodes/:id/{rpc/recv,message,status}`
+   * subscirbe `/nodes/:id/{rpc/{send,recv},message,status}`
    * @param {number|string} id node id
    */
   subscribeNode(id) {
     [
+      `nodes/${id}/rpc/send`,
       `nodes/${id}/rpc/recv`,
       `nodes/${id}/message`,
       `nodes/${id}/status`
