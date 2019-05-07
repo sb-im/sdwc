@@ -139,6 +139,7 @@ export const zhLocale = {
     weather: '室外天气',
     weather_feel: '天气',
     wind_speed: '风速',
+    wind_direction: '风向',
     humidity: '湿度',
     temperature: '气温',
     charts: '< {a} 为小雨，{a} - {b} 为中雨，> {b}为大雨',

@@ -8,6 +8,8 @@ import router from './router';
 
 import App from './App.vue';
 import './style.css';
+import 'chartist/dist/chartist.min.css';
+import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
 
 /**
  * Restore user token (if avaliable) before Vue instance was created.
