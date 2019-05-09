@@ -1,9 +1,10 @@
 // @ts-check
 
-function trace() {
+function trace(c) {
   // @ts-ignore
   //if (process.env.NODE_ENV === 'development') {
-    console.debug.apply(console, arguments);
+    //console.debug.apply(console, arguments);
+    console.log(c, arguments);
   //}
 }
 
