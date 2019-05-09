@@ -2,9 +2,9 @@
 
 function trace() {
   // @ts-ignore
-  if (process.env.NODE_ENV === 'development') {
+  //if (process.env.NODE_ENV === 'development') {
     console.debug.apply(console, arguments);
-  }
+  //}
 }
 
 function randStr(len = 5) {
