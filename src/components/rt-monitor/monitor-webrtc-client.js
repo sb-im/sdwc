@@ -1,10 +1,11 @@
 // @ts-check
 
-function trace(c) {
+import { EventEmitter } from 'events';
+
+function trace() {
   // @ts-ignore
   //if (process.env.NODE_ENV === 'development') {
-    //console.debug.apply(console, arguments);
-    console.log(c, arguments);
+  console.log.apply(console, arguments);
   //}
 }
 
@@ -38,16 +39,13 @@ class PeerConnectionClient {
     //  PeerConnection
     this.peerConnection = new RTCPeerConnection(this.pcConfig);
     trace('Create RTCPeerConnnection with config:', this.pcConfig);
-    this.peerConnection.onicecandidate = this.onIceCandidate.bind(this);
-    this.peerConnection.ontrack = this.onRemoteStreamAdded.bind(this);
-    this.peerConnection.onsignalingstatechange = this.onSignalingStateChanged.bind(this);
-    this.peerConnection.oniceconnectionstatechange = this.onIceConnectionStateChanged.bind(this);
+    this.peerConnection.addEventListener('icecandidate', ev => this.onIceCandidate(ev));
+    this.peerConnection.addEventListener('track', ev => this.onRemoteStreamAdded(ev))
+    this.peerConnection.addEventListener('signalingstatechange', ev => this.onSignalingStateChanged(ev));
+    this.peerConnection.addEventListener('iceconnectionstatechange', ev => this.onIceConnectionStateChanged(ev));
   }
 
   onIceCandidate(event) {
-    if (!this.peerConnection) {
-      return;
-    }
     if (event.candidate) {
       var message = {
         type: 'candidate',
@@ -55,30 +53,24 @@ class PeerConnectionClient {
         id: event.candidate.sdpMid,
         candidate: event.candidate.candidate
       };
-      trace('Sending IceCandidate :', message);
+      trace('Sending IceCandidate:', message);
       this.doSendPeerMessage(message);
-    }
-    else {
+    } else {
       trace('End of candidates.');
     }
   }
 
-  onIceConnectionStateChanged() {
-    if (!this.peerConnection) {
-      return;
-    }
-    trace('ICE connection state changed to:', this.peerConnection.iceConnectionState);
-    if (this.peerConnection.iceConnectionState === 'completed') {
+  onIceConnectionStateChanged(event) {
+    const state = event.target.iceConnectionState;
+    trace('ICE connection state changed to:', state);
+    if (state === 'completed') {
       const ms = (window.performance.now() - this.startTime).toFixed(0);
       trace(`ICE complete time: ${ms} ms.`);
     }
   }
 
-  onSignalingStateChanged() {
-    if (!this.peerConnection) {
-      return;
-    }
-    trace('Signaling state changed to: ', this.peerConnection.signalingState);
+  onSignalingStateChanged(event) {
+    trace('Signaling state changed to:', event.target.signalingState);
   }
 
   close() {
@@ -90,9 +82,6 @@ class PeerConnectionClient {
   }
 
   onRemoteStreamAdded(event) {
-    if (!this.peerConnection) {
-      return;
-    }
     if (!this.videoElem) {
       trace('Error: Video Element is empty');
       return;
@@ -111,7 +100,7 @@ class PeerConnectionClient {
   onReceivePeerMessage(data) {
     this.messageCounter++;
     const dataJson = JSON.parse(data);
-    trace('onReceived Message Type :', dataJson.type);
+    trace('onReceived Message Type:', dataJson.type);
     if (dataJson.type == 'offer') { // Processing offer
       trace('Offer from PeerConnection.');
       this.peerConnection.setRemoteDescription(new RTCSessionDescription(dataJson))
@@ -121,8 +110,7 @@ class PeerConnectionClient {
       this.peerConnection.createAnswer()
         .then(this.setLocalSdpAndSend.bind(this))
         .catch(e => trace('createAnswer', e));
-    }
-    else if (dataJson.type == 'candidate') { // Processing candidate
+    } else if (dataJson.type == 'candidate') { // Processing candidate
       const ice_candidate = new RTCIceCandidate({
         sdpMLineIndex: dataJson.label,
         sdpMid: dataJson.id,
@@ -138,46 +126,58 @@ class PeerConnectionClient {
 /**
  * @see https://github.com/kclyu/rpi-webrtc-streamer/blob/6881a5cc9571807bf16372b020ae96e5d64b891c/web-root/native-peerconnection/js/websocket_signaling.js
  */
-export class WebSocketSignalingChannel {
+export class WebSocketSignalingChannel extends EventEmitter {
   /**
    * @param {string} url
    * @param {HTMLVideoElement} videoElem
    * @param {string} iceServer
    */
   constructor(url, videoElem, iceServer) {
+    super();
     this.url = url;
     this.iceServer = iceServer;
     this.pc = new PeerConnectionClient(videoElem, this.sendPeerMessage.bind(this), this.iceServer);
     this.ws = new WebSocket(url);
-    this.ws.onopen = () => {
+    this.ws.addEventListener('open', () => {
       trace('Websocket connnected:', this.ws.url);
       this.registerSingal();
-    };
-    this.ws.onclose = () => {
+    });
+    this.ws.addEventListener('close', () => {
       trace('Websocket Disconnected');
       this.closeSingal();
       this.pc.close();
       this.pc = null;
-    };
-    this.ws.onmessage = event => {
+    });
+    this.ws.addEventListener('message', event => {
       var dataJson = JSON.parse(event.data);
       trace('WSS -> C:', dataJson);
       if (dataJson.cmd == 'send') {
         this.pc.onReceivePeerMessage(dataJson.msg);
+      } if (dataJson.cmd === 'event') {
+        this.emit('event', dataJson);
       }
-    };
-    this.ws.onerror = event => {
-      trace('An error occured while connecting :', event);
-    };
+    });
+    this.ws.addEventListener('error', event => {
+      trace('An error occured while connecting:', event);
+      this.emit('ws:error', event);
+    });
+    this.pc.peerConnection.addEventListener('connectionstatechange', event => {
+      /** @type {RTCIceConnectionState} */
+      // @ts-ignore
+      const state = event.target.iceConnectionState;
+      if (state === 'disconnected') {
+        this.emit('pc:disconnected');
+      }
+    });
   }
 
   sendWebsocket(message) {
     if (this.ws.readyState == WebSocket.OPEN || this.ws.readyState == WebSocket.CONNECTING) {
-      trace('C --> WSS:', message);
+      trace('C -> WSS:', message);
       this.ws.send(JSON.stringify(message));
       return true;
     }
-    trace('failed to send websocket message :', message);
+    trace('failed to send websocket message:', message);
     return new Error('failed to send websocket message');
   }
 
