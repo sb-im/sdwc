@@ -12,22 +12,16 @@
               icon="el-icon-edit"
               @click="handleEdit"
             >{{ $t('plan.edit.alter') }}</el-button>
-            <el-button
-              type="danger"
-              size="medium"
-              icon="el-icon-refresh"
-            >{{ $t('plan.view.run') }}</el-button>
+            <el-button type="danger" size="medium" icon="el-icon-refresh">{{ $t('plan.view.run') }}</el-button>
           </div>
         </div>
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </el-card>
+    <sd-map :path="mapPath" fit></sd-map>
     <sd-card icon="task/t_history" :title="$t('plan.view.history')" dense>
       <el-table stripe :data="log">
-        <el-table-column
-          align="center"
-          :label="$t('plan.view.run_time')"
-        >
+        <el-table-column align="center" :label="$t('plan.view.run_time')">
           <template v-slot="{row}">{{ $d(new Date(row.created_at), 'long') }}</template>
         </el-table-column>
         <el-table-column align="center" :label="$t('plan.view.raw_data')">
@@ -80,6 +74,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 import Card from '@/components/card.vue';
 import Icon from '@/components/sd-icon.vue';
+import PlanMap from '@/components/map/map.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 
 export default {
@@ -93,6 +88,11 @@ export default {
       type: Array,
       required: true
     }
+  },
+  data() {
+    return {
+      mapPath: []
+    };
   },
   computed: {
     ...mapGetters([
@@ -117,7 +117,8 @@ export default {
     ...mapActions([
       'retrievePlan',
       'getPlanLogs',
-      'downloadFile'
+      'downloadFile',
+      'getMapPath'
     ]),
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
@@ -127,12 +128,15 @@ export default {
     }
   },
   created() {
-    this.retrievePlan(this.plan.id);
+    this.retrievePlan(this.plan.id)
+      .then(plan => this.getMapPath(plan.map_path))
+      .then(path => this.mapPath = path);
     this.getPlanLogs(this.plan.id);
   },
   components: {
     [Card.name]: Card,
     [Icon.name]: Icon,
+    [PlanMap.name]: PlanMap,
     [PlanReadonly.name]: PlanReadonly
   }
 };
