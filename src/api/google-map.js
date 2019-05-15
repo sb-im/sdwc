@@ -6,7 +6,8 @@ const GoogleMapApiURL = {
   gdgdocs: 'https://ditu.gdgdocs.org/maps/api/js'
 };
 
-let wr = wretchJSONP.url(GoogleMapApiURL.cn);
+let gmapProm;
+let wr = wretchJSONP.url(GoogleMapApiURL.gdgdocs);
 
 /**
  * @param {keyof GoogleMapApiURL} url
@@ -30,9 +31,19 @@ export function setApiKey(key) {
  * @returns {Promise<google.maps>}
  */
 export async function loadGoogleMap() {
-  await wr.get();
   if (window.google) {
     return window.google.maps;
   }
-  throw new Error('Google Map Api load failed.');
+  if (!gmapProm) {
+    gmapProm = wr.get().res();
+  }
+  try {
+    await gmapProm;
+    if (window.google) {
+      return window.google.maps;
+    }
+  } catch (e) {
+    gmapProm = null;
+    throw Error('Google Map Api load failed:', e);
+  }
 }
