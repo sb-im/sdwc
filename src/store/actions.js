@@ -1,5 +1,6 @@
 // @ts-check
 
+import Papaparse from 'papaparse';
 import ContentDisposition from 'content-disposition';
 
 import { setLocale } from '@/i18n';
@@ -201,4 +202,22 @@ export async function downloadFile(_, { url, name }) {
     URL.revokeObjectURL(a.href);
     document.body.removeChild(a);
   });
+}
+
+/**
+ * @param {Context} _
+ * @param {string} url
+ */
+export async function getMapPath(_, url) {
+  const text = await SuperDock.getFile(url).then(r => r.text());
+  const path = [];
+  Papaparse.parse(text).data.forEach(dt => {
+    if (dt[3] === '16') {
+      path.push({
+        lat: Number.parseFloat(dt[8]),
+        lng: Number.parseFloat(dt[9])
+      });
+    }
+  });
+  return path;
 }
