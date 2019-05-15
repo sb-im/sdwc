@@ -1,37 +1,37 @@
 <template>
-  <el-card class="sd-card" shadow="never">
-    <div class="sd-drone-status">
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_drone"/>
-        <span class="sd-drone-status_text">{{ flightStatus }}</span>
+  <el-card class="sd-card sd-card--dense" shadow="never">
+    <div class="status">
+      <div class="status__item">
+        <sd-icon value="drone/d_drone" :size="18"/>
+        <span class="status__text">{{ flightStatus }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_mode"/>
-        <span class="sd-drone-status_text">{{ flightMode }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_mode" :size="18"/>
+        <span class="status__text">{{ flightMode }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_time"/>
-        <span class="sd-drone-status_text">{{ flightTime }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_time" :size="18"/>
+        <span class="status__text">{{ flightTime }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_speed"/>
-        <span class="sd-drone-status_text">{{ flightSpeed }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_speed" :size="18"/>
+        <span class="status__text">{{ flightSpeed }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_electricity"/>
-        <span class="sd-drone-status_text">{{ batteryPercentage }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_electricity" :size="18"/>
+        <span class="status__text">{{ batteryPercentage }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_voltage"/>
-        <span class="sd-drone-status_text">{{ batteryVoltage }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_voltage" :size="18"/>
+        <span class="status__text">{{ batteryVoltage }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_height"/>
-        <span class="sd-drone-status_text">{{ gpsHeight }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_height" :size="18"/>
+        <span class="status__text">{{ gpsHeight }}</span>
       </div>
-      <div class="sd-drone-status_item">
-        <sd-icon value="drone/d_satellite"/>
-        <span class="sd-drone-status_text">{{ gpsType }}</span>
+      <div class="status__item">
+        <sd-icon value="drone/d_satellite" :size="18"/>
+        <span class="status__text">{{ gpsType }}</span>
       </div>
     </div>
   </el-card>
@@ -134,15 +134,17 @@ export default {
 </script>
 
 <style>
-.sd-drone-status {
+.status {
   display: flex;
+  padding: 20px 0;
   justify-content: space-around;
 }
-.sd-drone-status_item {
+.status__item {
+  font-size: 14px;
   display: flex;
-  justify-content: center;
+  align-items: center;
 }
-.sd-drone-status_text {
+.status__text {
   margin-left: 4px;
 }
 </style>
