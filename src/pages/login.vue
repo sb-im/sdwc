@@ -1,29 +1,28 @@
 <template>
-  <login-bg :videos="video" image="/static/login-backgound.jpg">
-    <template slot="header">
-      <el-row type="flex" justify="space-around">
-        <div class="login-bg">
-          <h1 class="title font-26">SDWC-LOGIN</h1>
-          <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
-            <el-form-item :label="$t('login.username')" prop="username">
-              <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('login.password')" prop="password">
-              <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-      </el-row>
-    </template>
-  </login-bg>
+  <div class="login">
+    <div class="login-bg">
+      <img v-show="!videoCanPlay" class="login-img" src="/static/login-backgound.jpg">
+      <video v-show="videoCanPlay" @canplay="videoCanPlay = true" class="login-video" :src="video" muted autoplay loop></video>
+    </div>
+    <div class="login-form">
+      <h1 class="title font-26">SDWC-LOGIN</h1>
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
+        <el-form-item :label="$t('login.username')" prop="username">
+          <el-input type="text" v-model="ruleForm.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('login.password')" prop="password">
+          <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="login">{{ $t('login.button') }}</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
 </template>
 
 <script>
   import axios from 'axios';
-  import VueLbgv from 'vue-lbgv'
   import mqttClient from '../config/mqtt';
 
   export default {
@@ -49,7 +48,8 @@
         }
       }
       return {
-        video: [],
+        video: '',
+        videoCanPlay: false,
         ruleForm: {
           username: '',
           password: ''
@@ -65,15 +65,8 @@
       }
     },
     created() {
-      let ivideo= '/static/aerial';
-
-      for (let i = 0; i < 7; i++) {
-        this.video.push(ivideo + i + '-10s.mp4')
-      }
-      //console.log(this.video)
-    },
-    components: {
-      'login-bg': VueLbgv
+      const i = Math.floor(Math.random() * 7);
+      this.video = `/static/aerial${i}-10s.mp4`;
     },
     methods: {
       login() {
@@ -140,13 +133,34 @@
   }
 </script>
 <style scoped>
+  .login {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .title {
     color: #409eff;
     margin: 20px auto;
+    text-align: center;
   }
-
   .login-bg {
-    padding: 2% 2%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    position: fixed;
+  }
+  .login-img,
+  .login-video {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+  .login-form {
+    widows: 325px;
+    padding: 20px;
     background: #fff9;
   }
 </style>
