@@ -46,6 +46,10 @@ function registerMqttListener() {
       });
       return;
     }
+    /**
+     * mutate element-ui's Notification object
+     * @see https://github.com/ElemeFE/element/blob/v2.8.2/packages/notification/src/index.js
+     */
     const n = Notification({
       duration: 0,
       type: 'info',
@@ -57,6 +61,10 @@ function registerMqttListener() {
   MqttClient.on('rpc:response', ({ response }) => {
     if (!NotifyMap.has(response.payload.id)) return;
     const n = NotifyMap.get(response.payload.id);
+    /**
+     * mutate element-ui's Notification object
+     * @see https://github.com/ElemeFE/element/blob/v2.8.2/packages/notification/src/main.vue
+     */
     if (response.type === 'success') {
       n.$data.type = 'success';
       n.$data.message = i18n.t('common.operate_success');
