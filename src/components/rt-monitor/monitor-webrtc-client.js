@@ -144,7 +144,7 @@ export class WebSocketSignalingChannel extends EventEmitter {
     });
     this.ws.addEventListener('close', () => {
       trace('Websocket Disconnected');
-      this.closeSingal();
+      this.emit('ws:close');
       this.pc.close();
       this.pc = null;
     });
@@ -165,9 +165,7 @@ export class WebSocketSignalingChannel extends EventEmitter {
       /** @type {RTCIceConnectionState} */
       // @ts-ignore
       const state = event.target.iceConnectionState;
-      if (state === 'disconnected') {
-        this.emit('pc:disconnected');
-      }
+      this.emit(`pc:${state}`);
     });
   }
 
@@ -204,9 +202,7 @@ export class WebSocketSignalingChannel extends EventEmitter {
     this.sendWebsocket(register);
   }
 
-  closeSingal() {
-    if (this.ws.readyState == 1) {
-      this.ws.close();
-    }
+  close() {
+    this.ws.close();
   }
 }

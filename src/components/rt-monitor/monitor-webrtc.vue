@@ -28,15 +28,16 @@ export default {
           this.errMsg = ev.mesg;
         }
       });
+      this.channel.on('pc:connected', () => this.errMsg = '');
       this.channel.once('ws:error', () => this.recreateChannel());
-      this.channel.once('pc:disconnected', () => this.recreateChannel());
+      this.channel.once('pc:closed', () => this.recreateChannel());
     },
     recreateChannel() {
       this.destroyChannel();
       this.retryTimeout = setTimeout(() => this.createChannel(), 3 * 1000);
     },
     destroyChannel() {
-      this.channel.closeSingal();
+      this.channel.close();
       this.channel.removeAllListeners();
     }
   },
