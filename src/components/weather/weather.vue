@@ -212,9 +212,14 @@ export default {
   height: 160px;
   width: 500px;
 }
+
+/* chartist line-chart style */
 .weather .ct-series-a .ct-line,
 .weather .ct-series-a .ct-point {
   stroke: rgb(135, 206, 250);
+}
+.weather .ct-series-a .ct-area {
+  fill: rgb(135, 206, 250);
 }
 .weather .ct-series-a .ct-line {
   stroke-width: 2px;
@@ -226,6 +231,8 @@ export default {
 .weather .ct-series-a .ct-point:hover {
   stroke: rgb(65, 178, 223);
 }
+
+/* chartist-plugin-tooltips tooltip style */
 .weather .chartist-tooltip {
   font-family: inherit;
   font-weight: normal;
@@ -235,6 +242,7 @@ export default {
 .weather .chartist-tooltip::before {
   border-top-color: white;
 }
+
 .weather .el-input {
   width: 140px;
 }
