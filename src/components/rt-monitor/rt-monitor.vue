@@ -5,7 +5,7 @@
   <monitor-flash v-else-if="video&&video.point_type_name==='livestream_flash'" :source="video.name"></monitor-flash>
   <monitor-webrtc v-else-if="video&&video.point_type_name==='livestream_webrtc'" :source="video.name"></monitor-webrtc>
   <monitor-iframe v-else-if="video&&video.point_type_name==='iframe'" :source="video.name"></monitor-iframe>
-  <div class="empty" v-else>{{ $t('common.no_video') }}</div>
+  <div class="rt-monitor-tip-empty" v-else>{{ $t('common.no_video') }}</div>
 </template>
 <script>
   import MonitorImg from './monitor-img'
@@ -38,8 +38,10 @@
     }
   }
 </script>
-<style scoped>
-  .empty {
+<style>
+  .rt-monitor-tip-empty {
     color: #fff;
+    text-align: center;
+    padding-top: 200px;
   }
 </style>

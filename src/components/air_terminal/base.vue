@@ -17,7 +17,7 @@
         </ul>
         <ul class="d-f btns">
           <li><el-button @click.prevent="doMsission($t('air.air_hover'), 'mode_loiter')" class="d-b font-16" type="danger">=={{ $t('air.air_hover') }}==</el-button></li>
-          <li><el-button @click.prevent="doMsission($t('air.air_return'), 'model_rtl')" class="d-b font-16" type="danger">{{ $t('air.air_return') }}</el-button></li>
+          <li><el-button @click.prevent="doMsission($t('air.air_return'), 'mode_rtl')" class="d-b font-16" type="danger">{{ $t('air.air_return') }}</el-button></li>
           <li></li>
           <li></li>
           <!-- <li><el-button @click.prevent="doMsission($t('air.air_takeoff'), 'take_off')" class="d-b font-16" type="danger">{{ $t('air.air_takeoff') }}</el-button></li> -->
@@ -42,7 +42,10 @@
     <el-collapse class="debug">
       <el-collapse-item :title="$t('common.debug_tips')" name="1">
         <div class="collapse-content">
-          <el-button class="font-16" @click.prevent="doMsission($t('air.air_land'),'mode_land')" type="danger">{{ $t('air.air_land') }}</el-button>
+          <el-button class="font-16" @click.prevent="doMsission($t('air.power_info'),'power_info')" type="danger">{{ $t('air.power_info') }}</el-button>
+          <el-button class="font-16" @click.prevent="doMsission($t('air.power_on_drone'),'power_on_drone')" type="danger">{{ $t('air.power_on_drone') }}</el-button>
+          <el-button class="font-16" @click.prevent="doMsission($t('air.power_off_drone'),'power_off_drone')" type="danger">{{ $t('air.power_off_drone') }}</el-button>
+          <!-- <el-button class="font-16" @click.prevent="doMsission($t('air.air_land'),'mode_land')" type="danger">{{ $t('air.air_land') }}</el-button> -->
           <!-- <el-tooltip class="item" effect="dark" :content="$t('air.air_emergency_stop_tips')" placement="top">
             <el-button class="font-16" @click.prevent="doMsission($t('air.air_emergency_stop'), 'ncp', ['shell', 'stop'])" type="danger">{{ $t('air.air_emergency_stop') }}</el-button>
           </el-tooltip> -->
