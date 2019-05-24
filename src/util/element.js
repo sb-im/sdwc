@@ -15,6 +15,9 @@ import {
   MenuItem,
   Input,
   InputNumber,
+  Radio,
+  RadioGroup,
+  RadioButton,
   Button,
   ButtonGroup,
   Table,
@@ -23,6 +26,7 @@ import {
   Option,
   Form,
   FormItem,
+  Slider,
   Icon,
   Row,
   Col,
@@ -53,6 +57,9 @@ Vue.use(Submenu);
 Vue.use(MenuItem);
 Vue.use(Input);
 Vue.use(InputNumber);
+Vue.use(Radio);
+Vue.use(RadioButton);
+Vue.use(RadioGroup);
 Vue.use(Button);
 Vue.use(ButtonGroup);
 Vue.use(Table);
@@ -61,6 +68,7 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Form);
 Vue.use(FormItem);
+Vue.use(Slider);
 Vue.use(Icon);
 Vue.use(Row);
 Vue.use(Col);
