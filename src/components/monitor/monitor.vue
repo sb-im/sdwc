@@ -1,11 +1,14 @@
 <template>
-  <sd-card icon="airport/a_monitor" :title="$t('depot.monitor')" dense>
-    <template>
-      <div v-if="compoName">
+  <sd-card class="monitor" icon="airport/a_monitor" :title="$t('depot.monitor')" dense>
+    <template v-if="compoName && point.name">
+      <div class="monitor__content">
         <component :is="compoName" :source="point.name"></component>
       </div>
-      <div v-else class="monitor-empty">
-        <span class="monitor-tip">{{ $t('common.no_video') }}</span>
+      <slot></slot>
+    </template>
+    <template v-else>
+      <div class="monitor__content monitor__content--empty">
+        <span class="monitor__tip">{{ $t('common.no_video') }}</span>
       </div>
     </template>
   </sd-card>
@@ -53,24 +56,28 @@ export default {
 </script>
 
 <style>
-.monitor-video {
-  border: 0;
+.monitor .el-card__body {
+  position: relative;
 }
-.monitor-img {
-  border: 0;
+.monitor__content {
+  background-color: black;
+  font-size: 0;
 }
+.monitor-video,
+.monitor-img,
 .monitor-iframe {
   border: 0;
-}
-.monitor-empty {
-  height: 100%;
   width: 100%;
-  background-color: black;
+  height: 480px;
+}
+.monitor__content--empty {
+  height: 160px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.monitor-tip {
+.monitor__tip {
+  color: white;
   font-size: 18px;
   font-weight: bold;
 }
