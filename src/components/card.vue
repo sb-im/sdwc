@@ -4,6 +4,9 @@
       <div class="sd-card__head">
         <sd-icon :value="icon" :size="36"></sd-icon>
         <span class="sd-card__title">{{ title }}</span>
+        <div class="sd-card__action">
+          <slot name="action"></slot>
+        </div>
       </div>
     </template>
     <slot></slot>
