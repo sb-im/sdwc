@@ -68,10 +68,12 @@ export default {
 }
 .sd-panel__footer {
   margin-top: auto;
-  padding-left: 10px;
+  padding-right: 10px;
   height: 60px;
   color: #333;
   background-color: #b3c0d1;
   line-height: 60px;
+  text-align: right;
+  font-size: 14px;
 }
 </style>
