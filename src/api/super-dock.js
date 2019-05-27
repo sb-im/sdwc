@@ -24,6 +24,12 @@ export function token(username, password, client_id, client_secret) {
     .json(json => json);
 }
 
+export function logout(token) {
+  return wr.url('/oauth/revoke')
+    .post({ token })
+    .json();
+}
+
 /**
  * @see https://staging.sblab.xyz/apidoc/
  */

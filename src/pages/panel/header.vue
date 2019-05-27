@@ -21,7 +21,7 @@
       </template>
     </el-dropdown>
     <!-- user info dropdown -->
-    <el-dropdown class="header-dropdown">
+    <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
         <sd-icon value="header/user"/>
         <span>{{ $store.state.user.email }}</span>
@@ -29,7 +29,7 @@
       </span>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item class="header-dropdown-item">
+          <el-dropdown-item class="header-dropdown-item" command="logout">
             <i class="el-icon-back"></i>
             <span>{{ $t('header.logout') }}</span>
           </el-dropdown-item>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import Icon from '../../components/sd-icon.vue';
 
 const StatusIcon = {
@@ -72,6 +72,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'logout',
+    ]),
     /**
      * @param {'air'|depot'} type
      * @returns {string}
@@ -104,6 +107,17 @@ export default {
       const color = StatusColor[status] || StatusColor.default;
       const text = `${this.getTypeText(type_name)} ${name} ${this.getStatusText(status)}`;
       return { id, icon, color, text };
+    },
+    /**
+     * @param {'logout'} cmd
+     */
+    handleCommand(cmd) {
+      switch (cmd) {
+        case 'logout':
+          this.logout();
+          this.$router.replace({ name: 'login' });
+          break;
+      }
     }
   },
   components: {

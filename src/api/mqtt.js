@@ -138,6 +138,17 @@ class MqttClient extends EventEmitter {
       this.resolveMap.set(rpcId, { resolve, reject, meta });
     });
   }
+
+  /**
+   * shut down mqtt connection and remove event listeners
+   */
+  disconnect() {
+    if (!this.mqtt) return;
+    this.removeAllListeners();
+    return new Promise(resolve => {
+      this.mqtt.end(false, resolve);
+    });
+  }
 }
 
 export default new MqttClient();

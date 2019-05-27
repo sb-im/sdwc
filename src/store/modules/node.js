@@ -27,7 +27,8 @@ export const MutationTypes = {
   ADD_NODE: 'ADD_NODE',
   SET_NODE_STATUS: 'SET_NODE_STATUS',
   ADD_NODE_MSG: 'ADD_NODE_MSG',
-  ADD_NODE_LOG: 'ADD_NODE_LOG'
+  ADD_NODE_LOG: 'ADD_NODE_LOG',
+  CLEAR_NODES: 'CLEAR_NODES'
 };
 
 /**
@@ -58,6 +59,12 @@ const mutations = {
     if (nodeLog) {
       nodeLog.log.push(log);
     }
+  },
+  [MutationTypes.CLEAR_NODES](state) {
+    state.info = [];
+    state.status = [];
+    state.message = [];
+    state.log = [];
   }
 };
 
