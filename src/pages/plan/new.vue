@@ -1,26 +1,21 @@
 <template>
-  <el-card class="sd-card" shadow="never">
-    <template #header>
-      <div class="sd-card__head">
-        <sd-icon value="task/t_add"></sd-icon>
-        <span class="sd-card__title">{{ $t('plan.edit.create') }}</span>
-        <div class="sd-card__action">
-          <el-button
-            type="success"
-            size="medium"
-            icon="el-icon-document"
-            @click="handleCreate"
-          >{{ $t('plan.edit.save_plan') }}</el-button>
-        </div>
-      </div>
+  <sd-card icon="task/t_add" :title="$t('plan.edit.create')">
+    <template #action>
+      <el-button
+        type="success"
+        size="medium"
+        icon="el-icon-document"
+        @click="handleCreate"
+      >{{ $t('plan.edit.save_plan') }}</el-button>
     </template>
     <sd-plan-editable :initial="initial" ref="edit"></sd-plan-editable>
-  </el-card>
+  </sd-card>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import Icon from '@/components/sd-icon.vue';
+
+import Card from '@/components/card.vue';
 import PlanEditable from '@/components/plan/editable.vue';
 
 export default {
@@ -41,7 +36,7 @@ export default {
     }
   },
   components: {
-    [Icon.name]: Icon,
+    [Card.name]: Card,
     [PlanEditable.name]: PlanEditable
   }
 };

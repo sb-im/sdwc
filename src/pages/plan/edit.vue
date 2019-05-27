@@ -1,38 +1,33 @@
 <template>
-  <el-card class="sd-card" shadow="never">
-    <template #header>
-      <div class="sd-card__head">
-        <sd-icon value="task/t_edit"></sd-icon>
-        <span class="sd-card__title">{{ $t('plan.edit.alter') }}</span>
-        <div class="sd-card__action">
-          <el-button
-            type="success"
-            size="medium"
-            icon="el-icon-document"
-            @click="handleUpdate"
-          >{{ $t('plan.edit.save_plan') }}</el-button>
-          <el-button
-            type="danger"
-            size="medium"
-            icon="el-icon-delete"
-            @click="handleDelete"
-          >{{ $t('plan.edit.delete_plan') }}</el-button>
-          <el-button
-            type="info"
-            size="medium"
-            icon="el-icon-close"
-            @click="handleCancel"
-          >{{ $t('common.back') }}</el-button>
-        </div>
-      </div>
+  <sd-card icon="task/t_edit" :title="$t('plan.edit.alter')">
+    <template #action>
+      <el-button
+        type="success"
+        size="medium"
+        icon="el-icon-document"
+        @click="handleUpdate"
+      >{{ $t('plan.edit.save_plan') }}</el-button>
+      <el-button
+        type="danger"
+        size="medium"
+        icon="el-icon-delete"
+        @click="handleDelete"
+      >{{ $t('plan.edit.delete_plan') }}</el-button>
+      <el-button
+        type="info"
+        size="medium"
+        icon="el-icon-close"
+        @click="handleCancel"
+      >{{ $t('common.back') }}</el-button>
     </template>
     <sd-plan-editable :initial="plan" ref="edit"></sd-plan-editable>
-  </el-card>
+  </sd-card>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import Icon from '@/components/sd-icon.vue';
+
+import Card from '@/components/card.vue';
 import PlanEditable from '@/components/plan/editable.vue';
 
 export default {
@@ -72,7 +67,7 @@ export default {
     }
   },
   components: {
-    [Icon.name]: Icon,
+    [Card.name]: Card,
     [PlanEditable.name]: PlanEditable
   }
 };
