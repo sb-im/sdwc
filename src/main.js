@@ -17,6 +17,7 @@ import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
  * for the very first time.
  */
 store.dispatch('reconfigure');
+store.dispatch('restorePreference');
 
 new Vue({
   store,
@@ -24,3 +25,7 @@ new Vue({
   router,
   ...App
 }).$mount(document.getElementById('app'));
+
+window.addEventListener('beforeunload', () => {
+  store.dispatch('storePreference');
+});

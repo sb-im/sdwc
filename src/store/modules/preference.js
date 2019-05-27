@@ -1,14 +1,8 @@
 // @ts-check
 
 const state = {
-  super_dock_api_server: '',
-  oauth_client_id: '',
-  oauth_client_secret: '',
-  lang: 'en',
-  amap_key: '',
-  gmap_key: '',
-  caiyun_key: '',
-  mqtt_url: '',
+  mapType: 'sd-map-amap',
+  lang: 'en'
 };
 
 /**
@@ -16,14 +10,14 @@ const state = {
  */
 
 export const MutationTypes = {
-  SET_CONFIG: 'SET_CONFIG'
+  SET_PREFERENCE: 'SET_PREFERENCE'
 };
 
 /**
  * @type {{ [x: string]: (state: State, payload: any) => void }}
  */
 const mutations = {
-  [MutationTypes.SET_CONFIG](state, /** @type {State} */ payload) {
+  [MutationTypes.SET_PREFERENCE](state, /** @type {State} */ payload) {
     Object.assign(state, payload);
   }
 };

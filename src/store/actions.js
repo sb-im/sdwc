@@ -5,11 +5,13 @@ import ContentDisposition from 'content-disposition';
 
 import { setLocale } from '@/i18n';
 import * as SDWC from '@/api/sdwc';
+import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
 import * as SuperDock from '@/api/super-dock';
 import * as GoogleMap from '@/api/google-map';
 
+import { MutationTypes as PREF } from './modules/preference';
 import { MutationTypes as CONFIG } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
 import { MutationTypes as NODE } from './modules/node';
@@ -25,6 +27,31 @@ import { MutationTypes as PLAN } from './modules/plan';
 
 /**
  * @param {Context} context
+ * @param {any} payload
+ */
+export function setPreference({ commit }, payload) {
+  commit(PREF.SET_PREFERENCE, payload);
+}
+
+/**
+ * @param {Context} context
+ */
+export function storePreference({ state }) {
+  localStorage.setItem('sdwc-preference', JSON.stringify(state.preference));
+}
+
+/**
+ * @param {Context} context
+ */
+export function restorePreference({ commit }) {
+  try {
+    const pref = JSON.parse(localStorage.getItem('sdwc-preference'));
+    commit(PREF.SET_PREFERENCE, pref);
+  } catch (e) { /* noop */ }
+}
+
+/**
+ * @param {Context} context
  */
 export async function configure({ state, commit }) {
   const data = await SDWC.config();
@@ -33,6 +60,7 @@ export async function configure({ state, commit }) {
   SuperDock.setBaseURL(config.super_dock_api_server);
   GoogleMap.setApiKey(config.gmap_key);
   CaiYun.setApiKey(config.caiyun_key);
+  AMap.setApiKey(config.amap_key);
   setLocale(config.lang);
 }
 
