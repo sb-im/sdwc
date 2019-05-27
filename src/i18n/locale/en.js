@@ -54,13 +54,15 @@ export const enLocale = {
     view: {
       title: 'View Plan',
       run: 'Run Plan',
+      stop: 'Terminate Plan',
       history: 'Plan axecution history',
       run_time: 'Execution time',
       raw_data: 'Raw data',
       auto_run: 'Automatic processing',
       logs: 'Fly logs',
       sever_logs: 'Sever logs',
-      start_run: 'Plan started'
+      start_run: 'Plan started',
+      stop_run: 'Plan terminated'
     },
     edit: {
       add: 'Create',

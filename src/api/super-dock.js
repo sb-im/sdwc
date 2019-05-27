@@ -76,7 +76,13 @@ export function deletePlan(id) {
 export function runPlan(id) {
   return wr.url(`/api/v1/plans/${id}/plan_logs/`)
     .post()
-    .json();
+    .text();
+}
+
+export function stopPlan(id) {
+  return wr.url(`/api/v1/mission_queues/plan/${id}`)
+    .delete()
+    .text();
 }
 
 export function planLogs(id) {

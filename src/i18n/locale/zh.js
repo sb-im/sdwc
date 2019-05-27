@@ -54,13 +54,15 @@ export const zhLocale = {
     view: {
       title: '查看任务',
       run: '执行任务',
+      stop: '终止任务',
       history: '任务执行历史',
       run_time: '执行时间',
       raw_data: '原始数据',
       auto_run: '自动处理结果',
       logs: '飞行日志',
       sever_logs: '服务器日志',
-      start_run: '当前任务开始执行！'
+      start_run: '当前任务开始执行',
+      stop_run: '当前任务已经终止'
     },
     edit: {
       add: '新建任务',

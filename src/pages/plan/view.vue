@@ -1,23 +1,28 @@
 <template>
   <div class="plan__view">
-    <el-card class="sd-card" shadow="never">
-      <template #header>
-        <div class="sd-card__head">
-          <sd-icon value="task/t_view"></sd-icon>
-          <span class="sd-card__title">{{ $t('plan.view.title') }}</span>
-          <div class="sd-card__action">
-            <el-button
-              type="primary"
-              size="medium"
-              icon="el-icon-edit"
-              @click="handleEdit"
-            >{{ $t('plan.edit.alter') }}</el-button>
-            <el-button type="danger" size="medium" icon="el-icon-refresh">{{ $t('plan.view.run') }}</el-button>
-          </div>
-        </div>
+    <sd-card icon="task/t_view" :title="$t('plan.view.title')">
+      <template #action>
+        <el-button
+          type="primary"
+          size="medium"
+          icon="el-icon-edit"
+          @click="handleEdit"
+        >{{ $t('plan.edit.alter') }}</el-button>
+        <el-button
+          type="warning"
+          size="medium"
+          icon="el-icon-remove-outline"
+          @click="handleStop"
+        >{{ $t('plan.view.stop') }}</el-button>
+        <el-button
+          type="danger"
+          size="medium"
+          icon="el-icon-refresh"
+          @click="handleRun"
+        >{{ $t('plan.view.run') }}</el-button>
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
-    </el-card>
+    </sd-card>
     <sd-map :path="mapPath" fit></sd-map>
     <sd-card icon="task/t_history" :title="$t('plan.view.history')" dense>
       <el-table stripe :data="log">
@@ -71,9 +76,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { runPlan, stopPlan } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
-import Icon from '@/components/sd-icon.vue';
 import PlanMap from '@/components/map/map.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 
@@ -123,6 +128,24 @@ export default {
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
+    handleRun() {
+      runPlan(this.plan.id).then(() => {
+        this.$notify({
+          type: 'success',
+          title: this.plan.name,
+          message: this.$t('plan.view.start_run'),
+        });
+      });
+    },
+    handleStop() {
+      stopPlan(this.plan.id).then(() => {
+        this.$notify({
+          type: 'warning',
+          title: this.plan.name,
+          message: this.$t('plan.view.stop_run'),
+        });
+      });
+    },
     handleDownload(url, name) {
       this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });
     }
@@ -135,7 +158,6 @@ export default {
   },
   components: {
     [Card.name]: Card,
-    [Icon.name]: Icon,
     [PlanMap.name]: PlanMap,
     [PlanReadonly.name]: PlanReadonly
   }
