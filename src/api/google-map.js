@@ -7,7 +7,7 @@ const GoogleMapApiURL = {
 };
 
 let gmapProm;
-let wr = wretchJSONP.url(GoogleMapApiURL.gdgdocs);
+let wr = wretchJSONP.url(GoogleMapApiURL.com);
 
 /**
  * @param {keyof GoogleMapApiURL} url
@@ -28,7 +28,8 @@ export function setApiKey(key) {
 }
 
 /**
- * @returns {Promise<google.maps>}
+ * @see https://developers.google.com/maps/documentation/javascript/reference/
+ * @returns {Promise<typeof google.maps>}
  */
 export async function loadGoogleMap() {
   if (window.google) {
@@ -44,6 +45,6 @@ export async function loadGoogleMap() {
     }
   } catch (e) {
     gmapProm = null;
-    throw Error('Google Map Api load failed:', e);
+    throw Error('Google Map load failed.');
   }
 }

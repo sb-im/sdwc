@@ -35,11 +35,11 @@ export default {
   },
   methods: {
     async initMap() {
-      const { Map } = await loadGoogleMap();
+      const { Map, MapTypeId } = await loadGoogleMap();
       this.map = new Map(this.$refs.map, {
         zoom: 20,
         center: this.path[0] || this.center,
-        mapTypeId: 'hybrid',
+        mapTypeId: MapTypeId.HYBRID,
         streetViewControl: false
       });
     },
@@ -146,8 +146,9 @@ export default {
     }
   },
   mounted() {
-    this.initMap();
-    this.drawPath();
+    this.initMap().then(() => {
+      this.drawPath();
+    });
   }
 };
 </script>
