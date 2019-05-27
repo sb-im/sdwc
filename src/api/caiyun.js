@@ -28,8 +28,9 @@ function get(url) {
 /**
  * 实况天气
  * @see https://open.caiyunapp.com/实况天气接口/v2.2
- * @param lng
- * @param lat
+ * @param {number} lng
+ * @param {number} lat
+ * @returns {import('./api-types').CaiYunRealtime}
  */
 export function realtime(lng, lat) {
   return get(`/${lng},${lat}/realtime`);
@@ -38,8 +39,9 @@ export function realtime(lng, lat) {
 /**
  * 分钟级降雨预报
  * @see https://open.caiyunapp.com/分钟级降雨预报接口
- * @param lng
- * @param lat
+ * @param {number} lng
+ * @param {number} lat
+ * @returns {import('./api-types').CaiYunMinutely}
  */
 export function minutely(lng, lat) {
   return get(`/${lng},${lat}/minutely`);
