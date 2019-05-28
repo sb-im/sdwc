@@ -39,7 +39,7 @@ export default {
       this.map = new Map(this.$refs.map, {
         zoom: 20,
         center: this.path[0] || this.center,
-        mapTypeId: MapTypeId.HYBRID,
+        mapTypeId: MapTypeId.SATELLITE,
         streetViewControl: false
       });
     },
