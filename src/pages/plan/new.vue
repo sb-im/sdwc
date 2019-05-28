@@ -1,0 +1,43 @@
+<template>
+  <sd-card icon="task/t_add" :title="$t('plan.edit.create')">
+    <template #action>
+      <el-button
+        type="success"
+        size="medium"
+        icon="el-icon-document"
+        @click="handleCreate"
+      >{{ $t('plan.edit.save_plan') }}</el-button>
+    </template>
+    <sd-plan-editable :initial="initial" ref="edit"></sd-plan-editable>
+  </sd-card>
+</template>
+
+<script>
+import { mapActions } from 'vuex';
+
+import Card from '@/components/card.vue';
+import PlanEditable from '@/components/plan/editable.vue';
+
+export default {
+  name: 'sd-plan-new',
+  data() {
+    return {
+      initial: {}
+    };
+  },
+  methods: {
+    ...mapActions([
+      'createPlan'
+    ]),
+    handleCreate() {
+      const plan = this.$refs.edit.getPlan();
+      this.createPlan(plan)
+        .then(p => this.$router.push({ name: 'plan/view', params: { id: p.id } }));
+    }
+  },
+  components: {
+    [Card.name]: Card,
+    [PlanEditable.name]: PlanEditable
+  }
+};
+</script>

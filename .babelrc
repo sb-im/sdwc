@@ -1,5 +1,23 @@
 {
   "presets": [
-    ["@babel/env", { "modules": false }],
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "chrome": 70,
+          "firefox": 60,
+          "edge": 14
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ]
   ]
 }

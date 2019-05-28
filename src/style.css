@@ -1,0 +1,48 @@
+@media screen and (min-width: 1200px) {
+  /* container */
+  .plan__view,
+  .drone,
+  .depot {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* plan */
+  .plan__history {
+    min-width: 100%;
+  }
+  .plan__view .sd-card {
+    flex-grow: 1;
+  }
+  .sd-map .el-card__body {
+    height: calc(100% - 73px); /* 73 = 36 + 12*2 + 1 */
+  }
+  .map__el {
+    height: 100%;
+  }
+
+  /* drone */
+  .drone__status,
+  .drone .control {
+    min-width: 100%;
+  }
+  .drone .sd-card {
+    flex-grow: 1;
+  }
+
+  /* depot */
+  .depot .monitor {
+    flex-grow: 1;
+  }
+  .depot .weather .el-card__body {
+    flex-direction: column;
+  }
+  .depot .weather .el-card__body {
+    height: calc(100% - 73px);
+    align-items: center;
+    justify-content: center;
+  }
+  .depot .control {
+    min-width: 100%;
+  }
+}

@@ -15,7 +15,7 @@ script:
 before_deploy:
   - ls
   - ls | grep -v "`cat Deploylist`" | xargs rm -r
-  - rm .babelrc .editorconfig .eslintrc.js .gitignore
+  - rm .editorconfig .eslintrc.js .gitignore
   - wget https://raw.githubusercontent.com/SB-IM/SDWC/gh-pages/config.json
   - ls -a
 

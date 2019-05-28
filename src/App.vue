@@ -1,30 +1,18 @@
 <template>
-  <main id="app">
-    <router-view></router-view>
-  </main>
+  <router-view></router-view>
 </template>
 
 <script>
-  export default {
-    data(){
-      return {
+import { mapActions } from 'vuex';
 
-      }
-    },
-    created() {
-      this.$store.dispatch('appInit',this);
-    },
-    methods: {
-
-    }
+export default {
+  methods: {
+    ...mapActions([
+      'configure'
+    ])
+  },
+  created() {
+    this.configure();
   }
+};
 </script>
-
-<style>
-  #app {
-    height: 100%;
-    overflow: hidden;
-  }
-
-
-</style>
