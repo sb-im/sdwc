@@ -48,9 +48,40 @@ export default {
         this.map.addControl(new AMap.Scale);
       });
     },
+    /**
+     * @param {{lng: number; lat: number}[]} lnglat
+     * @returns {Promise<AMap.LngLat[]>}
+     */
+    convertCoordinate(lnglat) {
+      return new Promise((resolve, reject) => {
+        loadAMap().then(AMap => {
+          if (lnglat.length <= 40) {
+            AMap.convertFrom(lnglat.map(p => [p.lng, p.lat]), 'gps', (status, result) => {
+              if (result.info === 'ok') {
+                resolve(result.locations);
+              } else {
+                reject(status);
+              }
+            });
+          } else {
+            const left = lnglat.slice(0, 40);
+            const right = lnglat.slice(40);
+            Promise.all([
+              this.convertCoordinate(left),
+              this.convertCoordinate(right)
+            ]).then(([l, r]) => {
+              resolve(l.concat(r));
+            }).catch(e => {
+              console.error('convertCoordinate', e); // eslint-disable-line no-console
+              resolve([]);
+            });
+          }
+        });
+      });
+    },
     async drawPath() {
-      const { LngLat, Polyline } = await loadAMap();
-      const path = this.path.map(p => new LngLat(p.lng, p.lat));
+      const { Polyline } = await loadAMap();
+      const path = await this.convertCoordinate(this.path);
       if (this.poly) {
         this.poly.setPath(path);
       } else {
