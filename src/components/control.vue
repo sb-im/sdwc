@@ -1,5 +1,5 @@
 <template>
-  <sd-card icon="airport/a_h_control" :title="$t('common.advanced_control')">
+  <sd-card class="control" icon="airport/a_h_control" :title="$t('common.advanced_control')">
     <div
       class="control__body"
       v-loading="disabled"

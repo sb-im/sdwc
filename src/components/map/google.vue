@@ -1,7 +1,5 @@
 <template>
-  <div class="map map--google">
-    <div class="map__el" ref="map"></div>
-  </div>
+  <div class="map__el" ref="map"></div>
 </template>
 
 <script>

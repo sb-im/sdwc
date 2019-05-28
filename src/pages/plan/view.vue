@@ -24,7 +24,7 @@
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </sd-card>
     <sd-map :path="mapPath" fit></sd-map>
-    <sd-card icon="task/t_history" :title="$t('plan.view.history')" dense>
+    <sd-card class="plan__history" icon="task/t_history" :title="$t('plan.view.history')" dense>
       <el-table stripe :data="log">
         <el-table-column align="center" :label="$t('plan.view.run_time')">
           <template v-slot="{row}">{{ $d(new Date(row.created_at), 'long') }}</template>
