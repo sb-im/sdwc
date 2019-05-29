@@ -58,7 +58,7 @@ class MqttClient extends EventEmitter {
         /** @type {import('jsonrpc-lite').IParsedObjectRequest} */
         const request = jsonrpc.parse(str);
         if (request.type === 'request') {
-          const res = this.resolveMap.get(request.payload.id);
+          const res = this.resolveMap.get(request.payload.id) || {};
           this.emit('rpc:request', { id, request, meta: res.meta });
         }
       } else if (topic.endsWith('/rpc/recv')) {
