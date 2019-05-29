@@ -70,7 +70,7 @@ export default {
       this.$mqtt(this.point.node_id, {
         name: this.$t('air.gimbal_mode_' + mode),
         mission: 'gimbalmode',
-        arg: ['mode']
+        arg: [mode]
       }).then(() => {
         this.gimbal.mode = mode;
       });
