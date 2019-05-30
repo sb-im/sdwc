@@ -37,7 +37,6 @@ import wretch from 'wretch';
 import Chartist from 'chartist';
 import 'chartist-plugin-tooltips';
 
-import MqttClient from '@/api/mqtt';
 import { realtime, minutely } from '@/api/caiyun';
 
 import Card from '@/components/card.vue';
@@ -60,16 +59,18 @@ export default {
     point: {
       type: Object,
       required: true
+    },
+    status: {
+      type: Number,
+      required: true
+    },
+    position: {
+      type: Object,
+      required: false
     }
   },
   data() {
     return {
-      position: {
-        lat: null, // 纬度
-        lng: null, // 经度
-        alt: null, // 海拔
-        err: null
-      },
       weather: {
         s: null,
         realtime: null,
@@ -157,30 +158,22 @@ export default {
     },
     refreshWeather() {
       // this.get3s();
+      if (!this.position) return;
       this.getRealtime();
-      this.getMinutely().then(this.drawChart);
+      this.chartLoading = true;
+      this.getMinutely().then(() => {
+        this.drawChart();
+        this.chartLoading = false;
+      });
+    }
+  },
+  watch: {
+    position() {
+      this.refreshWeather();
     }
   },
   mounted() {
-    // this.get3s();
-    this.chartLoading = true;
-    MqttClient.invoke(this.point.node_id, 'ncp', ['status'])
-      .then(res => {
-        this.position.err = false;
-        this.position.lat = res.lat;
-        this.position.lng = res.lng;
-        this.position.alt = res.alt;
-      })
-      .then(() => {
-        this.getRealtime();
-        this.getMinutely().then(this.drawChart);
-      })
-      .catch(err => {
-        this.position.err = err;
-      })
-      .then(() => {
-        this.chartLoading = false;
-      });
+    this.refreshWeather();
     this.interval = window.setInterval(() => this.refreshWeather(), 120 * 1000);
   },
   beforeDestroy() {
