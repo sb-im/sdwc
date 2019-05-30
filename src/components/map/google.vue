@@ -13,6 +13,10 @@ export default {
       required: false,
       default: () => []
     },
+    positionDepot: {
+      type: Object,
+      required: false
+    },
     center: {
       type: Object,
       required: false,
@@ -28,7 +32,11 @@ export default {
       /** @type {google.maps.Map} */
       map: null,
       /** @type {google.maps.Polyline} */
-      poly: null
+      poly: null,
+      /** @type {google.maps.Marker} */
+      markerDepot: null,
+      /** @type {google.maps.Marker} */
+      markerDrone: null
     };
   },
   methods: {
@@ -41,10 +49,37 @@ export default {
         streetViewControl: false
       });
     },
+    async drawMarkerDepot() {
+      if (!this.positionDepot) return;
+      if (!this.markerDepot) {
+        const { Marker } = await loadGoogleMap();
+        this.markerDepot = new Marker({
+          map: this.map,
+          position: this.positionDepot,
+          label: '🚉'
+        });
+      } else {
+        this.markerDepot.setPosition(this.positionDepot);
+      }
+    },
+    async drawMarkerDrone() {
+      if (this.fit) return;
+      if (!this.markerDrone) {
+        const { Marker } = await loadGoogleMap();
+        this.markerDrone = new Marker({
+          map: this.map,
+          position: this.path[0],
+          label: '✈️'
+        });
+      } else {
+        this.markerDrone.setPosition(this.path[0]);
+      }
+    },
     /**
      * 清除并重新绘制路径
      */
     async drawPath() {
+      this.drawMarkerDrone();
       const { Polyline } = await loadGoogleMap();
       if (this.poly) {
         this.poly.setMap(null);
@@ -67,6 +102,7 @@ export default {
      * 向已经画在地图上的路径折线增加点
      */
     async patchPath(newPath) {
+      this.drawMarkerDrone();
       const { LatLng } = await loadGoogleMap();
       // 已经画在地图上的折线点集
       const mvcArray = this.poly.getPath();
@@ -97,6 +133,7 @@ export default {
   },
   watch: {
     center(val) {
+      if (!this.map) return;
       this.map.setCenter(val);
     },
     /**
@@ -106,7 +143,7 @@ export default {
     path(newPath, oldPath) {
       // 假设能
       let patchable = true;
-      if (oldPath.length === 0) {
+      if (!this.poly || oldPath.length === 0) {
         // 本来没有路线，那只能从头开始画
         patchable = false;
       } else {
@@ -137,6 +174,9 @@ export default {
         this.drawPath();
       }
     },
+    async positionDepot() {
+      this.drawMarkerDepot();
+    },
     async fit(val) {
       if (val === true) {
         this.fitPath();
@@ -145,7 +185,16 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
+      this.drawMarkerDepot();
       this.drawPath();
+    });
+  },
+  beforeDestroy() {
+    ['poly', 'markerDepot', 'markerDrone'].forEach(prop => {
+      if (this[prop]) {
+        this[prop].setMap(null);
+        this[prop] = null;
+      }
     });
   }
 };
