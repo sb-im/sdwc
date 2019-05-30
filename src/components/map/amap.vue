@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { loadAMap } from '@/api/amap';
+import { loadAMap, loadAMapUI } from '@/api/amap';
 export default {
   name: 'sd-map-amap',
   props: {
@@ -11,6 +11,10 @@ export default {
       type: Array,
       required: false,
       default: () => []
+    },
+    positionDepot: {
+      type: Object,
+      required: false
     },
     center: {
       type: Object,
@@ -27,7 +31,11 @@ export default {
       /** @type {AMap.Map} */
       map: null,
       /** @type {AMap.Polyline} */
-      poly: null
+      poly: null,
+      /** @type {AMap.Marker} */
+      markerDepot: null,
+      /** @type {AMap.Marker} */
+      markerDrone: null
     };
   },
   methods: {
@@ -79,9 +87,43 @@ export default {
         });
       });
     },
+    async drawMarkerDepot() {
+      if (!this.positionDepot) return;
+      const [position] = await this.convertCoordinate([this.positionDepot]);
+      if (!this.markerDepot) {
+        const AMapUI = await loadAMapUI();
+        AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
+          this.markerDepot = new SimpleMarker({
+            iconStyle: 'red',
+            iconLabel: '🚉',
+            position
+          });
+          this.map.add(this.markerDepot);
+        });
+      } else {
+        this.markerDepot.setPosition(position);
+      }
+    },
+    async drawMarkerDrone(position) {
+      if (this.fit) return;
+      if (!this.markerDrone) {
+        const AMapUI = await loadAMapUI();
+        AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
+          this.markerDrone = new SimpleMarker({
+            iconStyle: 'red',
+            iconLabel: '✈️',
+            position
+          });
+          this.map.add(this.markerDrone);
+        });
+      } else {
+        this.markerDrone.setPosition(position);
+      }
+    },
     async drawPath() {
       const { Polyline } = await loadAMap();
       const path = await this.convertCoordinate(this.path);
+      this.drawMarkerDrone(path[0]);
       if (this.poly) {
         this.poly.setPath(path);
       } else {
@@ -90,6 +132,7 @@ export default {
           geodesic: true,
           path: path,
           strokeColor: 'red',
+          strokeWeight: 2,
           lineJoin: 'round'
         });
       }
@@ -110,6 +153,7 @@ export default {
   },
   watch: {
     center(val) {
+      if (!this.map) return;
       this.map.setCenter(val);
     },
     path() {
@@ -123,14 +167,20 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
+      this.drawMarkerDepot();
       this.drawPath();
     });
   },
   beforeDestroy() {
-    if (this.poly) {
-      this.poly.setMap(null);
+    ['poly', 'markerDepot', 'markerDrone', 'markerDepot'].forEach(prop => {
+      if (this[prop]) {
+        this[prop].setMap(null);
+        this[prop] = null;
+      }
+    });
+    if (this.map) {
+      this.map.destroy();
     }
-    this.map.destroy();
   }
 };
 </script>
