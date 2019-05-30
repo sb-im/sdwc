@@ -23,23 +23,26 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      node: state => state.node
-    }),
+    ...mapState([
+      'node'
+    ]),
+    /** @returns {import('@/store/modules/node').Node} */
     selectedNode() {
-      return this.node.info.find(n => n.id === this.id);
+      return this.node.find(node => node.info.id === this.id);
     },
     componentName() {
       if (!this.selectedNode) return Loading.name;
-      return ComponentName[this.selectedNode.type_name];
+      return ComponentName[this.selectedNode.info.type_name];
     },
     componentProps() {
       if (!this.selectedNode) return {};
       return {
-        node: this.selectedNode,
-        status: this.node.status.find(n => n.id === this.id).status,
-        message: this.node.message.find(n => n.id === this.id).msg,
-        log: this.node.log.find(n => n.id === this.id).log
+        node: this.selectedNode.info,
+        status: this.selectedNode.status,
+        msg: this.selectedNode.msg,
+        log: this.selectedNode.log,
+        position: this.selectedNode.position,
+        path: this.selectedNode.path
       };
     }
   },

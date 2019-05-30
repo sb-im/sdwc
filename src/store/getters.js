@@ -9,12 +9,12 @@
  * @param {State} state
  */
 export function depots(state) {
-  return state.node.info.filter(node => node.type_name === 'depot');
+  return state.node.filter(node => node.info.type_name === 'depot').map(node => node.info);
 }
 
 /**
  * @param {State} state
  */
 export function drones(state) {
-  return state.node.info.filter(node => node.type_name === 'air');
+  return state.node.filter(node => node.info.type_name === 'air').map(node => node.info);
 }

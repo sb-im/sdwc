@@ -1,7 +1,7 @@
 <template>
   <div class="depot">
     <template v-for="{ point, compo } of points">
-      <component :is="compo" :key="point.id" :point="point"></component>
+      <component :is="compo" :key="point.id" :point="point" :status="status" :position="position"></component>
     </template>
     <sd-node-depot-control :node="node" :status="status"></sd-node-depot-control>
   </div>
@@ -32,13 +32,21 @@ export default {
       type: Number,
       required: true
     },
-    message: {
-      type: Array,
+    msg: {
+      type: Object,
       required: true
     },
     log: {
       type: Array,
       required: true
+    },
+    position: {
+      type: Object,
+      required: false
+    },
+    path: {
+      type: Array,
+      required: false
     }
   },
   computed: {

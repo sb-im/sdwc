@@ -79,17 +79,17 @@ export default {
       type: Object,
       required: true
     },
-    message: {
-      type: Array,
+    msg: {
+      type: Object,
       required: true
     }
   },
   computed: {
     status() {
-      if (this.message.length === 0) {
+      if (!this.msg.status) {
         return EmptyStatus;
       }
-      return this.message[0].status;
+      return this.msg.status;
     },
     flightStatus() {
       const key = FlightStatus[this.status.flight.status] || FlightStatus.none;

@@ -1,10 +1,10 @@
 <template>
   <div class="drone">
-    <sd-node-drone-status :node="node" :message="message"></sd-node-drone-status>
+    <sd-node-drone-status :node="node" :msg="msg"></sd-node-drone-status>
     <template v-for="{ point, compo } of points">
       <component :is="compo" :key="point.id" :point="point" :status="status"></component>
     </template>
-    <sd-map :path="mapPath"></sd-map>
+    <sd-map :point="node" :path="path"></sd-map>
     <sd-node-drone-control :node="node" :status="status"></sd-node-drone-control>
   </div>
 </template>
@@ -34,13 +34,21 @@ export default {
       type: Number,
       required: true
     },
-    message: {
-      type: Array,
+    msg: {
+      type: Object,
       required: true
     },
     log: {
       type: Array,
       required: true
+    },
+    position: {
+      type: Object,
+      required: false
+    },
+    path: {
+      type: Array,
+      required: false
     }
   },
   computed: {
@@ -48,12 +56,6 @@ export default {
       return this.node.points.map(point => {
         const compo = CompoName[point.point_type_name] || '';
         return { point, compo };
-      });
-    },
-    mapPath() {
-      return this.message.map(msg => {
-        const { lat, lon: lng } = msg.status.gps;
-        return { lat, lng };
       });
     }
   },

@@ -35,7 +35,7 @@ function registerMqttListener() {
     } else {
       prefix = `(${prefix}) `;
     }
-    const node = store.state.node.info.find(n => n.id === id);
+    const node = store.state.node.find(node => node.info.id === id).info;
     const name = meta.name || stringifyMission(request.payload);
     if (!node) {
       Notification({

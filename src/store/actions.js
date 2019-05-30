@@ -148,8 +148,8 @@ export async function getNodes({ commit }) {
  */
 export async function subscribeNodes({ state, commit }) {
   MqttClient.connect(state.config.mqtt_url);
-  state.node.info.forEach(node => {
-    MqttClient.subscribeNode(node.id);
+  state.node.forEach(node => {
+    MqttClient.subscribeNode(node.info.id);
   });
   MqttClient.on('status', ({ id, status }) => {
     commit(NODE.SET_NODE_STATUS, { id, status });

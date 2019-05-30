@@ -40,6 +40,9 @@
 </template>
 
 <script>
+/**
+ * @typedef {import('@/store/modules/node').NodeInfo} NodeInfo
+ */
 import { mapActions, mapState } from 'vuex';
 import Icon from '../../components/sd-icon.vue';
 
@@ -60,15 +63,11 @@ const StatusColor = {
 export default {
   name: 'sd-header',
   computed: {
-    ...mapState({
-      nodeInfo: state => state.node.info,
-      nodeStatus: state => state.node.status
-    }),
+    ...mapState([
+      'node'
+    ]),
     status() {
-      return this.nodeInfo.map(node => {
-        const status = this.nodeStatus.find(st => st.id === node.id);
-        return this.statusToObject(node, status);
-      });
+      return this.node.map(node => this.statusToObject(node.info, node.status));
     }
   },
   methods: {
@@ -98,11 +97,11 @@ export default {
       }
     },
     /**
-     * @param {{id: number, name: number, type_name: 'air'|'depot'}} param0 node info
-     * @param {{id: number, status: number}} param1 node status
+     * @param {NodeInfo} info node info
+     * @param {number} status node status
      * @returns {{id: number, icon: string, color: string, text: string}}
      */
-    statusToObject({ id, name, type_name }, { status }) {
+    statusToObject({ id, name, type_name }, status) {
       const icon = StatusIcon[status] || StatusIcon.default;
       const color = StatusColor[status] || StatusColor.default;
       const text = `${this.getTypeText(type_name)} ${name} ${this.getStatusText(status)}`;
