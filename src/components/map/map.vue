@@ -5,7 +5,7 @@
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs"></component>
+    <component :is="type" v-bind="$attrs" :positionDepot="positionDepot"></component>
   </sd-card>
 </template>
 
@@ -24,6 +24,12 @@ const MapType = {
 export default {
   name: 'sd-map',
   inheritAttrs: false,
+  props: {
+    point: {
+      type: Object,
+      required: false
+    }
+  },
   data() {
     return {
       type: '',
@@ -32,8 +38,19 @@ export default {
   },
   computed: {
     ...mapState([
+      'node',
       'preference'
-    ])
+    ]),
+    positionDepot() {
+      if (!this.point) return null;
+      const droneId = this.point.id;
+      for (const node of this.node) {
+        if (node.info.type_name === 'depot' && node.status === 0 && node.msg.link_id === droneId) {
+          return node.position;
+        }
+      }
+      return null;
+    }
   },
   methods: {
     ...mapActions([
