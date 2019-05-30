@@ -167,6 +167,19 @@ export async function subscribeNodes({ state, commit }) {
 
 /**
  * @param {Context} context
+ * @param {number} id
+ */
+export async function getDepotPosition({ state, commit }, id) {
+  const node = state.node.find(node => node.info.id === id);
+  if (node && node.info.type_name === 'depot' && node.status === 0) {
+    MqttClient.invoke(node.info.id, 'ncp', ['status'], {}).then(msg => {
+      commit(NODE.ADD_NODE_MSG, { id, msg });
+    });
+  }
+}
+
+/**
+ * @param {Context} context
  */
 export async function getPlans({ commit }) {
   const data = await SuperDock.plans();
