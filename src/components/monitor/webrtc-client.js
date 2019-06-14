@@ -176,7 +176,7 @@ export class WebSocketSignalingChannel extends EventEmitter {
       return true;
     }
     trace('failed to send websocket message:', message);
-    return new Error('failed to send websocket message');
+    return false;
   }
 
   sendPeerMessage(data) {
@@ -185,7 +185,7 @@ export class WebSocketSignalingChannel extends EventEmitter {
       msg: JSON.stringify(data),
       error: ''
     };
-    if (this.sendWebsocket(data_message) == false) {
+    if (this.sendWebsocket(data_message) === false) {
       trace('Failed to send data:', data_message);
       return false;
     }
