@@ -31,7 +31,7 @@ body {
     min-width: 100%;
   }
   .drone .sd-card {
-    flex-grow: 1;
+    width: calc(50% - 2px);
   }
 
   /* depot */
