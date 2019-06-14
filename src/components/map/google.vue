@@ -175,10 +175,10 @@ export default {
         this.drawPath();
       }
     },
-    async positionDepot() {
+    positionDepot() {
       this.drawMarkerDepot();
     },
-    async fit(val) {
+    fit(val) {
       if (val === true) {
         this.fitPath();
       }
