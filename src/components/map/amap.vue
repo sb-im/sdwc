@@ -146,7 +146,7 @@ export default {
     /**
      * 自动缩放地图以适应路径
      */
-    async fitPath() {
+    fitPath() {
       if (this.poly) {
         this.map.setFitView([this.poly]);
       }
@@ -160,10 +160,13 @@ export default {
     path() {
       this.drawPath();
     },
-    async fit(val) {
+    fit(val) {
       if (val === true) {
         this.fitPath();
       }
+    },
+    positionDepot() {
+      this.drawMarkerDepot();
     }
   },
   mounted() {
