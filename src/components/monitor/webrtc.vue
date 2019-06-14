@@ -44,8 +44,8 @@ export default {
       this.channel.once('pc:closed', () => this.recreateChannel());
     },
     destroyChannel() {
-      this.channel.close();
       this.channel.removeAllListeners();
+      this.channel.close();
     },
     recreateChannel() {
       this.destroyChannel();
