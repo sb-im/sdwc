@@ -107,6 +107,7 @@ export default {
     async drawMarkerDrone(position) {
       if (this.fit) return;
       if (!this.markerDrone) {
+        this.markerDrone = { setPosition() { /* noop */ } };
         const AMapUI = await loadAMapUI();
         AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
           this.markerDrone = new SimpleMarker({

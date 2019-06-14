@@ -65,6 +65,7 @@ export default {
     async drawMarkerDrone() {
       if (this.fit) return;
       if (!this.markerDrone) {
+        this.markerDrone = { setPosition() { /* noop */ } };
         const { Marker } = await loadGoogleMap();
         this.markerDrone = new Marker({
           map: this.map,
