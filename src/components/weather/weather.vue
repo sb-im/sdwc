@@ -4,7 +4,7 @@
       <div class="weather__caption">雷达降水强度</div>
       <div class="weather__chart" ref="chart" v-loading="chartLoading"></div>
     </div>
-    <el-form class="weather__column" label-width="120px" size="mini">
+    <el-form class="weather__column" label-width="80px" size="mini">
       <el-form-item :label="$t('depot.weather_feel')">
         <el-input readonly :value="weatherText.weather"></el-input>
       </el-form-item>
@@ -206,6 +206,17 @@ export default {
   width: 500px;
 }
 
+@media screen and (max-width: 965px) {
+  .weather .el-card__body {
+    flex-direction: column;
+    align-items: center;
+  }
+  .el-form.weather__column {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
 /* chartist line-chart style */
 .weather .ct-series-a .ct-line,
 .weather .ct-series-a .ct-point {
@@ -241,8 +252,5 @@ export default {
 }
 .weather .el-form-item {
   margin-bottom: 6px;
-}
-.weather .el-form-item:last-child {
-  margin-bottom: 0;
 }
 </style>
