@@ -90,9 +90,7 @@ export async function logout({ state, commit }) {
     await SuperDock.logout(state.user.token.slice(7));
     sessionStorage.removeItem('user');
     MqttClient.disconnect();
-    GoogleMap.setApiKey('');
     SuperDock.setAuth('');
-    AMap.setApiKey('');
     commit(USER.SET_USER_TOKEN, { token: '', due: -1 });
     commit(USER.SET_USER_INFO, { email: '', id: -1 });
     commit(NODE.CLEAR_NODES);

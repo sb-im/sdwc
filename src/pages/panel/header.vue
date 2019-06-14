@@ -113,8 +113,9 @@ export default {
     handleCommand(cmd) {
       switch (cmd) {
         case 'logout':
-          this.logout();
-          this.$router.replace({ name: 'login' });
+          this.logout().then(() => {
+            this.$router.replace({ name: 'login' });
+          });
           break;
       }
     }
