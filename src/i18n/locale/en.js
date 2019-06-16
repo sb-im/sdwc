@@ -82,6 +82,7 @@ export const enLocale = {
       cycle_type_4: 'EveryDay',
       cycle_type_5: 'EveryWeek',
       cycle_type_6: 'EveryMonth',
+      select_map: 'Select map',
       please_name: 'Please enter the name of plan!',
       please_desc: 'Please enter the description of plan!',
       please_air: 'Please select the drone!',

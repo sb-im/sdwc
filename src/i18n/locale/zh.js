@@ -82,6 +82,7 @@ export const zhLocale = {
       cycle_type_4: '每天',
       cycle_type_5: '每周',
       cycle_type_6: '每月',
+      select_map: '选择地图',
       please_name: '请输入任务名称！',
       please_desc: '请输入任务描述！',
       please_air: '请选择执飞无人机！',
