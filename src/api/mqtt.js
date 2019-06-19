@@ -75,7 +75,12 @@ class MqttClient extends EventEmitter {
         }
         this.resolveMap.delete(response.payload.id);
       } else if (topic.endsWith('/status')) {
-        this.emit('status', { id, status: Number.parseInt(str, 10) });
+        if (str.trim().startsWith('{')) {
+          const { code, status } = JSON.parse(str);
+          this.emit('status', { id, code, status });
+        } else {
+          this.emit('status', { id, code: Number.parseInt(str, 10) });
+        }
       } else if (topic.endsWith('/message')) {
         this.emit('message', { id, message: str });
       }

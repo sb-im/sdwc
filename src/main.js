@@ -18,11 +18,6 @@ import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
  */
 store.dispatch('reconfigure');
 store.dispatch('restorePreference');
-store.subscribe(mutation => {
-  if (mutation.type === 'SET_NODE_STATUS') {
-    store.dispatch('getDepotPosition', mutation.payload.id);
-  }
-});
 
 new Vue({
   store,

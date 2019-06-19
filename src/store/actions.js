@@ -149,8 +149,17 @@ export async function subscribeNodes({ state, commit }) {
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
   });
-  MqttClient.on('status', ({ id, status }) => {
-    commit(NODE.SET_NODE_STATUS, { id, status });
+  MqttClient.on('status', ({ id, code, status }) => {
+    commit(NODE.SET_NODE_STATUS, { id, status: code });
+    if (code === 0 && state.node.find(n => n.info.id === id && n.info.type_name === 'depot')) {
+      if (status) {
+        commit(NODE.ADD_NODE_MSG, { id, msg: status });
+      } else {
+        MqttClient.invoke(id, 'ncp', ['status'], {}).then(msg => {
+          commit(NODE.ADD_NODE_MSG, { id, msg });
+        });
+      }
+    }
   });
   MqttClient.on('message', ({ id, message }) => {
     let parsed;
@@ -161,19 +170,6 @@ export async function subscribeNodes({ state, commit }) {
       commit(NODE.ADD_NODE_LOG, { id, log: message });
     }
   });
-}
-
-/**
- * @param {Context} context
- * @param {number} id
- */
-export async function getDepotPosition({ state, commit }, id) {
-  const node = state.node.find(node => node.info.id === id);
-  if (node && node.info.type_name === 'depot' && node.status === 0) {
-    MqttClient.invoke(node.info.id, 'ncp', ['status'], {}).then(msg => {
-      commit(NODE.ADD_NODE_MSG, { id, msg });
-    });
-  }
 }
 
 /**
