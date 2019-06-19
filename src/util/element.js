@@ -22,6 +22,7 @@ import {
   ButtonGroup,
   Table,
   TableColumn,
+  Tooltip,
   Select,
   Option,
   Form,
@@ -32,6 +33,8 @@ import {
   Col,
   Container,
   Upload,
+  Collapse,
+  CollapseItem,
   Header,
   Loading,
   MessageBox,
@@ -64,6 +67,7 @@ Vue.use(Button);
 Vue.use(ButtonGroup);
 Vue.use(Table);
 Vue.use(TableColumn);
+Vue.use(Tooltip);
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(Form);
@@ -74,6 +78,8 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Container);
 Vue.use(Upload);
+Vue.use(Collapse);
+Vue.use(CollapseItem);
 Vue.use(Header);
 
 Vue.use(Loading.directive);
