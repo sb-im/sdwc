@@ -50,7 +50,13 @@ export default {
       });
     },
     async drawMarkerDepot() {
-      if (!this.positionDepot) return;
+      if (!this.positionDepot){
+        if (this.markerDepot) {
+          this.markerDepot.setMap(null);
+          this.markerDepot = null;
+        }
+        return;
+      }
       if (!this.markerDepot) {
         const { Marker } = await loadGoogleMap();
         this.markerDepot = new Marker({
@@ -64,6 +70,13 @@ export default {
     },
     async drawMarkerDrone() {
       if (this.fit) return;
+      if (this.path.length === 0) {
+        if (this.markerDepot) {
+          this.markerDrone.setMap(null);
+          this.markerDrone = null;
+        }
+        return;
+      }
       if (!this.markerDrone) {
         this.markerDrone = { setPosition() { /* noop */ } };
         const { Marker } = await loadGoogleMap();

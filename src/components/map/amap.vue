@@ -88,7 +88,13 @@ export default {
       });
     },
     async drawMarkerDepot() {
-      if (!this.positionDepot) return;
+      if (!this.positionDepot) {
+        if (this.markerDepot) {
+          this.markerDepot.setMap(null);
+          this.markerDepot = null;
+        }
+        return;
+      }
       const [position] = await this.convertCoordinate([this.positionDepot]);
       if (!this.markerDepot) {
         const AMapUI = await loadAMapUI();
@@ -122,6 +128,17 @@ export default {
       }
     },
     async drawPath() {
+      if (this.path.length === 0) {
+        if (this.poly) {
+          this.poly.setMap(null);
+          this.poly = null;
+        }
+        if (this.markerDrone) {
+          this.markerDrone.setMap(null);
+          this.markerDrone = null;
+        }
+        return;
+      }
       const { Polyline } = await loadAMap();
       const path = await this.convertCoordinate(this.path);
       this.drawMarkerDrone(path[0]);
