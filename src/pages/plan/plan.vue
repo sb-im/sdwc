@@ -60,10 +60,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.plan {
-  width: 100%;
-  height: 100%;
-}
-</style>
