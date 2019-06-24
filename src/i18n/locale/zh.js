@@ -185,6 +185,8 @@ export const zhLocale = {
     download: '下载',
     upload: '上传',
     re_upload: '重新上传',
+    retry: '重试',
+    connecting: '连接中 ...',
     back: '取消并返回',
     data_none: '暂无相关数据',
     debug_tips: '以下命令仅限开发人员调试使用',

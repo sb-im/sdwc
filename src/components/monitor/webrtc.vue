@@ -2,7 +2,15 @@
   <div class="monitor-webrtc">
     <video class="monitor-video" ref="video" autoplay controls muted></video>
     <div class="monitor-webrtc__overlay">
-      <span v-if="this.msg" class="monitor__tip">{{ this.msg }}</span>
+      <template v-if="this.msg">
+        <div class="monitor__tip">{{ this.msg }}</div>
+        <el-button
+          v-show="couldRetry"
+          size="small"
+          icon="el-icon-refresh-right"
+          @click="handleRetry"
+        >{{ $t('common.retry') }}</el-button>
+      </template>
     </div>
   </div>
 </template>
@@ -22,6 +30,7 @@ export default {
   data() {
     return {
       msg: '',
+      couldRetry: false,
       /** @type {WebSocketSignalingChannel} */
       channel: null
     };
@@ -37,11 +46,15 @@ export default {
       this.channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;
+          this.couldRetry = true;
         }
       });
+      this.msg = this.$t('common.connecting');
       this.channel.on('pc:connected', () => this.msg = '');
       this.channel.once('ws:error', () => this.recreateChannel());
       this.channel.once('pc:closed', () => this.recreateChannel());
+      this.channel.once('pc:failed', () => this.recreateChannel());
+      this.channel.once('pc:disconnected', () => this.recreateChannel());
     },
     destroyChannel() {
       this.channel.removeAllListeners();
@@ -50,6 +63,12 @@ export default {
     recreateChannel() {
       this.destroyChannel();
       this.retryTimeout = setTimeout(() => this.createChannel(), 3 * 1000);
+    },
+    handleRetry() {
+      this.couldRetry = false;
+      this.msg = '';
+      this.destroyChannel();
+      this.createChannel();
     }
   },
   mounted() {

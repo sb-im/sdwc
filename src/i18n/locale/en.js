@@ -185,6 +185,8 @@ export const enLocale = {
     download: 'Download',
     upload: 'Upload',
     re_upload: 'Re-upload',
+    retry: 'Retry',
+    connecting: 'Connecting...',
     back: 'Cancel & back',
     data_none: 'No relevant data yet',
     debug_tips: 'The commands are for developers only',
