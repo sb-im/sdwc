@@ -161,7 +161,7 @@ export class WebSocketSignalingChannel extends EventEmitter {
       trace('An error occured while connecting:', event);
       this.emit('ws:error', event);
     });
-    this.pc.peerConnection.addEventListener('connectionstatechange', event => {
+    this.pc.peerConnection.addEventListener('iceconnectionstatechange', event => {
       /** @type {RTCIceConnectionState} */
       // @ts-ignore
       const state = event.target.iceConnectionState;
