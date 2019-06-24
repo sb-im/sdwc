@@ -68,7 +68,7 @@ export default {
     handleGimbalMode(mode) {
       this.gimbal.mode = '';
       this.$mqtt(this.point.node_id, {
-        name: this.$t('air.gimbal_mode_' + mode),
+        name: `air.gimbal_mode_${mode}`,
         mission: 'gimbalmode',
         arg: [mode]
       }).then(() => {
