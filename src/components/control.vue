@@ -12,7 +12,7 @@
           <el-button
             size="medium"
             :type="ctl.type || 'warning'"
-            @click="handleControl(ctl)"
+            @click="handleCmdSend(ctl.mission)"
           >{{ $t(ctl.name, ctl.values) }}</el-button>
         </div>
       </div>
@@ -20,7 +20,7 @@
         <el-collapse-item :title="$t('common.debug_tips')" name="cmd-input">
           <el-input class="control__input" ref="inputCommand" v-model="command">
             <template #append>
-              <el-button @click="handleCmdSend">{{ $t('common.send') }}</el-button>
+              <el-button @click="handleCmdSend(command)">{{ $t('common.send') }}</el-button>
             </template>
           </el-input>
         </el-collapse-item>
@@ -80,8 +80,8 @@ export default {
     handleControl(ctl) {
       this.$mqtt(this.node.id, ctl).catch(() => { /* noop */ });
     },
-    handleCmdSend() {
-      const [mission, ...arg] = this.command.split(' ');
+    handleCmdSend(command) {
+      const [mission, ...arg] = command.split(' ');
       this.command = '';
       this.handleControl({ mission, arg });
     }
@@ -91,7 +91,7 @@ export default {
     if (inputCommand) {
       inputCommand.addEventListener('keypress', (ev) => {
         if (ev.keyCode === 13 || ev.key === 'Enter') {
-          this.handleCmdSend();
+          this.handleCmdSend(this.command);
         }
       });
     }
