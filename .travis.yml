@@ -13,12 +13,14 @@ script:
   - yarn build
 
 before_deploy:
-  - ls
-  - mv {assets,dist} /tmp/
-  - rm -rf {*,.*}
+  - ls -Al
+  - mv assets dist/
+  - mv dist /tmp/
+  - ls -A | xargs rm -rf
   - wget https://raw.githubusercontent.com/SB-IM/SDWC/gh-pages/config.json
-  - cp /tmp/{assets,dist}/* .
-  - ls -a
+  - mv /tmp/dist/* .
+  - rmdir /tmp/dist
+  - ls -Al
 
 
 deploy:
