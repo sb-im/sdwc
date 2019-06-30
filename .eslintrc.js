@@ -5,6 +5,7 @@ module.exports = {
     'plugin:vue/essential'
   ],
   rules: {
+    'require-atomic-updates': 'off',
     'semi': ['error', 'always'],
     'quotes': ['error', 'single']
   }
