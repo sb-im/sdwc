@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="control" icon="airport/a_h_control" :title="$t('common.advanced_control')">
+  <sd-card class="control" icon="compass" :title="$t('common.advanced_control')">
     <div
       class="control__body"
       v-loading="disabled"
@@ -41,7 +41,7 @@ import Icon from '@/components/sd-icon.vue';
  */
 const Controls = [
   {
-    icon: 'airport/a_reset',
+    icon: 'reset',
     item: [
       { name: 'depot.emergency_stop', mission: 'stop', type: 'danger' },
       { name: 'depot.air_reset', mission: 'reset' }

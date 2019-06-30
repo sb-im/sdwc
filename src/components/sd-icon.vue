@@ -18,7 +18,7 @@ export default {
   },
   computed: {
     imgSrc() {
-      return `/assets/images/${this.value}.svg`;
+      return `/assets/icons/${this.value}.svg`;
     }
   }
 };

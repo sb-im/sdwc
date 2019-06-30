@@ -5,7 +5,7 @@
     <!-- node status dropdown -->
     <el-dropdown class="header-dropdown">
       <span class="header-dropdown-content">
-        <sd-icon value="header/h_drone"/>
+        <sd-icon value="link"/>
         <span class="header-dropdown-text">{{ $t('header.status') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
@@ -23,7 +23,7 @@
     <!-- user info dropdown -->
     <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
-        <sd-icon value="header/user"/>
+        <sd-icon value="user"/>
         <span>{{ $store.state.user.email }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>

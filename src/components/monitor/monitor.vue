@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="monitor" icon="airport/a_monitor" :title="$t('depot.monitor')" dense>
+  <sd-card class="monitor" icon="monitor" :title="$t('depot.monitor')" dense>
     <template v-if="compoName && point.name">
       <div class="monitor__content">
         <component :is="compoName" :source="point.name"></component>

@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="weather" icon="airport/a_weather" :title="$t('depot.weather')">
+  <sd-card class="weather" icon="barometer" :title="$t('depot.weather')">
     <div class="weather__column">
       <div class="weather__caption">雷达降水强度</div>
       <div class="weather__chart" ref="chart" v-loading="chartLoading"></div>

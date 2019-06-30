@@ -4,38 +4,38 @@ import Control from '@/components/control.vue';
 
 const Controls = [
   {
-    icon: 'drone/d_drone',
+    icon: 'drone',
     item: [
       { name: 'air.air_hover', mission: 'mode_loiter' }
     ]
   },
   {
-    icon: 'drone/d_fly',
+    icon: 'takeoff',
     item: [
       { name: 'air.air_takeoff', mission: 'take_off' }
     ]
   },
   {
-    icon: 'drone/d_return',
+    icon: 'land',
     item: [
       { name: 'air.air_return', mission: 'model_rtl' }
     ]
   },
   {
-    icon: 'drone/d_task',
+    icon: 'map',
     item: [
       { name: 'air.air_runplan', mission: 'readyMsission' }
     ]
   },
   {
-    icon: 'drone/d_updown',
+    icon: 'updown',
     item: [
       { name: 'air.air_up', values: { num: 5 }, mission: 'up_5' },
       { name: 'air.air_down', values: { num: 5 }, mission: 'down_5' }
     ]
   },
   {
-    icon: 'drone/d_spare',
+    icon: 'ambulance',
     item: [
       { name: 'air.air_landpoint', mission: 'land_bakup' }
     ]

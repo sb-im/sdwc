@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="sd-map" icon="drone/d_task" title="GPS" dense>
+  <sd-card class="sd-map" icon="map" title="GPS" dense>
     <template #action>
       <el-radio-group v-model="type" size="small" @change="onMapTypeChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>

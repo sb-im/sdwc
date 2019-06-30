@@ -1,7 +1,7 @@
 <template>
   <div class="aside">
     <div class="aside-header">
-      <img class="aside-logo" src="/assets/images/header/logo.png">
+      <img class="aside-logo" src="/assets/images/logo-100.png">
     </div>
     <el-menu
       class="aside-menu"
@@ -13,7 +13,7 @@
     >
       <el-submenu index="plan">
         <template #title>
-          <sd-icon value="aside/task"></sd-icon>
+          <sd-icon value="task"></sd-icon>
           <span>{{ $t('sidemenu.plan') }}</span>
         </template>
         <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
@@ -29,7 +29,7 @@
       </el-submenu>
       <el-submenu index="depot">
         <template #title>
-          <sd-icon value="aside/airport"></sd-icon>
+          <sd-icon value="depot-blue"></sd-icon>
           <span>{{ $t('sidemenu.depot') }}</span>
         </template>
         <el-menu-item
@@ -41,7 +41,7 @@
       </el-submenu>
       <el-submenu index="drone">
         <template #title>
-          <sd-icon value="aside/drone"></sd-icon>
+          <sd-icon value="drone-blue"></sd-icon>
           <span>{{ $t('sidemenu.air') }}</span>
         </template>
         <el-menu-item
