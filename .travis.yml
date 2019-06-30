@@ -14,9 +14,10 @@ script:
 
 before_deploy:
   - ls
-  - ls | grep -v "`cat Deploylist`" | xargs rm -r
-  - rm .editorconfig .eslintrc.js .gitignore
+  - mv {assets,dist} /tmp/
+  - rm -rf {*,.*}
   - wget https://raw.githubusercontent.com/SB-IM/SDWC/gh-pages/config.json
+  - cp /tmp/{assets,dist}/* .
   - ls -a
 
 
@@ -25,7 +26,7 @@ deploy:
   fqdn: test.newbe.cc
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
-  keep-history: true
+  keep-history: false
   on:
     branch: dev
 

@@ -19,12 +19,14 @@ import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
 store.dispatch('reconfigure');
 store.dispatch('restorePreference');
 
+const el = document.createElement('div');
+document.body.appendChild(el);
 new Vue({
   store,
   i18n,
   router,
   ...App
-}).$mount(document.getElementById('app'));
+}).$mount(el);
 
 window.addEventListener('beforeunload', () => {
   store.dispatch('storePreference');

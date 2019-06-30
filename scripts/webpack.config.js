@@ -2,6 +2,7 @@
 
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
@@ -10,11 +11,13 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
  */
 const cfg = {
   mode: 'development',
-  entry: './src/main.js',
+  context: path.resolve(__dirname, '../src'),
+  entry: {
+    main: path.resolve(__dirname, '../src/main.js'),
+  },
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
-    filename: 'build.js'
+    path: path.resolve(__dirname, '../dist'),
+    filename: '[name].[hash].js'
   },
   module: {
     rules: [
@@ -29,31 +32,52 @@ const cfg = {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
-          compilerOptions: { preserveWhitespace: false }
+          compilerOptions: {
+            preserveWhitespace: false
+          }
         }
       },
       {
         test: /\.js$/,
+        exclude: /node_modules/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        options: {
+          presets: [
+            ['@babel/preset-env', { targets: { chrome: 64, firefox: 58, edge: 15, safari: 11 } }]
+          ],
+          plugins: [
+            ['component', { libraryName: 'element-ui', styleLibraryName: 'theme-chalk' }]
+          ]
+        }
       },
       {
-        test: /\.(ttf|eot|woff|png|jpe?g|gif|svg)$/,
+        test: /\.(ttf|eot|woff2?)$/,
         loader: 'file-loader',
         options: {
-          name: '[name].[ext]'
+          name: 'fonts/[name].[ext]'
+        }
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'images/[name].[ext]'
         }
       }
     ]
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
-      'assets': path.resolve(__dirname, 'assets')
+      '@': path.resolve(__dirname, '../src'),
+      'assets': path.resolve(__dirname, '../assets')
     }
   },
   plugins: [
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      title: 'S Dashboard Web Console'
+    })
   ],
   devServer: {
     hot: true,
@@ -85,7 +109,7 @@ module.exports = function (env, argv) {
       { loader: 'css-loader' }
     ];
     cfg.plugins.push(
-      new MiniCSSExtractPlugin({ filename: 'style.css' }),
+      new MiniCSSExtractPlugin({ filename: 'style.[contenthash].css' }),
       new OptimizeCssAssetsPlugin()
     );
   }
