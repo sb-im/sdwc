@@ -12,11 +12,8 @@ const NotifyMap = new Map();
  * @param {number} id
  * @param {SDWC.ControlItem} ctl
  */
-async function mqtt(id, { name, values, mission, arg = [] }) {
-  const meta = {
-    name: this.$t(name, values)
-  };
-  return MqttClient.invoke(id, mission, arg, meta);
+async function mqtt(id, { mission, arg = [] }) {
+  return MqttClient.invoke(id, mission, arg);
 }
 
 function stringifyMission({ method, params }) {
@@ -28,7 +25,7 @@ function stringifyMission({ method, params }) {
 }
 
 function registerMqttListener() {
-  MqttClient.on('rpc:request', ({ id, request, meta = {} }) => {
+  MqttClient.on('rpc:request', ({ id, request }) => {
     let prefix = request.payload.id.split('-')[0];
     if (prefix.startsWith('sdwc')) {
       prefix = '';
@@ -36,7 +33,7 @@ function registerMqttListener() {
       prefix = `(${prefix}) `;
     }
     const node = store.state.node.find(node => node.info.id === id).info;
-    const name = meta.name || stringifyMission(request.payload);
+    const name = stringifyMission(request.payload);
     if (!node) {
       Notification({
         duration: 0,

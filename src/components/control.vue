@@ -12,7 +12,7 @@
           <el-button
             size="medium"
             :type="ctl.type || 'warning'"
-            @click="handleCmdSend(ctl.mission)"
+            @click="handleControl(ctl)"
           >{{ $t(ctl.name, ctl.values) }}</el-button>
         </div>
       </div>
