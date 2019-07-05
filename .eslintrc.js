@@ -10,6 +10,7 @@ module.exports = {
     'quotes': ['error', 'single']
   },
   globals: {
-    __SDWC__VERSION__: 'readonly'
+    __SDWC__VERSION__: 'readonly',
+    __SDWC_DEV__: 'readonly'
   }
 }

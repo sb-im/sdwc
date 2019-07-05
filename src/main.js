@@ -32,3 +32,9 @@ new Vue({
 window.addEventListener('beforeunload', () => {
   store.dispatch('storePreference');
 });
+
+if (__SDWC_DEV__) {
+  const el = document.createElement('div');
+  el.classList.add('development-ribbon');
+  document.body.append(el);
+}

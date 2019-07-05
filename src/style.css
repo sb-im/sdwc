@@ -2,6 +2,18 @@ body {
   margin: 0;
 }
 
+.development-ribbon {
+  content: '';
+  background-image: url('/assets/images/staging-tip.svg');
+  background-repeat: no-repeat;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 120px;
+  width: 120px;
+  z-index: 1;
+}
+
 @media screen and (min-width: 1200px) {
   /* container */
   .plan__view,

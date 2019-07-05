@@ -103,7 +103,7 @@ const cfg = {
  * @see https://webpack.js.org/configuration/configuration-types/#exporting-a-function
  */
 module.exports = function (env, argv) {
-  process.env.NODE_ENV = env;
+  process.env.NODE_ENV = env.mode;
   if (process.env.NODE_ENV === 'production') {
     cfg.mode = 'production';
     cfg.devtool = 'source-map';
@@ -115,6 +115,11 @@ module.exports = function (env, argv) {
       new MiniCSSExtractPlugin({ filename: 'style.[contenthash].css' }),
       new OptimizeCssAssetsPlugin()
     );
+  }
+  if (env.dev) {
+    cfg.plugins.push(
+      new webpack.DefinePlugin({ '__SDWC_DEV__': `true` })
+    )
   }
   return cfg;
 }

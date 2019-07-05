@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120">
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="0" flood-opacity=".5" stdDeviation="5"/>
+    </filter>
+    <linearGradient id="bkg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="40%" stop-color="#ba0000"/>
+      <stop offset="50%" stop-color="#9a0000"/>
+    </linearGradient>
+  </defs>
+  <polygon fill="url(#bkg)" points="0,70 0,102 102,0 70,0" filter="url(#shadow)"/>
+  <polygon fill="none" stroke="#fff" stroke-dasharray="2,1" stroke-opacity=".5" points="-2,76 -2,100 100,-2 76,-2" filter="url(#shadow)"/>
+  <text x="0" y="64" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" transform="rotate(-45)">Development</text>
+</svg>
