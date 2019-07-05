@@ -11,12 +11,13 @@ import './style.css';
 import 'chartist/dist/chartist.min.css';
 import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
 
+store.dispatch('configure');
 /**
  * Restore user token (if avaliable) before Vue instance was created.
  * Makes `store.state.user` equals to restored state when enter router
  * for the very first time.
  */
-store.dispatch('reconfigure');
+store.dispatch('restoreSession');
 store.dispatch('restorePreference');
 
 const el = document.createElement('div');

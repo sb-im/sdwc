@@ -119,7 +119,7 @@ export function storeUser({ state }) {
  * restore user session after page refresh, if token still valid
  * @param {Context} context
  */
-export async function reconfigure({ commit }) {
+export async function restoreSession({ commit }) {
   const str = sessionStorage.getItem('user');
   if (!str) return;
   /** @type {import('./modules/user').State} */
