@@ -8,7 +8,10 @@
       <div class="sd-panel__view">
         <router-view></router-view>
       </div>
-      <div class="sd-panel__footer">Copyright © 2017-2019 StrawBerry Tech.</div>
+      <div class="sd-panel__footer">
+        <span class="sd-panel__ver">SDWC v{{version}}</span>
+        <span class="sd-panel__cpy">Copyright © 2017-2019 StrawBerry Tech.</span>
+      </div>
     </div>
   </div>
 </template>
@@ -29,6 +32,11 @@ export default {
       'subscribeNodes',
       'getPlans'
     ])
+  },
+  computed: {
+    version() {
+      return __SDWC__VERSION__; // would be replaced on compile
+    }
   },
   created() {
     // ensure config was loaded
@@ -68,12 +76,17 @@ export default {
 }
 .sd-panel__footer {
   margin-top: auto;
-  padding-right: 10px;
   height: 60px;
   color: #333;
   background-color: #b3c0d1;
   line-height: 60px;
-  text-align: right;
   font-size: 14px;
+}
+.sd-panel__ver {
+  margin-left: 10px;
+}
+.sd-panel__cpy {
+  margin-right: 10px;
+  float: right;
 }
 </style>

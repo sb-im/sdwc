@@ -8,5 +8,8 @@ module.exports = {
     'require-atomic-updates': 'off',
     'semi': ['error', 'always'],
     'quotes': ['error', 'single']
+  },
+  globals: {
+    __SDWC__VERSION__: 'readonly'
   }
 }

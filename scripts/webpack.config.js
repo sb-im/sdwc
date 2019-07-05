@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 const path = require('path');
+const webpack = require('webpack');
+const packageJson = require('../package.json');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
@@ -77,7 +79,8 @@ const cfg = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       title: 'S Dashboard Web Console'
-    })
+    }),
+    new webpack.DefinePlugin({ '__SDWC__VERSION__': `"${packageJson.version}"` })
   ],
   devServer: {
     hot: true,
