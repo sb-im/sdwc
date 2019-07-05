@@ -24,7 +24,7 @@ function stringifyMission({ method, params }) {
   return `${method} ${a}`;
 }
 
-function registerMqttListener() {
+function registerRpcListener() {
   MqttClient.on('rpc:request', ({ id, request }) => {
     let prefix = request.payload.id.split('-')[0];
     if (prefix.startsWith('sdwc')) {
@@ -75,9 +75,37 @@ function registerMqttListener() {
   });
 }
 
+const StatusIcon = {
+  0: 'el-icon-success',
+  1: 'el-icon-info',
+  2: 'el-icon-error',
+  default: 'el-icon-warning'
+};
+
+function getStatusText(status) {
+  switch (status) {
+    case 0: return i18n.t('header.normal');
+    case 1: return i18n.t('header.shutdown');
+    case 2: return i18n.t('header.net_error');
+    default: return i18n.t('header.never_online');
+  }
+}
+
+function registerStatusListener() {
+  MqttClient.on('status', ({ id, code }) => {
+    const node = store.state.node.find(node => node.info.id === id);
+    if (node.status === -1 || node.status === code) return;
+    Notification({
+      iconClass: StatusIcon[code],
+      title: `${node.info.name} : ${getStatusText(code)}`
+    });
+  });
+}
+
 Vue.use({
   install(Vue) {
     Vue.prototype.$mqtt = mqtt;
-    registerMqttListener();
+    registerRpcListener();
+    registerStatusListener();
   }
 });
