@@ -45,7 +45,11 @@ export default {
       if (!this.point) return null;
       const droneId = this.point.id;
       for (const node of this.node) {
-        if (node.info.type_name === 'depot' && node.status === 0 && node.msg.link_id === droneId) {
+        if (node.info.type_name === 'depot'
+          && node.status === 0
+          && node.msg.status
+          && node.msg.status.link_id === droneId
+        ) {
           return node.position;
         }
       }

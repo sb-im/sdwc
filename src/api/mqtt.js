@@ -80,8 +80,11 @@ class MqttClient extends EventEmitter {
         } else {
           this.emit('status', { id, code: Number.parseInt(str, 10) });
         }
+      } else if (topic.endsWith('/msg/battery')) {
+        const battery = JSON.parse(str);
+        this.emit('message', { id, msg: { battery } });
       } else if (topic.endsWith('/message')) {
-        this.emit('message', { id, message: str });
+        this.emit('message', { id, str });
       }
     });
   }
@@ -112,6 +115,7 @@ class MqttClient extends EventEmitter {
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
+   * @returns {Promise<any>}
    */
   invoke(target, method, arg) {
     if (this.mqtt === undefined || this.mqtt.connected === false) {

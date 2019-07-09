@@ -144,30 +144,33 @@ export async function getNodes({ commit }) {
 /**
  * @param {Context} context
  */
-export async function subscribeNodes({ state, commit }) {
+export async function subscribeNodes({ state, getters, commit }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
-  });
-  MqttClient.on('status', ({ id, code, status }) => {
-    commit(NODE.SET_NODE_STATUS, { id, status: code });
-    if (code === 0 && state.node.find(n => n.info.id === id && n.info.type_name === 'depot')) {
-      if (status) {
-        commit(NODE.ADD_NODE_MSG, { id, msg: status });
-      } else {
-        MqttClient.invoke(id, 'ncp', ['status'], {}).then(msg => {
-          commit(NODE.ADD_NODE_MSG, { id, msg });
-        });
-      }
+    if (node.info.points.findIndex(p => p.point_type_name === 'battery') >= 0) {
+      MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/battery`);
     }
   });
-  MqttClient.on('message', ({ id, message }) => {
-    let parsed;
-    try {
-      parsed = JSON.parse(message);
-      commit(NODE.ADD_NODE_MSG, { id, msg: parsed });
-    } catch (e) {
-      commit(NODE.ADD_NODE_LOG, { id, log: message });
+  MqttClient.on('status', async ({ id, code, status }) => {
+    commit(NODE.SET_NODE_STATUS, { id, status: code });
+    if (code === 0 && getters.depots.find(d => d.id === id)) {
+      if (!status) {
+        status = await MqttClient.invoke(id, 'ncp', ['status'], {});
+      }
+      commit(NODE.ADD_NODE_MSG, { id, msg: { status } });
+    }
+  });
+  MqttClient.on('message', ({ id, msg, str }) => {
+    if (msg) {
+      commit(NODE.ADD_NODE_MSG, { id, msg });
+    }
+    if (str) {
+      try {
+        commit(NODE.ADD_NODE_MSG, { id, msg: JSON.parse(str) });
+      } catch (e) {
+        commit(NODE.ADD_NODE_LOG, { id, log: str });
+      }
     }
   });
 }

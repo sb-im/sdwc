@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @typedef {{type: string; name: string; created_at: string; updated_at: string}} Point
+ * @typedef {{id: number; name: string; node_id: number; point_type_id: number; point_type_name: string; created_at: string; updated_at: string}} Point
  * @typedef {{id: number; name: string; type_name: 'air'|'depot'; description: string; points: Point[]}} NodeInfo
  * @typedef {number} NodeStatus
  * @typedef {any} NodeMsg
@@ -53,15 +53,20 @@ const mutations = {
   [MutationTypes.ADD_NODE_MSG](state, { id, msg }) {
     const node = state.find(node => node.info.id === id);
     if (node) {
+      node.msg = { ...node.msg, ...msg };
       switch (node.info.type_name) {
         case 'air':
-          node.msg = msg;
-          node.position = { lng: msg.status.gps.lon, lat: msg.status.gps.lat };
-          node.path.unshift(node.position);
+          if (msg.status) {
+            const { lon: lng, lat } = msg.status.gps;
+            node.position = { lng, lat };
+            node.path.unshift(node.position);
+          }
           break;
         case 'depot':
-          node.msg = msg;
-          node.position = { lng: Number.parseFloat(msg.lng), lat: Number.parseFloat(msg.lat) };
+          if (msg.status) {
+            const { lng, lat } = msg.status;
+            node.position = { lng: +lng, lat: +lat };
+          }
           break;
       }
     }
