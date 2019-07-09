@@ -27,6 +27,7 @@ import {
   Option,
   Form,
   FormItem,
+  Tag,
   Slider,
   Icon,
   Row,
@@ -72,6 +73,7 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Form);
 Vue.use(FormItem);
+Vue.use(Tag);
 Vue.use(Slider);
 Vue.use(Icon);
 Vue.use(Row);

@@ -206,7 +206,19 @@ export const enLocale = {
     operate_pending: 'Pending...',
     operate_success: 'Success',
     operate_error: 'Failed',
-    plan_ready: 'The plan is ready, is it run immediately?'
+    plan_ready: 'The plan is ready, is it run immediately?',
+    battery: {
+      title: 'Smart Battery',
+      id: 'Serial',
+      temp: 'Temperature',
+      cap: 'Capacity',
+      cur: 'Current',
+      remain: 'Remaining',
+      cycle: 'Cycle Count',
+      vol_cell: 'Voltage per Cell',
+      status: 'Status',
+      bal: 'Balance'
+    }
   },
   weather: {
     clear_day: 'Sunny',

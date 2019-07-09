@@ -18,10 +18,12 @@ import Status from './status.vue';
 import Control from './control.vue';
 import Monitor from './monitor.vue';
 import Debug from '@/components/debug.vue';
+import Battery from '@/components/battery.vue';
 import NodeMap from '@/components/map/map.vue';
 
 const CompoName = {
   'debug': Debug.name,
+  'battery': Battery.name,
   'console': Control.name,
   'iframe': Monitor.name,
   'livestream_img': Monitor.name,
@@ -32,6 +34,7 @@ const CompoName = {
 
 const CompoOrder = {
   [Monitor.name]: 0,
+  [Battery.name]: 5,
   [Control.name]: 9,
   [Debug.name]: 99,
 };
@@ -75,6 +78,7 @@ export default {
   components: {
     [Debug.name]: Debug,
     [Status.name]: Status,
+    [Battery.name]: Battery,
     [Control.name]: Control,
     [NodeMap.name]: NodeMap,
     [Monitor.name]: Monitor
