@@ -194,6 +194,7 @@ export const zhLocale = {
     clear: '清空',
     control: '控制',
     advanced_control: '高级控制',
+    debug: '调试',
     status: '状态',
     air_status: '无人机状态',
     depot_status: '机场状态',

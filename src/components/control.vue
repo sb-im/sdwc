@@ -16,15 +16,6 @@
           >{{ $t(ctl.name, ctl.values) }}</el-button>
         </div>
       </div>
-      <el-collapse class="control__collapse">
-        <el-collapse-item :title="$t('common.debug_tips')" name="cmd-input">
-          <el-input class="control__input" ref="inputCommand" v-model="command">
-            <template #append>
-              <el-button @click="handleCmdSend(command)">{{ $t('common.send') }}</el-button>
-            </template>
-          </el-input>
-        </el-collapse-item>
-      </el-collapse>
     </div>
   </sd-card>
 </template>
@@ -50,8 +41,9 @@ const Controls = [
 ];
 
 export default {
+  name: 'sd-node-control',
   props: {
-    node: {
+    point: {
       type: Object,
       required: true
     },
@@ -59,11 +51,6 @@ export default {
       type: Number,
       required: true
     }
-  },
-  data() {
-    return {
-      command: ''
-    };
   },
   computed: {
     disabled() {
@@ -78,22 +65,7 @@ export default {
      * @param {ControlItem} ctl
      */
     handleControl(ctl) {
-      this.$mqtt(this.node.id, ctl).catch(() => { /* noop */ });
-    },
-    handleCmdSend(command) {
-      const [mission, ...arg] = command.split(' ');
-      this.command = '';
-      this.handleControl({ mission, arg });
-    }
-  },
-  mounted() {
-    const inputCommand = this.$refs.inputCommand.$el.getElementsByTagName('input')[0];
-    if (inputCommand) {
-      inputCommand.addEventListener('keypress', (ev) => {
-        if (ev.keyCode === 13 || ev.key === 'Enter') {
-          this.handleCmdSend(this.command);
-        }
-      });
+      this.$mqtt(this.point.node_id, ctl).catch(() => { /* noop */ });
     }
   },
   components: {
@@ -120,25 +92,5 @@ export default {
   transition: opacity 0s;
   user-select: none;
   cursor: not-allowed;
-}
-.control .el-card__body {
-  padding-bottom: 0;
-}
-.control__collapse {
-  min-width: 100%;
-}
-.control .el-collapse,
-.control .el-collapse-item__header,
-.control .el-collapse-item__wrap {
-  border: none;
-}
-.control .el-collapse-item:last-child {
-  margin-bottom: unset;
-}
-.control__input {
-  width: 500px;
-}
-.control__input .el-input__inner {
-  font-family: monospace;
 }
 </style>
