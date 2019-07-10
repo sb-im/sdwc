@@ -1,50 +1,7 @@
 image: node:latest
 
 stages:
-  - pre_build
-  - build
-  - post_build
-  - pre_deploy
   - deploy
-
-pre_build:
-  stage: pre_build
-  script:
-    - yarn install
-    - yarn test
-
-build_staging:
-  stage: build
-  only:
-    refs:
-      - dev
-  script:
-    - yarn build --env.dev
-
-build_production:
-  stage: build
-  only:
-    refs:
-      - master
-  script:
-    - yarn build
-
-post_build:
-  stage: post_build
-  script:
-    - cp -r assets dist/
-    - mv dist/assets/robots.txt dist/
-    - mv dist/assets/favicon.ico dist/
-    - tar -cJf file.tar.xz -C dist/ .
-
-deploy:
-  stage: pre_deploy
-  script:
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
 
 deploy_staging:
   stage: deploy
@@ -52,6 +9,7 @@ deploy_staging:
     refs:
       - dev
   script:
+    - ./scripts/gitlab-ci.sh --env.dev
     - cat file.tar.xz | ssh sb@api.sb.im 'cd ~/www/sb.im/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
 
 deploy_production:
@@ -60,4 +18,5 @@ deploy_production:
     refs:
       - master
   script:
+    - ./scripts/gitlab-ci.sh
     - cat file.tar.xz | sbcloud@sbnet.xyz 'cd ~/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
