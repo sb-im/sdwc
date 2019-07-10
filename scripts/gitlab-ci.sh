@@ -1,4 +1,5 @@
 #!/bin/bash
+set -v
 
 yarn install
 yarn test
@@ -9,7 +10,8 @@ mv dist/assets/robots.txt dist/
 mv dist/assets/favicon.ico dist/
 tar -cJf file.tar.xz -C dist/ .
 
-echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+eval "$(ssh-agent -s)"
+echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
