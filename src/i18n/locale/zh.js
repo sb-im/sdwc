@@ -143,6 +143,7 @@ export const zhLocale = {
   depot: {
     monitor: '实时监控',
     weather: '室外天气',
+    weather_caption: '雷达降水强度',
     weather_feel: '天气',
     wind_speed: '风速',
     wind_direction: '风向',
