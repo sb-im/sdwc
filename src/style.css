@@ -46,7 +46,7 @@ body {
 
   /* drone */
   .drone__status {
-    min-width: 100%;
+    width: 100%;
   }
   .drone .monitor,
   .drone .sd-map {
@@ -55,7 +55,7 @@ body {
 
   /* depot */
   .depot .monitor {
-    min-width: calc(100% - 504px);
+    width: calc(100% - 504px);
   }
   .depot .weather .el-card__body {
     flex-direction: column;
