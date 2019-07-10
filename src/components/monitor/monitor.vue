@@ -71,7 +71,7 @@ export default {
   height: 480px;
 }
 .monitor__content--empty {
-  height: 160px;
+  height: 480px;
   display: flex;
   justify-content: center;
   align-items: center;
