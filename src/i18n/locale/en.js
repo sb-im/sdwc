@@ -215,7 +215,8 @@ export const enLocale = {
       cur: 'Current',
       remain: 'Remaining',
       cycle: 'Cycle Count',
-      vol_cell: 'Voltage per Cell',
+      vol_cell: 'Voltage',
+      vol: 'Total Voltage',
       status: 'Status',
       bal: 'Balance'
     }

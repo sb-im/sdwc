@@ -216,6 +216,7 @@ export const zhLocale = {
       remain: '剩余',
       cycle: '循环次数',
       vol_cell: '电压',
+      vol: '总电压',
       status: '状态',
       bal: '均衡状态',
       st: {

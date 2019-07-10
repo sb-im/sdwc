@@ -1,6 +1,9 @@
 <template>
   <sd-card class="battery" icon="battery" :title="$t('common.battery.title')">
     <el-form label-width="90px" size="mini">
+      <el-form-item :label="$t('common.battery.id')">
+        <el-input readonly :value="battery.id"></el-input>
+      </el-form-item>
       <el-form-item :label="$t('common.battery.temp')">
         <el-input readonly :value="battery.temp">
           <template #append>℃</template>
@@ -24,16 +27,15 @@
       <el-form-item :label="$t('common.battery.cycle')">
         <el-input readonly :value="battery.cycle"></el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.bal')">
-        <el-input readonly :value="battery.bal"></el-input>
+      <el-form-item :label="$t('common.battery.vol')">
+        <el-input readonly :value="totalVoltage">
+          <template #append>V</template>
+        </el-input>
       </el-form-item>
       <el-form-item :label="$t('common.battery.vol_cell')" style="width:480px">
         <el-input readonly :value="voltage">
           <template #append>mV</template>
         </el-input>
-      </el-form-item>
-      <el-form-item :label="$t('common.battery.id')">
-        <el-input readonly :value="battery.id"></el-input>
       </el-form-item>
       <el-form-item :label="$t('common.battery.status')" class="battery__status">
         <el-tag
@@ -77,6 +79,9 @@ export default {
     },
     voltage() {
       return (this.battery.vol_cell || '').replace(/\//g, ' / ');
+    },
+    totalVoltage() {
+      return (this.battery.vol_cell || '').split('/').reduce((a, b) => +b + a, 0) / 1000;
     }
   },
   watch: {
@@ -109,7 +114,7 @@ export default {
   margin-bottom: 8px;
 }
 .battery__status {
-  width: 100%;
+  min-width: 100%;
 }
 .battery__status .el-tag:not(:last-child) {
   margin-right: 8px;
