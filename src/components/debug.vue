@@ -1,7 +1,6 @@
 <template>
-  <sd-card class="control debug" icon="gear" :title="$t('common.debug')">
+  <sd-card class="debug" icon="gear" :title="$t('common.debug')">
     <div
-      class="control__body"
       v-loading="disabled"
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="$t('common.not_operational')"
