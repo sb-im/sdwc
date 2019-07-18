@@ -1,6 +1,8 @@
 import elMsg from 'element-ui/lib/locale/lang/zh-CN';
 
-export const zhDtFormat = {
+export const name = '简体中文';
+
+export const foramt = {
   short: {
     year: 'numeric',
     month: '2-digit',
@@ -23,7 +25,7 @@ export const zhDtFormat = {
   }
 };
 
-export const zhLocale = {
+export const locale = {
   ...elMsg,
   login: {
     username: '账号',

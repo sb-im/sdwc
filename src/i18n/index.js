@@ -1,26 +1,29 @@
 import Vue from 'vue';
 import I18n from 'vue-i18n';
 
-import {zhLocale, zhDtFormat} from './locale/zh';
-import {enLocale, enDtFormat} from './locale/en';
+import * as zh from './locale/zh';
+import * as en from './locale/en';
 
 Vue.use(I18n);
 
 const i18n = new I18n({
   locale: 'en',
   messages: {
-    'en': enLocale,
-    'zh': zhLocale,
-    'zh-cn': zhLocale
+    'en': en.locale,
+    'zh': zh.locale
   },
   dateTimeFormats: {
-    'en': enDtFormat,
-    'zh': zhDtFormat,
-    'zh-cn': zhDtFormat
+    'en': en.format,
+    'zh': zh.foramt
   }
 });
 
 export default i18n;
+
+export const locales = {
+  en: en.name,
+  zh: zh.name
+};
 
 export function setLocale(locale) {
   i18n.locale = locale;

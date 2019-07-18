@@ -1,6 +1,8 @@
 import elMsg from 'element-ui/lib/locale/lang/en';
 
-export const enDtFormat = {
+export const name = 'English';
+
+export const format = {
   short: {
     year: 'numeric',
     month: '2-digit',
@@ -23,7 +25,7 @@ export const enDtFormat = {
   }
 };
 
-export const enLocale = {
+export const locale = {
   ...elMsg,
   login: {
     username: 'Username',
