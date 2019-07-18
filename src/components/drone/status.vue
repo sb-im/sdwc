@@ -100,7 +100,7 @@ export default {
       return this.$t(key);
     },
     flightTime() {
-      const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.flight.time)), 'time');
+      const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.flight.time)), 'elapsed');
       return this.$t('air.flight_time', { t });
     },
     flightSpeed() {

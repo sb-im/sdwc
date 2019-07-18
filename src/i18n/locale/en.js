@@ -2,29 +2,6 @@ import elMsg from 'element-ui/lib/locale/lang/en';
 
 export const name = 'English';
 
-export const format = {
-  short: {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  },
-  long: {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  },
-  time: {
-    timeZone: 'UTC',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }
-};
-
 export const locale = {
   ...elMsg,
   login: {
@@ -37,6 +14,9 @@ export const locale = {
   },
   header: {
     title: 'Superdock Drone Automatic Airport',
+    notify: 'Notification History',
+    notify_clear: 'Clear',
+    notify_empty: 'No history notification',
     status: 'Communication Status',
     logout: 'Logout',
     air: 'Drone',
@@ -48,6 +28,7 @@ export const locale = {
     abnormal: 'Abnormal'
   },
   sidemenu: {
+    overview: 'Overview',
     plan: 'Plans',
     depot: 'Depots',
     air: 'Drone'

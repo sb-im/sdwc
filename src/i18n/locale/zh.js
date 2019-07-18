@@ -2,29 +2,6 @@ import elMsg from 'element-ui/lib/locale/lang/zh-CN';
 
 export const name = '简体中文';
 
-export const foramt = {
-  short: {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  },
-  long: {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  },
-  time: {
-    timeZone: 'UTC',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }
-};
-
 export const locale = {
   ...elMsg,
   login: {
@@ -37,6 +14,9 @@ export const locale = {
   },
   header: {
     title: 'Superdock 无人机自动机场',
+    notify: '通知记录',
+    notify_clear: '清空',
+    notify_empty: '暂无通知记录',
     status: '通讯状态',
     logout: '退出',
     air: '无人机',
@@ -48,6 +28,7 @@ export const locale = {
     abnormal: '异常'
   },
   sidemenu: {
+    overview: '概况',
     plan: '任务管理',
     depot: '机场',
     air: '无人机'

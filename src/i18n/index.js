@@ -1,20 +1,21 @@
 import Vue from 'vue';
 import I18n from 'vue-i18n';
 
+import { format } from './common';
 import * as zh from './locale/zh';
 import * as en from './locale/en';
 
 Vue.use(I18n);
 
 const i18n = new I18n({
-  locale: 'en',
+  locale: navigator.language.split('-')[0],
   messages: {
     'en': en.locale,
     'zh': zh.locale
   },
   dateTimeFormats: {
-    'en': en.format,
-    'zh': zh.foramt
+    'en': format,
+    'zh': format
   }
 });
 
