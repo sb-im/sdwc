@@ -3,7 +3,7 @@
 import Papaparse from 'papaparse';
 import ContentDisposition from 'content-disposition';
 
-import { setLocale } from '@/i18n';
+import { setLocale, locales } from '@/i18n';
 import * as SDWC from '@/api/sdwc';
 import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
@@ -30,6 +30,13 @@ import { MutationTypes as PLAN } from './modules/plan';
  * @param {any} payload
  */
 export function setPreference({ commit }, payload) {
+  if (typeof payload.lang === 'string') {
+    if (Object.prototype.hasOwnProperty.call(locales, payload.lang)) {
+      setLocale(payload.lang);
+    } else {
+      throw new Error(`Invalid language key ${payload.lang}`);
+    }
+  }
   commit(PREF.SET_PREFERENCE, payload);
 }
 
@@ -56,12 +63,15 @@ export function restorePreference({ commit }) {
 export async function configure({ state, commit }) {
   const data = await SDWC.config();
   commit(CONFIG.SET_CONFIG, data);
+  if (!state.preference.lang) {
+    commit(PREF.SET_PREFERENCE, { lang: data.lang });
+  }
   const config = state.config;
   SuperDock.setBaseURL(config.super_dock_api_server);
   GoogleMap.setApiKey(config.gmap_key);
   CaiYun.setApiKey(config.caiyun_key);
   AMap.setApiKey(config.amap_key);
-  setLocale(config.lang);
+  setLocale(state.preference.lang);
 }
 
 /**

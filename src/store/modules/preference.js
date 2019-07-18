@@ -2,7 +2,7 @@
 
 const state = {
   mapType: 'sd-map-amap',
-  lang: 'en'
+  lang: ''
 };
 
 /**

@@ -5,7 +5,7 @@
     <!-- node status dropdown -->
     <el-dropdown class="header-dropdown">
       <span class="header-dropdown-content">
-        <sd-icon value="link"/>
+        <sd-icon value="link" />
         <span class="header-dropdown-text">{{ $t('header.status') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
@@ -23,13 +23,21 @@
     <!-- user info dropdown -->
     <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
-        <sd-icon value="user"/>
+        <sd-icon value="user" />
         <span>{{ $store.state.user.email }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item class="header-dropdown-item" command="logout">
+          <el-dropdown-item
+            v-for="(value, key) in locales"
+            :key="key"
+            class="header-dropdown-item"
+            :command="{ lang: key }"
+          >
+            <el-radio :value="preference.lang" :label="key">{{value}}</el-radio>
+          </el-dropdown-item>
+          <el-dropdown-item class="header-dropdown-item" command="logout" divided>
             <i class="el-icon-back"></i>
             <span>{{ $t('header.logout') }}</span>
           </el-dropdown-item>
@@ -44,7 +52,8 @@
  * @typedef {import('@/store/modules/node').NodeInfo} NodeInfo
  */
 import { mapActions, mapState } from 'vuex';
-import Icon from '../../components/sd-icon.vue';
+import { locales } from '@/i18n';
+import Icon from '@/components/sd-icon.vue';
 
 const StatusIcon = {
   0: 'el-icon-success',
@@ -64,15 +73,20 @@ export default {
   name: 'sd-header',
   computed: {
     ...mapState([
-      'node'
+      'node',
+      'preference'
     ]),
     status() {
       return this.node.map(node => this.statusToObject(node.info, node.status));
+    },
+    locales() {
+      return locales;
     }
   },
   methods: {
     ...mapActions([
       'logout',
+      'setPreference'
     ]),
     /**
      * @param {'air'|depot'} type
@@ -108,15 +122,15 @@ export default {
       return { id, icon, color, text };
     },
     /**
-     * @param {'logout'} cmd
+     * @param {{lang: string}|'logout'} cmd
      */
     handleCommand(cmd) {
-      switch (cmd) {
-        case 'logout':
-          this.logout().then(() => {
-            this.$router.replace({ name: 'login' });
-          });
-          break;
+      if (typeof cmd.lang === 'string') {
+        this.setPreference(cmd);
+      } else if (cmd === 'logout') {
+        this.logout().then(() => {
+          this.$router.replace({ name: 'login' });
+        });
       }
     }
   },
