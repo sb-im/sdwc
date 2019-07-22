@@ -27,4 +27,5 @@ deploy_production:
       - master
   script:
     - ./scripts/gitlab-ci.sh
-    - cat file.tar.xz | sbcloud@sbnet.xyz 'cd ~/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
+    - cat file.tar.xz | ssh sbcloud@sbnet.xyz 'cd ~/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
+
