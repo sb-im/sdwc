@@ -164,7 +164,7 @@ export async function subscribeNodes({ state, getters, commit }) {
   });
   MqttClient.on('status', async ({ id, code, status }) => {
     commit(NODE.SET_NODE_STATUS, { id, status: code });
-    if (code === 0 && getters.depots.find(d => d.id === id)) {
+    if (code === 0 && getters.depots.find(d => d.info.id === id)) {
       if (!status) {
         status = await MqttClient.invoke(id, 'ncp', ['status'], {});
       }

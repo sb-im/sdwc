@@ -58,8 +58,8 @@ export default {
       'drones'
     ]),
     droneName() {
-      const drone = this.drones.find(d => d.id === this.plan.node_id);
-      if (drone) return drone.name;
+      const drone = this.drones.find(d => d.info.id === this.plan.node_id);
+      if (drone) return drone.info.name;
       return '';
     },
     cycleTypeName() {

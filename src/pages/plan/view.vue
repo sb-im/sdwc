@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import { runPlan, stopPlan } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
@@ -98,25 +98,6 @@ export default {
     return {
       mapPath: []
     };
-  },
-  computed: {
-    ...mapGetters([
-      'depots',
-      'drones'
-    ]),
-    droneName() {
-      const drone = this.drones.find(d => d.id === this.plan.node_id);
-      if (drone) return drone.name;
-      return '';
-    },
-    depotName() {
-      const depot = this.depots.find(d => d.id === this.plan.depot_id);
-      if (depot) return depot.name;
-      return '';
-    },
-    cycleTypeName() {
-      return this.$t(`plan.edit.cycle_type_${this.plan.cycle_types_id + 1}`);
-    }
   },
   methods: {
     ...mapActions([

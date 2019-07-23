@@ -1,7 +1,7 @@
 <template>
   <div class="aside">
     <div class="aside-header">
-      <img class="aside-logo" src="/assets/images/logo-100.png">
+      <img class="aside-logo" src="/assets/images/logo-100.png" />
     </div>
     <el-menu
       class="aside-menu"
@@ -11,6 +11,10 @@
       :default-active="activeIndex"
       router
     >
+      <el-menu-item index="overview" :route="{ name: 'overview' }">
+        <sd-icon value="info"></sd-icon>
+        <span>{{ $t('sidemenu.overview') }}</span>
+      </el-menu-item>
       <el-submenu index="plan">
         <template #title>
           <sd-icon value="task"></sd-icon>
@@ -34,10 +38,10 @@
         </template>
         <el-menu-item
           v-for="depot in depots"
-          :key="depot.id"
-          :index="`node-${depot.id}`"
-          :route="{ name: 'node', params: { id: depot.id } }"
-        >{{ depot.name }}</el-menu-item>
+          :key="depot.info.id"
+          :index="`node-${depot.info.id}`"
+          :route="{ name: 'node', params: { id: depot.info.id } }"
+        >{{ depot.info.name }}</el-menu-item>
       </el-submenu>
       <el-submenu index="drone">
         <template #title>
@@ -46,10 +50,10 @@
         </template>
         <el-menu-item
           v-for="drone in drones"
-          :key="drone.id"
-          :index="`node-${drone.id}`"
-          :route="{ name: 'node', params: { id: drone.id } }"
-        >{{ drone.name }}</el-menu-item>
+          :key="drone.info.id"
+          :index="`node-${drone.info.id}`"
+          :route="{ name: 'node', params: { id: drone.info.id } }"
+        >{{ drone.info.name }}</el-menu-item>
       </el-submenu>
     </el-menu>
   </div>
@@ -72,6 +76,8 @@ export default {
     activeIndex() {
       const { name, params: { id } } = this.$route;
       switch (name) {
+        case 'overview':
+          return 'overview';
         case 'node':
           return `${name}-${id}`;
         case 'plan/view':

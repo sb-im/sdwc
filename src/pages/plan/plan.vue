@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'vuex';
+
 import Icon from '@/components/sd-icon.vue';
 import Edit from './edit.vue';
 import View from './view.vue';
@@ -23,10 +24,6 @@ export default {
       plans: state => state.plan.info,
       logs: state => state.plan.log
     }),
-    ...mapGetters([
-      'depots',
-      'drones'
-    ]),
     plan() {
       return this.plans.find(p => p.id === this.id);
     },
