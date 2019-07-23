@@ -11,7 +11,7 @@ export function setBaseURL(url = '') {
  * @returns {Promise<import('./api-types').Weather3sResult>}
  */
 export function get(id = '') {
-  return wr.url(`/get/${id}`)
+  return wr.url(id, /^https?:/.test(id))
     .get()
     .json();
 }

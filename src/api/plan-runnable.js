@@ -13,18 +13,26 @@ const Level = {
  * @param {import('./api-types').Weather3sResult} data
  */
 function realtimeLevel(data) {
-  const { wind_speed, rainfall_count } = data[0];
+  let { wind_speed, rainfall_count } = data[0];
+  wind_speed = Number.parseInt(wind_speed);
+  rainfall_count = Number.parseInt(rainfall_count);
+  let level;
   if (wind_speed >= 400 || rainfall_count >= 15) {
-    return Level.Error;
-  } else if (wind_speed < 400 || rainfall_count < 15) {
-    return Level.Danger;
-  } else if (wind_speed < 300 || rainfall_count < 10) {
-    return Level.Warning;
-  } else if (wind_speed < 200 || rainfall_count < 5) {
-    return Level.Primary;
-  } else if (wind_speed < 50 || rainfall_count === 0) {
-    return Level.Success;
+    level =  Level.Error;
+  } else if (wind_speed >= 300 || rainfall_count >= 10) {
+    level =  Level.Danger;
+  } else if (wind_speed >= 200 || rainfall_count >= 5) {
+    level =  Level.Warning;
+  } else if (wind_speed >= 50 || rainfall_count >= 0) {
+    level =  Level.Primary;
+  } else {
+    level =  Level.Success;
   }
+  return {
+    level,
+    wind_speed,
+    rainfall_count
+  };
 }
 
 /**
@@ -38,17 +46,24 @@ function forecastLevel(data) {
       nearest: { distance: precipitation_distance }
     }
   } = data.result;
+  let level;
   if (wind_speed >= 400 || precipitation_intensity >= 0.4 || precipitation_distance <= 1) {
-    return Level.Error;
-  } else if (wind_speed < 400 || precipitation_intensity < 0.4 || precipitation_distance > 1) {
-    return Level.Danger;
-  } else if (wind_speed < 300 || precipitation_intensity < 0.3 || precipitation_distance > 2) {
-    return Level.Warning;
-  } else if (wind_speed < 200 || precipitation_intensity < 0.1 || precipitation_distance > 3) {
-    return Level.Primary;
-  } else if (wind_speed < 50 || precipitation_intensity === 0 || precipitation_distance > 5) {
-    return Level.Success;
+    level = Level.Error;
+  } else if (wind_speed >= 300 || precipitation_intensity >= 0.3 || precipitation_distance <= 2) {
+    level = Level.Danger;
+  } else if (wind_speed >= 200 || precipitation_intensity >= 0.1 || precipitation_distance <= 3) {
+    level = Level.Warning;
+  } else if (wind_speed >= 50 || precipitation_intensity >= 0 || precipitation_distance <= 5) {
+    level = Level.Primary;
+  } else {
+    level = Level.Success;
   }
+  return {
+    level,
+    wind_speed,
+    precipitation_distance,
+    precipitation_intensity
+  };
 }
 
 /**

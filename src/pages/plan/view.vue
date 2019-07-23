@@ -71,6 +71,7 @@
         </el-table-column>
       </el-table>
     </sd-card>
+    <sd-preflight ref="preflight" :plan="plan" @run="handleRunComfirm"></sd-preflight>
   </div>
 </template>
 
@@ -80,6 +81,7 @@ import { runPlan, stopPlan } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
+import Preflight from '@/components/preflight.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 
 export default {
@@ -109,23 +111,32 @@ export default {
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
+    togglePreflightDialog() {
+      this.dialogVisible = !this.dialogVisible;
+      if (this.dialogVisible === false) {
+        this.preflightData = {};
+      }
+    },
     handleRun() {
-      runPlan(this.plan.id).then(() => {
+      this.$refs.preflight.toggle();
+    },
+    handleRunComfirm() {
+      runPlan(this.plan.id)/*.then(() => {
         this.$notify({
           type: 'success',
           title: this.plan.name,
           message: this.$t('plan.view.start_run'),
         });
-      });
+      })*/;
     },
     handleStop() {
-      stopPlan(this.plan.id).then(() => {
+      stopPlan(this.plan.id)/*.then(() => {
         this.$notify({
           type: 'warning',
           title: this.plan.name,
           message: this.$t('plan.view.stop_run'),
         });
-      });
+      })*/;
     },
     handleDownload(url, name) {
       this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });
@@ -140,6 +151,7 @@ export default {
   components: {
     [Card.name]: Card,
     [PlanMap.name]: PlanMap,
+    [Preflight.name]: Preflight,
     [PlanReadonly.name]: PlanReadonly
   }
 };
