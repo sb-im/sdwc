@@ -57,3 +57,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.plan.el-loading-parent--relative {
+  height: 100%;
+}
+</style>
