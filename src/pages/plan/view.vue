@@ -111,16 +111,11 @@ export default {
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
-    togglePreflightDialog() {
-      this.dialogVisible = !this.dialogVisible;
-      if (this.dialogVisible === false) {
-        this.preflightData = {};
-      }
-    },
     handleRun() {
       this.$refs.preflight.toggle();
     },
     handleRunComfirm() {
+      this.$refs.preflight.toggle();
       runPlan(this.plan.id)/*.then(() => {
         this.$notify({
           type: 'success',
