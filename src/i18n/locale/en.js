@@ -214,5 +214,15 @@ export const locale = {
     snow: 'Snow',
     wind: 'Wind',
     haze: 'Haze'
+  },
+  preflight: {
+    title: 'Preflight Check',
+    realtime: 'Realtime Weather',
+    wind: 'Wind speed',
+    rain: 'Rainfall',
+    forecast: 'Weather Forecast',
+    intensity: 'Radar precipitation intensity',
+    distance: 'Nearest precipitation zone',
+    comfirm: 'Confirm Run'
   }
 };

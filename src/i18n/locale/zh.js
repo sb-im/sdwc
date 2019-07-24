@@ -232,5 +232,15 @@ export const locale = {
     snow: '雪',
     wind: '风',
     haze: '雾霾沙尘'
+  },
+  preflight: {
+    title: '起飞前检测',
+    realtime: '实时天气',
+    wind: '风速',
+    rain: '降水',
+    forecast: '天气预报',
+    intensity: '雷达降水强度',
+    distance: '最近降水带',
+    comfirm: '确认执行'
   }
 };

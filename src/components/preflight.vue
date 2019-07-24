@@ -1,5 +1,5 @@
 <template>
-  <el-dialog custom-class="sd-preflight" title="起飞前检查" :visible.sync="show">
+  <el-dialog custom-class="sd-preflight" :title="$t('preflight.title')" :visible.sync="show">
     <div v-loading="loading">
       <div class="sd-preflight__item">
         <sd-icon value="depot" :size="30"></sd-icon>
@@ -14,32 +14,32 @@
       <div class="sd-preflight__item">
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
-          <div class="sd-preflight__title">实时天气</div>
-          <div>风速 {{ preflightData.realtime.wind_speed * 0.36 }} km/h</div>
-          <div>降水 {{ preflightData.realtime.rainfall_count }}</div>
+          <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
+          <div>{{ $t('preflight.wind') }} {{ preflightData.realtime.wind_speed * 0.36 }} km/h</div>
+          <div>{{ $t('preflight.rain') }} {{ preflightData.realtime.rainfall_count }}</div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
       </div>
       <div class="sd-preflight__item">
         <sd-icon value="satellite" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
-          <div class="sd-preflight__title">天气预报</div>
-          <div>风速 {{ preflightData.forecast.wind_speed }} km/h</div>
-          <div>降水强度 {{ preflightData.forecast.precipitation_intensity }}</div>
-          <div>降水带距离 {{ preflightData.forecast.precipitation_distance }} km</div>
+          <div class="sd-preflight__title">{{ $t('preflight.forecast') }} </div>
+          <div>{{ $t('preflight.wind') }}  {{ preflightData.forecast.wind_speed }} km/h</div>
+          <div>{{ $t('preflight.intensity') }}  {{ preflightData.forecast.precipitation_intensity }}</div>
+          <div>{{ $t('preflight.distance') }}  {{ preflightData.forecast.precipitation_distance }} km</div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
       </div>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button size="medium" icon="el-icon-circle-close" @click="toggle">取消</el-button>
+      <el-button size="medium" icon="el-icon-circle-close" @click="toggle">{{ $t('common.cancel') }}</el-button>
       <el-button
         type="danger"
         size="medium"
         icon="el-icon-refresh"
         :disabled="disabled"
         @click="emitRun"
-      >{{ $t('plan.view.run') }}</el-button>
+      >{{ $t('preflight.comfirm') }}</el-button>
     </div>
   </el-dialog>
 </template>
