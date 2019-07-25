@@ -41,6 +41,7 @@ import {
   Loading,
   MessageBox,
   Message,
+  Notification
 } from 'element-ui';
 import ElementLocale from 'element-ui/lib/locale';
 import i18n from '@/i18n';
@@ -93,3 +94,4 @@ Vue.prototype.$alert = MessageBox.alert;
 Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$message = Message;
+Vue.prototype.$notify = Notification;

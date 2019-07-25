@@ -44,8 +44,11 @@ export const locale = {
       auto_run: '自动处理结果',
       logs: '飞行日志',
       sever_logs: '服务器日志',
+      pending: '任务发送中 ...',
       start_run: '当前任务开始执行',
-      stop_run: '当前任务已经终止'
+      start_fail: '任务执行失败：{code}',
+      stop_run: '当前任务已经终止',
+      stop_fail: '任务终止失败：{code}'
     },
     edit: {
       add: '新建任务',

@@ -116,22 +116,46 @@ export default {
     },
     handleRunComfirm() {
       this.$refs.preflight.toggle();
-      runPlan(this.plan.id)/*.then(() => {
-        this.$notify({
-          type: 'success',
-          title: this.plan.name,
-          message: this.$t('plan.view.start_run'),
-        });
-      })*/;
+      /**
+       * mutate element-ui's Notification object
+       * @see https://github.com/ElemeFE/element/blob/v2.8.2/packages/notification/src/main.vue
+       */
+      const n = this.$notify({
+        offset: 50,
+        duration: 0,
+        type: 'info',
+        title: this.plan.name,
+        message: this.$t('plan.view.pending'),
+      });
+      runPlan(this.plan.id).then(() => {
+        n.$data.message = this.$t('plan.view.start_run');
+        n.$data.type = 'success';
+        n.$data.duration = 2000;
+        n.startTimer();
+      }).catch(e => {
+        console.error(e);
+        n.$data.type = 'error';
+        n.$data.message = this.$t('plan.view.start_fail', { code: e.status });
+      });
     },
     handleStop() {
-      stopPlan(this.plan.id)/*.then(() => {
-        this.$notify({
-          type: 'warning',
-          title: this.plan.name,
-          message: this.$t('plan.view.stop_run'),
-        });
-      })*/;
+      const n = this.$notify({
+        offset: 50,
+        duration: 0,
+        type: 'info',
+        title: this.plan.name,
+        message: this.$t('plan.view.pending'),
+      });
+      stopPlan(this.plan.id).then(() => {
+        n.$data.message = this.$t('plan.view.stop_run');
+        n.$data.type = 'warning';
+        n.$data.duration = 2000;
+        n.startTimer();
+      }).catch(e => {
+        console.error(e);
+        n.$data.type = 'error';
+        n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
+      });
     },
     handleDownload(url, name) {
       this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });

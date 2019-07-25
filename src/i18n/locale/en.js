@@ -44,8 +44,11 @@ export const locale = {
       auto_run: 'Automatic processing',
       logs: 'Fly logs',
       sever_logs: 'Sever logs',
+      pending: 'Sending plan ...',
       start_run: 'Plan started',
-      stop_run: 'Plan terminated'
+      start_fail: 'Failed to start plan: {code}',
+      stop_run: 'Plan terminated',
+      stop_fail: 'Failed to terminate plan: {code}'
     },
     edit: {
       add: 'Create',
