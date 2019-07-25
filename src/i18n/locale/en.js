@@ -220,6 +220,8 @@ export const locale = {
   },
   preflight: {
     title: 'Preflight Check',
+    no_drone: 'Drone Not Found',
+    no_depot: 'Depot Not Found',
     realtime: 'Realtime Weather',
     wind: 'Wind speed',
     rain: 'Rainfall',

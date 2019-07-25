@@ -238,6 +238,8 @@ export const locale = {
   },
   preflight: {
     title: '起飞前检测',
+    no_drone: '找不到无人机',
+    no_depot: '找不到机场',
     realtime: '实时天气',
     wind: '风速',
     rain: '降水',

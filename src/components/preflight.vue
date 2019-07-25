@@ -2,20 +2,20 @@
   <el-dialog custom-class="sd-preflight" :title="$t('preflight.title')" :visible.sync="show">
     <div v-loading="loading">
       <div class="sd-preflight__item">
-        <sd-icon value="depot" :size="30"></sd-icon>
-        <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
-        <i class="sd-preflight__icon" :class="StatusClass[depot.status]"></i>
-      </div>
-      <div class="sd-preflight__item">
         <sd-icon value="drone" :size="30"></sd-icon>
         <div class="sd-preflight__detail sd-preflight__title">{{ drone.info.name }}</div>
         <i class="sd-preflight__icon" :class="StatusClass[drone.status]"></i>
       </div>
       <div class="sd-preflight__item">
+        <sd-icon value="depot" :size="30"></sd-icon>
+        <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
+        <i class="sd-preflight__icon" :class="StatusClass[depot.status]"></i>
+      </div>
+      <div class="sd-preflight__item">
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
-          <div>{{ $t('preflight.wind') }} {{ preflightData.realtime.wind_speed * 0.36 }} km/h</div>
+          <div>{{ $t('preflight.wind') }} {{ preflightData.realtime.wind_speed }} m/s</div>
           <div>{{ $t('preflight.rain') }} {{ preflightData.realtime.rainfall_count }}</div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
@@ -23,10 +23,10 @@
       <div class="sd-preflight__item">
         <sd-icon value="satellite" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
-          <div class="sd-preflight__title">{{ $t('preflight.forecast') }} </div>
-          <div>{{ $t('preflight.wind') }}  {{ preflightData.forecast.wind_speed }} km/h</div>
-          <div>{{ $t('preflight.intensity') }}  {{ preflightData.forecast.precipitation_intensity }}</div>
-          <div>{{ $t('preflight.distance') }}  {{ preflightData.forecast.precipitation_distance }} km</div>
+          <div class="sd-preflight__title">{{ $t('preflight.forecast') }}</div>
+          <div>{{ $t('preflight.wind') }} {{ preflightData.forecast.wind_speed.toFixed(1) }} m/s</div>
+          <div>{{ $t('preflight.intensity') }} {{ preflightData.forecast.precipitation_intensity }}</div>
+          <div>{{ $t('preflight.distance') }} {{ preflightData.forecast.precipitation_distance }} km</div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
       </div>
@@ -53,7 +53,8 @@ import { planRunnable } from '@/api/plan-runnable';
 const StatusClass = {
   0: 'el-icon-success sd-preflight-green',
   1: 'el-icon-info sd-preflight-grey',
-  2: 'el-icon-error sd-preflight-red'
+  2: 'el-icon-error sd-preflight-red',
+  3: 'el-icon-error sd-preflight-grey'
 };
 
 const LevelClass = {
@@ -66,9 +67,14 @@ const LevelClass = {
 
 const DefaultPreflightData = {
   realtime: {
+    rainfall_count: 0,
+    wind_speed: 0,
     level: 'error'
   },
   forecast: {
+    precipitation_intensity: 0,
+    precipitation_distance: 0,
+    wind_speed: 0,
     level: 'error'
   }
 };
@@ -99,11 +105,23 @@ export default {
       'drones',
       'depots'
     ]),
+    defaultDrone() {
+      return { info: { name: this.$t('preflight.no_drone') }, status: 3 };
+    },
     drone() {
-      return this.drones.find(d => d.info.id === this.plan.node_id);
+      return this.drones.find(d => d.info.id === this.plan.node_id) || this.defaultDrone;
+    },
+    defaultDepot() {
+      return {
+        info: {
+          name: this.$t('preflight.no_depot'),
+          points: [{ point_type_name: 'weather' }]
+        },
+        status: 3,
+      };
     },
     depot() {
-      return this.depots.find(d => d.msg.status && d.msg.status.link_id === this.plan.node_id);
+      return this.depots.find(d => d.msg.status && d.msg.status.link_id === this.plan.node_id) || this.defaultDepot;
     },
     weather() {
       return this.depot.info.points.find(p => p.point_type_name === 'weather');
@@ -121,6 +139,10 @@ export default {
       this.show = !this.show;
     },
     async check() {
+      if (!this.weather.name || !this.depot.position) {
+        this.preflightData = DefaultPreflightData;
+        return;
+      }
       this.loading = true;
       const id = this.weather.name;
       const { lng, lat } = this.depot.position;
