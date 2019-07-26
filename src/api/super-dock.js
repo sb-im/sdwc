@@ -46,12 +46,17 @@ export function nodes() {
     .json();
 }
 
+export function getNodeMissionQueue(id) {
+  return wr.url(`/api/v1/nodes/${id}/mission_queues/`)
+    .get()
+    .json();
+}
+
 export function plans() {
   return wr.url('/api/v1/plans/')
     .get()
     .json();
 }
-
 
 export function createPlan(plan) {
   return wr.url('/api/v1/plans/')
@@ -76,6 +81,12 @@ export function updatePlan(id, plan) {
 export function deletePlan(id) {
   return wr.url(`/api/v1/plans/${id}`)
     .delete()
+    .json();
+}
+
+export function getPlanMissionQueue(id) {
+  return wr.url(`/api/v1/plans/${id}/mission_queues/`)
+    .get()
     .json();
 }
 

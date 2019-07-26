@@ -9,15 +9,18 @@
           @click="handleEdit"
         >{{ $t('plan.edit.alter') }}</el-button>
         <el-button
+          v-if="running"
           type="warning"
           size="medium"
           icon="el-icon-remove-outline"
           @click="handleStop"
         >{{ $t('plan.view.stop') }}</el-button>
         <el-button
+          v-else
           type="danger"
           size="medium"
           icon="el-icon-refresh"
+          :loading="running === null"
           @click="handleRun"
         >{{ $t('plan.view.run') }}</el-button>
       </template>
@@ -77,7 +80,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { runPlan, stopPlan } from '@/api/super-dock';
+import { getPlanMissionQueue, runPlan, stopPlan } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -98,6 +101,7 @@ export default {
   },
   data() {
     return {
+      running: null,
       mapPath: []
     };
   },
@@ -108,6 +112,10 @@ export default {
       'downloadFile',
       'getMapPath'
     ]),
+    checkPlanRunning() {
+      getPlanMissionQueue(this.plan.id)
+        .then(queue => this.running = queue.length !== 0);
+    },
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
@@ -136,7 +144,7 @@ export default {
         console.error(e);
         n.$data.type = 'error';
         n.$data.message = this.$t('plan.view.start_fail', { code: e.status });
-      });
+      }).then(this.checkPlanRunning);
     },
     handleStop() {
       const n = this.$notify({
@@ -155,17 +163,18 @@ export default {
         console.error(e);
         n.$data.type = 'error';
         n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
-      });
+      }).then(this.checkPlanRunning);
     },
     handleDownload(url, name) {
       this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });
     }
   },
-  created() {
+  mounted() {
     this.retrievePlan(this.plan.id)
       .then(plan => this.getMapPath(plan.map_path))
       .then(path => this.mapPath = path);
     this.getPlanLogs(this.plan.id);
+    this.checkPlanRunning();
   },
   components: {
     [Card.name]: Card,
