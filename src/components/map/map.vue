@@ -1,16 +1,16 @@
 <template>
-  <sd-card class="sd-map" icon="map" title="GPS" dense>
+  <sd-card class="sd-map" :icon="icon" :title="title" dense>
     <template #action>
       <el-radio-group v-model="type" size="small" @change="onMapTypeChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" :positionDepot="positionDepot"></component>
+    <component :is="type" v-bind="$attrs" :fit="fit" :positionDepot="positionDepot"></component>
   </sd-card>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 import Card from '@/components/card.vue';
 import Google from './google.vue';
@@ -28,6 +28,10 @@ export default {
     point: {
       type: Object,
       required: false
+    },
+    fit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -38,19 +42,26 @@ export default {
   },
   computed: {
     ...mapState([
-      'node',
       'preference'
     ]),
+    ...mapGetters([
+      'depots'
+    ]),
+    icon() {
+      return this.fit ? 'map-waypoint' : 'map-marker';
+    },
+    title() {
+      return this.$t(this.fit ? 'map.waypoint' : 'map.satellite');
+    },
     positionDepot() {
       if (!this.point) return null;
       const droneId = this.point.id;
-      for (const node of this.node) {
-        if (node.info.type_name === 'depot'
-          && node.status === 0
-          && node.msg.status
-          && node.msg.status.link_id === droneId
+      for (const d of this.depots) {
+        if (d.status === 0
+          && d.msg.status
+          && d.msg.status.link_id === droneId
         ) {
-          return node.position;
+          return d.position;
         }
       }
       return null;

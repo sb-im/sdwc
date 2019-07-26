@@ -235,6 +235,10 @@ export const locale = {
     wind: '风',
     haze: '雾霾沙尘'
   },
+  map: {
+    waypoint: '路径点',
+    satellite: '卫星地图'
+  },
   preflight: {
     title: '起飞前检测',
     no_drone: '找不到无人机',

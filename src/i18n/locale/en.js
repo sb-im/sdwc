@@ -217,6 +217,10 @@ export const locale = {
     wind: 'Wind',
     haze: 'Haze'
   },
+  map: {
+    waypoint: 'Waypoint',
+    satellite: 'Satellite Map'
+  },
   preflight: {
     title: 'Preflight Check',
     no_drone: 'Drone Not Found',
