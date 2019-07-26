@@ -53,7 +53,6 @@ export const locale = {
     edit: {
       add: '新建任务',
       alter: '修改任务',
-      create: '创建任务',
       save_plan: '保存任务',
       delete_plan: '删除任务',
       name_inp: '请输入任务名称',

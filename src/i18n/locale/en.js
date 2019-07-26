@@ -53,7 +53,6 @@ export const locale = {
     edit: {
       add: 'Create',
       alter: 'Modify',
-      create: 'Create',
       save_plan: 'Save',
       delete_plan: 'Delete',
       name_inp: 'Enter the name of plan',

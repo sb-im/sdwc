@@ -1,5 +1,5 @@
 <template>
-  <sd-card icon="paper-add" :title="$t('plan.edit.create')">
+  <sd-card icon="doc-add" :title="$t('plan.edit.add')">
     <template #action>
       <el-button
         type="success"
