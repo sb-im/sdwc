@@ -1,17 +1,17 @@
 <template>
   <el-dialog custom-class="sd-preflight" :title="$t('preflight.title')" :visible.sync="show">
-    <div v-loading="loading">
-      <div class="sd-preflight__item">
+    <div>
+      <div class="sd-preflight__item" v-loading="loading[0]">
         <sd-icon value="drone" :size="30"></sd-icon>
         <div class="sd-preflight__detail sd-preflight__title">{{ drone.info.name }}</div>
         <i class="sd-preflight__icon" :class="StatusClass[drone.status]"></i>
       </div>
-      <div class="sd-preflight__item">
+      <div class="sd-preflight__item" v-loading="loading[1]">
         <sd-icon value="depot" :size="30"></sd-icon>
         <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
         <i class="sd-preflight__icon" :class="StatusClass[depot.status]"></i>
       </div>
-      <div class="sd-preflight__item">
+      <div v-if="weatherPoint.name" class="sd-preflight__item" v-loading="loading[2]">
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
@@ -20,7 +20,7 @@
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
       </div>
-      <div class="sd-preflight__item">
+      <div class="sd-preflight__item" v-loading="loading[3]">
         <sd-icon value="satellite" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.forecast') }}</div>
@@ -37,18 +37,18 @@
         type="danger"
         size="medium"
         icon="el-icon-refresh"
-        :disabled="disabled"
+        :disabled="disabled || cooldown > 0"
         @click="emitRun"
-      >{{ $t('preflight.comfirm') }}</el-button>
+      >{{ $t('preflight.comfirm') }}{{confirmSuffix}}</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
-import { planRunnable } from '@/api/plan-runnable';
+import { checkForecast, checkRealtime } from '@/api/plan-runnable';
 
 const StatusClass = {
   0: 'el-icon-success sd-preflight-green',
@@ -90,8 +90,11 @@ export default {
   data() {
     return {
       show: false,
-      loading: false,
-      preflightData: DefaultPreflightData
+      checkTime: 0,
+      loading: Array(4).fill(false),
+      preflightData: DefaultPreflightData,
+      countDownInterval: -1,
+      cooldown: 0
     };
   },
   computed: {
@@ -123,31 +126,84 @@ export default {
     depot() {
       return this.depots.find(d => d.msg.status && d.msg.status.link_id === this.plan.node_id) || this.defaultDepot;
     },
-    weather() {
+    weatherPoint() {
       return this.depot.info.points.find(p => p.point_type_name === 'weather');
     },
     disabled() {
-      return this.loading ||
+      return this.loading.some(value => value === true) ||
         this.drone.status !== 0 ||
         this.depot.status !== 0 ||
-        this.preflightData.realtime.level === 'error' ||
+        (this.weatherPoint.name && this.preflightData.realtime.level === 'error') ||
         this.preflightData.forecast.level === 'error';
+    },
+    confirmSuffix() {
+      return this.cooldown > 0 ? ` (${this.cooldown})` : '';
     }
   },
   methods: {
+    ...mapActions([
+      'updateDepotStatus'
+    ]),
     toggle() {
       this.show = !this.show;
     },
-    async check() {
-      if (!this.weather.name || !this.depot.position) {
-        this.preflightData = DefaultPreflightData;
-        return;
+    wait() {
+      const timeout = (0.5 + Math.random()) * 1000;
+      return new Promise(resolve => setTimeout(resolve, timeout));
+    },
+    async checkDrone() {
+      // nothing to check though
+    },
+    async checkDepot() {
+      const { id } = this.depot.info;
+      if (!id) return;
+      await this.updateDepotStatus(id);
+    },
+    async checkRealtime(time) {
+      const { name } = this.weatherPoint;
+      if (!name) return;
+      this.preflightData.realtime = DefaultPreflightData.realtime;
+      const result = await checkRealtime(name);
+      if (time === this.checkTime) {
+        this.preflightData.realtime = result;
       }
-      this.loading = true;
-      const id = this.weather.name;
-      const { lng, lat } = this.depot.position;
-      this.preflightData = await planRunnable({ lng, lat, id });
-      this.loading = false;
+    },
+    async checkForecast(time) {
+      const { position } = this.depot;
+      if (!position) return;
+      this.preflightData.forecast = DefaultPreflightData.forecast;
+      const result = await checkForecast(position);
+      if (time === this.checkTime) {
+        this.preflightData.forecast = result;
+      }
+    },
+    async check() {
+      const t = Date.now();
+      const start = prom => Promise.all([this.wait(), prom]);
+      const finish = index => this.checkTime === t && this.$set(this.loading, index, false);
+      this.checkTime = t;
+      this.loading = Array(4).fill(true);
+      await start(this.checkDrone());
+      finish(0);
+      await start(this.checkDepot());
+      finish(1);
+      await start(this.checkRealtime(t));
+      finish(2);
+      await start(this.checkForecast(t));
+      finish(3);
+      if (this.show && !this.disabled && this.checkTime === t) {
+        this.countDown();
+      }
+    },
+    countDown() {
+      this.cooldown = 5;
+      this.countDownInterval = setInterval(() => {
+        this.cooldown--;
+        if (this.cooldown <= 0) {
+          clearInterval(this.countDownInterval);
+          this.countDownInterval = -1;
+        }
+      }, 1000);
     },
     emitRun() {
       this.$emit('run');
@@ -169,6 +225,9 @@ export default {
 </script>
 
 <style>
+.sd-preflight {
+  width: 500px;
+}
 .sd-preflight .el-dialog__body {
   padding: 10px 20px;
 }

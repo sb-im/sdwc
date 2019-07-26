@@ -18,15 +18,15 @@ function realtimeLevel(data) {
   rainfall_count = Number.parseInt(rainfall_count);
   let level;
   if (wind_speed >= 10 || rainfall_count >= 15) {
-    level =  Level.Error;
+    level = Level.Error;
   } else if (wind_speed >= 6 || rainfall_count >= 10) {
-    level =  Level.Danger;
+    level = Level.Danger;
   } else if (wind_speed >= 4 || rainfall_count >= 5) {
-    level =  Level.Warning;
+    level = Level.Warning;
   } else if (wind_speed >= 2 || rainfall_count > 0) {
-    level =  Level.Primary;
+    level = Level.Primary;
   } else {
-    level =  Level.Success;
+    level = Level.Success;
   }
   return {
     level,
@@ -68,16 +68,15 @@ function forecastLevel(data) {
 }
 
 /**
- * @typedef {{lng: number; lat: number; id: string}} PlanRunnableOptions
- * @param {PlanRunnableOptions} _
+ * @param {{lng: number; lat: number}} _
  */
-export async function planRunnable({ lng, lat, id }) {
-  const [res3s, resCaiyun] = await Promise.all([
-    get3s(id),
-    realtime(lng, lat)
-  ]);
-  return {
-    realtime: realtimeLevel(res3s),
-    forecast: forecastLevel(resCaiyun)
-  };
+export function checkForecast({ lng, lat }) {
+  return realtime(lng, lat).then(forecastLevel);
+}
+
+/**
+ * @param {string} id
+ */
+export function checkRealtime(id) {
+  return get3s(id).then(realtimeLevel);
 }
