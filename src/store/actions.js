@@ -153,8 +153,17 @@ export async function getNodes({ commit }) {
 
 /**
  * @param {Context} context
+ * @param {string} id depot id
  */
-export async function subscribeNodes({ state, getters, commit }) {
+export async function updateDepotStatus({ commit }, id) {
+  const status = await MqttClient.invoke(id, 'ncp', ['status']);
+  commit(NODE.ADD_NODE_MSG, { id, msg: { status } });
+}
+
+/**
+ * @param {Context} context
+ */
+export async function subscribeNodes({ state, getters, commit, dispatch }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
@@ -165,10 +174,14 @@ export async function subscribeNodes({ state, getters, commit }) {
   MqttClient.on('status', async ({ id, code, status }) => {
     commit(NODE.SET_NODE_STATUS, { id, status: code });
     if (code === 0 && getters.depots.find(d => d.info.id === id)) {
-      if (!status) {
-        status = await MqttClient.invoke(id, 'ncp', ['status'], {});
+      // `status` object may be empty: older depot does not support
+      // send status via mqtt channel `nodes/:id/status`
+      if (status) {
+        commit(NODE.ADD_NODE_MSG, { id, msg: { status } });
+      } else {
+        // invoke `ncp status` to fetch status
+        dispatch('updateDepotStatus', id);
       }
-      commit(NODE.ADD_NODE_MSG, { id, msg: { status } });
     }
   });
   MqttClient.on('message', ({ id, msg, str }) => {
