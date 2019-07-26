@@ -10,7 +10,7 @@
       @visible-change="handleNotifyVisible"
     >
       <span class="header-dropdown-content">
-        <sd-icon :value="notifyAlert ? 'warning' :'updown'" />
+        <sd-icon :value="notifyAlert ? 'warning' :'trumpet'" />
         <span class="header-dropdown-text">{{ $t('header.notify') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
@@ -38,7 +38,7 @@
     <!-- node status dropdown -->
     <el-dropdown class="header-dropdown">
       <span class="header-dropdown-content">
-        <sd-icon value="link" />
+        <sd-icon value="connected" />
         <span class="header-dropdown-text">{{ $t('header.status') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>

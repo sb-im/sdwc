@@ -4,7 +4,7 @@ import Control from '@/components/control.vue';
 
 const Controls = [
   {
-    icon: 'drone',
+    icon: 'drone-blue',
     item: [
       { name: 'air.air_hover', mission: 'mode_loiter' }
     ]
@@ -22,7 +22,7 @@ const Controls = [
     ]
   },
   {
-    icon: 'map',
+    icon: 'map-waypoint-blue',
     item: [
       { name: 'air.air_runplan', mission: 'readyMsission' }
     ]

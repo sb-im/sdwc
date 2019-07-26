@@ -9,7 +9,7 @@
       <span class="status__text">{{ flightMode }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="stopwatch" :size="18"/>
+      <sd-icon value="timespan" :size="18"/>
       <span class="status__text">{{ flightTime }}</span>
     </div>
     <div class="status__item">
@@ -17,11 +17,11 @@
       <span class="status__text">{{ flightSpeed }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="battery-vertical" :size="18"/>
+      <sd-icon value="battery-horizontal" :size="18"/>
       <span class="status__text">{{ batteryPercentage }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="chart" :size="18"/>
+      <sd-icon value="voltage" :size="18"/>
       <span class="status__text">{{ batteryVoltage }}</span>
     </div>
     <div class="status__item">

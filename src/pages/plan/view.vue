@@ -1,6 +1,6 @@
 <template>
   <div class="plan__view">
-    <sd-card icon="board-view" :title="$t('plan.view.title')">
+    <sd-card icon="doc" :title="$t('plan.view.title')">
       <template #action>
         <el-button
           type="primary"

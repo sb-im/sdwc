@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="debug" icon="gear" :title="$t('common.debug')">
+  <sd-card class="debug" icon="maintenance" :title="$t('common.debug')">
     <div
       v-loading="disabled"
       element-loading-spinner="el-icon-warning-outline"

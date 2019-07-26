@@ -12,7 +12,7 @@
       router
     >
       <el-menu-item index="overview" :route="{ name: 'overview' }">
-        <sd-icon value="info"></sd-icon>
+        <sd-icon value="info-circle"></sd-icon>
         <span>{{ $t('sidemenu.overview') }}</span>
       </el-menu-item>
       <el-submenu index="plan">

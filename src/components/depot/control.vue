@@ -17,7 +17,7 @@ const Controls = [
     ]
   },
   {
-    icon: 'charge',
+    icon: 'battery',
     item: [
       { name: 'depot.start_charge', mission: 'power_chargedrone_on' },
       { name: 'depot.stop_charge', mission: 'power_chargedrone_off' }
