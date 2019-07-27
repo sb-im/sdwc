@@ -130,6 +130,7 @@ export const locale = {
     weather: 'Outdoor weather',
     weather_feel: 'Weather',
     weather_caption: 'Radar precipitation intensity',
+    wind: 'Wind',
     wind_speed: 'Wind Speed',
     wind_direction: 'Wind Direction',
     humidity: 'Hum',

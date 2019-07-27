@@ -130,6 +130,7 @@ export const locale = {
     weather: '室外天气',
     weather_caption: '雷达降水强度',
     weather_feel: '天气',
+    wind: '风',
     wind_speed: '风速',
     wind_direction: '风向',
     humidity: '湿度',

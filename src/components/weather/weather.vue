@@ -4,23 +4,17 @@
       <div class="weather__caption">{{$t('depot.weather_caption')}}</div>
       <div class="weather__chart" ref="chart" v-loading="chartLoading"></div>
     </div>
-    <el-form class="weather__column" label-width="80px" size="mini">
+    <el-form class="weather__column" label-width="70px" size="mini">
+      <el-form-item :label="$t('depot.wind')" class="wind">
+        <sd-weather-wind-icon :speed="weatherText.windSpeed" :direction="weatherText.windDirection"></sd-weather-wind-icon>
+        <span class="weather__windspeed">{{weatherText.windSpeed.toFixed(2)}} m/s</span>
+      </el-form-item>
       <el-form-item :label="$t('depot.weather_feel')">
         <el-input readonly :value="weatherText.weather"></el-input>
       </el-form-item>
       <el-form-item :label="$t('depot.temperature')">
         <el-input readonly :value="weatherText.temperature">
           <template #append>℃</template>
-        </el-input>
-      </el-form-item>
-      <el-form-item :label="$t('depot.wind_speed')">
-        <el-input readonly :value="weatherText.windSpeed">
-          <template #append>km/h</template>
-        </el-input>
-      </el-form-item>
-      <el-form-item :label="$t('depot.wind_direction')">
-        <el-input readonly :value="weatherText.windDirection">
-          <template #append>deg</template>
         </el-input>
       </el-form-item>
       <el-form-item :label="$t('depot.humidity')">
@@ -40,6 +34,7 @@ import 'chartist-plugin-tooltips';
 import { realtime, minutely } from '@/api/caiyun';
 
 import Card from '@/components/card.vue';
+import WindIcon from './wind-icon.vue';
 
 const Skycon = {
   CLEAR_DAY: 'weather.clear_day',
@@ -85,12 +80,18 @@ export default {
   computed: {
     weatherText() {
       if (!this.weather.realtime || this.weather.realtime.status !== 'ok') {
-        return {};
+        return {
+          weather: '...',
+          windSpeed: 0,
+          windDirection: 0,
+          temperature: '...',
+          humidity: '...'
+        };
       }
       const r = this.weather.realtime.result;
       return {
         weather: this.$t(Skycon[r.skycon]),
-        windSpeed: r.wind.speed,
+        windSpeed: r.wind.speed / 3.6,
         windDirection: r.wind.direction,
         temperature: r.temperature,
         humidity: (r.humidity * 100).toFixed(0)
@@ -185,7 +186,8 @@ export default {
     }
   },
   components: {
-    [Card.name]: Card
+    [Card.name]: Card,
+    [WindIcon.name]: WindIcon
   }
 };
 </script>
@@ -252,5 +254,16 @@ export default {
 }
 .weather .el-form-item {
   margin-bottom: 6px;
+}
+.weather .wind .el-form-item__label {
+  line-height: 40px;
+}
+.weather .wind .el-form-item__content {
+  display: flex;
+  align-items: center;
+}
+.weather__windspeed {
+  margin-left: 10px;
+  color: #606266;
 }
 </style>
