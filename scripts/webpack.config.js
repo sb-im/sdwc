@@ -101,6 +101,8 @@ const cfg = {
 
 /**
  * @see https://webpack.js.org/configuration/configuration-types/#exporting-a-function
+ * @param {{mode: 'development'|'production'; dev?: true}} env
+ * @param {string[]} argv
  */
 module.exports = function (env, argv) {
   process.env.NODE_ENV = env.mode;
@@ -116,10 +118,9 @@ module.exports = function (env, argv) {
       new OptimizeCssAssetsPlugin()
     );
   }
-  if (env.dev) {
-    cfg.plugins.push(
-      new webpack.DefinePlugin({ '__SDWC_DEV__': `true` })
-    )
-  }
+  // 'DEVELOPMENT' ribbon on left top corner
+  cfg.plugins.push(
+    new webpack.DefinePlugin({ '__SDWC_DEV__': env.dev ? `true` : `false` })
+  )
   return cfg;
 }
