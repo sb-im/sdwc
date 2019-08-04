@@ -177,14 +177,20 @@ export default {
      * @param {{lang: string}|'logout'|'clear'} cmd
      */
     handleCommand(cmd) {
-      if (typeof cmd.lang === 'string') {
+      if (!cmd) return;
+      if (typeof cmd === 'string') {
+        switch (cmd) {
+          case 'logout':
+            this.logout().then(() => {
+              this.$router.replace({ name: 'login' });
+            });
+            break;
+          case 'clear':
+            this.$store.commit(NOTI.CLEAR_NOTI);
+            break;
+        }
+      } else if (typeof cmd.lang === 'string') {
         this.setPreference(cmd);
-      } else if (cmd === 'logout') {
-        this.logout().then(() => {
-          this.$router.replace({ name: 'login' });
-        });
-      } else if (cmd === 'clear') {
-        this.$store.commit(NOTI.CLEAR_NOTI);
       }
     }
   },
