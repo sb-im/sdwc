@@ -2,32 +2,48 @@
   <sd-card class="weather" icon="barometer" :title="$t('depot.weather')">
     <div class="weather__column">
       <div class="weather__caption">{{$t('depot.weather_caption')}}</div>
-      <div class="weather__chart" ref="chart" v-loading="chartLoading"></div>
+      <div class="weather__chart" ref="rainChart" v-loading="rainChartLoading"></div>
     </div>
-    <el-form class="weather__column" label-width="70px" size="mini">
-      <el-form-item :label="$t('depot.wind')" class="wind">
-        <sd-weather-wind-icon :speed="weatherText.windSpeed" :direction="weatherText.windDirection"></sd-weather-wind-icon>
-        <span class="weather__windspeed">{{weatherText.windSpeed.toFixed(2)}} m/s</span>
-      </el-form-item>
-      <el-form-item :label="$t('depot.weather_feel')">
-        <el-input readonly :value="weatherText.weather"></el-input>
-      </el-form-item>
-      <el-form-item :label="$t('depot.temperature')">
-        <el-input readonly :value="weatherText.temperature">
-          <template #append>℃</template>
-        </el-input>
-      </el-form-item>
-      <el-form-item :label="$t('depot.humidity')">
-        <el-input readonly :value="weatherText.humidity">
-          <template #append>%</template>
-        </el-input>
-      </el-form-item>
-    </el-form>
+    <div class="weather__column">
+      <div class="weather__caption">{{$t('depot.wind_caption')}}</div>
+      <div class="weather__chart" ref="windChart"></div>
+    </div>
+    <div class="weather__column weather__column--multi">
+      <div class="weather__coord">
+        <sd-weather-wind-icon :speed="weatherNow.windSpeed" :direction="weatherNow.windDirection"></sd-weather-wind-icon>
+      </div>
+      <el-form label-width="70px" size="mini">
+        <el-form-item :label="$t('depot.wind_speed')">
+          <el-input readonly :value="weatherNow.windSpeed">
+            <template #append>m/s</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('depot.wind_direction')">
+          <el-input readonly :value="weatherNow.windDirection">
+            <template #append>deg</template>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <el-form label-width="70px" size="mini">
+        <el-form-item :label="$t('depot.weather_feel')">
+          <el-input readonly :value="caiyunText.weather"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('depot.temperature')">
+          <el-input readonly :value="caiyunText.temperature">
+            <template #append>℃</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('depot.humidity')">
+          <el-input readonly :value="caiyunText.humidity">
+            <template #append>%</template>
+          </el-input>
+        </el-form-item>
+      </el-form>
+    </div>
   </sd-card>
 </template>
 
 <script>
-import wretch from 'wretch';
 import Chartist from 'chartist';
 import 'chartist-plugin-tooltips';
 
@@ -66,63 +82,71 @@ export default {
   },
   data() {
     return {
-      weather: {
+      caiyun: {
         s: null,
         realtime: null,
         minutely: null
       },
       /** @type {Chartist.IChartistLineChart} */
-      chart: null,
-      chartLoading: false,
+      rainChart: null,
+      rainChartLoading: false,
+      windChart: null,
       interval: null
     };
   },
   computed: {
-    weatherText() {
-      if (!this.weather.realtime || this.weather.realtime.status !== 'ok') {
+    weatherRec() {
+      const depot = this.$store.getters.depots.find(d => d.info.id === this.point.node_id);
+      return depot ? depot.weatherRec : [];
+    },
+    weatherNow() {
+      const latest = this.weatherRec[this.weatherRec.length - 1];
+      if (!latest) return {};
+      const w = latest.weather;
+      return {
+        windSpeed: w.WS / 10,
+        windDirection: w.WD,
+        // temperature: w.T,
+        // humidity: w.RH,
+        // aiPressure: w.Pa
+      };
+    },
+    caiyunText() {
+      if (!this.caiyun.realtime || this.caiyun.realtime.status !== 'ok') {
         return {
           weather: '...',
-          windSpeed: 0,
-          windDirection: 0,
           temperature: '...',
           humidity: '...'
         };
       }
-      const r = this.weather.realtime.result;
+      const r = this.caiyun.realtime.result;
       return {
         weather: this.$t(Skycon[r.skycon]),
-        windSpeed: r.wind.speed / 3.6,
-        windDirection: r.wind.direction,
         temperature: r.temperature,
         humidity: (r.humidity * 100).toFixed(0)
       };
     }
   },
   methods: {
-    get3s() {
-      return wretch(this.point.name).get().json().then(res => {
-        this.weather.s = res;
-      });
-    },
     getRealtime() {
       return realtime(this.position.lng, this.position.lat).then(res => {
-        this.weather.realtime = res;
+        this.caiyun.realtime = res;
       });
     },
     getMinutely() {
       return minutely(this.position.lng, this.position.lat).then(res => {
-        this.weather.minutely = res;
+        this.caiyun.minutely = res;
       });
     },
-    drawChart() {
-      const time = minute => new Date(this.weather.minutely.server_time * 1000 + minute * 60 * 1000).toLocaleString('zh', {
+    drawRainChart() {
+      const time = minute => new Date(this.caiyun.minutely.server_time * 1000 + minute * 60 * 1000).toLocaleString('zh', {
         hour12: false,
         hour: '2-digit',
         minute: '2-digit'
       });
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [this.weather.minutely.result.minutely.precipitation.map((y, x) => ({ x, y }))]
+        series: [this.caiyun.minutely.result.minutely.precipitation.map((y, x) => ({ x, y }))]
       };
       /** @type {Chartist.ILineChartOptions} */
       const options = {
@@ -151,26 +175,58 @@ export default {
           })
         ]
       };
-      if (this.chart === null) {
-        this.chart = new Chartist.Line(this.$refs.chart, data, options);
+      if (this.rainChart === null) {
+        this.rainChart = new Chartist.Line(this.$refs.rainChart, data, options);
       } else {
-        this.chart.update(data, options);
+        this.rainChart.update(data, options);
+      }
+    },
+    drawWindChart() {
+      const latest = this.weatherRec[this.weatherRec.length - 1];
+      /** @type {Chartist.IChartistData} */
+      const data = {
+        series: [this.weatherRec.map(r => ({ x: Math.trunc((r.time - latest.time) / 1000), y: r.weather.WS / 10 }))]
+      };
+      if (this.windChart === null) {
+        /** @type {Chartist.ILineChartOptions} */
+        const options = {
+          axisX: {
+            type: Chartist.FixedScaleAxis,
+            ticks: [-59, -3],
+            high: 0,
+            low: -59,
+            labelInterpolationFnc: value => value < -30 ? this.$t('depot.min_before') : this.$t('depot.now')
+          },
+          showPoint: true,
+          showArea: true,
+          plugins: [
+            Chartist.plugins.tooltip({
+              tooltipOffset: { x: 0, y: -22 },
+              tooltipFnc: (meta, value) => value.split(',')[1] + ' m/s'
+            })
+          ]
+        };
+        this.windChart = new Chartist.Line(this.$refs.windChart, data, options);
+      } else {
+        this.windChart.update(data);
       }
     },
     refreshWeather() {
-      // this.get3s();
       if (!this.position) return;
       this.getRealtime();
-      this.chartLoading = true;
+      this.rainChartLoading = true;
       this.getMinutely().then(() => {
-        this.drawChart();
-        this.chartLoading = false;
+        this.drawRainChart();
+        this.rainChartLoading = false;
       });
     }
   },
   watch: {
     position() {
       this.refreshWeather();
+    },
+    weatherRec() {
+      this.drawWindChart();
     }
   },
   mounted() {
@@ -181,8 +237,11 @@ export default {
     if (this.interval !== null) {
       window.clearInterval(this.interval);
     }
-    if (this.chart !== null) {
-      this.chart.detach();
+    if (this.rainChart !== null) {
+      this.rainChart.detach();
+    }
+    if (this.windChart !== null) {
+      this.windChart.detach();
     }
   },
   components: {
@@ -195,28 +254,32 @@ export default {
 <style>
 .weather .el-card__body {
   display: flex;
-  padding: 12px 0 4px;
-  justify-content: space-evenly;
+  padding: 8px 0 0;
+  flex-direction: column;
+  align-items: center;
 }
 .weather__caption {
+  font-size: 14px;
   text-align: center;
   color: #606266;
 }
 .weather__chart {
   position: relative;
   height: 160px;
-  width: 500px;
+  width: 600px;
 }
-
-@media screen and (max-width: 965px) {
-  .weather .el-card__body {
-    flex-direction: column;
-    align-items: center;
-  }
-  .el-form.weather__column {
-    display: flex;
-    flex-wrap: wrap;
-  }
+.weather .el-input {
+  width: 140px;
+}
+.weather .el-form-item {
+  margin-bottom: 6px;
+}
+.weather__column--multi {
+  display: flex;
+}
+.weather__coord {
+  display: flex;
+  align-items: center;
 }
 
 /* chartist line-chart style */
@@ -247,23 +310,5 @@ export default {
 }
 .weather .chartist-tooltip::before {
   border-top-color: white;
-}
-
-.weather .el-input {
-  width: 140px;
-}
-.weather .el-form-item {
-  margin-bottom: 6px;
-}
-.weather .wind .el-form-item__label {
-  line-height: 40px;
-}
-.weather .wind .el-form-item__content {
-  display: flex;
-  align-items: center;
-}
-.weather__windspeed {
-  margin-left: 10px;
-  color: #606266;
 }
 </style>

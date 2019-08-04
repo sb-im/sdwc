@@ -55,15 +55,10 @@ body {
 
   /* depot */
   .depot .monitor {
-    width: calc(100% - 504px);
-  }
-  .depot .weather .el-card__body {
-    flex-direction: column;
+    width: calc(100% - 604px);
   }
   .depot .weather .el-card__body {
     height: calc(100% - 73px);
-    align-items: center;
-    justify-content: center;
   }
 }
 

@@ -1,8 +1,16 @@
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+  <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+    <g>
+      <line x1="40" y1="10" x2="40" y2="70" stroke="#cccccc" stroke-width="1" stroke-dasharray="2"></line>
+      <line x1="10" y1="40" x2="70" y2="40" stroke="#cccccc" stroke-width="1" stroke-dasharray="2"></line>
+      <text x="36" y="9" fill="#999999" font-size="12">N</text>
+      <text x="36" y="80" fill="#999999" font-size="12">S</text>
+      <text x="0" y="44" fill="#999999" font-size="12">W</text>
+      <text x="72" y="44" fill="#999999" font-size="12">E</text>
+    </g>
     <g v-if="speed === 0">
-      <circle cx="20" cy="20" r="10.5" stroke="#4e7ab5" fill="transparent" />
-      <circle cx="20" cy="20" r="4.5" stroke="#4e7ab5" fill="#8bb7f0" />
+      <circle cx="40" cy="40" r="10.5" stroke="#4e7ab5" fill="transparent" />
+      <circle cx="40" cy="40" r="4.5" stroke="#4e7ab5" fill="#8bb7f0" />
     </g>
     <g v-else :transform="transform">
       <line x1="20" y1="0" x2="20" y2="7.7" stroke="#4e7ab5" stroke-width="1" v-if="barb[0] !== 4" />
@@ -56,7 +64,7 @@ export default {
   },
   computed: {
     transform() {
-      return `rotate(${this.direction} 20 20)`;
+      return `translate(20 5)\nrotate(${this.direction} 20 35)`;
     },
     barb() {
       const barb = [];
