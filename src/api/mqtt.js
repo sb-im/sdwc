@@ -83,6 +83,9 @@ class MqttClient extends EventEmitter {
       } else if (topic.endsWith('/msg/battery')) {
         const battery = JSON.parse(str);
         this.emit('message', { id, msg: { battery } });
+      } else if (topic.endsWith('/msg/weather')) {
+        const weather = JSON.parse(str);
+        this.emit('message', { id, msg: { weather } });
       } else if (topic.endsWith('/message')) {
         this.emit('message', { id, str });
       }

@@ -8,7 +8,9 @@
  * @typedef {string[]} NodeLog
  * @typedef {{lat: number, lng: number}} NodePosition
  * @typedef {NodePosition[]} NodePath
- * @typedef {{info: NodeInfo; status: NodeStatus; msg: NodeMsg; log: NodeLog; position: NodePosition; path: NodePath}} Node
+ * @typedef {{WD: number, WS: number, T: number, RH: number, Pa: number}} NodeWeather
+ * @typedef {{time: number, weather: NodeWeather}[]} WeatherRecord
+ * @typedef {{info: NodeInfo; status: NodeStatus; msg: NodeMsg; log: NodeLog; position: NodePosition; path: NodePath; weatherRec: WeatherRecord}} Node
  */
 
 /** @type {Node[]} */
@@ -41,7 +43,8 @@ const mutations = {
       msg: {},
       log: [],
       position: null,
-      path: []
+      path: [],
+      weatherRec: []
     });
   },
   [MutationTypes.SET_NODE_STATUS](state, { id, status }) {
@@ -66,6 +69,14 @@ const mutations = {
           if (msg.status) {
             const { lng, lat } = msg.status;
             node.position = { lng: +lng, lat: +lat };
+          } else if (msg.weather) {
+            const time = Date.now();
+            node.weatherRec.push({ time, weather: msg.weather });
+            let earliest = node.weatherRec[0];
+            while (time - earliest.time > 60000) {
+              node.weatherRec.shift();
+              earliest = node.weatherRec[0];
+            }
           }
           break;
       }

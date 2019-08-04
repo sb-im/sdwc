@@ -167,8 +167,15 @@ export async function subscribeNodes({ state, getters, commit, dispatch }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
-    if (node.info.points.findIndex(p => p.point_type_name === 'battery') >= 0) {
-      MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/battery`);
+    for (const p of node.info.points) {
+      switch (p.point_type_name) {
+        case 'battery':
+          MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/battery`);
+          break;
+        case 'weather':
+          MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/weather`);
+          break;
+      }
     }
   });
   MqttClient.on('status', async ({ id, code, status }) => {
