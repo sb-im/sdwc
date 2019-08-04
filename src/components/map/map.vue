@@ -25,13 +25,11 @@ export default {
   name: 'sd-map',
   inheritAttrs: false,
   props: {
-    point: {
-      type: Object,
-      required: false
+    drone: {
+      type: Object
     },
     fit: {
-      type: Boolean,
-      default: false
+      type: Boolean
     }
   },
   data() {
@@ -54,12 +52,11 @@ export default {
       return this.$t(this.fit ? 'map.waypoint' : 'map.satellite');
     },
     positionDepot() {
-      if (!this.point) return null;
-      const droneId = this.point.id;
+      if (!this.drone) return null;
       for (const d of this.depots) {
         if (d.status === 0
           && d.msg.status
-          && d.msg.status.link_id === droneId
+          && d.msg.status.link_id === this.drone.id
         ) {
           return d.position;
         }

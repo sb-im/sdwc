@@ -6,7 +6,7 @@
       <sd-map
         v-if="compo === 'sd-node-mointor-drone'"
         :key="`${point.id}_map`"
-        :point="node"
+        :drone="node"
         :path="path"
       ></sd-map>
     </template>
