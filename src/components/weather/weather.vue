@@ -7,6 +7,10 @@
     <div class="weather__column">
       <div class="weather__caption">{{$t('depot.wind_caption')}}</div>
       <div class="weather__chart" ref="windChart"></div>
+      <div class="weather__label ct-label">
+        <span>(m/s) {{$t('depot.min_before')}}</span>
+        <span>{{$t('depot.now')}}</span>
+      </div>
     </div>
     <div class="weather__column weather__column--multi">
       <div class="weather__coord">
@@ -163,7 +167,6 @@ export default {
           high: 1,
           low: 0
         },
-        showPoint: true,
         showArea: true,
         plugins: [
           Chartist.plugins.tooltip({
@@ -182,27 +185,33 @@ export default {
       }
     },
     drawWindChart() {
-      const latest = this.weatherRec[this.weatherRec.length - 1];
+      let points = [];
+      const len = this.weatherRec.length;
+      if (len >= 60) {
+        points = this.weatherRec.slice(0, 60);
+      } else {
+        points = new Array(60 - len).concat(this.weatherRec);
+      }
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [this.weatherRec.map(r => ({ x: Math.trunc((r.time - latest.time) / 1000), y: r.weather.WS / 10 }))]
+        series: [points.map(r => r.weather.WS / 10)]
       };
       if (this.windChart === null) {
         /** @type {Chartist.ILineChartOptions} */
         const options = {
           axisX: {
-            type: Chartist.FixedScaleAxis,
-            ticks: [-59, -3],
-            high: 0,
-            low: -59,
-            labelInterpolationFnc: value => value < -30 ? this.$t('depot.min_before') : this.$t('depot.now')
+            showGrid: false,
+            showLable: false
           },
-          showPoint: true,
+          axisY: {
+            labelInterpolationFnc: value => value
+          },
+          fullWidth: true,
           showArea: true,
           plugins: [
             Chartist.plugins.tooltip({
               tooltipOffset: { x: 0, y: -22 },
-              tooltipFnc: (meta, value) => value.split(',')[1] + ' m/s'
+              tooltipFnc: (meta, value) => value + ' m/s'
             })
           ]
         };
@@ -273,6 +282,17 @@ export default {
 }
 .weather .el-form-item {
   margin-bottom: 6px;
+}
+.weather__column {
+  position: relative;
+}
+.weather__label {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
 }
 .weather__column--multi {
   display: flex;
