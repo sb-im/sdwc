@@ -97,7 +97,6 @@ export default {
 
 <style>
 .aside {
-  height: 100%;
   background-color: #545c64;
   display: flex;
   flex-direction: column;

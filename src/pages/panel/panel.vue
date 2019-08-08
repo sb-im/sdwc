@@ -1,15 +1,13 @@
 <template>
   <div class="sd-panel">
-    <div class="sd-panel__side">
-      <sd-aside></sd-aside>
-    </div>
+    <sd-aside class="sd-panel__side"></sd-aside>
     <div class="sd-panel__main">
       <sd-header></sd-header>
       <div class="sd-panel__view">
         <router-view></router-view>
       </div>
       <div class="sd-panel__footer">
-        <span class="sd-panel__ver">SDWC v{{version}}</span>
+        <span>SDWC v{{version}}</span>
         <span class="sd-panel__cpy">Copyright © 2017-2019 StrawBerry Tech.</span>
       </div>
     </div>
@@ -61,7 +59,7 @@ export default {
 }
 .sd-panel__side {
   height: 100%;
-  width: 200px;
+  min-width: 200px;
 }
 .sd-panel__main {
   height: 100%;
@@ -81,12 +79,9 @@ export default {
   background-color: #b3c0d1;
   line-height: 60px;
   font-size: 14px;
-}
-.sd-panel__ver {
-  margin-left: 10px;
+  padding: 0 10px;
 }
 .sd-panel__cpy {
-  margin-right: 10px;
   float: right;
 }
 </style>
