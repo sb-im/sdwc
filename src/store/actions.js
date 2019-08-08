@@ -153,6 +153,14 @@ export async function getNodes({ commit }) {
 
 /**
  * @param {Context} context
+ * @param {string} id drone id
+ */
+export function clearDronePath({ commit }, id) {
+  commit(NODE.CLEAR_NODE_PATH, { id });
+}
+
+/**
+ * @param {Context} context
  * @param {string} id depot id
  */
 export async function updateDepotStatus({ commit }, id) {

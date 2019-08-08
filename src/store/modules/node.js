@@ -25,6 +25,7 @@ export const MutationTypes = {
   SET_NODE_STATUS: 'SET_NODE_STATUS',
   ADD_NODE_MSG: 'ADD_NODE_MSG',
   ADD_NODE_LOG: 'ADD_NODE_LOG',
+  CLEAR_NODE_PATH: 'CLEAR_NODE_PATH',
   CLEAR_NODES: 'CLEAR_NODES'
 };
 
@@ -86,6 +87,12 @@ const mutations = {
     const node = state.find(node => node.info.id === id);
     if (node) {
       node.log.push(log);
+    }
+  },
+  [MutationTypes.CLEAR_NODE_PATH](state, { id }) {
+    const node = state.find(node => node.info.id === id);
+    if (node) {
+      node.path.splice(1, node.path.length - 1);
     }
   },
   [MutationTypes.CLEAR_NODES](state) {

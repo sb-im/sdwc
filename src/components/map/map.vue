@@ -1,7 +1,9 @@
 <template>
   <sd-card class="sd-map" :icon="icon" :title="title" dense>
     <template #action>
-      <el-radio-group v-model="type" size="small" @change="onMapTypeChange">
+      <el-button v-if="drone" icon="el-icon-delete" size="small" @click="handlePathClear">{{ $t('map.clear') }}</el-button>
+      <span>&nbsp;</span>
+      <el-radio-group v-model="type" size="small" @change="handleMapChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
@@ -66,9 +68,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setPreference'
+      'setPreference',
+      'clearDronePath'
     ]),
-    onMapTypeChange(mapType) {
+    handlePathClear() {
+      this.clearDronePath(this.drone.id);
+    },
+    handleMapChange(mapType) {
       this.setPreference({ mapType });
     }
   },

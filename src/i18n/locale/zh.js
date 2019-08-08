@@ -229,7 +229,8 @@ export const locale = {
   },
   map: {
     waypoint: '路径点',
-    satellite: '卫星地图'
+    satellite: '卫星地图',
+    clear: '清除轨迹'
   },
   preflight: {
     title: '起飞前检测',
