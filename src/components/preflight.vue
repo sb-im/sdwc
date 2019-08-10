@@ -11,7 +11,7 @@
         <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
         <i class="sd-preflight__icon" :class="StatusClass[depot.status]"></i>
       </div>
-      <div v-if="weatherPoint.name" class="sd-preflight__item" v-loading="loading[2]">
+      <div v-if="weatherPoint" class="sd-preflight__item" v-loading="loading[2]">
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
@@ -158,8 +158,7 @@ export default {
       await this.updateDepotStatus(id);
     },
     async checkRealtime(time) {
-      const { name } = this.weatherPoint;
-      if (!name) return;
+      if (!this.weatherPoint) return;
       this.preflightData.realtime = DefaultPreflightData.realtime;
       /** @type {import('@/store/modules/node').WeatherRecord} */
       const records = this.depot.weatherRec;
