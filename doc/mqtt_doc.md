@@ -191,7 +191,7 @@ Name | Type   | Description
 lat  | string | Latitude
 lng  | string | Longitude
 alt  | string | Altitude
-Az   | uint   | Azimuth 0°~360° https://zh.wikipedia.org/wiki/%E6%96%B9%E4%BD%8D%E8%A7%92
+heading| uint | Heading 0°~360°
 
 
 ## `nodes/:id/msg/notification`
@@ -202,6 +202,7 @@ Az   | uint   | Azimuth 0°~360° https://zh.wikipedia.org/wiki/%E6%96%B9%E4%BD%
 Name | Type   | Description
 ---- | ------ | -----------
 time | string | timestamp length `10`
+level| uint   | 0-7 `1: Debug, 2: Info, 3: Warn, 4: Error, 5: Fatal, 6: Panic`
 msg  | string | message body
 
 ### ~~Sub: `nodes/:id/message`~~ *Discard*
