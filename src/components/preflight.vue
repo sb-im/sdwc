@@ -16,7 +16,6 @@
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
           <div>{{ $t('preflight.wind') }} {{ preflightData.realtime.wind_speed }} m/s</div>
-          <div>{{ $t('preflight.rain') }} {{ preflightData.realtime.rainfall_count }}</div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
       </div>
@@ -48,7 +47,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
-import { checkForecast, checkRealtime } from '@/api/plan-runnable';
+import { checkForecast, windSpeedLevel } from '@/api/plan-runnable';
 
 const StatusClass = {
   0: 'el-icon-success sd-preflight-green',
@@ -67,7 +66,6 @@ const LevelClass = {
 
 const DefaultPreflightData = {
   realtime: {
-    rainfall_count: 0,
     wind_speed: 0,
     level: 'error'
   },
@@ -148,7 +146,7 @@ export default {
       this.show = !this.show;
     },
     wait() {
-      const timeout = (0.5 + Math.random()) * 1000;
+      const timeout = (1 + Math.random()) * 1000;
       return new Promise(resolve => setTimeout(resolve, timeout));
     },
     async checkDrone() {
@@ -163,7 +161,10 @@ export default {
       const { name } = this.weatherPoint;
       if (!name) return;
       this.preflightData.realtime = DefaultPreflightData.realtime;
-      const result = await checkRealtime(name);
+      /** @type {import('@/store/modules/node').WeatherRecord} */
+      const records = this.depot.weatherRec;
+      const avgSpeed = records.reduce((a, b) => a + b.weather.WS, 0) / records.length;
+      const result = windSpeedLevel(avgSpeed);
       if (time === this.checkTime) {
         this.preflightData.realtime = result;
       }

@@ -68,6 +68,29 @@ function forecastLevel(data) {
 }
 
 /**
+ * @param {number} ws wind speed, unit: 0.1 m/s
+ */
+export function windSpeedLevel(ws) {
+  let level;
+  const wind_speed = ws / 10; // unit: m/s
+  if (wind_speed >= 10) {
+    level = Level.Error;
+  } else if (wind_speed >= 6) {
+    level = Level.Danger;
+  } else if (wind_speed >= 4) {
+    level = Level.Warning;
+  } else if (wind_speed >= 2) {
+    level = Level.Primary;
+  } else {
+    level = Level.Success;
+  }
+  return {
+    wind_speed: wind_speed.toFixed(1),
+    level
+  };
+}
+
+/**
  * @param {{lng: number; lat: number}} _
  */
 export function checkForecast({ lng, lat }) {
