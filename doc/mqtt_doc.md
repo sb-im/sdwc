@@ -1,9 +1,21 @@
 # Online Status
 
 ### Sub: `nodes/:id/status`
--> `0`
+```json
+{
+  "code":0,
+  "msg":"",
+  "status": {
+    "link_id":1,
+    "position_ok":true,
+    "lat":"22.687713",
+    "lng":"114.224837",
+    "alt":"74.839996"
+  }
+}
+```
 
-status_map = {
+status_code_map = {
   online: 0,
   offline: 1,
   neterror: 2
@@ -14,25 +26,186 @@ status_map = {
 
 #### Send
 ### Pub: `nodes/:id/rpc/send`
--> `{"jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": "sdwc-1"}`
+```json
+{"jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": "sdwc-1"}
+```
 
 **Id must is the Unique id**
 
 Id must String
 
 For sdwc:
-Id: `sdwc-<unique_id>`
+Id: `sdwc-<unique_id>` Or `sdwc.<user id>-<timestamp>`
 
 #### Recv
 ### Sub: `nodes/:id/rpc/recv`
--> `{"jsonrpc": "2.0", "result": 19, "id": "sdwc-1"}`
+```json
+{"jsonrpc": "2.0", "result": 19, "id": "sdwc-1"}
+```
 
 Or
 
--> `{"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": "sdwc-1"}`
+```json
+{"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": "sdwc-1"}
+```
+
 
 # Message
-### Sub: `nodes/:id/message`
+## `nodes/:id/msg/weather`
+-> `{"WD":0,"WS":0,"T":66115,"RH":426,"Pa":99780}`
+```go
+type Weather struct {
+// http://shortof.com/suolueci/wdir-wind-direction
+// 0 ~ 360
+WindDirection int `json:"WD"`
+// http://shortof.com/search/luceneapi_node/wind_speed
+// 0.1 m/s
+WindSpeed int `json:"WS"`
 
--> `{"heartbeat": {"battery": {"remain": 99, "voltage": 48280}, "flight": {"status": 3, "speed": 0.08756901323795319, "mode": 0, "time": "111"}, "gps": {"satellites": 4, "lat": 226878281, "height": 2.669999837875366, "type": 3, "lon": 1142245713}}}`
+// https://en.wikipedia.org/wiki/Kelvin
+// [°C] = [K] − 273.15
+// 0.01 K
+Temperature int `json:"T"`
+
+// Relative humidity (0 ~ 99)％ * 0.1
+Humidity int `json:"RH"`
+
+// Atmospheric pressure Pa
+AtmosphericPressure int `json:"Pa"`
+}
+```
+
+## `nodes/:id/msg/battery`
+```json
+{"temp": 27, "cap": 8634, "cur": "2561", "remain": 71, "cycle": 0, "vol_cell": "3941/3948/3944/3945/3943/3942", "status": ["Switch OFF Discharging", "Switch OFF Charging"], "bal": 0, "id": "591906111641001"}
+```
+
+Name | Type | Description
+---- | ---- | -----------
+temp | float| Temperature [°C]
+cap  | uint | Capacity [mA*h]
+cur  | string | current [mA] If Charging have `-`
+cycle| uint | Cycles
+remain|uint | remaining battery [%]
+vol_cell| string | Cell voltage [mV]
+bal | int | Unknown
+id  | string | Unique id
+
+
+[]status :string
+```
+DISCHARGING
+CHARGING
+Charging Fully
+Switch ON Discharging
+Switch OFF Discharging
+Switch ON Charging
+Switch OFF Charging
+PROTECTION(Short-circuited)
+PROTECTION(Low Temperature)
+PROTECTION(High Temperature)
+PROTECTION(Low Temperature Charging)
+PROTECTION(High Temperature Charging)
+PROTECTION(Overcharging)
+PROTECTION(Over Discharging)
+PROTECTION(Overcurrent Charging)
+PROTECTION(Overcurrent Discharging)
+```
+
+
+## `nodes/:id/msg/status`
+```json
+{"status":"standby","mode":"auto","time":0,"speed":0.15,"height":-0.07,"gps":{"type":"RTK_FIX","satcount":10},"battery":{"percent":100,"voltage":12.59},"signal":50}
+```
+
+Name | Type   | Description
+---- | ------ | -----------
+status|string | Enum `standby, flying, error`
+mode | string | Enum `auto, guide, rtl, land, loiter` http://ardupilot.org/copter/docs/flight-modes.html
+time | uint   | flight time [s]
+speed| float  | Ground speed [m/s]
+height| float | Relative height at the takeoff point
+gps.type|string| Enum `NO_GPS, NO_FIX, 2D_FIX, 3D_FIX, DGPS, RTK_FLOAT, RTK_FIX`
+gps.satcount| uint  | GPS satellites count
+battery.percent| uint | 1-100 [%]
+battery.voltage| float  | voltage [v]
+signal| uint  | Signal strength 1-100 [%]
+
+
+## `nodes/:id/msg/gimbal`
+```json
+{"mode":"auto","yaw":0,"pitch":0}
+```
+
+Name | Type   | Description
+---- | ------ | -----------
+mode | string | gimbal_mode
+yaw  | int    |
+pitch| int    |
+
+### RPC: gimbal_info
+#### Request:
+```json
+{"jsonrpc":"2.0","method":"gimbal_info","id":"sdwc-1"}
+```
+#### Response:
+```json
+{"jsonrpc":"2.0","result":{"mode":["manual","auto","rc"],"yaw":[-90,90],"pitch":[-90,45]},"id":"sdwc-1"}
+```
+##### Or
+```json
+{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found"},"id":"sdwc-1"}
+```
+**IF have error{}, Need Disable gimbal_mode && gimbal_ctl**
+
+
+### RPC: gimbal_mode
+#### Request:
+```json
+{"jsonrpc":"2.0","method":"gimbal_mode","params":["manual"],"id":"sdwc-2"}
+```
+#### Response:
+```json
+{"jsonrpc":"2.0","result":"manual","id":"sdwc-2"}
+```
+**gimbal_mode `manual` As a special mode, Can only be use `gimbal_ctl` in `gimbal_mode == manual`**
+
+### RPC: gimbal_ctl
+#### Request:
+```json
+{"jsonrpc":"2.0","method":"gimbal_ctl","params":{"yaw":-37,"pitch":0},"id":"sdwc-3"}
+```
+#### Response:
+```json
+{"jsonrpc":"2.0","result":{"yaw":-37,"pitch":0},"id":"sdwc-3"}
+```
+
+
+## `nodes/:id/msg/position`
+```json
+{"lat":"22.6876399","lng":"114.2248704","alt":"0.07","Az":10}
+```
+
+Name | Type   | Description
+---- | ------ | -----------
+lat  | string | Latitude
+lng  | string | Longitude
+alt  | string | Altitude
+Az   | uint   | Azimuth 0°~360° https://zh.wikipedia.org/wiki/%E6%96%B9%E4%BD%8D%E8%A7%92
+
+
+## `nodes/:id/msg/notification`
+```json
+{"time":"1565413755","msg":""}
+```
+
+Name | Type   | Description
+---- | ------ | -----------
+time | string | timestamp length `10`
+msg  | string | message body
+
+### ~~Sub: `nodes/:id/message`~~ *Discard*
+```json
+{"heartbeat": {"battery": {"remain": 99, "voltage": 48280}, "flight": {"status": 3, "speed": 0.08756901323795319, "mode": 0, "time": "111"}, "gps": {"satellites": 4, "lat": 226878281, "height": 2.669999837875366, "type": 3, "lon": 1142245713}}}
+```
 
