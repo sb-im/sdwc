@@ -13,12 +13,6 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      /** @type {Hls} */
-      hls: null
-    };
-  },
   methods: {
     loadHls() {
       if (Hls.isSupported()) {
@@ -32,6 +26,7 @@ export default {
     }
   },
   mounted() {
+    this.hls = null;
     this.loadHls();
   },
   beforeDestroy() {

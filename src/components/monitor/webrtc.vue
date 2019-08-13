@@ -30,9 +30,7 @@ export default {
   data() {
     return {
       msg: '',
-      couldRetry: false,
-      /** @type {WebSocketSignalingChannel} */
-      channel: null
+      couldRetry: false
     };
   },
   computed: {
@@ -72,6 +70,7 @@ export default {
     }
   },
   mounted() {
+    this.channel = null;
     this.createChannel();
   },
   beforeDestroy() {
