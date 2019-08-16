@@ -207,7 +207,25 @@ export const locale = {
     rain: 'Rain',
     snow: 'Snow',
     wind: 'Wind',
-    haze: 'Haze'
+    haze: 'Haze',
+    alert: {
+      '01': 'Typhoon',
+      '02': 'Rainstorm',
+      '03': 'Blizzard',
+      '04': 'Cold',
+      '05': 'Gale',
+      '06': 'Sandstorm',
+      '07': 'High Temp',
+      '08': 'Arid',
+      '09': 'Thunder',
+      '10': 'Hail',
+      '11': 'Frost',
+      '12': 'Fog',
+      '13': 'Haze',
+      '14': 'Road Icing',
+      '15': 'Forest Fire',
+      '16': 'Thunderstorm',
+    }
   },
   map: {
     waypoint: 'Waypoint',

@@ -46,3 +46,14 @@ export function realtime(lng, lat) {
 export function minutely(lng, lat) {
   return get(`/${lng},${lat}/minutely`);
 }
+
+/**
+ * 通用预报接口
+ * @see https://open.caiyunapp.com/通用预报接口
+ * @param {number} lng
+ * @param {number} lat
+ * @returns {import('./api-types').CaiYunResult<any>}
+ */
+export function weather(lng, lat) {
+  return get(`/${lng},${lat}/weather`);
+}

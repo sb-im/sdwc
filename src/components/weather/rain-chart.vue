@@ -23,13 +23,13 @@ export default {
   methods: {
     /** @param {number} minute */
     shortTime(minute) {
-      const dt = new Date(this.caiyun.minutely.server_time * 1000 + minute * 60 * 1000);
+      const dt = new Date(this.caiyun.server_time * 1000 + minute * 60 * 1000);
       return dt.toLocaleString('zh', { hour: '2-digit', minute: '2-digit', hour12: false, });
     },
     draw() {
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [this.caiyun.minutely.result.minutely.precipitation.map((y, x) => ({ x, y }))]
+        series: [this.caiyun.minutely.precipitation.map((y, x) => ({ x, y }))]
       };
       if (this.chart === null) {
         /** @type {Chartist.ILineChartOptions} */

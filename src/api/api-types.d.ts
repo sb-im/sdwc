@@ -1,4 +1,4 @@
-interface CayYunResult<T> {
+export interface CaiYunResult<T> {
   status: string;
   lang: string;
   unit?: string;
@@ -59,7 +59,7 @@ interface Precipitation {
   local: PrecipitationLocal;
 }
 
-export type CaiYunRealtime = CayYunResult<RealtimeResult>;
+export type CaiYunRealtime = CaiYunResult<RealtimeResult>;
 
 interface MinutelyResult {
   forecast_keypoint: string;
@@ -77,7 +77,7 @@ interface MinutelyDetails {
   precipitation: number[];
 }
 
-export type CaiYunMinutely = CayYunResult<MinutelyResult>;
+export type CaiYunMinutely = CaiYunResult<MinutelyResult>;
 
 interface Weather3sData {
   _id: string;

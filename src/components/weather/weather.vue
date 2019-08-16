@@ -17,6 +17,9 @@
             <template #append>deg</template>
           </el-input>
         </el-form-item>
+        <el-form-item label>
+          <sd-weather-alert :alert="caiyun.alert"></sd-weather-alert>
+        </el-form-item>
       </el-form>
       <el-form label-width="70px" size="mini">
         <el-form-item :label="$t('depot.weather_feel')">
@@ -38,12 +41,13 @@
 </template>
 
 <script>
-import { realtime, minutely } from '@/api/caiyun';
+import { weather } from '@/api/caiyun';
 
 import Card from '@/components/card.vue';
 import WindIcon from './wind-icon.vue';
 import RainChart from './rain-chart.vue';
 import WindChart from './wind-chart.vue';
+import AlertBadge from './alert-badge.vue';
 
 const Skycon = {
   CLEAR_DAY: 'weather.clear_day',
@@ -77,7 +81,9 @@ export default {
     return {
       caiyun: {
         realtime: null,
-        minutely: null
+        minutely: null,
+        alert: null,
+        server_time: 0
       },
       caiyunLoading: false,
       interval: null
@@ -108,7 +114,7 @@ export default {
           humidity: '...'
         };
       }
-      const r = this.caiyun.realtime.result;
+      const r = this.caiyun.realtime;
       return {
         weather: this.$t(Skycon[r.skycon]),
         temperature: r.temperature,
@@ -117,21 +123,18 @@ export default {
     }
   },
   methods: {
-    getRealtime() {
-      return realtime(this.position.lng, this.position.lat).then(res => {
-        this.caiyun.realtime = res;
-      });
-    },
-    getMinutely() {
-      return minutely(this.position.lng, this.position.lat).then(res => {
-        this.caiyun.minutely = res;
+    getWeather() {
+      return weather(this.position.lng, this.position.lat).then(res => {
+        this.caiyun.minutely = res.result.minutely;
+        this.caiyun.realtime = res.result.realtime;
+        this.caiyun.alert = res.result.alert;
+        this.caiyun.server_time = res.server_time;
       });
     },
     refreshWeather() {
       if (!this.position) return;
-      this.getRealtime();
       this.caiyunLoading = true;
-      this.getMinutely().then(() => {
+      this.getWeather().then(() => {
         this.caiyunLoading = false;
         this.$refs.rain.draw();
       });
@@ -156,6 +159,7 @@ export default {
     [WindIcon.name]: WindIcon,
     [RainChart.name]: RainChart,
     [WindChart.name]: WindChart,
+    [AlertBadge.name]: AlertBadge
   }
 };
 </script>
