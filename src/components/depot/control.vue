@@ -5,7 +5,7 @@ const Controls = [
   {
     icon: 'reset',
     item: [
-      { name: 'depot.emergency_stop', mission: 'ncp shell stop', type: 'danger' },
+      { name: 'depot.emergency_stop', mission: 'ncp', arg: ['shell', 'stop'], type: 'danger' },
       { name: 'depot.air_reset', mission: 'reset' }
     ]
   },
