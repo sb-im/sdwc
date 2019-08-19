@@ -193,7 +193,7 @@ export default {
     });
   },
   beforeDestroy() {
-    ['poly', 'markerDepot', 'markerDrone', 'markerDepot'].forEach(prop => {
+    ['poly', 'markerDepot', 'markerDrone'].forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
