@@ -31,20 +31,6 @@ export default {
       default: false
     }
   },
-  data() {
-    return {
-      /** @type {google.maps.Map} */
-      map: null,
-      /** @type {google.maps.Polyline} */
-      poly: null,
-      /** @type {google.maps.Marker} */
-      markerDepot: null,
-      /** @type {google.maps.Marker} */
-      markerDrone: null,
-      /** @type {{[key: string]: google.maps.Marker}} */
-      namedMarkers: {}
-    };
-  },
   methods: {
     async initMap() {
       const { Map, MapTypeId } = await loadGoogleMap();
@@ -138,7 +124,6 @@ export default {
       this.map.setCenter(newPath[0]);
     },
     async drawNamedMarkers() {
-      if (!this.map) return;
       const { Point, LatLngBounds } = await loadGoogleMap();
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
@@ -225,11 +210,8 @@ export default {
     positionDepot() {
       this.drawMarkerDepot();
     },
-    markers: {
-      immediate: true,
-      handler() {
-        this.drawNamedMarkers();
-      }
+    markers() {
+      this.drawNamedMarkers();
     },
     center(val) {
       if (!this.map) return;
@@ -241,14 +223,27 @@ export default {
       }
     }
   },
+  created() {
+    /** @type {google.maps.Map} */
+    this.map = null;
+    /** @type {google.maps.Polyline} */
+    this.poly = null;
+    /** @type {google.maps.Marker} */
+    this.markerDepot = null;
+    /** @type {google.maps.Marker} */
+    this.markerDrone = null;
+    /** @type {{[key: string]: google.maps.Marker}} */
+    this.namedMarkers = {};
+  },
   mounted() {
     this.initMap().then(() => {
       this.drawMarkerDepot();
       this.drawPath();
+      this.drawNamedMarkers();
     });
   },
   beforeDestroy() {
-    ['poly', 'markerDepot', 'markerDrone'].forEach(prop => {
+    Object.keys(this.namedMarkers).concat('poly', 'markerDepot', 'markerDrone').forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;

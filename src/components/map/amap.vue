@@ -31,20 +31,6 @@ export default {
       default: false
     }
   },
-  data() {
-    return {
-      /** @type {AMap.Map} */
-      map: null,
-      /** @type {AMap.Polyline} */
-      poly: null,
-      /** @type {AMap.Marker} */
-      markerDepot: null,
-      /** @type {AMap.Marker} */
-      markerDrone: null,
-      /** @type {{[key: string]: AMap.Marker}} */
-      namedMarkers: {}
-    };
-  },
   methods: {
     async initMap() {
       const AMap = await loadAMap();
@@ -168,7 +154,6 @@ export default {
       }
     },
     async drawNamedMarkers() {
-      if (!this.map) return;
       const [AMap, AMapUI, position] = await Promise.all([
         loadAMap(),
         loadAMapUI(),
@@ -215,11 +200,8 @@ export default {
     positionDepot() {
       this.drawMarkerDepot();
     },
-    markers: {
-      immediate: true,
-      handler() {
-        this.drawNamedMarkers();
-      },
+    markers() {
+      this.drawNamedMarkers();
     },
     center(val) {
       if (!this.map) return;
@@ -231,14 +213,27 @@ export default {
       }
     },
   },
+  created() {
+    /** @type {AMap.Map} */
+    this.map = null;
+    /** @type {AMap.Polyline} */
+    this.poly = null;
+    /** @type {AMap.Marker} */
+    this.markerDepot = null;
+    /** @type {AMap.Marker} */
+    this.markerDrone = null;
+    /** @type {{[key: string]: AMap.Marker}} */
+    this.namedMarkers = {};
+  },
   mounted() {
     this.initMap().then(() => {
       this.drawMarkerDepot();
       this.drawPath();
+      this.drawNamedMarkers();
     });
   },
   beforeDestroy() {
-    ['poly', 'markerDepot', 'markerDrone'].forEach(prop => {
+    Object.keys(this.namedMarkers).concat('poly', 'markerDepot', 'markerDrone').forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
