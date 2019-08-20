@@ -4,6 +4,7 @@
 
 <script>
 import { loadAMap, loadAMapUI } from '@/api/amap';
+
 export default {
   name: 'sd-map-amap',
   props: {
@@ -14,6 +15,10 @@ export default {
     },
     positionDepot: {
       type: Object,
+      required: false
+    },
+    markers: {
+      type: Array,
       required: false
     },
     center: {
@@ -35,7 +40,9 @@ export default {
       /** @type {AMap.Marker} */
       markerDepot: null,
       /** @type {AMap.Marker} */
-      markerDrone: null
+      markerDrone: null,
+      /** @type {{[key: string]: AMap.Marker}} */
+      namedMarkers: {}
     };
   },
   methods: {
@@ -160,6 +167,38 @@ export default {
         this.map.setCenter(path[0]);
       }
     },
+    async drawNamedMarkers() {
+      if (!this.map) return;
+      const [AMap, AMapUI, position] = await Promise.all([
+        loadAMap(),
+        loadAMapUI(),
+        this.convertCoordinate(this.markers.map(m => m.position || { lng: 0, lat: 0 }))
+      ]);
+      AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
+        for (let i = 0; i < this.markers.length; i++) {
+          const m = this.markers[i];
+          if (!m.position) continue;
+          let marker = this.namedMarkers[m.id];
+          const pos = position[i];
+          if (marker) {
+            marker.setPosition(pos);
+          } else {
+            marker = new SimpleMarker({
+              iconStyle: 'red',
+              iconLabel: m.type === 'depot' ? '🚉' : '✈️',
+              position: pos,
+              label: {
+                content: m.name,
+                offset: new AMap.Pixel(25, 30)
+              }
+            });
+            this.$set(this.namedMarkers, m.id, marker);
+            this.map.add(marker);
+          }
+          this.map.setFitView();
+        }
+      });
+    },
     /**
      * 自动缩放地图以适应路径
      */
@@ -170,21 +209,27 @@ export default {
     }
   },
   watch: {
+    path() {
+      this.drawPath();
+    },
+    positionDepot() {
+      this.drawMarkerDepot();
+    },
+    markers: {
+      immediate: true,
+      handler() {
+        this.drawNamedMarkers();
+      },
+    },
     center(val) {
       if (!this.map) return;
       this.map.setCenter(val);
-    },
-    path() {
-      this.drawPath();
     },
     fit(val) {
       if (val === true) {
         this.fitPath();
       }
     },
-    positionDepot() {
-      this.drawMarkerDepot();
-    }
   },
   mounted() {
     this.initMap().then(() => {
@@ -205,3 +250,16 @@ export default {
   }
 };
 </script>
+
+<style>
+.amap-marker-label {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  padding: 2px 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 10px 0 0 0;
+  background: rgb(211, 61, 41);
+}
+</style>
