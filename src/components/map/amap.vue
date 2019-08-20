@@ -154,6 +154,7 @@ export default {
       }
     },
     async drawNamedMarkers() {
+      if (!this.markers) return;
       const [AMap, AMapUI, position] = await Promise.all([
         loadAMap(),
         loadAMapUI(),
@@ -253,8 +254,8 @@ export default {
   font-weight: bold;
   text-align: center;
   padding: 2px 4px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid #a83121;
   border-radius: 10px 0 0 0;
-  background: rgb(211, 61, 41);
+  background: #d33d29;
 }
 </style>
