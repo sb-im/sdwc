@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { loadGoogleMap } from '@/api/google-map';
+import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
 
 export default {
   name: 'sd-map-google',
@@ -15,6 +15,10 @@ export default {
     },
     positionDepot: {
       type: Object,
+      required: false
+    },
+    markers: {
+      type: Array,
       required: false
     },
     center: {
@@ -36,7 +40,9 @@ export default {
       /** @type {google.maps.Marker} */
       markerDepot: null,
       /** @type {google.maps.Marker} */
-      markerDrone: null
+      markerDrone: null,
+      /** @type {{[key: string]: google.maps.Marker}} */
+      namedMarkers: {}
     };
   },
   methods: {
@@ -131,6 +137,33 @@ export default {
       // 将地图的中心设为折线上最新的点
       this.map.setCenter(newPath[0]);
     },
+    async drawNamedMarkers() {
+      if (!this.map) return;
+      const { Point, LatLngBounds } = await loadGoogleMap();
+      /** @type {google.maps.Marker} */
+      const MarkerWithLabel = await loadGoogleMapMarker();
+      const bounds = new LatLngBounds();
+      for (const m of this.markers) {
+        if (!m.position) continue;
+        /** @type {google.maps.Marker} */
+        let marker = this.namedMarkers[m.id];
+        if (marker) {
+          marker.setPosition(m.position);
+        } else {
+          marker = new MarkerWithLabel({
+            map: this.map,
+            position: m.position,
+            label: m.type === 'depot' ? '🚉' : '✈️',
+            labelContent: m.name,
+            labelAnchor: new Point(-5, 16),
+            labelClass: 'sd-gmap-marker'
+          });
+          this.$set(this.namedMarkers, m.id, marker);
+        }
+        bounds.extend(marker.getPosition());
+        this.map.fitBounds(bounds);
+      }
+    },
     /**
      * 自动缩放地图以适应路径
      */
@@ -147,10 +180,6 @@ export default {
     }
   },
   watch: {
-    center(val) {
-      if (!this.map) return;
-      this.map.setCenter(val);
-    },
     /**
      * 判断能否只通过增新点来得到新的路线
      * 换言之，判断旧路径是否与新路径的开始点一致，且旧路径的点集为新路径点集的真子集
@@ -196,6 +225,16 @@ export default {
     positionDepot() {
       this.drawMarkerDepot();
     },
+    markers: {
+      immediate: true,
+      handler() {
+        this.drawNamedMarkers();
+      }
+    },
+    center(val) {
+      if (!this.map) return;
+      this.map.setCenter(val);
+    },
     fit(val) {
       if (val === true) {
         this.fitPath();
@@ -218,3 +257,16 @@ export default {
   }
 };
 </script>
+
+<style>
+.sd-gmap-marker {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  padding: 2px 4px;
+  border: 1px solid white;
+  border-radius: 10px 0 0 0;
+  background: rgba(234, 67, 53, 0.8);
+}
+</style>
