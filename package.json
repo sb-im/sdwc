@@ -13,6 +13,7 @@
     "test": "eslint --ext .js,.vue src/"
   },
   "dependencies": {
+    "@google/markerwithlabel": "^1.2.3",
     "chartist": "^0.11.3",
     "chartist-plugin-tooltips": "^0.0.17",
     "content-disposition": "^0.5.3",

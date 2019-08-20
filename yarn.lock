@@ -702,6 +702,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@google/markerwithlabel@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@google/markerwithlabel/-/markerwithlabel-1.2.3.tgz#47a4d99438fa99e722b8f1f5cf0d4e96d937a067"
+  integrity sha512-lqD2p8GrJIlqNgrVK7P7EI72rSK+HTj3IgN7hL36l6sjzoIKOCdE93VfHeKl3YoRxOIvEoWDTLIpUtKLecHRQA==
+
 "@types/amap-js-sdk@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@types/amap-js-sdk/-/amap-js-sdk-1.4.1.tgz#cae3846058b4b2ad1e33b3a50dbacee59d151e4b"

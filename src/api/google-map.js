@@ -48,3 +48,18 @@ export async function loadGoogleMap() {
     throw Error('Google Map load failed.');
   }
 }
+
+export async function loadGoogleMapMarker() {
+  /* global require:readonly */
+  if (window.google) {
+    return require('@google/markerwithlabel');
+  }
+  try {
+    await gmapProm;
+    if (window.google) {
+      return require('@google/markerwithlabel');
+    }
+  } catch (e) {
+    throw Error('Google Map Marker load failed.');
+  }
+}
