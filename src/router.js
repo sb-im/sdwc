@@ -5,6 +5,7 @@ import store from './store/index';
 
 import Login from './pages/login.vue';
 import Panel from './pages/panel/panel.vue';
+import Overview from './pages/overview/overview.vue';
 import Plan from './pages/plan/plan.vue';
 import PlanNew from './pages/plan/new.vue';
 import PlanEdit from './pages/plan/edit.vue';
@@ -39,10 +40,16 @@ const routes = [
     path: '/panel',
     name: 'panel',
     component: Panel,
+    redirect: { name: 'overview' },
     beforeEnter(to, from, next) {
       next(checkUser() ? undefined : '/login');
     },
     children: [
+      {
+        path: 'overview',
+        name: 'overview',
+        component: Overview
+      },
       {
         path: 'node/:id',
         name: 'node',
