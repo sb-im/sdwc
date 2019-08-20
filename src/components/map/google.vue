@@ -124,6 +124,7 @@ export default {
       this.map.setCenter(newPath[0]);
     },
     async drawNamedMarkers() {
+      if (!this.markers) return;
       const { Point, LatLngBounds } = await loadGoogleMap();
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
@@ -171,15 +172,18 @@ export default {
      * @param {{lng: number; lat: number}[]} newPath
      */
     path(newPath) {
-      /** @type {google.maps.LatLng[]} */
-      let oldPath = [];
-      try { oldPath = this.poly.getPath().getArray(); } catch (e) { /* ignore */ }
+      // 任务路径点，每次都重绘
+      if (this.fit) {
+        return this.drawPath();
+      }
       // 假设能
       let patchable = true;
-      if (!this.poly || oldPath.length === 0) {
+      if (!this.poly) {
         // 本来没有路线，那只能从头开始画
         patchable = false;
       } else {
+        /** @type {google.maps.LatLng[]} */
+        const oldPath = this.poly.getPath().getArray();
         // 计算新旧路径的长度差值
         const lengthDiff = newPath.length - oldPath.length;
         // 新路径上的点比旧路径上的点少，只能从头开始画
