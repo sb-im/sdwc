@@ -31,18 +31,6 @@
           :route="{ name: 'plan', params: { id: plan.id } }"
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
-      <el-submenu index="depot">
-        <template #title>
-          <sd-icon value="depot-blue"></sd-icon>
-          <span>{{ $t('sidemenu.depot') }}</span>
-        </template>
-        <el-menu-item
-          v-for="depot in depots"
-          :key="depot.info.id"
-          :index="`node-${depot.info.id}`"
-          :route="{ name: 'node', params: { id: depot.info.id } }"
-        >{{ depot.info.name }}</el-menu-item>
-      </el-submenu>
       <el-submenu index="drone">
         <template #title>
           <sd-icon value="drone-blue"></sd-icon>
@@ -54,6 +42,18 @@
           :index="`node-${drone.info.id}`"
           :route="{ name: 'node', params: { id: drone.info.id } }"
         >{{ drone.info.name }}</el-menu-item>
+      </el-submenu>
+      <el-submenu index="depot">
+        <template #title>
+          <sd-icon value="depot-blue"></sd-icon>
+          <span>{{ $t('sidemenu.depot') }}</span>
+        </template>
+        <el-menu-item
+          v-for="depot in depots"
+          :key="depot.info.id"
+          :index="`node-${depot.info.id}`"
+          :route="{ name: 'node', params: { id: depot.info.id } }"
+        >{{ depot.info.name }}</el-menu-item>
       </el-submenu>
     </el-menu>
   </div>
