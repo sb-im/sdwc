@@ -29,7 +29,7 @@ export const locale = {
   },
   sidemenu: {
     overview: '概况',
-    plan: '任务管理',
+    plan: '任务',
     depot: '机场',
     air: '无人机'
   },

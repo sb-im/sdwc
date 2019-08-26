@@ -1,15 +1,21 @@
 <template>
-  <div v-if="configLoaded">
-    <sd-overview-map :markers="markers"></sd-overview-map>
+  <div class="sd-overview">
+    <div class="sd-overview__counters">
+      <sd-overview-counter icon="drone" :caption="$t('sidemenu.air')" :value="drones.length"></sd-overview-counter>
+      <sd-overview-counter icon="depot" :caption="$t('sidemenu.depot')" :value="depots.length"></sd-overview-counter>
+      <sd-overview-counter icon="task" :caption="$t('sidemenu.plan')" :value="plan.info.length"></sd-overview-counter>
+    </div>
+    <sd-overview-map v-if="configLoaded" :markers="markers"></sd-overview-map>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 import { config } from '@/api/sdwc';
 import Card from '@/components/card.vue';
 import OverviewMap from './overview-map.vue';
+import OverviewCounter from './overview-counter.vue';
 
 export default {
   name: 'sd-overview',
@@ -19,6 +25,9 @@ export default {
     };
   },
   computed: {
+    ...mapState([
+      'plan'
+    ]),
     ...mapGetters([
       'depots',
       'drones'
@@ -43,10 +52,15 @@ export default {
   },
   components: {
     [Card.name]: Card,
-    [OverviewMap.name]: OverviewMap
+    [OverviewMap.name]: OverviewMap,
+    [OverviewCounter.name]: OverviewCounter
   }
 };
 </script>
 
 <style>
+.sd-overview__counters {
+  display: flex;
+  margin-bottom: 10px;
+}
 </style>

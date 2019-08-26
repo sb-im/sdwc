@@ -31,7 +31,7 @@ export const locale = {
     overview: 'Overview',
     plan: 'Plans',
     depot: 'Depots',
-    air: 'Drone'
+    air: 'Drones'
   },
   plan: {
     view: {

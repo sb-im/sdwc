@@ -58,7 +58,7 @@ export default {
   margin: 0;
 }
 .overview-map .el-card__body {
-  height: calc(100vh - 215px);
+  height: calc(100vh - 315px);
 }
 .overview-map .map__el {
   height: 100%;
