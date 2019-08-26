@@ -1,5 +1,5 @@
 <template>
-  <el-card class="sd-overview-counter" shadow="never">
+  <el-card class="sd-overview-counter" shadow="never" :style="{ backgroundColor: backgroundColor }">
     <sd-icon :value="icon" :size="48"></sd-icon>
     <div class="overview-counter__text">
       <div class="overview-counter__caption">{{caption}}</div>
@@ -25,6 +25,10 @@ export default {
     value: {
       type: [String, Number],
       required: true
+    },
+    backgroundColor: {
+      type: String,
+      required: true
     }
   },
   components: {
@@ -36,6 +40,8 @@ export default {
 <style>
 .sd-overview-counter {
   flex-grow: 1;
+  margin: 5px 10px;
+  border: 1px solid #ececec;
 }
 .sd-overview-counter:not(:first-child) {
   margin-left: 10px;
