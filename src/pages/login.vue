@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login__bg">
-      <img class="login__i" src="/assets/images/login-backgound.jpg" v-show="!showVideo">
+      <img class="login__i" src="/assets/images/login-backgound.jpg" v-show="!showVideo" />
       <video
         class="login__i"
         :src="video"
@@ -16,7 +16,7 @@
       <h1 class="login__title">S Dashboard Web Console</h1>
       <el-form label-width="80px" label-position="left">
         <el-form-item :label="$t('login.username')" :error="errorUsername">
-          <el-input type="text" v-model="username" autofocus></el-input>
+          <el-input ref="inputUsr" type="text" v-model="username" autofocus></el-input>
         </el-form-item>
         <el-form-item :label="$t('login.password')" :error="errorPassword">
           <el-input ref="inputPwd" type="password" show-password v-model="password"></el-input>
@@ -87,6 +87,19 @@ export default {
       inputPwd.addEventListener('keypress', (ev) => {
         if (ev.keyCode === 13 || ev.key === 'Enter') {
           this.handleLogin();
+        }
+      });
+    }
+    /** @type {HTMLInputElement} */
+    const inputUsr = this.$refs.inputUsr.$el.getElementsByTagName('input')[0];
+    if (inputUsr) {
+      inputUsr.addEventListener('keypress', (ev) => {
+        if (ev.keyCode === 13 || ev.key === 'Enter') {
+          if (this.password.length === 0 && inputPwd) {
+            inputPwd.focus();
+          } else {
+            this.handleLogin();
+          }
         }
       });
     }
