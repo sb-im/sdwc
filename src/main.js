@@ -4,6 +4,7 @@ import './util/element';
 import i18n from './i18n';
 import './util/plugin-mqtt';
 import store from './store';
+import { MutationTypes as USER } from './store/modules/user';
 import router from './router';
 
 import App from './App.vue';
@@ -20,17 +21,30 @@ store.dispatch('configure');
 store.dispatch('restoreSession');
 store.dispatch('restorePreference');
 
+window.addEventListener('beforeunload', () => {
+  store.dispatch('storePreference');
+});
+
 const el = document.createElement('div');
 document.body.appendChild(el);
-new Vue({
+const app = new Vue({
+  el,
   store,
   i18n,
   router,
-  ...App
-}).$mount(el);
+  extends: App
+});
 
-window.addEventListener('beforeunload', () => {
-  store.dispatch('storePreference');
+store.subscribe((mutation) => {
+  if (mutation.type === USER.INVALIDATE_TOKEN) {
+    store.dispatch('logout');
+    router.replace({ name: 'login' });
+    app.$message({
+      type: 'error',
+      duration: 0,
+      message: i18n.t('login.expired')
+    });
+  }
 });
 
 if (__SDWC_DEV__) {

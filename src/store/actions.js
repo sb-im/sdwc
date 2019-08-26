@@ -85,6 +85,7 @@ export async function login({ state, commit }, { username, password }) {
     const due = (data.created_at + data.expires_in) * 1000;
     commit(USER.SET_USER_TOKEN, { token, due });
     SuperDock.setAuth(token);
+    setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
     return token;
   }
   catch (e) {
@@ -139,6 +140,7 @@ export async function restoreSession({ commit }) {
   commit(USER.SET_USER_TOKEN, json);
   commit(USER.SET_USER_INFO, json);
   SuperDock.setAuth(json.token);
+  setTimeout(() => commit(USER.INVALIDATE_TOKEN), json.due - Date.now());
 }
 
 /**

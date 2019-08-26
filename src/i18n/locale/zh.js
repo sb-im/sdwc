@@ -10,7 +10,8 @@ export const locale = {
     password: '密码',
     error_password: '请输入密码',
     button: '登录',
-    failed: '登录失败：用户名或密码错误'
+    failed: '登录失败：用户名或密码错误',
+    expired: '会话已过期，请重新登录'
   },
   header: {
     title: 'Superdock 无人机自动机场',

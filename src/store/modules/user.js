@@ -13,7 +13,8 @@ const state = {
 
 export const MutationTypes = {
   SET_USER_TOKEN: 'SET_USER_TOKEN',
-  SET_USER_INFO: 'SET_USER_INFO'
+  SET_USER_INFO: 'SET_USER_INFO',
+  INVALIDATE_TOKEN: 'INVALIDATE_TOKEN'
 };
 
 /**
@@ -27,6 +28,10 @@ const mutations = {
   [MutationTypes.SET_USER_INFO](state, { id, email }) {
     state.id = id;
     state.email = email;
+  },
+  [MutationTypes.INVALIDATE_TOKEN](state) {
+    state.token = '';
+    state.due = -1;
   }
 };
 

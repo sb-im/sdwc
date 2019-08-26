@@ -10,7 +10,8 @@ export const locale = {
     password: 'Password',
     error_password: 'Password is required',
     button: 'Login',
-    failed: 'Failed: Invalid Username or Password'
+    failed: 'Failed: Invalid Username or Password',
+    expired: 'Session expired, please login again'
   },
   header: {
     title: 'Superdock Drone Automatic Airport',
