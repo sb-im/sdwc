@@ -58,6 +58,7 @@ export default {
       'login'
     ]),
     async handleLogin() {
+      this.$message.closeAll();
       if (!this.username) {
         this.errorUsername = this.$t('login.error_username');
       } else {
