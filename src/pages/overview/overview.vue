@@ -1,16 +1,10 @@
 <template>
   <div class="sd-overview">
-    <el-row class="sd-overview__counters">
-      <el-col :sm="24" :md="8">
-        <sd-overview-counter icon="drone" :caption="$t('sidemenu.air')" :value="drones.length" background-color="#ecf5ff"></sd-overview-counter>
-      </el-col>
-      <el-col :sm="24" :md="8">
-        <sd-overview-counter icon="depot" :caption="$t('sidemenu.depot')" :value="depots.length" background-color="#f0f9eb"></sd-overview-counter>
-      </el-col>
-      <el-col :sm="24" :md="8">
-        <sd-overview-counter icon="task" :caption="$t('sidemenu.plan')" :value="plan.info.length" background-color="#fef0f0"></sd-overview-counter>
-      </el-col>
-    </el-row>
+    <div class="sd-overview__counters">
+      <sd-overview-counter icon="drone" :caption="$t('sidemenu.air')" :value="drones.length" background-color="#ecf5ff"></sd-overview-counter>
+      <sd-overview-counter icon="depot" :caption="$t('sidemenu.depot')" :value="depots.length" background-color="#f0f9eb"></sd-overview-counter>
+      <sd-overview-counter icon="task" :caption="$t('sidemenu.plan')" :value="plan.info.length" background-color="#fef0f0"></sd-overview-counter>
+    </div>
     <sd-overview-map v-if="configLoaded" :markers="markers"></sd-overview-map>
   </div>
 </template>
@@ -66,6 +60,7 @@ export default {
 
 <style>
 .sd-overview__counters {
+  display: flex;
   margin-bottom: 20px;
 }
 </style>

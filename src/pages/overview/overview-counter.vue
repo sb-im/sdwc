@@ -40,7 +40,6 @@ export default {
 <style>
 .sd-overview-counter {
   flex-grow: 1;
-  margin: 5px 10px;
   border: 1px solid #ececec;
 }
 .sd-overview-counter:not(:first-child) {
