@@ -61,6 +61,6 @@ export default {
 <style>
 .sd-overview__counters {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 </style>
