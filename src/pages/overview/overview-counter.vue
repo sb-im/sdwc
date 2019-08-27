@@ -28,7 +28,7 @@ export default {
     },
     backgroundColor: {
       type: String,
-      required: true
+      default: "#ffffff"
     }
   },
   components: {
