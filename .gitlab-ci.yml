@@ -27,5 +27,5 @@ deploy_production:
       - master
   script:
     - ./scripts/gitlab-ci.sh
-    - cat file.tar.xz | ssh ${HOST_CLOUD_PRODUCTION}@${USER_CLOUD_PRODUCTION} 'cd ~/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
+    - cat file.tar.xz | ssh ${USER_CLOUD_PRODUCTION}@${HOST_CLOUD_PRODUCTION} 'cd ~/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
 
