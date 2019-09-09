@@ -112,13 +112,14 @@ export default {
       this.drawMarkerDrone();
       const { LatLng } = await loadGoogleMap();
       // 已经画在地图上的折线点集
+      /** @type {google.maps.MVCArray} */
       const mvcArray = this.poly.getPath();
       const oldLength = mvcArray.getLength();
       // 遍历每个新增的点（index 越小的点越新）
       for (let i = 0; i < newPath.length - oldLength; i++) {
         const point = newPath[i];
         // 将点的经纬度加入点集，GoogleMap 会自动更新折线
-        mvcArray.push(new LatLng(point.lat, point.lng));
+        mvcArray.insertAt(0, new LatLng(point.lat, point.lng));
       }
       // 将地图的中心设为折线上最新的点
       this.map.setCenter(newPath[0]);
@@ -206,8 +207,10 @@ export default {
         }
       }
       if (patchable) {
+        console.warn('patching');
         this.patchPath(newPath);
       } else {
+        console.warn('drawing');
         this.drawPath();
       }
     },

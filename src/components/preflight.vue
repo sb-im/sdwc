@@ -129,7 +129,7 @@ export default {
     },
     disabled() {
       return this.loading.some(value => value === true) ||
-        this.drone.status !== 0 ||
+        (this.drone.status !== 0 && this.drone.status !== 1) ||
         this.depot.status !== 0 ||
         (this.weatherPoint.name && this.preflightData.realtime.level === 'error') ||
         this.preflightData.forecast.level === 'error';

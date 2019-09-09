@@ -59,7 +59,7 @@ export default {
           title: this.$t(name),
           message: this.$t('common.operate_pending')
         });
-        MqttClient.invoke(this.node.id, 'startmission_ready', [])
+        MqttClient.invoke(this.point.node_id, 'startmission_ready', [])
           .then(() => {
             // 'startmission_ready' returns 'OK'
             this.$msgbox.close();
