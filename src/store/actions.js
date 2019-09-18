@@ -12,7 +12,7 @@ import * as SuperDock from '@/api/super-dock';
 import * as GoogleMap from '@/api/google-map';
 
 import { MutationTypes as PREF } from './modules/preference';
-import { MutationTypes as CONFIG } from './modules/config';
+import { MutationTypes as CONF } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
 import { MutationTypes as NODE } from './modules/node';
 import { MutationTypes as PLAN } from './modules/plan';
@@ -62,7 +62,7 @@ export function restorePreference({ commit }) {
  */
 export async function configure({ state, commit }) {
   const data = await SDWC.config();
-  commit(CONFIG.SET_CONFIG, data);
+  commit(CONF.SET_CONFIG, data);
   if (!state.preference.lang) {
     commit(PREF.SET_PREFERENCE, { lang: data.lang });
   }
