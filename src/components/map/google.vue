@@ -207,10 +207,8 @@ export default {
         }
       }
       if (patchable) {
-        console.warn('patching');
         this.patchPath(newPath);
       } else {
-        console.warn('drawing');
         this.drawPath();
       }
     },
