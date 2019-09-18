@@ -21,7 +21,7 @@ export function token(username, password, client_id, client_secret) {
       client_secret,
       grant_type: 'password'
     })
-    .json(json => json);
+    .json();
 }
 
 export function logout(token) {
