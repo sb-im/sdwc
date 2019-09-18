@@ -148,6 +148,7 @@ export async function restoreSession({ commit }) {
  */
 export async function getNodes({ commit }) {
   const data = await SuperDock.nodes();
+  data.sort((a, b) => a.id - b.id);
   data.forEach(node => {
     commit(NODE.ADD_NODE, node);
   });
