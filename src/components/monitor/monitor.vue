@@ -1,8 +1,8 @@
 <template>
   <sd-card class="monitor" icon="monitor" :title="$t('depot.monitor')" dense>
-    <template v-if="compoName && point.name">
+    <template v-if="streamAvailable">
       <div class="monitor__content">
-        <component :is="compoName" :source="point.name"></component>
+        <component :is="compoName" :nodeId="point.node_id" :source="point.name"></component>
       </div>
       <slot></slot>
     </template>
@@ -21,6 +21,7 @@ import Flv from './flv.vue';
 import Hls from './hls.vue';
 import Img from './img.vue';
 import WebRTC from './webrtc.vue';
+import WebRTC2 from './webrtc2.vue';
 import IFrame from './iframe.vue';
 
 const CompoName = {
@@ -28,6 +29,7 @@ const CompoName = {
   'livestream_hls': Hls.name,
   'livestream_img': Img.name,
   'livestream_webrtc': WebRTC.name,
+  'livestream_webrtc2': WebRTC2.name,
   'iframe': IFrame.name
 };
 
@@ -42,6 +44,12 @@ export default {
   computed: {
     compoName() {
       return CompoName[this.point.point_type_name] || '';
+    },
+    streamAvailable() {
+      if (this.point.point_type_name === 'livestream_webrtc2') {
+        return true;
+      }
+      return this.compoName !== '';
     }
   },
   components: {
@@ -50,6 +58,7 @@ export default {
     [Hls.name]: Hls,
     [Img.name]: Img,
     [WebRTC.name]: WebRTC,
+    [WebRTC2.name]: WebRTC2,
     [IFrame.name]: IFrame
   }
 };

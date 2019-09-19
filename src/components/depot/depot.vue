@@ -20,7 +20,8 @@ const CompoName = {
   'livestream_img': Monitor.name,
   'livestream_flv': Monitor.name,
   'livestream_hls': Monitor.name,
-  'livestream_webrtc': Monitor.name
+  'livestream_webrtc': Monitor.name,
+  'livestream_webrtc2': Monitor.name
 };
 
 const CompoOrder = {
