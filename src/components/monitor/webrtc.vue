@@ -20,7 +20,7 @@ import { mapState } from 'vuex';
 import { WebSocketSignalingChannel } from './webrtc-client';
 
 export default {
-  name: 'sd-node-mointor-webrtc',
+  name: 'sd-node-monitor-webrtc',
   props: {
     source: {
       type: String,
