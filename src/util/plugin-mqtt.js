@@ -14,8 +14,20 @@ async function mqtt(id, { mission, arg = [] }) {
   return MqttClient.invoke(id, mission, arg);
 }
 
+/**
+ * ellipsis too long JSON values
+ * @param {string} key
+ * @param {any} value
+ */
+function replacer(key, value) {
+  if (typeof value === 'string' && value.length > 10) {
+    return '...';
+  }
+  return value;
+}
+
 function stringifyMission({ method, params }) {
-  const a = JSON.stringify(params);
+  const a = JSON.stringify(params, replacer);
   if (a === '[]' || a === '{}') {
     return method;
   }
