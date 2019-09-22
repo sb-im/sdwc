@@ -166,6 +166,7 @@ export const locale = {
     re_upload: 'Re-upload',
     retry: 'Retry',
     connecting: 'Connecting...',
+    disconnected: 'Disconnected',
     back: 'Cancel & back',
     data_none: 'No relevant data yet',
     debug_tips: 'The commands are for developers only',
