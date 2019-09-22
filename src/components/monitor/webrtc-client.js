@@ -2,7 +2,7 @@
 
 import { EventEmitter } from 'events';
 
-function trace() {
+export function trace() {
   // @ts-ignore
   if (process.env.NODE_ENV === 'development') { // eslint-disable-line
     console.debug.apply(console, arguments);    // eslint-disable-line
