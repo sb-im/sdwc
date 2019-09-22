@@ -66,6 +66,7 @@ export default {
   },
   mounted() {
     this.chart = null;
+    this.draw();
   },
   beforeDestroy() {
     if (this.chart !== null) {
