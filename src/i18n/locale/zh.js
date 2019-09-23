@@ -262,6 +262,7 @@ export const locale = {
     forecast: '天气预报',
     intensity: '雷达降水强度',
     distance: '最近降水带',
-    comfirm: '确认执行'
+    confirm: '确认执行',
+    slide2confirm: '滑动确认执行任务'
   }
 };

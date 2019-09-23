@@ -1,0 +1,147 @@
+<template>
+  <div class="sd-slide-confirm" :class="containerClass" :style="containerStyle">
+    <div class="sd-slide-confirm__text" :style="textStyle">{{text}}</div>
+    <el-button
+      class="sd-slide-confirm__inner"
+      ref="button"
+      v-bind="buttonAttrs"
+      :style="buttonStyle"
+    ></el-button>
+  </div>
+</template>
+
+<script>
+export default {
+  inheritAttrs: false,
+  name: 'sd-slide-confirm',
+  props: {
+    width: {
+      type: Number,
+      default: 240
+    },
+    text: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      buttonWidth: 0,
+      dragable: false,
+      position: 0,
+      initialX: 0,
+      completed: false
+    };
+  },
+  computed: {
+    containerClass() {
+      return {
+        'sd-slide-confirm--completed': this.completed
+      };
+    },
+    containerStyle() {
+      return { width: `${this.width}px` };
+    },
+    textStyle() {
+      return { visibility: this.position ? 'hidden' : 'visible' };
+    },
+    buttonAttrs() {
+      return {
+        ...this.$attrs,
+        type: this.$attrs.disabled ? 'info' : this.completed ? 'success' : this.$attrs.type || 'primary',
+        icon: this.completed ? 'el-icon-check' : this.$attrs.icon || 'el-icon-arrow-right'
+      };
+    },
+    buttonStyle() {
+      if (this.completed) return { marginLeft: `${this.completedPosition}px` };
+      if (!this.dragable) return {};
+      return {
+        marginLeft: `${this.position}px`,
+        transitionProperty: 'background-color',
+      };
+    },
+    completedPosition() {
+      return this.width - this.buttonWidth;
+    }
+  },
+  methods: {
+    /** @param {MouseEvent} ev */
+    activate(ev) {
+      if (this.$attrs.disabled) return;
+      this.dragable = true;
+      this.initialX = ev.pageX;
+      this.buttonWidth = this.$refs.button.$el.getBoundingClientRect().width;
+    },
+    deactivate() {
+      this.position = 0;
+      this.dragable = false;
+      this.completed = false;
+      this.$el.focus();
+    },
+    handleMouseUp() {
+      if (this.position === this.completedPosition) {
+        this.completed = true;
+        this.$emit('confirm');
+      } else {
+        this.deactivate();
+      }
+    },
+    /** @param {MouseEvent} ev */
+    handleMouseMove(ev) {
+      if (!this.dragable) {
+        return;
+      }
+      const pos = ev.pageX - this.initialX;
+      if (pos <= 0) {
+        this.position = 0;
+      } else if (pos > this.completedPosition) {
+        this.position = this.completedPosition;
+      } else {
+        this.position = pos;
+      }
+    }
+  },
+  mounted() {
+    const button = this.$refs.button.$el;
+    button.addEventListener('mousedown', ev => this.activate(ev));
+    const container = this.$el;
+    container.addEventListener('mouseup', () => this.handleMouseUp());
+    container.addEventListener('mouseleave', () => this.deactivate());
+    container.addEventListener('mousemove', ev => this.handleMouseMove(ev));
+  }
+};
+</script>
+
+<style>
+.sd-slide-confirm {
+  display: inline-block;
+  position: relative;
+  border-radius: 3px;
+  transition-duration: 0.1s;
+  color: #909399;
+  background-color: #f4f4f5;
+  box-shadow: inset 0 0 0 1px #d3d4d6;
+}
+.sd-slide-confirm--completed {
+  color: #67c23a;
+  background-color: #f0f9eb;
+  box-shadow: inset 0 0 0 1px #c2e7b0;
+}
+.sd-slide-confirm__text {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  user-select: none;
+  pointer-events: none;
+}
+.sd-slide-confirm__inner {
+  display: block;
+}
+.el-button + .sd-slide-confirm {
+  margin-left: 10px;
+}
+</style>

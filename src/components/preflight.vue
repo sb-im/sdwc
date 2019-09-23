@@ -32,13 +32,13 @@
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button size="medium" icon="el-icon-circle-close" @click="toggle">{{ $t('common.cancel') }}</el-button>
-      <el-button
-        type="danger"
+      <sd-slide-confirm
         size="medium"
-        icon="el-icon-refresh"
-        :disabled="disabled || cooldown > 0"
-        @click="emitRun"
-      >{{ $t('preflight.comfirm') }}{{confirmSuffix}}</el-button>
+        ref="slide"
+        :disabled="disabled"
+        :text="$t('preflight.slide2confirm')"
+        @confirm="emitRun"
+      ></sd-slide-confirm>
     </div>
   </el-dialog>
 </template>
@@ -47,6 +47,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
+import SlideConfirm from '@/components/slide-confirm.vue';
 import { checkForecast, windSpeedLevel } from '@/api/plan-runnable';
 
 const StatusClass = {
@@ -90,9 +91,7 @@ export default {
       show: false,
       checkTime: 0,
       loading: Array(4).fill(false),
-      preflightData: DefaultPreflightData,
-      countDownInterval: -1,
-      cooldown: 0
+      preflightData: DefaultPreflightData
     };
   },
   computed: {
@@ -127,15 +126,20 @@ export default {
     weatherPoint() {
       return this.depot.info.points.find(p => p.point_type_name === 'weather');
     },
-    disabled() {
-      return this.loading.some(value => value === true) ||
-        (this.drone.status !== 0 && this.drone.status !== 1) ||
-        this.depot.status !== 0 ||
-        (this.weatherPoint.name && this.preflightData.realtime.level === 'error') ||
-        this.preflightData.forecast.level === 'error';
+    canRunPlan() {
+      return (
+        // drone status ok / poweroff
+        (this.drone.status === 0 || this.drone.status === 1)
+        // depot status ok
+        && this.depot.status === 0
+        // have realtime weather && weather ok
+        && (!this.weatherPoint.name || this.preflightData.realtime.level !== 'error')
+        // caiyun weather forecast ok
+        && this.preflightData.forecast.level !== 'error'
+      );
     },
-    confirmSuffix() {
-      return this.cooldown > 0 ? ` (${this.cooldown})` : '';
+    disabled() {
+      return this.loading.some(value => value === true) || !this.canRunPlan;
     }
   },
   methods: {
@@ -191,22 +195,9 @@ export default {
       finish(2);
       await start(this.checkForecast(t));
       finish(3);
-      if (this.show && !this.disabled && this.checkTime === t) {
-        this.countDown();
-      }
-    },
-    countDown() {
-      this.cooldown = 5;
-      this.countDownInterval = setInterval(() => {
-        this.cooldown--;
-        if (this.cooldown <= 0) {
-          clearInterval(this.countDownInterval);
-          this.countDownInterval = -1;
-        }
-      }, 1000);
     },
     emitRun() {
-      this.$emit('run');
+      setTimeout(() => this.$emit('run'), 750);
     }
   },
   watch: {
@@ -214,12 +205,16 @@ export default {
       if (val === true) {
         this.check();
       } else {
-        setTimeout(() => this.preflightData = DefaultPreflightData, 210);
+        setTimeout(() => {
+          this.$refs.slide.deactivate();
+          this.preflightData = DefaultPreflightData;
+        }, 210);
       }
     }
   },
   components: {
-    [Icon.name]: Icon
+    [Icon.name]: Icon,
+    [SlideConfirm.name]: SlideConfirm
   }
 };
 </script>

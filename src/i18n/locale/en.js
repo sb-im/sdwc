@@ -244,6 +244,7 @@ export const locale = {
     forecast: 'Weather Forecast',
     intensity: 'Radar precipitation intensity',
     distance: 'Nearest precipitation zone',
-    comfirm: 'Confirm Run'
+    confirm: 'Confirm Run',
+    slide2confirm: 'Slide to Run Plan'
   }
 };
