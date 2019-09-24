@@ -1,5 +1,12 @@
 <template>
-  <el-dialog custom-class="sd-preflight" :title="$t('preflight.title')" :visible.sync="show">
+  <el-dialog
+    custom-class="sd-preflight"
+    :title="$t('preflight.title')"
+    :visible.sync="show"
+    :close-on-click-modal="false"
+    @open="check"
+    @closed="reset"
+  >
     <div>
       <div class="sd-preflight__item" v-loading="loading[0]">
         <sd-icon value="drone" :size="30"></sd-icon>
@@ -198,18 +205,10 @@ export default {
     },
     emitRun() {
       setTimeout(() => this.$emit('run'), 750);
-    }
-  },
-  watch: {
-    show(val) {
-      if (val === true) {
-        this.check();
-      } else {
-        setTimeout(() => {
-          this.$refs.slide.deactivate();
-          this.preflightData = DefaultPreflightData;
-        }, 210);
-      }
+    },
+    reset() {
+      this.$refs.slide.deactivate();
+      this.preflightData = DefaultPreflightData;
     }
   },
   components: {
