@@ -76,7 +76,6 @@ export default {
       this.position = 0;
       this.dragable = false;
       this.completed = false;
-      this.$el.focus();
     },
     handleMouseUp() {
       if (this.position === this.completedPosition) {
@@ -85,6 +84,10 @@ export default {
       } else {
         this.deactivate();
       }
+    },
+    handleMouseLeave() {
+      if (this.completed) return;
+      this.deactivate();
     },
     /** @param {MouseEvent} ev */
     handleMouseMove(ev) {
@@ -106,7 +109,7 @@ export default {
     button.addEventListener('mousedown', ev => this.activate(ev));
     const container = this.$el;
     container.addEventListener('mouseup', () => this.handleMouseUp());
-    container.addEventListener('mouseleave', () => this.deactivate());
+    container.addEventListener('mouseleave', () => this.handleMouseLeave());
     container.addEventListener('mousemove', ev => this.handleMouseMove(ev));
   }
 };
