@@ -13,6 +13,10 @@ export default {
       required: false,
       default: () => []
     },
+    headingDrone: {
+      type: Number,
+      default: 0
+    },
     positionDepot: {
       type: Object,
       required: false
@@ -54,11 +58,22 @@ export default {
         this.markerDepot = new Marker({
           map: this.map,
           position: this.positionDepot,
-          label: '🚉'
+          label: '🚉',
+          zIndex: 0
         });
       } else {
         this.markerDepot.setPosition(this.positionDepot);
       }
+    },
+    createMarkerDroneIcon(rotation) {
+      return {
+        anchor: { x: 20, y: 20 },
+        path: 'M20,2L8 33.5 20 28 32 33.5z',
+        fillColor: '#ea4335',
+        fillOpacity: 1,
+        strokeColor: '#fff',
+        rotation
+      };
     },
     async drawMarkerDrone() {
       if (this.fit) return;
@@ -72,10 +87,12 @@ export default {
       if (!this.markerDrone) {
         this.markerDrone = { setPosition() { /* noop */ } };
         const { Marker } = await loadGoogleMap();
+        this.markerDroneIcon = this.createMarkerDroneIcon(this.headingDrone);
         this.markerDrone = new Marker({
           map: this.map,
           position: this.path[0],
-          label: '✈️'
+          icon: this.markerDroneIcon,
+          zIndex: 10
         });
       } else {
         this.markerDrone.setPosition(this.path[0]);
@@ -212,6 +229,12 @@ export default {
         this.drawPath();
       }
     },
+    headingDrone(val) {
+      if (this.markerDrone) {
+        this.markerDroneIcon.rotation = val;
+        this.markerDrone.setIcon(this.markerDroneIcon);
+      }
+    },
     positionDepot() {
       this.drawMarkerDepot();
     },
@@ -267,6 +290,6 @@ export default {
   padding: 2px 4px;
   border: 1px solid white;
   border-radius: 10px 0 0 0;
-  background: rgba(234, 67, 53, 0.8);
+  background: #ea4335;
 }
 </style>

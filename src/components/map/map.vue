@@ -1,13 +1,24 @@
 <template>
   <sd-card class="sd-map" :icon="icon" :title="title" dense>
     <template #action>
-      <el-button v-if="drone" icon="el-icon-delete" size="small" @click="handlePathClear">{{ $t('map.clear') }}</el-button>
+      <el-button
+        v-if="drone"
+        icon="el-icon-delete"
+        size="small"
+        @click="handlePathClear"
+      >{{ $t('map.clear') }}</el-button>
       <span>&nbsp;</span>
       <el-radio-group v-model="type" size="small" @change="handleMapChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" :fit="fit" :positionDepot="positionDepot"></component>
+    <component
+      :is="type"
+      v-bind="$attrs"
+      :fit="fit"
+      :headingDrone="headingDrone"
+      :positionDepot="positionDepot"
+    ></component>
   </sd-card>
 </template>
 
@@ -28,6 +39,9 @@ export default {
   inheritAttrs: false,
   props: {
     drone: {
+      type: Object
+    },
+    msg: {
       type: Object
     },
     fit: {
@@ -52,6 +66,10 @@ export default {
     },
     title() {
       return this.$t(this.fit ? 'map.waypoint' : 'map.satellite');
+    },
+    headingDrone() {
+      if (this.msg.status) return this.msg.status.flight.heading;
+      return 0;
     },
     positionDepot() {
       if (!this.drone) return null;

@@ -13,6 +13,10 @@ export default {
       required: false,
       default: () => []
     },
+    headingDrone: {
+      type: Number,
+      default: 0
+    },
     positionDepot: {
       type: Object,
       required: false
@@ -95,6 +99,7 @@ export default {
           this.markerDepot = new SimpleMarker({
             iconStyle: 'red',
             iconLabel: '🚉',
+            zIndex: 0,
             position
           });
           this.map.add(this.markerDepot);
@@ -107,15 +112,15 @@ export default {
       if (this.fit) return;
       if (!this.markerDrone) {
         this.markerDrone = { setPosition() { /* noop */ } };
-        const AMapUI = await loadAMapUI();
-        AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
-          this.markerDrone = new SimpleMarker({
-            iconStyle: 'red',
-            iconLabel: '✈️',
-            position
-          });
-          this.map.add(this.markerDrone);
+        const { Marker, Pixel } = await loadAMap();
+        this.markerDrone = new Marker({
+          icon: '/assets/icons/drone-marker-amap.svg',
+          offset: new Pixel(-20, -20),
+          angle: this.headingDrone,
+          zIndex: 10,
+          position
         });
+        this.map.add(this.markerDrone);
       } else {
         this.markerDrone.setPosition(position);
       }
@@ -197,6 +202,11 @@ export default {
   watch: {
     path() {
       this.drawPath();
+    },
+    headingDrone(val) {
+      if (this.markerDrone) {
+        this.markerDrone.setAngle(val);
+      }
     },
     positionDepot() {
       this.drawMarkerDepot();

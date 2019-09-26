@@ -8,6 +8,7 @@
         :key="`${point.id}_map`"
         :drone="node"
         :path="path"
+        :msg="msg"
       ></sd-map>
     </template>
   </div>
