@@ -1,7 +1,7 @@
 import wretchJSONP from './wretch-jsonp';
 
 const conf = {
-  v: '1.4.14',
+  v: '1.4.15',
   key: ''
 };
 let amapProm;
