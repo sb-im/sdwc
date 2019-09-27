@@ -12,6 +12,8 @@
           <el-button
             size="medium"
             :type="ctl.type || 'warning'"
+            v-loading="pending[ctl.mission]"
+            element-loading-background="rgba(255,255,255,0.5)"
             @click="handleControl(ctl)"
           >{{ $t(ctl.name, ctl.values) }}</el-button>
         </div>
@@ -25,10 +27,8 @@ import Card from '@/components/card.vue';
 import Icon from '@/components/sd-icon.vue';
 
 /**
- * @typedef {import('element-ui/types/button').ButtonType} ButtonType
- * @typedef {import('@/index').SDWC.ControlItem} ControlItem
  * custom control group
- * @type {{ icon: string, item: ControlItem[] }[]}
+ * @type {{ icon: string, item: SDWC.ControlItem[] }[]}
  */
 const Controls = [
   {
@@ -52,6 +52,11 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      pending: {}
+    };
+  },
   computed: {
     disabled() {
       return this.status !== 0;
@@ -62,10 +67,20 @@ export default {
   },
   methods: {
     /**
-     * @param {ControlItem} ctl
+     * @param {SDWC.ControlItem} ctl
      */
     handleControl(ctl) {
-      this.$mqtt(this.point.node_id, ctl).catch(() => { /* noop */ });
+      this.$set(this.pending, ctl.mission, true);
+      this.$mqtt(this.point.node_id, ctl)
+        .catch(() => { /* noop */ })
+        .then(() => this.$set(this.pending, ctl.mission, false));
+    }
+  },
+  mounted() {
+    for (const group of this.controls) {
+      for (const item of group.item) {
+        this.$set(this.pending, item.mission, false);
+      }
     }
   },
   components: {
