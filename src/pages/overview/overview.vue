@@ -41,7 +41,13 @@ export default {
       }
       for (let d of this.drones) {
         if (d.status === 0) {
-          result.push({ id: d.info.id, type: 'drone', name: d.info.name, position: d.position });
+          result.push({
+            type: 'drone',
+            id: d.info.id,
+            name: d.info.name,
+            position: d.position,
+            heading: d.msg.status ? d.msg.status.flight.heading : 0
+          });
         }
       }
       return result;
