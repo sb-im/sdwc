@@ -8,19 +8,13 @@ import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
 export default {
   name: 'sd-map-google',
   props: {
+    /** @type {Vue.PropOptions<{lng: number, lat: number}[]>} */
     path: {
       type: Array,
       required: false,
       default: () => []
     },
-    headingDrone: {
-      type: Number,
-      default: 0
-    },
-    positionDepot: {
-      type: Object,
-      required: false
-    },
+    /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
       required: false
@@ -45,26 +39,10 @@ export default {
         streetViewControl: false
       });
     },
-    async drawMarkerDepot() {
-      if (!this.positionDepot) {
-        if (this.markerDepot) {
-          this.markerDepot.setMap(null);
-          this.markerDepot = null;
-        }
-        return;
-      }
-      if (!this.markerDepot) {
-        const { Marker } = await loadGoogleMap();
-        this.markerDepot = new Marker({
-          map: this.map,
-          position: this.positionDepot,
-          label: '🚉',
-          zIndex: 0
-        });
-      } else {
-        this.markerDepot.setPosition(this.positionDepot);
-      }
-    },
+    /**
+     * @param {number} rotation
+     * @returns {Partial<google.maps.Symbol>}
+     */
     createMarkerDroneIcon(rotation) {
       return {
         anchor: { x: 20, y: 20 },
@@ -75,34 +53,10 @@ export default {
         rotation
       };
     },
-    async drawMarkerDrone() {
-      if (this.fit) return;
-      if (this.path.length === 0) {
-        if (this.markerDepot) {
-          this.markerDrone.setMap(null);
-          this.markerDrone = null;
-        }
-        return;
-      }
-      if (!this.markerDrone) {
-        this.markerDrone = { setPosition() { /* noop */ } };
-        const { Marker } = await loadGoogleMap();
-        this.markerDroneIcon = this.createMarkerDroneIcon(this.headingDrone);
-        this.markerDrone = new Marker({
-          map: this.map,
-          position: this.path[0],
-          icon: this.markerDroneIcon,
-          zIndex: 10
-        });
-      } else {
-        this.markerDrone.setPosition(this.path[0]);
-      }
-    },
     /**
      * 清除并重新绘制路径
      */
     async drawPath() {
-      this.drawMarkerDrone();
       const { Polyline } = await loadGoogleMap();
       if (this.poly) {
         this.poly.setMap(null);
@@ -126,7 +80,6 @@ export default {
      * @param {{lng: number; lat: number}[]} newPath
      */
     async patchPath(newPath) {
-      this.drawMarkerDrone();
       const { LatLng } = await loadGoogleMap();
       // 已经画在地图上的折线点集
       /** @type {google.maps.MVCArray} */
@@ -138,33 +91,57 @@ export default {
         // 将点的经纬度加入点集，GoogleMap 会自动更新折线
         mvcArray.insertAt(0, new LatLng(point.lat, point.lng));
       }
-      // 将地图的中心设为折线上最新的点
-      this.map.setCenter(newPath[0]);
+      if (this.fit) {
+        this.fitPath();
+      } else {
+        this.map.setCenter(this.path[0]);
+      }
     },
     async drawNamedMarkers() {
       if (!this.markers) return;
-      const { Point, LatLngBounds } = await loadGoogleMap();
+      const { LatLngBounds } = await loadGoogleMap();
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
       const bounds = new LatLngBounds();
-      for (const m of this.markers) {
-        if (!m.position) continue;
+      for (const marker of this.markers) {
+        if (!marker.position) continue;
         /** @type {google.maps.Marker} */
-        let marker = this.namedMarkers[m.id];
-        if (marker) {
-          marker.setPosition(m.position);
+        let mapMarker = this.namedMarkers[marker.id];
+        if (mapMarker) {
+          mapMarker.setPosition(marker.position);
+          if (marker.type === 'drone') {
+            /** @type {google.maps.ReadonlySymbol} */
+            const icon = mapMarker.getIcon();
+            if (icon.rotation !== marker.heading) {
+              mapMarker.setIcon({ ...icon, rotation: marker.heading });
+            }
+          }
         } else {
-          marker = new MarkerWithLabel({
-            map: this.map,
-            position: m.position,
-            label: m.type === 'depot' ? '🚉' : '✈️',
-            labelContent: m.name,
-            labelAnchor: new Point(-5, 16),
-            labelClass: 'sd-gmap-marker'
-          });
-          this.$set(this.namedMarkers, m.id, marker);
+          if (marker.type === 'depot') {
+            mapMarker = new MarkerWithLabel({
+              map: this.map,
+              position: marker.position,
+              label: '🚉',
+              labelContent: marker.name,
+              labelAnchor: { x: -5, y: 16 },
+              labelClass: 'sd-gmap-marker'
+            });
+          } else if (marker.type === 'drone') {
+            mapMarker = new MarkerWithLabel({
+              map: this.map,
+              position: marker.position,
+              icon: this.createMarkerDroneIcon(marker.heading),
+              labelContent: marker.name,
+              labelAnchor: { x: 0, y: -10 },
+              labelClass: 'sd-gmap-marker',
+              zIndex: 100
+            });
+          }
+          this.namedMarkers[marker.id] = mapMarker;
         }
-        bounds.extend(marker.getPosition());
+        bounds.extend(mapMarker.getPosition());
+      }
+      if (this.fit) {
         this.map.fitBounds(bounds);
       }
     },
@@ -229,15 +206,6 @@ export default {
         this.drawPath();
       }
     },
-    headingDrone(val) {
-      if (this.markerDrone) {
-        this.markerDroneIcon.rotation = val;
-        this.markerDrone.setIcon(this.markerDroneIcon);
-      }
-    },
-    positionDepot() {
-      this.drawMarkerDepot();
-    },
     markers() {
       this.drawNamedMarkers();
     },
@@ -256,22 +224,17 @@ export default {
     this.map = null;
     /** @type {google.maps.Polyline} */
     this.poly = null;
-    /** @type {google.maps.Marker} */
-    this.markerDepot = null;
-    /** @type {google.maps.Marker} */
-    this.markerDrone = null;
     /** @type {{[key: string]: google.maps.Marker}} */
     this.namedMarkers = {};
   },
   mounted() {
     this.initMap().then(() => {
-      this.drawMarkerDepot();
       this.drawPath();
       this.drawNamedMarkers();
     });
   },
   beforeDestroy() {
-    Object.keys(this.namedMarkers).concat('poly', 'markerDepot', 'markerDrone').forEach(prop => {
+    Object.keys(this.namedMarkers).concat('poly').forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;

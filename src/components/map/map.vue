@@ -12,13 +12,7 @@
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component
-      :is="type"
-      v-bind="$attrs"
-      :fit="fit"
-      :headingDrone="headingDrone"
-      :positionDepot="positionDepot"
-    ></component>
+    <component :is="type" v-bind="$attrs" :path="path" :fit="fit" :markers="markers"></component>
   </sd-card>
 </template>
 
@@ -44,6 +38,9 @@ export default {
     msg: {
       type: Object
     },
+    path: {
+      type: Array
+    },
     fit: {
       type: Boolean
     }
@@ -67,21 +64,33 @@ export default {
     title() {
       return this.$t(this.fit ? 'map.waypoint' : 'map.satellite');
     },
-    headingDrone() {
-      if (this.msg.status) return this.msg.status.flight.heading;
-      return 0;
-    },
-    positionDepot() {
-      if (!this.drone) return null;
+    /**
+     * @returns {SDWC.Marker[]}
+     */
+    markers() {
+      const markers = [
+        {
+          type: 'drone',
+          id: this.drone.id,
+          name: this.drone.name,
+          position: this.path[0],
+          heading: this.msg.status ? this.msg.status.flight.heading : 0
+        }
+      ];
       for (const d of this.depots) {
         if (d.status === 0
           && d.msg.status
           && d.msg.status.link_id === this.drone.id
         ) {
-          return d.position;
+          markers.push({
+            type: 'depot',
+            id: d.info.id,
+            name: d.info.name,
+            position: d.position
+          });
         }
       }
-      return null;
+      return markers;
     }
   },
   methods: {

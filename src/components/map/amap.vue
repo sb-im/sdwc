@@ -8,19 +8,13 @@ import { loadAMap, loadAMapUI } from '@/api/amap';
 export default {
   name: 'sd-map-amap',
   props: {
+    /** @type {Vue.PropOptions<{lng: number, lat: number}[]>} */
     path: {
       type: Array,
       required: false,
       default: () => []
     },
-    headingDrone: {
-      type: Number,
-      default: 0
-    },
-    positionDepot: {
-      type: Object,
-      required: false
-    },
+    /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
       required: false
@@ -41,6 +35,7 @@ export default {
       const center = this.path[0] || this.center;
       this.map = new AMap.Map(this.$refs.map, {
         zoom: 18,
+        jogEnable: false,
         center: new AMap.LngLat(center.lng, center.lat)
       });
       AMap.plugin(['AMap.ToolBar', 'AMap.MapType', 'AMap.Scale'], () => {
@@ -84,62 +79,16 @@ export default {
         });
       });
     },
-    async drawMarkerDepot() {
-      if (!this.positionDepot) {
-        if (this.markerDepot) {
-          this.markerDepot.setMap(null);
-          this.markerDepot = null;
-        }
-        return;
-      }
-      const [position] = await this.convertCoordinate([this.positionDepot]);
-      if (!this.markerDepot) {
-        const AMapUI = await loadAMapUI();
-        AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
-          this.markerDepot = new SimpleMarker({
-            iconStyle: 'red',
-            iconLabel: '🚉',
-            zIndex: 0,
-            position
-          });
-          this.map.add(this.markerDepot);
-        });
-      } else {
-        this.markerDepot.setPosition(position);
-      }
-    },
-    async drawMarkerDrone(position) {
-      if (this.fit) return;
-      if (!this.markerDrone) {
-        this.markerDrone = { setPosition() { /* noop */ } };
-        const { Marker, Pixel } = await loadAMap();
-        this.markerDrone = new Marker({
-          icon: '/assets/icons/drone-marker-amap.svg',
-          offset: new Pixel(-20, -20),
-          angle: this.headingDrone,
-          zIndex: 10,
-          position
-        });
-        this.map.add(this.markerDrone);
-      } else {
-        this.markerDrone.setPosition(position);
-      }
-    },
     async drawPath() {
       if (this.path.length === 0) {
         if (this.poly) {
           this.poly.setMap(null);
           this.poly = null;
         }
-        if (this.markerDrone) {
-          this.markerDrone.setMap(null);
-          this.markerDrone = null;
-        }
         return;
       }
       const { Polyline } = await loadAMap();
       const path = await this.convertCoordinate(this.path);
-      this.drawMarkerDrone(path[0]);
       if (this.poly) {
         this.poly.setPath(path);
       } else {
@@ -167,26 +116,55 @@ export default {
       ]);
       AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
         for (let i = 0; i < this.markers.length; i++) {
-          const m = this.markers[i];
-          if (!m.position) continue;
-          let marker = this.namedMarkers[m.id];
+          const marker = this.markers[i];
+          if (!marker.position) continue;
+          /** @type {AMap.Marker} */
+          let mapMarker = this.namedMarkers[marker.id];
           const pos = position[i];
-          if (marker) {
-            marker.setPosition(pos);
-          } else {
-            marker = new SimpleMarker({
-              iconStyle: 'red',
-              iconLabel: m.type === 'depot' ? '🚉' : '✈️',
-              position: pos,
-              label: {
-                content: m.name,
-                offset: new AMap.Pixel(25, 30)
+          if (mapMarker) {
+            mapMarker.setPosition(pos);
+            if (marker.type === 'drone') {
+              /** @type {{ heading: number; img: HTMLImageElement }} */
+              const extData = mapMarker.getExtData();
+              if (extData.heading !== marker.heading) {
+                extData.img.style.transform = `rotate(${marker.heading}deg)`;
               }
-            });
-            this.$set(this.namedMarkers, m.id, marker);
-            this.map.add(marker);
+            }
+          } else {
+            if (marker.type === 'depot') {
+              mapMarker = new SimpleMarker({
+                iconStyle: 'red',
+                iconLabel: '🚉',
+                position: pos,
+                label: {
+                  content: marker.name,
+                  offset: { x: 25, y: 30 }
+                }
+              });
+            } else if (marker.type === 'drone') {
+              const img = document.createElement('img');
+              img.src = '/assets/icons/drone-marker-amap.svg';
+              img.style.transform = `rotate(${marker.heading}deg)`;
+              mapMarker = new AMap.Marker({
+                content: img,
+                offset: { x: -20, y: -20 },
+                position: pos,
+                extData: {
+                  img,
+                  heading: marker.heading
+                },
+                label: {
+                  content: marker.name,
+                  offset: { x: 25, y: 30 }
+                }
+              });
+            }
+            this.namedMarkers[marker.id] = mapMarker;
+            this.map.add(mapMarker);
           }
-          this.map.setFitView();
+          if (this.fit) {
+            this.map.setFitView();
+          }
         }
       });
     },
@@ -202,14 +180,6 @@ export default {
   watch: {
     path() {
       this.drawPath();
-    },
-    headingDrone(val) {
-      if (this.markerDrone) {
-        this.markerDrone.setAngle(val);
-      }
-    },
-    positionDepot() {
-      this.drawMarkerDepot();
     },
     markers() {
       this.drawNamedMarkers();
@@ -229,22 +199,17 @@ export default {
     this.map = null;
     /** @type {AMap.Polyline} */
     this.poly = null;
-    /** @type {AMap.Marker} */
-    this.markerDepot = null;
-    /** @type {AMap.Marker} */
-    this.markerDrone = null;
     /** @type {{[key: string]: AMap.Marker}} */
     this.namedMarkers = {};
   },
   mounted() {
     this.initMap().then(() => {
-      this.drawMarkerDepot();
       this.drawPath();
       this.drawNamedMarkers();
     });
   },
   beforeDestroy() {
-    Object.keys(this.namedMarkers).concat('poly', 'markerDepot', 'markerDrone').forEach(prop => {
+    Object.keys(this.namedMarkers).concat('poly').forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
