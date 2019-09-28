@@ -141,7 +141,6 @@ export default {
         n.$data.duration = 2000;
         n.startTimer();
       }).catch(e => {
-        console.error(e);
         n.$data.type = 'error';
         n.$data.message = this.$t('plan.view.start_fail', { code: e.status });
       }).then(this.checkPlanRunning);
@@ -160,7 +159,6 @@ export default {
         n.$data.duration = 2000;
         n.startTimer();
       }).catch(e => {
-        console.error(e);
         n.$data.type = 'error';
         n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
       }).then(this.checkPlanRunning);
