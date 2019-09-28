@@ -2,15 +2,18 @@
   <sd-card class="debug" icon="maintenance" :title="$t('common.debug')">
     <div
       v-loading="disabled"
+      element-loading-custom-class="control--disable"
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="$t('common.not_operational')"
     >
-      <div class="debug__control">
+      <div class="debug__control sd-control__buttons">
         <el-button
           v-for="ctl in controls"
           :key="ctl"
           size="medium"
           type="warning"
+          :disabled="pending[ctl]"
+          v-loading="pending[ctl]"
           @click="handleControl(ctl)"
         >{{ ctl }}</el-button>
       </div>
@@ -41,6 +44,7 @@ export default {
   },
   data() {
     return {
+      pending: {},
       command: ''
     };
   },
@@ -53,8 +57,14 @@ export default {
     }
   },
   methods: {
-    handleControl(ctl, arg) {
-      this.$mqtt(this.point.node_id, { mission: ctl, arg }).catch(() => { /* noop */ });
+    /**
+     * @param {string} ctl
+     */
+    handleControl(ctl) {
+      this.$set(this.pending, ctl, true);
+      this.$mqtt(this.point.node_id, { mission: ctl })
+        .catch(() => { /* noop */ })
+        .then(() => this.$set(this.pending, ctl, false));
     },
     handleCmdSend() {
       const [mission, ...arg] = this.command.split(' ');
@@ -63,6 +73,9 @@ export default {
     }
   },
   mounted() {
+    for (const it of this.controls) {
+      this.$set(this.pending, it, false);
+    }
     const inputCommand = this.$refs.inputCommand.$el.getElementsByTagName('input')[0];
     if (inputCommand) {
       inputCommand.addEventListener('keypress', (ev) => {
