@@ -1,16 +1,16 @@
 <template>
-  <el-card shadow="never" :class="className">
-    <template #header>
-      <div class="sd-card__head">
-        <sd-icon :value="icon" :size="36"></sd-icon>
-        <span class="sd-card__title">{{ title }}</span>
-        <div class="sd-card__action">
-          <slot name="action"></slot>
-        </div>
+  <div class="el-card is-never-shadow sd-card" :class="className">
+    <div class="el-card__header sd-card__head">
+      <sd-icon :value="icon" :size="36"></sd-icon>
+      <span class="sd-card__title">{{ title }}</span>
+      <div class="sd-card__action">
+        <slot name="action"></slot>
       </div>
-    </template>
-    <slot></slot>
-  </el-card>
+    </div>
+    <div class="el-card__body">
+      <slot></slot>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -36,7 +36,6 @@ export default {
   computed: {
     className() {
       return {
-        'sd-card': true,
         'sd-card--dense': this.dense
       };
     }
@@ -54,6 +53,7 @@ export default {
 .sd-card__head {
   display: flex;
   align-items: center;
+  user-select: none;
 }
 .sd-card__title {
   margin-left: 8px;
