@@ -3,17 +3,18 @@
     <div
       class="control__body"
       v-loading="disabled"
+      element-loading-custom-class="control--disable"
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="$t('common.not_operational')"
     >
-      <div class="control__group" v-for="group in controls" :key="group.icon">
+      <div class="control__group control__buttons" v-for="group in controls" :key="group.icon">
         <sd-icon :value="group.icon" :size="36"></sd-icon>
         <div v-for="ctl in group.item" :key="ctl.name">
           <el-button
             size="medium"
             :type="ctl.type || 'warning'"
+            :disabled="pending[ctl.mission]"
             v-loading="pending[ctl.mission]"
-            element-loading-background="rgba(255,255,255,0.5)"
             @click="handleControl(ctl)"
           >{{ $t(ctl.name, ctl.values) }}</el-button>
         </div>
@@ -94,6 +95,7 @@ export default {
 .control__body {
   display: flex;
   flex-wrap: wrap;
+  user-select: none;
 }
 .control__group {
   margin-right: 16px;
@@ -103,9 +105,50 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.control__body .el-loading-mask {
+.control--disable {
   transition: opacity 0s;
-  user-select: none;
   cursor: not-allowed;
+}
+.control__buttons .el-button {
+  position: relative;
+}
+.control__buttons .el-button.is-disabled {
+  border-color: transparent;
+}
+.control__buttons .el-button .el-loading-mask {
+  background-color: rgba(255, 255, 255, 0.55);
+}
+.control__buttons .el-button .el-loading-spinner .circular circle {
+  r: 10;
+  animation-name: loading-dash--small;
+}
+.control__buttons .el-button--danger .el-loading-spinner .circular circle {
+  stroke: #f56c6c;
+}
+.control__buttons .el-button--warning .el-loading-spinner .circular circle {
+  stroke: #e6a23c;
+}
+.control__buttons .el-button--primary .el-loading-spinner .circular circle {
+  stroke: #409eff;
+}
+.control__buttons .el-button--success .el-loading-spinner .circular circle {
+  stroke: #67c23a;
+}
+.control__buttons .el-button--info .el-loading-spinner .circular circle {
+  stroke: #909399;
+}
+@keyframes loading-dash--small {
+  0% {
+    stroke-dasharray: 1, 100;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 45, 75;
+    stroke-dashoffset: -20px;
+  }
+  100% {
+    stroke-dasharray: 45, 75;
+    stroke-dashoffset: -60px;
+  }
 }
 </style>
