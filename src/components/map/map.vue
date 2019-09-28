@@ -68,6 +68,9 @@ export default {
      * @returns {SDWC.Marker[]}
      */
     markers() {
+      if (!this.drone) {
+        return null;
+      }
       const markers = [
         {
           type: 'drone',
