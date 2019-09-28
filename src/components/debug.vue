@@ -6,7 +6,7 @@
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="$t('common.not_operational')"
     >
-      <div class="debug__control sd-control__buttons">
+      <div class="debug__control control__buttons">
         <el-button
           v-for="ctl in controls"
           :key="ctl"
