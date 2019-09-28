@@ -5,6 +5,18 @@
 <script>
 import { loadAMap, loadAMapUI } from '@/api/amap';
 
+/**
+ * @type {AMap.lnglat}
+ * store map center across instance
+ */
+let __AMAP_CENTER__;
+
+/**
+ * @type {number}
+ * store zoom level across instance
+ */
+let __AMAP_ZOOM__;
+
 export default {
   name: 'sd-map-amap',
   props: {
@@ -19,10 +31,10 @@ export default {
       type: Array,
       required: false
     },
+    /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
     center: {
       type: Object,
-      required: false,
-      default: () => ({ lat: 30, lng: 120 })
+      required: false
     },
     fit: {
       type: Boolean,
@@ -32,9 +44,9 @@ export default {
   methods: {
     async initMap() {
       const AMap = await loadAMap();
-      const center = this.path[0] || this.center;
+      const center = this.center || __AMAP_CENTER__ || { lat: 30, lng: 120 };
       this.map = new AMap.Map(this.$refs.map, {
-        zoom: 18,
+        zoom: this.fit ? __AMAP_ZOOM__ : 18,
         jogEnable: false,
         center: new AMap.LngLat(center.lng, center.lat)
       });
@@ -108,7 +120,6 @@ export default {
       }
     },
     async drawNamedMarkers() {
-      if (!this.markers) return;
       const [AMap, AMapUI, position] = await Promise.all([
         loadAMap(),
         loadAMapUI(),
@@ -204,8 +215,12 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
-      this.drawPath();
-      this.drawNamedMarkers();
+      if (this.path.length !== 0) {
+        this.drawPath();
+      }
+      if (this.markers) {
+        this.drawNamedMarkers();
+      }
     });
   },
   beforeDestroy() {
@@ -216,6 +231,8 @@ export default {
       }
     });
     if (this.map) {
+      __AMAP_CENTER__ = this.map.getCenter();
+      __AMAP_ZOOM__ = this.map.getZoom();
       this.map.destroy();
     }
   }

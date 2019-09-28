@@ -5,6 +5,18 @@
 <script>
 import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
 
+/**
+ * @type {google.maps.LatLng}
+ * store map center across instance
+ */
+let __GMAP_CENTER__;
+
+/**
+ * @type {number}
+ * store zoom level across instance
+ */
+let __GMAP_ZOOM__;
+
 export default {
   name: 'sd-map-google',
   props: {
@@ -19,10 +31,10 @@ export default {
       type: Array,
       required: false
     },
+    /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
     center: {
       type: Object,
-      required: false,
-      default: () => ({ lat: 30, lng: 120 })
+      required: false
     },
     fit: {
       type: Boolean,
@@ -33,8 +45,8 @@ export default {
     async initMap() {
       const { Map, MapTypeId } = await loadGoogleMap();
       this.map = new Map(this.$refs.map, {
-        zoom: 20,
-        center: this.path[0] || this.center,
+        zoom: this.fit ? __GMAP_ZOOM__ : 20,
+        center: this.center || this.path[0] || __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
         streetViewControl: false
       });
@@ -98,7 +110,6 @@ export default {
       }
     },
     async drawNamedMarkers() {
-      if (!this.markers) return;
       const { LatLngBounds } = await loadGoogleMap();
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
@@ -229,8 +240,12 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
-      this.drawPath();
-      this.drawNamedMarkers();
+      if (this.path.length !== 0) {
+        this.drawPath();
+      }
+      if (this.markers) {
+        this.drawNamedMarkers();
+      }
     });
   },
   beforeDestroy() {
@@ -240,6 +255,10 @@ export default {
         this[prop] = null;
       }
     });
+    if (this.map) {
+      __GMAP_CENTER__ = this.map.getCenter();
+      __GMAP_ZOOM__ = this.map.getZoom();
+    }
   }
 };
 </script>
