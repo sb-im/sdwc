@@ -42,7 +42,7 @@
       <sd-slide-confirm
         size="medium"
         ref="slide"
-        :disabled="disabled"
+        :disabled="slideDisabled"
         :text="$t('preflight.slide2confirm')"
         @confirm="emitRun"
       ></sd-slide-confirm>
@@ -133,7 +133,7 @@ export default {
     weatherPoint() {
       return this.depot.info.points.find(p => p.point_type_name === 'weather');
     },
-    canRunPlan() {
+    checkPassed() {
       return (
         // drone status ok / poweroff
         (this.drone.status === 0 || this.drone.status === 1)
@@ -145,8 +145,15 @@ export default {
         && this.preflightData.forecast.level !== 'error'
       );
     },
-    disabled() {
-      return this.loading.some(value => value === true) || !this.canRunPlan;
+    slideDisabled() {
+      return (
+        // checking
+        this.loading.some(value => value === true)
+        // check failed
+        || !this.checkPassed
+        // drone poweroff
+        || this.drone.status === 1
+      );
     }
   },
   methods: {
@@ -157,8 +164,11 @@ export default {
       this.show = !this.show;
     },
     wait() {
-      const timeout = (1 + Math.random()) * 1000;
+      const timeout = (1.5 + Math.random()) * 1000;
       return new Promise(resolve => setTimeout(resolve, timeout));
+    },
+    async preCheck() {
+      this.$mqtt(this.depot.info.id, { mission: 'power_chargedrone_on' });
     },
     async checkDrone() {
       // nothing to check though
@@ -168,40 +178,43 @@ export default {
       if (!id) return;
       await this.updateDepotStatus(id);
     },
-    async checkRealtime(time) {
+    async checkRealtime(timestamp) {
       if (!this.weatherPoint) return;
       this.preflightData.realtime = DefaultPreflightData.realtime;
       /** @type {SDWC.WeatherRecord[]} */
       const records = this.depot.weatherRec;
       const avgSpeed = records.reduce((a, b) => a + b.weather.WS, 0) / records.length;
       const result = windSpeedLevel(avgSpeed);
-      if (time === this.checkTime) {
+      if (timestamp === this.checkTime) {
         this.preflightData.realtime = result;
       }
     },
-    async checkForecast(time) {
+    async checkForecast(timestamp) {
       const { position } = this.depot;
       if (!position) return;
       this.preflightData.forecast = DefaultPreflightData.forecast;
       const result = await checkForecast(position);
-      if (time === this.checkTime) {
+      if (timestamp === this.checkTime) {
         this.preflightData.forecast = result;
       }
     },
     async check() {
       const t = Date.now();
-      const start = prom => Promise.all([this.wait(), prom]);
-      const finish = index => this.checkTime === t && this.$set(this.loading, index, false);
+      const wrap = async (prom, index) => {
+        await Promise.all([this.wait(), prom]);
+        if (this.checkTime === t) {
+          this.$set(this.loading, index, false);
+        }
+      };
+      this.preCheck();
       this.checkTime = t;
       this.loading = Array(4).fill(true);
-      await start(this.checkDrone());
-      finish(0);
-      await start(this.checkDepot());
-      finish(1);
-      await start(this.checkRealtime(t));
-      finish(2);
-      await start(this.checkForecast(t));
-      finish(3);
+      await Promise.all([
+        wrap(this.checkDrone(), 0),
+        wrap(this.checkDepot(), 1),
+        wrap(this.checkRealtime(t), 2),
+        wrap(this.checkForecast(t), 3)
+      ]);
     },
     emitRun() {
       setTimeout(() => this.$emit('run'), 750);
