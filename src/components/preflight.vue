@@ -171,7 +171,7 @@ export default {
     async checkRealtime(time) {
       if (!this.weatherPoint) return;
       this.preflightData.realtime = DefaultPreflightData.realtime;
-      /** @type {import('@/store/modules/node').WeatherRecord} */
+      /** @type {SDWC.WeatherRecord[]} */
       const records = this.depot.weatherRec;
       const avgSpeed = records.reduce((a, b) => a + b.weather.WS, 0) / records.length;
       const result = windSpeedLevel(avgSpeed);

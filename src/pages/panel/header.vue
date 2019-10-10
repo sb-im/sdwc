@@ -76,10 +76,6 @@
 </template>
 
 <script>
-/**
- * @typedef {import('@/store/modules/node').NodeInfo} NodeInfo
- * @typedef {import('@/store/modules/notification').NotificationItem} NotificationItem
- */
 import { mapActions, mapState } from 'vuex';
 import { locales } from '@/i18n';
 import Icon from '@/components/sd-icon.vue';
@@ -133,7 +129,7 @@ export default {
       }
     },
     /**
-     * @param {NotificationItem} n
+     * @param {SDWC.NotificationItem} n
      */
     notificationToObject(n) {
       const icon = StatusIcon[n.status];
@@ -163,7 +159,7 @@ export default {
       }
     },
     /**
-     * @param {NodeInfo} info node info
+     * @param {SDWC.NodeInfo} info node info
      * @param {number} status node status
      * @returns {{id: number, icon: string, color: string, text: string}}
      */

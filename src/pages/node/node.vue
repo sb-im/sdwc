@@ -26,7 +26,7 @@ export default {
     ...mapState([
       'node'
     ]),
-    /** @returns {import('@/store/modules/node').Node} */
+    /** @returns {SDWC.Node} */
     selectedNode() {
       return this.node.find(node => node.info.id === this.id);
     },

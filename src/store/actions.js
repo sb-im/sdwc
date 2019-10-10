@@ -4,7 +4,7 @@ import Papaparse from 'papaparse';
 import ContentDisposition from 'content-disposition';
 
 import { setLocale, locales } from '@/i18n';
-import * as SDWC from '@/api/sdwc';
+import * as S from '@/api/sdwc';
 import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
@@ -21,8 +21,8 @@ import { MutationTypes as PLAN } from './modules/plan';
  * @typedef {object} Context
  * @property {import('vuex/types/index').Commit} commit
  * @property {import('vuex/types/index').Dispatch} dispatch
- * @property {import('./getters').Getters} getters
- * @property {import('./index').State} state
+ * @property {SDWC.EachReturnType<typeof import('./getters')>} getters
+ * @property {SDWC.State} state
  */
 
 /**
@@ -61,7 +61,7 @@ export function restorePreference({ commit }) {
  * @param {Context} context
  */
 export async function configure({ state, commit }) {
-  const data = await SDWC.config();
+  const data = await S.config();
   commit(CONF.SET_CONFIG, data);
   if (!state.preference.lang) {
     commit(PREF.SET_PREFERENCE, { lang: data.lang });
@@ -88,7 +88,7 @@ export async function login({ state, commit }, { username, password }) {
     setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
     return token;
   }
-  catch (e) {
+  catch (/** @type {SDWC.LoginResponseErr} */ e) {
     throw { msg: e.invalid_grant };
   }
 }
@@ -133,7 +133,7 @@ export function storeUser({ state }) {
 export async function restoreSession({ commit }) {
   const str = sessionStorage.getItem('user');
   if (!str) return;
-  /** @type {import('./modules/user').State} */
+  /** @type {SDWC.User} */
   let json;
   try { json = JSON.parse(str); } catch (e) { /* ignore it */ }
   if (!json.token) return;
@@ -238,9 +238,8 @@ export async function getPlanLogs({ commit }, id) {
 }
 
 /**
- * @typedef {import('./modules/plan').PlanInfo} Plan
  * @param {Context} context
- * @param {Plan} plan
+ * @param {SDWC.PlanInfo} plan
  */
 export async function createPlan({ commit }, plan) {
   const data = await SuperDock.createPlan(plan);
@@ -260,7 +259,7 @@ export async function retrievePlan({ commit }, id) {
 
 /**
  * @param {Context} context
- * @param {Plan} plan
+ * @param {SDWC.PlanInfo} plan
  */
 export async function updatePlan({ commit }, plan) {
   const data = await SuperDock.updatePlan(plan.id, plan);

@@ -29,7 +29,7 @@ import Icon from '@/components/sd-icon.vue';
 
 /**
  * custom control group
- * @type {{ icon: string, item: SDWC.ControlItem[] }[]}
+ * @type {{ icon: string, item: SDWC.ControlButton[] }[]}
  */
 const Controls = [
   {

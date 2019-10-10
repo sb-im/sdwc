@@ -1,5 +1,6 @@
 // @ts-check
 
+/** @type {SDWC.Config} */
 const state = {
   super_dock_api_server: '',
   oauth_client_id: '',
@@ -11,19 +12,15 @@ const state = {
   mqtt_url: '',
 };
 
-/**
- * @typedef {typeof state} State
- */
-
 export const MutationTypes = {
   SET_CONFIG: 'SET_CONFIG'
 };
 
 /**
- * @type {{ [x: string]: (state: State, payload: any) => void }}
+ * @type {{ [x: string]: (state: SDWC.Config, payload: any) => void }}
  */
 const mutations = {
-  [MutationTypes.SET_CONFIG](state, /** @type {State} */ payload) {
+  [MutationTypes.SET_CONFIG](state, /** @type {Partial<SDWC.Config>} */ payload) {
     Object.assign(state, payload);
   }
 };

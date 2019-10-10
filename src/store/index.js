@@ -8,8 +8,7 @@ import * as getters from './getters';
 Vue.use(Vuex);
 
 /**
- * @typedef {import('./modules').State} State
- * @type {import('vuex').Store<State>}
+ * @type {import('vuex').Store<SDWC.State>}
  */
 export default new Vuex.Store({
   modules,

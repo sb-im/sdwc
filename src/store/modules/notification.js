@@ -1,14 +1,9 @@
 // @ts-check
 
 /**
- * @typedef {{id: string; time: number; prefix: string; title: string; status: number}} NotificationItem
- * @type {NotificationItem[]}
+ * @type {SDWC.NotificationItem[]}
 */
 const state = [];
-
-/**
- * @typedef {typeof state} State
- */
 
 export const MutationTypes = {
   ADD_NOTI: 'ADD_NOTI',
@@ -17,13 +12,13 @@ export const MutationTypes = {
 };
 
 /**
- * @type {{ [x: string]: (state: State, payload: any) => void }}
+ * @type {{ [x: string]: (state: SDWC.NotificationItem[], payload: any) => void }}
  */
 const mutations = {
-  [MutationTypes.ADD_NOTI](state, /** @type {NotificationItem} */ payload) {
+  [MutationTypes.ADD_NOTI](state, /** @type {SDWC.NotificationItem} */ payload) {
     state.unshift(payload);
   },
-  [MutationTypes.MOD_NOTI](state, /** @type {NotificationItem} */ payload) {
+  [MutationTypes.MOD_NOTI](state, /** @type {SDWC.NotificationItem} */ payload) {
     const n = state.find(i => i.id === payload.id);
     if (n) {
       n.status = payload.status;

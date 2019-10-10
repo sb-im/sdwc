@@ -1,24 +1,7 @@
 // @ts-check
 
-/**
- * @typedef {{id: number; name: string; node_id: number; point_type_id: number; point_type_name: string; created_at: string; updated_at: string}} Point
- * @typedef {{id: number; name: string; type_name: 'air'|'depot'; description: string; points: Point[]}} NodeInfo
- * @typedef {number} NodeStatus
- * @typedef {any} NodeMsg
- * @typedef {string[]} NodeLog
- * @typedef {{lat: number, lng: number}} NodePosition
- * @typedef {NodePosition[]} NodePath
- * @typedef {{WD: number, WS: number, T: number, RH: number, Pa: number}} NodeWeather
- * @typedef {{time: number, weather: NodeWeather}[]} WeatherRecord
- * @typedef {{info: NodeInfo; status: NodeStatus; msg: NodeMsg; log: NodeLog; position: NodePosition; path: NodePath; weatherRec: WeatherRecord}} Node
- */
-
-/** @type {Node[]} */
+/** @type {SDWC.Node[]} */
 const state = [];
-
-/**
- * @typedef {typeof state} State
-*/
 
 export const MutationTypes = {
   ADD_NODE: 'ADD_NODE',
@@ -30,10 +13,10 @@ export const MutationTypes = {
 };
 
 /**
- * @type {{ [x: string]: (state: State, payload: any) => void }}
+ * @type {{ [x: string]: (state: SDWC.Node[], payload: any) => void }}
  */
 const mutations = {
-  [MutationTypes.ADD_NODE](state, /** @type {NodeInfo} */ payload) {
+  [MutationTypes.ADD_NODE](state, /** @type {SDWC.NodeInfo} */ payload) {
     const node = state.find(node => node.info.id === payload.id);
     if (node) {
       return;

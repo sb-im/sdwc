@@ -35,7 +35,7 @@ function stringifyMission({ method, params }) {
 }
 
 /**
- * @param {import('@/store/modules/notification').NotificationItem} n
+ * @param {SDWC.NotificationItem} n
  * @param {boolean} mod
  */
 function emitNotification(n, mod = false) {

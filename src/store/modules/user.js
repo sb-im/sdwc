@@ -1,15 +1,12 @@
 // @ts-check
 
+/** @type {SDWC.User} */
 const state = {
   id: -1,
   email: '',
   token: '',
   due: -1
 };
-
-/**
- * @typedef {typeof state} State
-*/
 
 export const MutationTypes = {
   SET_USER_TOKEN: 'SET_USER_TOKEN',
@@ -18,7 +15,7 @@ export const MutationTypes = {
 };
 
 /**
- * @type {{ [x: string]: (state: State, payload: any) => void }}
+ * @type {{ [x: string]: (state: SDWC.User, payload: any) => void }}
  */
 const mutations = {
   [MutationTypes.SET_USER_TOKEN](state, { token, due }) {
