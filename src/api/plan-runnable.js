@@ -10,7 +10,7 @@ const Level = {
 };
 
 /**
- * @param {import('./api-types').Weather3sResult} data
+ * @param {ApiTypes.Weather3sResult} data
  */
 function realtimeLevel(data) {
   let { wind_speed, rainfall_count } = data[0];  // unit: 0.1 m/s
@@ -36,7 +36,7 @@ function realtimeLevel(data) {
 }
 
 /**
- * @param {import('./api-types').CaiYunRealtime} data
+ * @param {ApiTypes.CaiYunRealtime} data
  */
 function forecastLevel(data) {
   let {
