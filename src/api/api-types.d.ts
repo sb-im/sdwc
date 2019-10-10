@@ -1,13 +1,30 @@
-export interface CaiYunResult<T> {
-  status: string;
-  lang: string;
-  unit?: string;
-  server_time: number;
-  location: number[];
-  api_status: string;
-  tzshift: number;
-  api_version: string;
-  result: T;
+namespace ApiTypes {
+  export interface CaiYunResult<T> {
+    status: string;
+    lang: string;
+    unit?: string;
+    server_time: number;
+    location: number[];
+    api_status: string;
+    tzshift: number;
+    api_version: string;
+    result: T;
+  }
+  export type CaiYunRealtime = CaiYunResult<RealtimeResult>;
+  export type CaiYunMinutely = CaiYunResult<MinutelyResult>;
+  export type Weather3sResult = Weather3sData[];
+
+  export interface LoginResponseOk {
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+    created_at: number;
+  }
+
+  export interface LoginResponseErr {
+    error: string;
+    error_description: string;
+  }
 }
 
 interface RealtimeResult {
@@ -59,8 +76,6 @@ interface Precipitation {
   local: PrecipitationLocal;
 }
 
-export type CaiYunRealtime = CaiYunResult<RealtimeResult>;
-
 interface MinutelyResult {
   forecast_keypoint: string;
   minutely: MinutelyDetails;
@@ -76,8 +91,6 @@ interface MinutelyDetails {
   precipitation_2h: number[];
   precipitation: number[];
 }
-
-export type CaiYunMinutely = CaiYunResult<MinutelyResult>;
 
 interface Weather3sData {
   _id: string;
@@ -98,5 +111,3 @@ interface Weather3sData {
   timestamp: string;
   __v: number;
 }
-
-export type Weather3sResult = Weather3sData[];

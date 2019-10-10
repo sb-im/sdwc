@@ -8,7 +8,7 @@ export function setBaseURL(url = '') {
 
 /**
  * @param {string} id
- * @returns {Promise<import('./api-types').Weather3sResult>}
+ * @returns {ApiTypes.Weather3sResult>}
  */
 export function get(id = '') {
   return wr.url(id, /^https?:/.test(id))

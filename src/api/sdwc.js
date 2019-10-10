@@ -7,6 +7,7 @@ export function setBaseURL(url = '') {
 }
 
 let confProm;
+/** @returns {Promise<SDWC.Config>} */
 export function config() {
   if (confProm) return confProm;
   return confProm = wr.url('/config.json')

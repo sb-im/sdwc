@@ -10,8 +10,7 @@ export function setAuth(token = '') {
   wr = wr.auth(token);
 }
 
-// {"access_token":"...","token_type":"bearer","expires_in":7200,"created_at":1553867150}
-// {"error":"invalid_grant","error_description":"The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client."}
+/** @returns {Promise<ApiTypes.LoginResponseOk>} */
 export function token(username, password, client_id, client_secret) {
   return wr.url('/oauth/token')
     .post({
@@ -40,6 +39,7 @@ export function user() {
     .json();
 }
 
+/** @returns {Promise<SDWC.NodeInfo[]>} */
 export function nodes() {
   return wr.url('/api/v1/nodes/')
     .get()
@@ -52,6 +52,7 @@ export function getNodeMissionQueue(id) {
     .json();
 }
 
+/** @returns {Promise<SDWC.PlanInfo[]>} */
 export function plans() {
   return wr.url('/api/v1/plans/')
     .get()
@@ -65,6 +66,7 @@ export function createPlan(plan) {
     .json();
 }
 
+/** @returns {Promise<SDWC.PlanInfo>} */
 export function retrievePlan(id) {
   return wr.url(`/api/v1/plans/${id}`)
     .get()
@@ -102,12 +104,14 @@ export function stopPlan(id) {
     .text();
 }
 
+/** @returns {Promise<SDWC.PlanLog[]>} */
 export function planLogs(id) {
   return wr.url(`/api/v1/plans/${id}/plan_logs/`)
     .get()
     .json();
 }
 
+/** @returns {Promise<SDWC.PlanLog>} */
 export function retrievePlanLog(planId, logId) {
   return wr.url(`/api/v1/plans/${planId}/plan_logs/${logId}`)
     .get()

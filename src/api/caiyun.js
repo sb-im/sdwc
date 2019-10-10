@@ -30,7 +30,7 @@ function get(url) {
  * @see https://open.caiyunapp.com/实况天气接口/v2.2
  * @param {number} lng
  * @param {number} lat
- * @returns {import('./api-types').CaiYunRealtime}
+ * @returns {ApiTypes.CaiYunRealtime}
  */
 export function realtime(lng, lat) {
   return get(`/${lng},${lat}/realtime`);
@@ -41,7 +41,7 @@ export function realtime(lng, lat) {
  * @see https://open.caiyunapp.com/分钟级降雨预报接口
  * @param {number} lng
  * @param {number} lat
- * @returns {import('./api-types').CaiYunMinutely}
+ * @returns {ApiTypes.CaiYunMinutely}
  */
 export function minutely(lng, lat) {
   return get(`/${lng},${lat}/minutely`);
@@ -52,7 +52,7 @@ export function minutely(lng, lat) {
  * @see https://open.caiyunapp.com/通用预报接口
  * @param {number} lng
  * @param {number} lat
- * @returns {import('./api-types').CaiYunResult<any>}
+ * @returns {ApiTypes.CaiYunResult<any>}
  */
 export function weather(lng, lat) {
   return get(`/${lng},${lat}/weather`);
