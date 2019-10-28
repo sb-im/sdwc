@@ -32,7 +32,12 @@
           <div class="sd-preflight__title">{{ $t('preflight.forecast') }}</div>
           <div>{{ $t('preflight.wind') }} {{ preflightData.forecast.wind_speed.toFixed(1) }} m/s</div>
           <div>{{ $t('preflight.intensity') }} {{ preflightData.forecast.precipitation_intensity }}</div>
-          <div>{{ $t('preflight.distance') }} {{ preflightData.forecast.precipitation_distance }} km</div>
+          <template v-if="preflightData.forecast.precipitation_distance >= 10000">
+            <div>{{ $t('preflight.no_precipitation') }}</div>
+          </template>
+          <template v-else>
+            <div>{{ $t('preflight.distance') }} {{ preflightData.forecast.precipitation_distance }} km</div>
+          </template>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
       </div>
