@@ -43,7 +43,7 @@ function forecastLevel(data) {
     wind: { speed: wind_speed }, // unit: km/h
     precipitation: {
       local: { intensity: precipitation_intensity },
-      nearest: { distance: precipitation_distance }
+      nearest: { distance: precipitation_distance } = { distance: 65535 }
     }
   } = data.result;
   wind_speed /= 3.6;             // unit: m/s
