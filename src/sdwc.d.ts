@@ -137,9 +137,13 @@ declare namespace SDWC {
 
   // components/map.vue
   interface MarkerBase {
-    id: number;
+    id: number | string;
     position: { lng: number; lat: number };
     name: string;
+  }
+  export interface MarkerAction extends MarkerBase {
+    type: 'action';
+    action: string[];
   }
   export interface MarkerDepot extends MarkerBase {
     type: 'depot';
@@ -148,5 +152,5 @@ declare namespace SDWC {
     type: 'drone';
     heading: number;
   }
-  export type Marker = MarkerDepot | MarkerDrone;
+  export type Marker = MarkerAction | MarkerDepot | MarkerDrone;
 }

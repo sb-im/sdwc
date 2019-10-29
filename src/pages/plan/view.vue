@@ -26,7 +26,7 @@
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </sd-card>
-    <sd-map :path="mapPath" fit></sd-map>
+    <sd-map :path="mapPath" :markers="mapMarkers" fit></sd-map>
     <sd-card class="plan__history" icon="paper-busy" :title="$t('plan.view.history')" dense>
       <el-table stripe :data="log">
         <el-table-column align="center" :label="$t('plan.view.run_time')">
@@ -102,7 +102,8 @@ export default {
   data() {
     return {
       running: null,
-      mapPath: []
+      mapPath: [],
+      mapMarkers: []
     };
   },
   methods: {
@@ -170,7 +171,10 @@ export default {
   mounted() {
     this.retrievePlan(this.plan.id)
       .then(plan => this.getMapPath(plan.map_path))
-      .then(path => this.mapPath = path);
+      .then(r => {
+        this.mapPath = r.path;
+        this.mapMarkers = r.actions;
+      });
     this.getPlanLogs(this.plan.id);
     this.checkPlanRunning();
   },
