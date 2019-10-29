@@ -117,9 +117,10 @@ export default {
 
 .login__title {
   color: #409eff;
-  margin: 0 0 20px;
+  margin: 0 -36px 20px;
   font-size: 26px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .login__form {
