@@ -30,7 +30,8 @@ export default {
     /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
-      required: false
+      required: false,
+      default: () => []
     },
     /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
     center: {
@@ -73,7 +74,8 @@ export default {
               if (result.info === 'ok') {
                 resolve(result.locations);
               } else {
-                reject(status);
+                console.error('convertCoordinate', lnglat, status, result); // eslint-disable-line no-console
+                reject({ status, result });
               }
             });
           } else {
@@ -85,8 +87,7 @@ export default {
             ]).then(([l, r]) => {
               resolve(l.concat(r));
             }).catch(e => {
-              console.error('convertCoordinate', e); // eslint-disable-line no-console
-              resolve([]);
+              reject(e);
             });
           }
         });
@@ -225,7 +226,7 @@ export default {
       if (this.path.length !== 0) {
         this.drawPath();
       }
-      if (this.markers) {
+      if (this.markers.length !== 0) {
         this.drawNamedMarkers();
       }
     });

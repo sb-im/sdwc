@@ -30,7 +30,8 @@ export default {
     /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
-      required: false
+      required: false,
+      default: () => []
     },
     /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
     center: {
@@ -257,7 +258,7 @@ export default {
       if (this.path.length !== 0) {
         this.drawPath();
       }
-      if (this.markers) {
+      if (this.markers.length !== 0) {
         this.drawNamedMarkers();
       }
     });
