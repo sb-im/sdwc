@@ -68,6 +68,9 @@ export default {
      * @returns {SDWC.Marker[]}
      */
     markers() {
+      if (this.$attrs.markers) {
+        return this.$attrs.markers;
+      }
       if (!this.drone) {
         return null;
       }

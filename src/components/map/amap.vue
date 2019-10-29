@@ -4,6 +4,7 @@
 
 <script>
 import { loadAMap, loadAMapUI } from '@/api/amap';
+import { MapActionEmoji } from '@/constants/map-actions';
 
 /**
  * @type {AMap.lnglat}
@@ -169,6 +170,12 @@ export default {
                   offset: { x: 25, y: 30 }
                 }
               });
+            } else if (marker.type === 'action') {
+              mapMarker = new AMap.Marker({
+                content: `<div class="amap-marker--action">${marker.action.map(a => MapActionEmoji[a]).join('')}</div>`,
+                position: pos,
+                offset: new AMap.Pixel(-11, -11)
+              });
             }
             this.namedMarkers[marker.id] = mapMarker;
             this.map.add(mapMarker);
@@ -249,5 +256,23 @@ export default {
   border: 1px solid #a83121;
   border-radius: 10px 0 0 0;
   background: #d33d29;
+}
+.amap-marker--action {
+  box-sizing: border-box;
+  height: 22px;
+  min-width: 22px;
+  padding: 2px;
+  border: 1px solid #a83121;
+  border-radius: 11px;
+  color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  background: rgba(211, 61, 41, 0.5);
+  opacity: 0.8;
+  transition: background-color 0.3s;
+}
+.amap-marker--action:hover {
+  background: rgba(211, 61, 41, 1);
+  opacity: 1;
 }
 </style>

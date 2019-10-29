@@ -4,6 +4,7 @@
 
 <script>
 import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
+import { MapActionEmoji } from '@/constants/map-actions';
 
 /**
  * @type {google.maps.LatLng}
@@ -135,7 +136,7 @@ export default {
               label: '🚉',
               labelContent: marker.name,
               labelAnchor: { x: -5, y: 16 },
-              labelClass: 'sd-gmap-marker'
+              labelClass: 'gmap-label'
             });
           } else if (marker.type === 'drone') {
             mapMarker = new MarkerWithLabel({
@@ -144,15 +145,28 @@ export default {
               icon: this.createMarkerDroneIcon(marker.heading),
               labelContent: marker.name,
               labelAnchor: { x: 0, y: -10 },
-              labelClass: 'sd-gmap-marker',
+              labelClass: 'gmap-label',
               zIndex: 100
+            });
+          } else if (marker.type === 'action') {
+            mapMarker = new MarkerWithLabel({
+              map: this.map,
+              position: marker.position,
+              icon: {
+                anchor: { x: 0, y: 0 },
+                path: ''
+              },
+              labelContent: marker.action.map(a => MapActionEmoji[a]).join(''),
+              labelAnchor: { x: 10, y: 10 },
+              labelClass: 'gmap-action'
             });
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
         bounds.extend(mapMarker.getPosition());
       }
-      if (this.fit) {
+      if ((!this.path || this.path.length === 0) && this.fit && !bounds.isEmpty()) {
+        // only fit to markers if no path persent
         this.map.fitBounds(bounds);
       }
     },
@@ -264,7 +278,7 @@ export default {
 </script>
 
 <style>
-.sd-gmap-marker {
+.gmap-label {
   color: white;
   font-size: 12px;
   font-weight: bold;
@@ -273,5 +287,17 @@ export default {
   border: 1px solid white;
   border-radius: 10px 0 0 0;
   background: #ea4335;
+}
+.gmap-action {
+  box-sizing: border-box;
+  height: 22px;
+  min-width: 22px;
+  padding: 3px;
+  border-radius: 11px;
+  border: 1px solid white;
+  font-size: 12px;
+  line-height: 14px;
+  background: rgba(234, 67, 53, 0.6);
+  opacity: 0.8;
 }
 </style>
