@@ -46,7 +46,10 @@ export default {
   margin-left: 10px;
 }
 .sd-overview-counter .el-card__body {
+  padding: 0 20px;
+  height: 88px;
   display: flex;
+  align-items: center;
 }
 .overview-counter__text {
   margin-left: 20px;
