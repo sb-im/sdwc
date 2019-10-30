@@ -103,7 +103,7 @@ export default {
         raw: rawFile
       };
       fileList.splice(0, 1, f);
-      this.plan.file = f;
+      this.plan.file = rawFile;
     },
     handleFileUpload() { /* noop */ }
   },
