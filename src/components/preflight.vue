@@ -117,23 +117,13 @@ export default {
       'drones',
       'depots'
     ]),
-    defaultDrone() {
-      return { info: { name: this.$t('preflight.no_drone') }, status: 3 };
-    },
     drone() {
-      return this.drones.find(d => d.info.id === this.plan.node_id) || this.defaultDrone;
-    },
-    defaultDepot() {
-      return {
-        info: {
-          name: this.$t('preflight.no_depot'),
-          points: [{ point_type_name: 'weather' }]
-        },
-        status: 3,
-      };
+      return this.drones.find(d => d.info.id === this.plan.node_id)
+        || { info: { name: this.$t('preflight.no_drone') }, status: 3 };
     },
     depot() {
-      return this.depots.find(d => d.msg.status && d.msg.status.link_id === this.plan.node_id) || this.defaultDepot;
+      return this.depots.find(d => d.msg.status && d.msg.status.link_id === this.plan.node_id)
+        || { info: { name: this.$t('preflight.no_depot'), points: [] }, status: 3, };
     },
     weatherPoint() {
       return this.depot.info.points.find(p => p.point_type_name === 'weather');
