@@ -124,29 +124,18 @@ export default {
       this.$refs.preflight.toggle();
     },
     handleRunComfirm() {
-      this.$refs.preflight.toggle();
+      this.$refs.preflight.setPlanRunStatus(2);
+      runPlan(this.plan.id).then(() => {
+        this.$refs.preflight.setPlanRunStatus(0);
+      }).catch(e => {
+        this.$refs.preflight.setPlanRunStatus(1, e.status);
+      }).then(this.checkPlanRunning);
+    },
+    handleStop() {
       /**
        * mutate element-ui's Notification object
        * @see https://github.com/ElemeFE/element/blob/v2.8.2/packages/notification/src/main.vue
        */
-      const n = this.$notify({
-        offset: 50,
-        duration: 0,
-        type: 'info',
-        title: this.plan.name,
-        message: this.$t('plan.view.pending'),
-      });
-      runPlan(this.plan.id).then(() => {
-        n.$data.message = this.$t('plan.view.start_run');
-        n.$data.type = 'success';
-        n.$data.duration = 2000;
-        n.startTimer();
-      }).catch(e => {
-        n.$data.type = 'error';
-        n.$data.message = this.$t('plan.view.start_fail', { code: e.status });
-      }).then(this.checkPlanRunning);
-    },
-    handleStop() {
       const n = this.$notify({
         offset: 50,
         duration: 0,

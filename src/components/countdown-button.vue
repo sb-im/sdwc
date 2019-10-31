@@ -1,5 +1,5 @@
 <template>
-  <el-button v-bind="$attrs">
+  <el-button v-bind="$attrs" v-on="$listeners" :disabled="disabled" ref="button">
     <slot></slot>
     {{confirmSuffix}}
   </el-button>
@@ -17,6 +17,13 @@ export default {
     delay: {
       type: Number,
       default: 1000
+    },
+    mode: {
+      type: String,
+      default: '',
+      validator(v) {
+        return ['delay', 'timeout'].includes(v);
+      }
     }
   },
   data() {
@@ -26,6 +33,9 @@ export default {
     };
   },
   computed: {
+    disabled() {
+      return this.mode === 'delay' && this.remain > 0;
+    },
     confirmSuffix() {
       return this.remain > 0 ? ` (${this.remain})` : '';
     }
@@ -38,6 +48,9 @@ export default {
         if (this.remain <= 0) {
           clearInterval(this.interval);
           this.interval = -1;
+          if (this.mode === 'timeout') {
+            this.$emit('click');
+          }
         }
       }, this.delay);
     }

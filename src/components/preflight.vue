@@ -7,7 +7,7 @@
     @open="check"
     @closed="reset"
   >
-    <div>
+    <template v-if="!activated">
       <div class="sd-preflight__item" v-loading="loading[0]">
         <sd-icon value="drone" :size="30"></sd-icon>
         <div class="sd-preflight__detail sd-preflight__title">{{ drone.info.name }}</div>
@@ -41,17 +41,34 @@
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
       </div>
-    </div>
-    <div slot="footer" class="dialog-footer">
+    </template>
+    <template v-else>
+      <div class="sd-preflight__plan">
+        <div :class="PlanStatusClass[runStatus]" class="sd-preflight__plan-status"></div>
+        <div class="sd-preflight__plan-text">{{ planStatusText }}</div>
+      </div>
+    </template>
+    <template slot="footer">
       <el-button size="medium" icon="el-icon-circle-close" @click="toggle">{{ $t('common.cancel') }}</el-button>
-      <sd-slide-confirm
-        size="medium"
-        ref="slide"
-        :disabled="slideDisabled"
-        :text="$t('preflight.slide2confirm')"
-        @confirm="emitRun"
-      ></sd-slide-confirm>
-    </div>
+      <template v-if="!activated">
+        <sd-slide-confirm
+          size="medium"
+          ref="slide"
+          :disabled="slideDisabled"
+          :text="$t('preflight.slide2confirm')"
+          @confirm="emitRun"
+        ></sd-slide-confirm>
+      </template>
+      <template v-else>
+        <el-button size="medium" @click="toDrone">{{ $t('common.air') }}</el-button>
+        <sd-countdown-button
+          size="medium"
+          mode="timeout"
+          ref="btnToDepot"
+          @click="toDepot"
+        >{{ $t('common.depot') }}</sd-countdown-button>
+      </template>
+    </template>
   </el-dialog>
 </template>
 
@@ -60,8 +77,10 @@ import { mapGetters, mapActions } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
 import SlideConfirm from '@/components/slide-confirm.vue';
+import CountdownButton from '@/components/countdown-button.vue';
 import { checkForecast, windSpeedLevel } from '@/api/plan-runnable';
 
+// drone/depot status
 const StatusClass = {
   0: 'el-icon-success sd-preflight-green',
   1: 'el-icon-info sd-preflight-grey',
@@ -69,12 +88,20 @@ const StatusClass = {
   3: 'el-icon-error sd-preflight-grey'
 };
 
+// realtime/forecast weather level
 const LevelClass = {
   success: 'el-icon-success sd-preflight-green',
   primary: 'el-icon-circle-plus sd-preflight-blue',
   warning: 'el-icon-warning sd-preflight-orange',
   danger: 'el-icon-remove sd-preflight-red',
   error: 'el-icon-error sd-preflight-grey'
+};
+
+// plan run status
+const PlanStatusClass = {
+  0: 'el-icon-success sd-preflight-green',
+  1: 'el-icon-error sd-preflight-red',
+  2: 'el-icon-loading sd-preflight-grey'
 };
 
 const DefaultPreflightData = {
@@ -103,16 +130,13 @@ export default {
       show: false,
       checkTime: 0,
       loading: Array(4).fill(false),
-      preflightData: DefaultPreflightData
+      preflightData: DefaultPreflightData,
+      activated: false,
+      runStatus: 2,
+      returnCode: 0
     };
   },
   computed: {
-    StatusClass() {
-      return StatusClass;
-    },
-    LevelClass() {
-      return LevelClass;
-    },
     ...mapGetters([
       'drones',
       'depots'
@@ -149,6 +173,15 @@ export default {
         // drone poweroff
         || this.drone.status === 1
       );
+    },
+    planStatusText() {
+      if (!this.activated) return '';
+      switch (this.runStatus) {
+        case 0: return this.$t('plan.view.start_run');
+        case 1: return this.$t('plan.view.start_fail', { code: this.returnCode });
+        case 2: return this.$t('plan.view.pending');
+        default: return '';
+      }
     }
   },
   methods: {
@@ -212,16 +245,41 @@ export default {
       ]);
     },
     emitRun() {
-      setTimeout(() => this.$emit('run'), 750);
+      this.activated = true;
+      this.$emit('run');
+    },
+    setPlanRunStatus(status, code = 0) {
+      this.runStatus = status;
+      this.returnCode = code;
+      if (status === 0) {
+        this.$refs.btnToDepot.countDown();
+      }
+    },
+    toDrone() {
+      this.$router.push({ name: 'node', params: { id: this.drone.info.id } });
+    },
+    toDepot() {
+      this.$router.push({ name: 'node', params: { id: this.depot.info.id } });
     },
     reset() {
-      this.$refs.slide.deactivate();
+      if (this.activated) {
+        this.activated = false;
+        this.runStatus = -1;
+      } else {
+        this.$refs.slide.deactivate();
+      }
       this.preflightData = DefaultPreflightData;
     }
   },
+  created() {
+    this.StatusClass = StatusClass;
+    this.LevelClass = LevelClass;
+    this.PlanStatusClass = PlanStatusClass;
+  },
   components: {
     [Icon.name]: Icon,
-    [SlideConfirm.name]: SlideConfirm
+    [SlideConfirm.name]: SlideConfirm,
+    [CountdownButton.name]: CountdownButton
   }
 };
 </script>
@@ -232,6 +290,7 @@ export default {
 }
 .sd-preflight .el-dialog__body {
   padding: 10px 20px;
+  height: 260px;
 }
 .sd-preflight__item {
   margin: 10px 0;
@@ -249,6 +308,16 @@ export default {
 .sd-preflight__icon {
   line-height: 30px;
   font-size: 24px;
+}
+.sd-preflight__plan {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.sd-preflight__plan-status {
+  font-size: 60px;
 }
 .sd-preflight-green {
   color: #67c23a;
