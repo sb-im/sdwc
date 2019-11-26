@@ -43,7 +43,7 @@ export default {
     createClient() {
       this.msg = this.$t('common.connecting');
       this.couldRetry = true;
-      const client = new WebRTC2Client(this.$refs.video, this.config.ice_server);
+      const client = new WebRTC2Client(this.$refs.video, this.config.ice_servers || this.config.ice_server);
       client.on('ice', /** @type {RTCIceConnectionState} */ state => {
         switch (state) {
           case 'connected':

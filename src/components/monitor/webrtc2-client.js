@@ -10,11 +10,10 @@ export class WebRTC2Client extends EventEmitter {
   constructor(video, iceServer) {
     super();
     this.video = video;
-    const pc = new RTCPeerConnection({
-      iceServers: [
-        { urls: iceServer || 'stun:stun.l.google.com:19302' }
-      ]
-    });
+
+    const pc = new RTCPeerConnection(typeof iceServer === "string"
+      ? {iceServers: [{ urls: iceServer }]}
+      : {iceServers: iceServer});
     this.pc = pc;
     pc.addEventListener('iceconnectionstatechange', () => this.onIceConnStateChange());
     pc.addEventListener('icecandidate', ev => this.onIceCandidate(ev));
