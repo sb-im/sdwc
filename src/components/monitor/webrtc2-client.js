@@ -7,9 +7,10 @@ export class WebRTC2Client extends EventEmitter {
    * @param {HTMLVideoElement} video
    * @param {string} iceServer
    */
-  constructor(video, iceServer) {
+  constructor(video, iceServer, sender) {
     super();
     this.video = video;
+    this.sender = sender;
 
     const pc = new RTCPeerConnection(typeof iceServer === "string"
       ? {iceServers: [{ urls: iceServer }]}
@@ -19,6 +20,8 @@ export class WebRTC2Client extends EventEmitter {
     pc.addEventListener('icecandidate', ev => this.onIceCandidate(ev));
     pc.addEventListener('track', ev => this.onTrack(ev));
     pc.addTransceiver('video', { direction: 'recvonly' });
+
+    pc.createOffer().then(d => pc.setLocalDescription(d)).catch(console.log)
   }
 
   onIceConnStateChange() {
@@ -30,7 +33,11 @@ export class WebRTC2Client extends EventEmitter {
    * @param {RTCPeerConnectionIceEvent} ev
    */
   onIceCandidate(ev) {
-    trace('IceCandidate', ev.candidate);
+    // Use `turn` need this
+    if (event.candidate === null) {
+      trace('IceCandidate', ev.candidate);
+      this.sender(this.pc.localDescription)
+    }
   }
 
   /**

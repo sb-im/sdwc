@@ -43,7 +43,14 @@ export default {
     createClient() {
       this.msg = this.$t('common.connecting');
       this.couldRetry = true;
-      const client = new WebRTC2Client(this.$refs.video, this.config.ice_servers || this.config.ice_server);
+      const client = new WebRTC2Client(this.$refs.video, this.config.ice_servers || this.config.ice_server, localSdp => {
+        this.$mqtt(this.nodeId, {
+          mission: 'webrtc',
+          arg: localSdp
+        }).then(remoteSdp => {
+          client.startSession(remoteSdp);
+        });
+      });
       client.on('ice', /** @type {RTCIceConnectionState} */ state => {
         switch (state) {
           case 'connected':
@@ -57,14 +64,6 @@ export default {
             this.msg = this.$t('common.disconnected');
             break;
         }
-      });
-      client.createOffer().then(localSdp => {
-        this.$mqtt(this.nodeId, {
-          mission: 'webrtc',
-          arg: localSdp
-        }).then(result => {
-          client.startSession(result);
-        });
       });
       return client;
     },
