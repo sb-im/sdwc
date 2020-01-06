@@ -53,7 +53,7 @@ export default {
       return this.status !== 0;
     },
     controls() {
-      return this.point.name.split(' ');
+      return this.point.name.trim().split(' ');
     }
   },
   methods: {
@@ -94,8 +94,10 @@ export default {
 
 <style>
 .debug__control {
-  margin-bottom: 10px;
   margin-right: 10px;
+}
+.debug__control .el-button {
+  margin: 0 6px 6px 0;
 }
 .debug__input {
   width: 500px;
