@@ -71,6 +71,8 @@ export default {
         name: `air.gimbal_mode_${mode}`,
         mission: 'gimbalmode',
         arg: [mode]
+      }, {
+        notification: true
       }).then(() => {
         this.gimbal.mode = mode;
       });
@@ -81,6 +83,8 @@ export default {
         name: this.$t('air.pitch_angle'),
         mission: 'gimbal',
         arg: { yaw, pitch, [prop]: value }
+      }, {
+        notification: true
       });
     }
   },
