@@ -3,8 +3,6 @@
 </template>
 
 <script>
-import Hls from 'hls.js';
-
 export default {
   name: 'sd-node-monitor-hls',
   props: {
@@ -15,14 +13,16 @@ export default {
   },
   methods: {
     loadHls() {
-      if (Hls.isSupported()) {
-        this.hls = new Hls();
-        this.hls.loadSource(this.source);
-        this.hls.attachMedia(this.$refs.video);
-        this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          this.$refs.video.play();
-        });
-      }
+      import(/* webpackChunkName: "hls" */ 'hls.js').then(Hls => {
+        if (Hls.isSupported()) {
+          this.hls = new Hls();
+          this.hls.loadSource(this.source);
+          this.hls.attachMedia(this.$refs.video);
+          this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            this.$refs.video.play();
+          });
+        }
+      });
     }
   },
   mounted() {

@@ -3,8 +3,6 @@
 </template>
 
 <script>
-import flvjs from 'flv.js';
-
 export default {
   name: 'sd-node-monitor-flv',
   props: {
@@ -13,33 +11,29 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      /** @type {flvjs.Player} */
-      player: null
-    };
-  },
   methods: {
     loadPlayer() {
-      if (flvjs.isSupported()) {
-        this.player = flvjs.createPlayer(
-          {
-            type: 'flv',
-            isLive: true,
-            hasAudio: false,
-            hasVideo: true,
-            url: this.source
-          },
-          {
-            enableWorker: true,
-            enableStashBuffer: false,
-            stashInitialSize: 128
-          }
-        );
-        this.player.attachMediaElement(this.$refs.video);
-        this.player.load();
-        this.player.play();
-      }
+      import(/* webpackChunkName: "flv" */ 'flv.js').then(flvjs => {
+        if (flvjs.isSupported()) {
+          this.player = flvjs.createPlayer(
+            {
+              type: 'flv',
+              isLive: true,
+              hasAudio: false,
+              hasVideo: true,
+              url: this.source
+            },
+            {
+              enableWorker: true,
+              enableStashBuffer: false,
+              stashInitialSize: 128
+            }
+          );
+          this.player.attachMediaElement(this.$refs.video);
+          this.player.load();
+          this.player.play();
+        }
+      });
     },
     destroyPlayer() {
       this.player.pause();
@@ -49,6 +43,7 @@ export default {
     }
   },
   mounted() {
+    this.player = null;
     this.loadPlayer();
   },
   beforeDestroy() {
