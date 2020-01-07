@@ -102,7 +102,8 @@ export default {
         return;
       }
       const { Polyline } = await loadAMap();
-      const path = await this.convertCoordinate(this.path);
+      let path = [];
+      if (this.path.length > 0) path = await this.convertCoordinate(this.path);
       if (this.poly) {
         this.poly.setPath(path);
       } else {
