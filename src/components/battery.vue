@@ -1,48 +1,48 @@
 <template>
-  <sd-card class="battery" icon="battery" :title="$t('common.battery.title')">
+  <sd-card class="battery" icon="battery" :title="$t('battery.title')">
     <el-form label-width="90px" size="mini">
-      <el-form-item :label="$t('common.battery.id')">
+      <el-form-item :label="$t('battery.id')">
         <el-input readonly :value="battery.id"></el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.temp')">
+      <el-form-item :label="$t('battery.temp')">
         <el-input readonly :value="battery.temp">
           <template #append>℃</template>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.cap')">
+      <el-form-item :label="$t('battery.cap')">
         <el-input readonly :value="battery.cap">
           <template #append>mAh</template>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.cur')">
+      <el-form-item :label="$t('battery.cur')">
         <el-input readonly :value="current">
           <template #append>A</template>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.remain')">
+      <el-form-item :label="$t('battery.remain')">
         <el-input readonly :value="battery.remain" ref="inputRemain">
           <template #append>%</template>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.cycle')">
+      <el-form-item :label="$t('battery.cycle')">
         <el-input readonly :value="battery.cycle"></el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.vol')">
+      <el-form-item :label="$t('battery.vol')">
         <el-input readonly :value="totalVoltage">
           <template #append>V</template>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.vol_cell')" style="width:480px">
+      <el-form-item :label="$t('battery.vol_cell')" style="width:480px">
         <el-input readonly :value="voltage">
           <template #append>mV</template>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('common.battery.status')" class="battery__status">
+      <el-form-item :label="$t('battery.status')" class="battery__status">
         <el-tag
           v-for="(val, index) of battery.status"
           :key="index"
           size="medium"
-        >{{ $t(`common.battery.st.${val}`) }}</el-tag>
+        >{{ $t(`battery.st.${val}`) }}</el-tag>
       </el-form-item>
     </el-form>
   </sd-card>

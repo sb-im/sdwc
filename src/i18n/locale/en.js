@@ -182,24 +182,26 @@ export const locale = {
     none: 'None',
     logs: 'Logs',
     no_video: 'No video source',
-    system_tips: 'System',
+    fullscreen: 'Enter fullscreen',
+    exit_fullscreen: 'Exit fullscreen',
     operate_pending: 'Pending...',
     operate_success: 'Success',
     operate_error: 'Failed',
-    plan_ready: 'The plan is ready, is it run immediately?',
-    battery: {
-      title: 'Smart Battery',
-      id: 'Serial',
-      temp: 'Temperature',
-      cap: 'Capacity',
-      cur: 'Current',
-      remain: 'Remaining',
-      cycle: 'Cycle Count',
-      vol_cell: 'Voltage',
-      vol: 'Total Voltage',
-      status: 'Status',
-      bal: 'Balance'
-    }
+    system_tips: 'System',
+    plan_ready: 'The plan is ready, is it run immediately?'
+  },
+  battery: {
+    title: 'Smart Battery',
+    id: 'Serial',
+    temp: 'Temperature',
+    cap: 'Capacity',
+    cur: 'Current',
+    remain: 'Remaining',
+    cycle: 'Cycle Count',
+    vol_cell: 'Voltage',
+    vol: 'Total Voltage',
+    status: 'Status',
+    bal: 'Balance'
   },
   weather: {
     clear_day: 'Sunny',
