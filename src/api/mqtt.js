@@ -118,7 +118,7 @@ class MqttClient extends EventEmitter {
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
-   * @param {SDWC.MqttControlOptions} options]
+   * @param {SDWC.MqttControlOptions} [options]
    * @returns {Promise<any>}
    */
   invoke(target, method, arg, options) {
@@ -139,7 +139,7 @@ class MqttClient extends EventEmitter {
    * @param {any} arg method argument
    * @param {SDWC.MqttControlOptions} [options]
    */
-  _invoke(target, method, arg, options) {
+  _invoke(target, method, arg, options = {}) {
     const rpcId = this.nextRpcId();
     const topicSend = `nodes/${target}/rpc/send`;
     let payload;

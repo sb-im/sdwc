@@ -17,6 +17,7 @@
 
 <script>
 import { mapState } from 'vuex';
+
 import { WebSocketSignalingChannel } from './webrtc-client';
 
 export default {

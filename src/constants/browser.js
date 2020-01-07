@@ -3,7 +3,7 @@ import Bowser from 'bowser';
 const result = Bowser.parse(navigator.userAgent);
 
 if (process.env.NODE_ENV === 'development') { // eslint-disable-line no-undef
-  console.log('Browser and platform detection', result);
+  console.log('Browser and platform detection', result); // eslint-disable-line no-console
 }
 
 export default result;

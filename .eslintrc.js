@@ -6,6 +6,7 @@ module.exports = {
   ],
   rules: {
     'require-atomic-updates': 'off',
+    'no-console': 'error',
     'semi': ['error', 'always'],
     'quotes': ['error', 'single']
   },
