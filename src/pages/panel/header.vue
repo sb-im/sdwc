@@ -77,8 +77,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+
 import { locales } from '@/i18n';
 import Icon from '@/components/sd-icon.vue';
+import { getStatusText } from '@/constants/level-status';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 
 const StatusIcon = {
@@ -147,18 +149,6 @@ export default {
       }
     },
     /**
-     * @param {number} status
-     * @returns {string}
-     */
-    getStatusText(status) {
-      switch (status) {
-        case 0: return this.$t('header.normal');
-        case 1: return this.$t('header.shutdown');
-        case 2: return this.$t('header.net_error');
-        default: return this.$t('header.never_online');
-      }
-    },
-    /**
      * @param {SDWC.NodeInfo} info node info
      * @param {number} status node status
      * @returns {{id: number, icon: string, color: string, text: string}}
@@ -166,7 +156,7 @@ export default {
     statusToObject({ id, name, type_name }, status) {
       const icon = StatusIcon[status] || StatusIcon.default;
       const color = StatusColor[status] || StatusColor.default;
-      const text = `${this.getTypeText(type_name)} ${name} ${this.getStatusText(status)}`;
+      const text = `${this.getTypeText(type_name)} ${name} ${getStatusText(status)}`;
       return { id, icon, color, text };
     },
     /**
