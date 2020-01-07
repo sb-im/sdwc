@@ -1,6 +1,6 @@
 <template>
   <div class="monitor-webrtc">
-    <video class="monitor-video" ref="video" autoplay controls muted></video>
+    <video class="monitor-video" ref="video" autoplay muted></video>
     <div class="monitor-webrtc__overlay">
       <template v-if="this.msg">
         <div class="monitor__tip">{{ this.msg }}</div>

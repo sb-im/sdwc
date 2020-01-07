@@ -1,10 +1,26 @@
 <template>
-  <sd-card class="monitor" icon="monitor" :title="$t('depot.monitor')" dense>
+  <sd-card
+    class="monitor"
+    :class="monitorClassName"
+    icon="monitor"
+    :title="$t('depot.monitor')"
+    dense
+  >
     <template v-if="streamAvailable">
       <div class="monitor__content">
         <component :is="compoName" :nodeId="point.node_id" :source="point.name"></component>
       </div>
       <slot></slot>
+      <div class="monitor__control">
+        <el-tooltip :content="$t(`common.${fullscreen ? 'exit_' : ''}fullscreen`)" placement="top">
+          <el-button
+            size="mini"
+            :type="fullscreen ? 'primary' : ''"
+            icon="el-icon-full-screen"
+            @click="handleFullscreen"
+          ></el-button>
+        </el-tooltip>
+      </div>
     </template>
     <template v-else>
       <div class="monitor__content monitor__content--empty">
@@ -16,6 +32,7 @@
 
 <script>
 import Card from '@/components/card.vue';
+import { isSafari, isiPad } from '@/constants/browser';
 
 import Flv from './flv.vue';
 import Hls from './hls.vue';
@@ -41,7 +58,18 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      fullscreen: false
+    };
+  },
   computed: {
+    monitorClassName() {
+      return {
+        'monitor--full': this.fullscreen,
+        'monitor--ipadfix': isSafari && isiPad
+      };
+    },
     compoName() {
       return CompoName[this.point.point_type_name] || '';
     },
@@ -51,6 +79,29 @@ export default {
       }
       return this.compoName !== '';
     }
+  },
+  methods: {
+    handleFullscreen() {
+      const el = this.$el.getElementsByClassName('el-card__body')[0];
+      if (el) {
+        if (this.fullscreen) {
+          (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        } else {
+          (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+        }
+      }
+    }
+  },
+  mounted() {
+    const el = this.$el.getElementsByClassName('el-card__body')[0];
+    const eventName = isSafari ? 'webkitfullscreenchange' : 'fullscreenchange';
+    el.addEventListener(eventName, () => {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        this.fullscreen = true;
+      } else {
+        this.fullscreen = false;
+      }
+    });
   },
   components: {
     [Card.name]: Card,
@@ -79,11 +130,22 @@ export default {
   width: 100%;
   height: 480px;
 }
+.monitor--full .monitor-video,
+.monitor--full .monitor-img,
+.monitor--full .monitor-iframe {
+  width: 100vw;
+  height: 100vh;
+}
 .monitor__content--empty {
   height: 480px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.monitor__control {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
 }
 .monitor__tip {
   color: white;

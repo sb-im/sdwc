@@ -112,4 +112,9 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
+.monitor--full.monitor--ipadfix .monitor-drone-control {
+  top: 24px;
+  left: 90px;
+  right: 10px;
+}
 </style>
