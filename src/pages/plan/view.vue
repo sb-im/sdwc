@@ -28,10 +28,14 @@
     </sd-card>
     <sd-map :path="mapPath" :markers="mapMarkers" fit></sd-map>
     <sd-card class="plan__history" icon="paper-busy" :title="$t('plan.view.history')" dense>
-      <el-table stripe :data="log">
-        <el-table-column align="center" :label="$t('plan.view.run_time')">
-          <template v-slot="{row}">{{ $d(new Date(row.created_at), 'long') }}</template>
-        </el-table-column>
+      <el-table stripe :data="log" :default-sort="{ prop: 'created_at', order: 'descending' }">
+        <el-table-column
+          align="center"
+          prop="created_at"
+          sortable
+          :label="$t('plan.view.run_time')"
+          :formatter="dateFormatter"
+        ></el-table-column>
         <el-table-column align="center" :label="$t('plan.view.raw_data')">
           <template v-slot="{row}">
             <el-button
@@ -155,6 +159,9 @@ export default {
     },
     handleDownload(url, name) {
       this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });
+    },
+    dateFormatter(row, column, cellValue /*, index */) {
+      return this.$d(new Date(cellValue), 'long');
     }
   },
   mounted() {
