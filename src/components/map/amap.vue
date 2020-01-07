@@ -48,7 +48,9 @@ export default {
       const AMap = await loadAMap();
       const center = this.center || __AMAP_CENTER__ || { lat: 30, lng: 120 };
       this.map = new AMap.Map(this.$refs.map, {
-        zoom: this.fit ? __AMAP_ZOOM__ : 18,
+        zoom: this.fit ? __AMAP_ZOOM__ : 20,
+        zooms: [3, 20],
+        expandZoomRange: true,
         jogEnable: false,
         center: new AMap.LngLat(center.lng, center.lat)
       });
@@ -183,7 +185,7 @@ export default {
             this.map.add(mapMarker);
           }
           if (this.fit) {
-            this.map.setFitView();
+            this.map.setFitView(null, false, [8, 8, 8, 8], 20);
           }
         }
       });
@@ -193,7 +195,7 @@ export default {
      */
     fitPath() {
       if (this.poly) {
-        this.map.setFitView([this.poly]);
+        this.map.setFitView([this.poly], false, [8, 8, 8, 8], 20);
       }
     }
   },
