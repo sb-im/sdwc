@@ -1,7 +1,9 @@
 import Vue from 'vue';
 
+import { mqtt } from '@/util/plugin-mqtt'
+
 declare module 'vue/types/vue' {
   interface Vue {
-    $mqtt: (id: number, ctl: SDWC.ControlItem) => Promise<void>;
+    $mqtt: typeof mqtt;
   }
 }

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import i18n from '@/i18n';
+import { getStatusText } from '@/constants/level-status';
 import store from '@/store';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 import MqttClient from '@/api/mqtt';
@@ -9,9 +9,10 @@ import MqttClient from '@/api/mqtt';
  * @this {Vue}
  * @param {number} id
  * @param {SDWC.ControlItem} ctl
+ * @param {SDWC.MqttControlOptions} options
  */
-async function mqtt(id, { mission, arg = [] }) {
-  return MqttClient.invoke(id, mission, arg);
+export async function mqtt(id, { mission, arg = [] }, options = {}) {
+  return MqttClient.invoke(id, mission, arg, options);
 }
 
 /**
@@ -59,15 +60,6 @@ function registerRpcListener() {
     const status = response.type === 'success' ? 0 : 2;
     emitNotification({ id: response.payload.id, status }, true);
   });
-}
-
-function getStatusText(status) {
-  switch (status) {
-    case 0: return i18n.t('header.normal');
-    case 1: return i18n.t('header.shutdown');
-    case 2: return i18n.t('header.net_error');
-    default: return i18n.t('header.never_online');
-  }
 }
 
 function registerStatusListener() {

@@ -118,12 +118,13 @@ class MqttClient extends EventEmitter {
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
+   * @param {SDWC.MqttControlOptions} options]
    * @returns {Promise<any>}
    */
-  invoke(target, method, arg) {
+  invoke(target, method, arg, options) {
     if (this.mqtt === undefined || this.mqtt.connected === false) {
       return new Promise((resolve, reject) => {
-        this.queue.push({ arg: [target, method, arg], resolve, reject });
+        this.queue.push({ arg: [target, method, arg, options], resolve, reject });
       });
     } else {
       return this._invoke.apply(this, arguments);
@@ -136,16 +137,26 @@ class MqttClient extends EventEmitter {
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
+   * @param {SDWC.MqttControlOptions} [options]
    */
-  _invoke(target, method, arg) {
+  _invoke(target, method, arg, options) {
     const rpcId = this.nextRpcId();
     const topicSend = `nodes/${target}/rpc/send`;
-    const payload = jsonrpc.request(rpcId, method, arg);
+    let payload;
+    if (options.notification) {
+      payload = jsonrpc.notification(method, arg);
+    } else {
+      payload = jsonrpc.request(rpcId, method, arg);
+    }
     this.mqtt.publish(topicSend, JSON.stringify(payload));
     MqttClient.log('pub:', payload);
-    return new Promise((resolve, reject) => {
-      this.resolveMap.set(rpcId, { resolve, reject });
-    });
+    if (options.notification) {
+      return Promise.resolve();
+    } else {
+      return new Promise((resolve, reject) => {
+        this.resolveMap.set(rpcId, { resolve, reject });
+      });
+    }
   }
 
   /**

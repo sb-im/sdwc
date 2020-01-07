@@ -153,4 +153,9 @@ declare namespace SDWC {
     heading: number;
   }
   export type Marker = MarkerAction | MarkerDepot | MarkerDrone;
+
+  export interface MqttControlOptions {
+    /** send as JSONRPC Notification */
+    notification?: boolean;
+  }
 }
