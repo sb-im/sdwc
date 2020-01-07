@@ -43,15 +43,16 @@ export default {
     createClient() {
       this.msg = this.$t('common.connecting');
       this.couldRetry = true;
-      const client = new WebRTC2Client(this.$refs.video, this.config.ice_servers || this.config.ice_server, localSdp => {
+      const client = new WebRTC2Client(this.config.ice_servers || this.config.ice_server);
+      client.on('candidatecomplete', () => {
         this.$mqtt(this.nodeId, {
           mission: 'webrtc',
-          arg: localSdp
+          arg: client.pc.localDescription
         }).then(remoteSdp => {
           client.startSession(remoteSdp);
         });
       });
-      client.on('ice', /** @type {RTCIceConnectionState} */ state => {
+      client.on('icestatechange', (/** @type {RTCIceConnectionState} */ state) => {
         switch (state) {
           case 'connected':
             this.msg = '';
@@ -65,10 +66,14 @@ export default {
             break;
         }
       });
+      client.on('track', (/** @type {MediaStream[]} */ streams) => {
+        this.$refs.video.srcObject = streams[0];
+      });
       return client;
     },
     handleRetry() {
       if (this.client) {
+        this.$refs.video.srcObject = null;
         this.client.destroy();
         this.client = null;
       }
@@ -81,6 +86,7 @@ export default {
   },
   beforeDestroy() {
     if (this.client) {
+      this.$refs.video.srcObject = null;
       this.client.destroy();
       this.client = null;
     }

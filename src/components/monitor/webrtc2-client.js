@@ -4,29 +4,29 @@ import { trace } from './webrtc-client';
 
 export class WebRTC2Client extends EventEmitter {
   /**
-   * @param {HTMLVideoElement} video
-   * @param {string} iceServer
+   * @param {string | RTCIceServer[]} iceServer
    */
-  constructor(video, iceServer, sender) {
+  constructor(iceServer) {
     super();
-    this.video = video;
-    this.sender = sender;
-
-    const pc = new RTCPeerConnection(typeof iceServer === "string"
-      ? {iceServers: [{ urls: iceServer }]}
-      : {iceServers: iceServer});
+    /** @type {RTCConfiguration} */
+    const configuration = {
+      iceServers: typeof iceServer === 'string' ? [{ urls: iceServer }] : iceServer
+    };
+    const pc = new RTCPeerConnection(configuration);
     this.pc = pc;
     pc.addEventListener('iceconnectionstatechange', () => this.onIceConnStateChange());
     pc.addEventListener('icecandidate', ev => this.onIceCandidate(ev));
     pc.addEventListener('track', ev => this.onTrack(ev));
     pc.addTransceiver('video', { direction: 'recvonly' });
-
-    pc.createOffer().then(d => pc.setLocalDescription(d)).catch(console.log)
+    pc.createOffer().then(offer => {
+      trace('createOffer', offer);
+      pc.setLocalDescription(offer);
+    }).catch(e => trace('ERROR: createOffer', e));
   }
 
   onIceConnStateChange() {
     trace('IceConnStateChange', this.pc.iceConnectionState);
-    this.emit('ice', this.pc.iceConnectionState);
+    this.emit('icestatechange', this.pc.iceConnectionState);
   }
 
   /**
@@ -34,9 +34,9 @@ export class WebRTC2Client extends EventEmitter {
    */
   onIceCandidate(ev) {
     // Use `turn` need this
+    trace('IceCandidate', ev.candidate);
     if (event.candidate === null) {
-      trace('IceCandidate', ev.candidate);
-      this.sender(this.pc.localDescription)
+      this.emit('candidatecomplete');
     }
   }
 
@@ -45,14 +45,7 @@ export class WebRTC2Client extends EventEmitter {
    */
   onTrack(ev) {
     trace('Track', ev.streams);
-    this.video.srcObject = ev.streams[0];
-    this.emit('track');
-  }
-
-  async createOffer() {
-    const localSdp = await this.pc.createOffer();
-    await this.pc.setLocalDescription(localSdp);
-    return localSdp;
+    this.emit('track', ev.streams);
   }
 
   /**
@@ -63,7 +56,6 @@ export class WebRTC2Client extends EventEmitter {
   }
 
   destroy() {
-    this.video.srcObject = null;
     this.pc.close();
   }
 }
