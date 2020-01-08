@@ -41,6 +41,10 @@ export default {
     fit: {
       type: Boolean,
       default: false
+    },
+    follow: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -48,7 +52,7 @@ export default {
       const AMap = await loadAMap();
       const center = this.center || __AMAP_CENTER__ || { lat: 30, lng: 120 };
       this.map = new AMap.Map(this.$refs.map, {
-        zoom: this.fit ? __AMAP_ZOOM__ : 20,
+        zoom: __AMAP_ZOOM__ || 20,
         zooms: [3, 20],
         expandZoomRange: true,
         jogEnable: false,
@@ -120,7 +124,7 @@ export default {
       }
       if (this.fit) {
         this.fitPath();
-      } else {
+      } else if (this.follow) {
         this.map.setCenter(path[0]);
       }
     },
@@ -138,6 +142,7 @@ export default {
           let mapMarker = this.namedMarkers[marker.id];
           const pos = position[i];
           if (mapMarker) {
+            // marker has been created
             mapMarker.setPosition(pos);
             if (marker.type === 'drone') {
               /** @type {{ heading: number; img: HTMLImageElement }} */
@@ -215,6 +220,13 @@ export default {
         this.fitPath();
       }
     },
+    follow(val) {
+      if (!val) return;
+      if (!this.poly) return;
+      const path = this.poly.getPath();
+      if (!path.length <= 0) return;
+      this.map.setCenter(path[0]);
+    }
   },
   created() {
     /** @type {AMap.Map} */

@@ -41,14 +41,18 @@ export default {
     fit: {
       type: Boolean,
       default: false
+    },
+    follow: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
     async initMap() {
       const { Map, MapTypeId } = await loadGoogleMap();
       this.map = new Map(this.$refs.map, {
-        zoom: this.fit ? __GMAP_ZOOM__ : 20,
-        center: this.center || this.path[0] || __GMAP_CENTER__ || { lat: 30, lng: 120 },
+        zoom: __GMAP_ZOOM__ || 20,
+        center: this.center || __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
         streetViewControl: false
       });
@@ -85,7 +89,7 @@ export default {
       this.poly.setMap(this.map);
       if (this.fit) {
         this.fitPath();
-      } else {
+      } else if (this.follow) {
         this.map.setCenter(this.path[0]);
       }
     },
@@ -107,7 +111,7 @@ export default {
       }
       if (this.fit) {
         this.fitPath();
-      } else {
+      } else if (this.follow) {
         this.map.setCenter(this.path[0]);
       }
     },
@@ -243,6 +247,11 @@ export default {
       if (val === true) {
         this.fitPath();
       }
+    },
+    follow(val) {
+      if (!val) return;
+      if (this.path.length <= 0) return;
+      this.map.setCenter(this.path[0]);
     }
   },
   created() {

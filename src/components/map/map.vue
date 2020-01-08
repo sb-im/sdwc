@@ -3,16 +3,28 @@
     <template #action>
       <el-button
         v-if="drone"
+        :icon="follow ? 'el-icon-location' : 'el-icon-location-outline'"
+        size="small"
+        @click="handleFollow"
+      >{{ $t(`map.${follow ? 'follow' : 'manual'}`) }}</el-button>
+      <el-button
+        v-if="drone"
         icon="el-icon-delete"
         size="small"
         @click="handlePathClear"
       >{{ $t('map.clear') }}</el-button>
-      <span>&nbsp;</span>
-      <el-radio-group v-model="type" size="small" @change="handleMapChange">
+      <el-radio-group class="map__switch" size="small" v-model="type" @change="handleMapChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" :path="path" :fit="fit" :markers="markers"></component>
+    <component
+      :is="type"
+      v-bind="$attrs"
+      :path="path"
+      :markers="markers"
+      :fit="fit"
+      :follow="follow"
+    ></component>
   </sd-card>
 </template>
 
@@ -48,7 +60,7 @@ export default {
   data() {
     return {
       type: '',
-      MapType
+      follow: true
     };
   },
   computed: {
@@ -58,6 +70,9 @@ export default {
     ...mapGetters([
       'depots'
     ]),
+    MapType() {
+      return MapType;
+    },
     icon() {
       return this.fit ? 'map-waypoint' : 'map-marker';
     },
@@ -104,6 +119,10 @@ export default {
       'setPreference',
       'clearDronePath'
     ]),
+    handleFollow() {
+      this.follow = !this.follow;
+      this.setPreference({ mapFollow: this.follow });
+    },
     handlePathClear() {
       this.clearDronePath(this.drone.id);
     },
@@ -113,6 +132,7 @@ export default {
   },
   created() {
     this.type = this.preference.mapType;
+    this.follow = this.preference.mapFollow;
   },
   components: {
     [Card.name]: Card,
@@ -123,6 +143,9 @@ export default {
 </script>
 
 <style>
+.map__switch {
+  margin-left: 10px;
+}
 .map__el {
   width: 100%;
   height: 400px;

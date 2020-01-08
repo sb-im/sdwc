@@ -94,6 +94,7 @@ declare namespace SDWC {
   // store/modules/preference.js
   export interface Preference {
     mapType: string;
+    mapFollow: boolean;
     lang: string;
   }
 

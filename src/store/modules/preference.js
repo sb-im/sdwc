@@ -3,6 +3,7 @@
 /** @type {SDWC.Preference} */
 const state = {
   mapType: 'sd-map-amap',
+  mapFollow: true,
   lang: ''
 };
 

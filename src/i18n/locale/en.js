@@ -234,7 +234,10 @@ export const locale = {
   map: {
     waypoint: 'Waypoint',
     satellite: 'Satellite Map',
-    clear: 'Clear track'
+    clear: 'Clear Track',
+    follow: 'Follow',
+    fit: 'Fit',
+    manual: 'Manual'
   },
   preflight: {
     title: 'Preflight Check',
