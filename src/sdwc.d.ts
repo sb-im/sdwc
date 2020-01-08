@@ -95,6 +95,7 @@ declare namespace SDWC {
   export interface Preference {
     mapType: string;
     mapFollow: boolean;
+    overviewFit: boolean;
     lang: string;
   }
 

@@ -4,6 +4,7 @@
 const state = {
   mapType: 'sd-map-amap',
   mapFollow: true,
+  overviewFit: true,
   lang: ''
 };
 

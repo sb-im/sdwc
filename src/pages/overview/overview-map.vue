@@ -1,11 +1,16 @@
 <template>
   <sd-card class="overview-map" icon="map-marker" :title="$t('sidemenu.overview')" dense>
     <template #action>
-      <el-radio-group v-model="type" size="small" @change="handleMapChange">
+      <el-button
+        :icon="fit ? 'el-icon-data-line' : 'el-icon-data-board'"
+        size="small"
+        @click="handleFit"
+      >{{ $t(`map.${fit ? 'fit' : 'manual'}`) }}</el-button>
+      <el-radio-group class="map__switch" size="small" v-model="type" @change="handleMapChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" fit></component>
+    <component :is="type" v-bind="$attrs" :fit="fit"></component>
   </sd-card>
 </template>
 
@@ -26,24 +31,32 @@ export default {
   data() {
     return {
       type: '',
-      MapType
+      fit: true
     };
   },
   computed: {
     ...mapState([
       'preference'
     ]),
+    MapType() {
+      return MapType;
+    }
   },
   methods: {
     ...mapActions([
       'setPreference',
     ]),
+    handleFit() {
+      this.fit = !this.fit;
+      this.setPreference({ overviewFit: this.fit });
+    },
     handleMapChange(mapType) {
       this.setPreference({ mapType });
     }
   },
   created() {
     this.type = this.preference.mapType;
+    this.fit = this.preference.overviewFit;
   },
   components: {
     [Card.name]: Card,
