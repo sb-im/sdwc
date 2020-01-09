@@ -120,6 +120,10 @@ export default {
   flex-grow: 1;
 }
 
+.sd--safari .aside-menu {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
 .aside .el-menu-item.is-active {
   box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 rgba(0, 0, 0, 0.2);
 }

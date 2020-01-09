@@ -68,6 +68,10 @@ export default {
   display: flex;
   flex-direction: column;
 }
+.sd--safari .sd-panel__main {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
 .sd-panel__view {
   padding: 10px;
   flex-grow: 1;

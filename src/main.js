@@ -6,6 +6,7 @@ import './util/plugin-mqtt';
 import store from './store';
 import { MutationTypes as USER } from './store/modules/user';
 import router from './router';
+import './util/browser-hacks';
 
 import App from './App.vue';
 import './style.css';
