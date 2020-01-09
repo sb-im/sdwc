@@ -65,7 +65,7 @@ export default {
         this.errorUsername = '';
       }
       if (!this.password) {
-        this.errorPassword = this.$t('login.error_username');
+        this.errorPassword = this.$t('login.error_password');
       } else {
         this.errorPassword = '';
       }
