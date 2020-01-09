@@ -13,7 +13,7 @@ import './style.css';
 import 'chartist/dist/chartist.min.css';
 import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
 
-store.dispatch('configure');
+const configurePromise = store.dispatch('configure');
 /**
  * Restore user token (if avaliable) before Vue instance was created.
  * Makes `store.state.user` equals to restored state when enter router
@@ -33,6 +33,7 @@ const app = new Vue({
   store,
   i18n,
   router,
+  provide: { configurePromise },
   extends: App
 });
 

@@ -16,7 +16,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { config } from '@/api/sdwc';
 
 import Aside from './aside.vue';
 import Header from './header.vue';
@@ -36,9 +35,10 @@ export default {
       return __SDWC__VERSION__; // would be replaced on compile
     }
   },
+  inject: ['configurePromise'],
   created() {
-    // ensure config was loaded
-    config()
+    // ensure action `configure` completed
+    this.configurePromise
       .then(() => this.getUserInfo())
       .then(() => {
         this.getNodes().then(() => this.subscribeNodes());
