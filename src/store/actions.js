@@ -113,14 +113,11 @@ export async function logout({ state, commit }) {
 /**
  * @param {Context} context
  */
-export function getUserInfo({ commit, dispatch }) {
-  // this function cannot be an async function, otherwise it won't be executed
-  // on mobile safari
-  SuperDock.user().then(data => {
-    commit(USER.SET_USER_INFO, data);
-    dispatch('storeUser');
-    MqttClient.setIdPrefix(data.id);
-  });
+export async function getUserInfo({ commit, dispatch }) {
+  const data = await SuperDock.user();
+  commit(USER.SET_USER_INFO, data);
+  dispatch('storeUser');
+  MqttClient.setIdPrefix(data.id);
 }
 
 /**
