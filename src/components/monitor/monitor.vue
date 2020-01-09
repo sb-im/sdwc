@@ -32,7 +32,7 @@
 
 <script>
 import Card from '@/components/card.vue';
-import { isSafari, isiPad } from '@/constants/browser';
+import { isSafari } from '@/constants/browser';
 
 import Flv from './flv.vue';
 import Hls from './hls.vue';
@@ -66,8 +66,7 @@ export default {
   computed: {
     monitorClassName() {
       return {
-        'monitor--full': this.fullscreen,
-        'monitor--ipadfix': isSafari && isiPad
+        'monitor--full': this.fullscreen
       };
     },
     compoName() {
