@@ -45,8 +45,10 @@ const mutations = {
         case 'air':
           if (msg.status) {
             const { lon: lng, lat } = msg.status.gps;
-            node.position = { lng, lat };
-            node.path.unshift(node.position);
+            if (typeof lng === 'number' && typeof lat === 'number') {
+              node.position = { lng, lat };
+              node.path.unshift(node.position);
+            }
           }
           break;
         case 'depot':
