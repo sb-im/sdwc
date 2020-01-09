@@ -73,6 +73,7 @@ export default {
      * @returns {Promise<AMap.LngLat[]>}
      */
     convertCoordinate(lnglat) {
+      if (lnglat.length <= 0) return Promise.resolve([]);
       return new Promise((resolve, reject) => {
         loadAMap().then(AMap => {
           if (lnglat.length <= 40) {
@@ -108,8 +109,7 @@ export default {
         return;
       }
       const { Polyline } = await loadAMap();
-      let path = [];
-      if (this.path.length > 0) path = await this.convertCoordinate(this.path);
+      let path = await this.convertCoordinate(this.path);
       if (this.poly) {
         this.poly.setPath(path);
       } else {
