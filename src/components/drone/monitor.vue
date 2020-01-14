@@ -8,7 +8,7 @@
       </el-radio-group>
     </template>
     <template>
-      <div class="monitor-drone-control">
+      <div class="monitor-drone-control" :class="wrapperClass">
         <div class="monitor-drone-control--horizontal">
           <!-- pitch angle right -->
           <el-slider
@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import throttle from 'lodash/throttle';
+
 import Monitor from '@/components/monitor/monitor.vue';
 
 export default {
@@ -87,6 +89,11 @@ export default {
     gimbalDisabled() {
       return this.status != 0 || this.gimbal.mode !== 'mavlink';
     },
+    wrapperClass() {
+      return {
+        'monitor-drone-control--moving': this.gesture.valid
+      };
+    }
   },
   methods: {
     /**
@@ -140,7 +147,7 @@ export default {
     },
     sendGestureCtl(x, y) {
       const now = Date.now();
-      const factor = (now - this.gesture.lastTime) / 3;
+      const factor = (now - this.gesture.lastTime) / 8;
       let { yaw, pitch } = this.gimbal;
       const dx = Math.trunc((this.gesture.lastPos.x - x) / factor);
       const dy = Math.trunc((y - this.gesture.lastPos.y) / factor);
@@ -183,13 +190,13 @@ export default {
         });
         // Gesture Move
         el.addEventListener('mousemove', ev => {
-          this.handleGestureMove(ev.x, ev.y);
+          this.handleGestureMoveThrottled(ev.x, ev.y);
         });
         el.addEventListener('touchmove', ev => {
           if (ev.target !== el && event.target.parentElement !== el) return;
           const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
           if (!t) return;
-          this.handleGestureMove(t.pageX, t.pageY);
+          this.handleGestureMoveThrottled(t.pageX, t.pageY);
         });
         // Gesture End
         el.addEventListener('mouseup', ev => {
@@ -209,6 +216,7 @@ export default {
     }
   },
   mounted() {
+    this.handleGestureMoveThrottled = throttle(this.handleGestureMove, 55);
     this.bindGestures();
   },
   components: {
@@ -233,6 +241,9 @@ export default {
 .monitor-drone-control--vertical {
   display: flex;
   justify-content: flex-end;
+}
+.monitor-drone-control--moving {
+  cursor: move;
 }
 .monitor-drone-control__restore {
   margin: 0 5px;
