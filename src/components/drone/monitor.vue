@@ -75,6 +75,7 @@ export default {
       },
       gesture: {
         valid: false,
+        lastTime: -1,
         lastPos: {
           x: 0,
           y: 0
@@ -120,64 +121,89 @@ export default {
       this.gimbal.pitch = 0;
     },
     handleGestureStart(x, y) {
+      if (this.gimbalDisabled) return;
       this.gesture.valid = true;
+      this.gesture.lastPos = { x, y };
+      this.gesture.lastTime = Date.now();
+    },
+    handleGestureMove(x, y) {
+      if (this.gimbalDisabled) return;
+      if (!this.gesture.valid) return;
+      this.sendGestureCtl(x, y);
       this.gesture.lastPos = { x, y };
     },
     handleGestureEnd(x, y) {
       if (this.gimbalDisabled) return;
-      if (this.gesture.valid) {
-        this.gesture.valid = false;
-        let { yaw, pitch } = this.gimbal;
-        const dx = Math.floor((this.gesture.lastPos.x - x) / 10);
-        const dy = Math.floor((this.gesture.lastPos.y - y) / 10);
-        if (yaw + dx > 90) {
-          yaw = 90;
-        } else if (yaw + dx < -90) {
-          yaw = -90;
-        } else {
-          yaw += dx;
-        }
-        if (pitch + dy > 45) {
-          pitch = 45;
-        } else if (pitch + dy < -90) {
-          pitch = -90;
-        } else {
-          pitch += dy;
-        }
-        this.gimbal.yaw = yaw;
-        this.gimbal.pitch = pitch;
-        this.handleGimbalCtl({ yaw, pitch });
+      if (!this.gesture.valid) return;
+      this.sendGestureCtl(x, y);
+      this.gesture.valid = false;
+    },
+    sendGestureCtl(x, y) {
+      const now = Date.now();
+      const factor = (now - this.gesture.lastTime) / 3;
+      let { yaw, pitch } = this.gimbal;
+      const dx = Math.trunc((this.gesture.lastPos.x - x) / factor);
+      const dy = Math.trunc((y - this.gesture.lastPos.y) / factor);
+      if (yaw + dx > 90) {
+        yaw = 90;
+      } else if (yaw + dx < -90) {
+        yaw = -90;
+      } else {
+        yaw += dx;
       }
+      if (pitch + dy > 45) {
+        pitch = 45;
+      } else if (pitch + dy < -90) {
+        pitch = -90;
+      } else {
+        pitch += dy;
+      }
+      this.gimbal.yaw = yaw;
+      this.gimbal.pitch = pitch;
+      this.handleGimbalCtl({ yaw, pitch });
+      this.gesture.lastTime = now;
     },
     bindGestures() {
       /** @type {HTMLDivElement} */
       const el = this.$el.getElementsByClassName('monitor-drone-control')[0];
       if (el) {
+        // Gesture Start
         el.addEventListener('mousedown', ev => {
-          if (this.gimbalDisabled) return;
-          ev.preventDefault();
+          if (ev.target !== el && event.target.parentElement !== el) return;
           this.handleGestureStart(ev.x, ev.y);
         });
         el.addEventListener('touchstart', ev => {
           if (ev.target !== el && event.target.parentElement !== el) return;
+          // do not prevent scroll when control disabled
           if (this.gimbalDisabled) return;
           ev.preventDefault();
           const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
           if (!t) return;
           this.handleGestureStart(t.pageX, t.pageY);
         });
+        // Gesture Move
+        el.addEventListener('mousemove', ev => {
+          this.handleGestureMove(ev.x, ev.y);
+        });
+        el.addEventListener('touchmove', ev => {
+          if (ev.target !== el && event.target.parentElement !== el) return;
+          const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
+          if (!t) return;
+          this.handleGestureMove(t.pageX, t.pageY);
+        });
+        // Gesture End
         el.addEventListener('mouseup', ev => {
-          if (this.gimbalDisabled) return;
-          ev.preventDefault();
           this.handleGestureEnd(ev.x, ev.y);
         });
         el.addEventListener('touchend', ev => {
           if (ev.target !== el && event.target.parentElement !== el) return;
-          if (this.gimbalDisabled) return;
-          ev.preventDefault();
           const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
           if (!t) return;
           this.handleGestureEnd(t.pageX, t.pageY);
+        });
+        // Gesture Cancel
+        el.addEventListener('mouseleave', ev => {
+          this.handleGestureEnd(ev.x, ev.y);
         });
       }
     }
