@@ -112,6 +112,7 @@ export const locale = {
     gimbal_mode_mavlink: 'Manual',
     gimbal_mode_neutral: 'Auto',
     gimbal_mode_rc: 'Remote-Control',
+    gimbal_center: 'Center',
     screenshot: 'Screenshot',
     recording: 'Recording',
     air_control: 'Drone control',

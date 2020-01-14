@@ -6,6 +6,9 @@
     :title="$t('depot.monitor')"
     dense
   >
+    <template #action>
+      <slot name="action"></slot>
+    </template>
     <template v-if="streamAvailable">
       <div class="monitor__content">
         <component :is="compoName" :nodeId="point.node_id" :source="point.name"></component>

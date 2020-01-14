@@ -112,6 +112,7 @@ export const locale = {
     gimbal_mode_mavlink: '手动',
     gimbal_mode_neutral: '自动',
     gimbal_mode_rc: '遥控器',
+    gimbal_center: '回中',
     screenshot: '截图',
     recording: '录制屏幕',
     air_control: '无人机控制',
