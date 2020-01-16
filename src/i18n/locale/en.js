@@ -22,11 +22,10 @@ export const locale = {
     logout: 'Logout',
     air: 'Drone',
     depot: 'Depot',
-    normal: 'Normal',
-    shutdown: 'Powered Off',
-    net_error: 'Network Error',
-    never_online: 'Not Connected',
-    abnormal: 'Abnormal'
+    status_0: 'Normal',
+    status_1: 'Powered Off',
+    status_2: 'Network Error',
+    'status_-1': 'Not Connected'
   },
   sidemenu: {
     overview: 'Overview',

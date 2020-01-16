@@ -24,11 +24,11 @@
             <span>{{ $t('header.notify_empty') }}</span>
           </el-dropdown-item>
           <div v-else class="notify__list">
-            <el-dropdown-item v-for="n of notify" :key="n.id" class="notify">
-              <div class="notify__prefix">{{ n.prefix }} · {{ $d(n.time, 'time') }}</div>
+            <el-dropdown-item v-for="n of notify" :key="n.notif.id" class="notify">
+              <div class="notify__prefix">{{ n.notif.prefix }} · {{ $d(n.notif.time, 'time') }}</div>
               <div>
-                <i class="notify__icon" :class="n.icon" :style="{color: n.color}"></i>
-                <span class="notify__title">{{ n.title }}</span>
+                <i class="notify__icon" :class="n.icon"></i>
+                <span class="notify__title">{{ n.notif.title }}</span>
               </div>
             </el-dropdown-item>
           </div>
@@ -45,8 +45,8 @@
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item v-for="st in status" :key="st.id">
-            <router-link tag="span" :to="{name: 'node', params: { id: st.id }}">
-              <i :class="st.icon" :style="{color: st.color}"></i>
+            <router-link tag="span" :to="{ name: 'node', params: { id: st.id } }">
+              <i :class="st.icon"></i>
               <span>{{ st.text }}</span>
             </router-link>
           </el-dropdown-item>
@@ -63,7 +63,7 @@
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item v-for="(value, key) in locales" :key="key" :command="{ lang: key }">
-            <el-radio :value="preference.lang" :label="key">{{value}}</el-radio>
+            <el-radio :value="preference.lang" :label="key">{{ value }}</el-radio>
           </el-dropdown-item>
           <el-dropdown-item command="logout" divided>
             <i class="el-icon-back"></i>
@@ -80,21 +80,21 @@ import { mapActions, mapState } from 'vuex';
 
 import { locales } from '@/i18n';
 import Icon from '@/components/sd-icon.vue';
-import { getStatusText } from '@/constants/level-status';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 
-const StatusIcon = {
-  0: 'el-icon-success',
-  1: 'el-icon-info',
-  2: 'el-icon-error',
-  default: 'el-icon-warning'
+const NotificationClass = {
+  0: 'el-icon-success color--green',
+  1: 'el-icon-question color--grey',
+  2: 'el-icon-error color--red',
+  3: 'el-icon-info color--blue',
+  default: 'el-icon-warning color--orange'
 };
 
-const StatusColor = {
-  0: '#67C23A',
-  1: '#909399',
-  2: '#F56C6C',
-  default: '#E6A23C'
+const NodeStatusClass = {
+  0: 'el-icon-success color--green',
+  1: 'el-icon-info color--gery',
+  2: 'el-icon-error color--red',
+  default: 'el-icon-warning color--orange'
 };
 
 export default {
@@ -131,22 +131,11 @@ export default {
       }
     },
     /**
-     * @param {SDWC.NotificationItem} n
+     * @param {SDWC.NotificationItem} notif
      */
-    notificationToObject(n) {
-      const icon = StatusIcon[n.status];
-      const color = StatusColor[n.status];
-      return { icon, color, ...n };
-    },
-    /**
-     * @param {'air'|depot'} type
-     * @returns {string}
-     */
-    getTypeText(type) {
-      switch (type) {
-        case 'air': return this.$t('header.air');
-        case 'depot': return this.$t('header.depot');
-      }
+    notificationToObject(notif) {
+      const icon = NotificationClass[notif.status] || NotificationClass.default;
+      return { icon, notif };
     },
     /**
      * @param {SDWC.NodeInfo} info node info
@@ -154,10 +143,11 @@ export default {
      * @returns {{id: number, icon: string, color: string, text: string}}
      */
     statusToObject({ id, name, type_name }, status) {
-      const icon = StatusIcon[status] || StatusIcon.default;
-      const color = StatusColor[status] || StatusColor.default;
-      const text = `${this.getTypeText(type_name)} ${name} ${getStatusText(status)}`;
-      return { id, icon, color, text };
+      const icon = NodeStatusClass[status] || NodeStatusClass.default;
+      const type = this.$t(`header.${type_name}`);
+      const st = this.$t(`header.status_${status}`);
+      const text = `${type} ${name} ${st}`;
+      return { id, icon, text };
     },
     /**
      * @param {{lang: string}|'logout'|'clear'} cmd

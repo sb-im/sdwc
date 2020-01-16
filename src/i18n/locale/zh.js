@@ -22,11 +22,10 @@ export const locale = {
     logout: '退出',
     air: '无人机',
     depot: '机场',
-    normal: '正常',
-    shutdown: '已关闭',
-    net_error: '网络错误',
-    never_online: '未连接',
-    abnormal: '异常'
+    status_0: '正常',
+    status_1: '已关闭',
+    status_2: '网络错误',
+    'status_-1': '未连接'
   },
   sidemenu: {
     overview: '概况',

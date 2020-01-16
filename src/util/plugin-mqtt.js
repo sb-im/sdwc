@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import { getStatusText } from '@/constants/level-status';
+import i18n from '@/i18n';
 import store from '@/store';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 import MqttClient from '@/api/mqtt';
@@ -65,12 +65,15 @@ function registerRpcListener() {
 function registerStatusListener() {
   MqttClient.on('status', ({ id, code }) => {
     const node = store.state.node.find(node => node.info.id === id);
-    if (!node || node.status === -1 || node.status === code) return;
+    if (!node || node.status === code) return;
+    const now = Date.now();
+    const st = i18n.t(`header.status_${code}`);
     emitNotification({
-      id: `sdwc-node/${id}/status/${Date.now()}`,
-      prefix: 'status',
-      title: `${node.info.name} : ${getStatusText(code)}`,
-      status: code
+      id: `node/${id}/status/${now}`,
+      time: now,
+      prefix: 'Status',
+      status: code,
+      title: `${node.info.name} : ${st}`
     });
   });
 }
