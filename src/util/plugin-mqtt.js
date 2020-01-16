@@ -56,6 +56,19 @@ function registerRpcListener() {
       title: `${node.name} : ${stringifyMission(request.payload)}`
     });
   });
+  let notificationId = 0;
+  MqttClient.on('rpc:notification', ({ id, request }) => {
+    const node = store.state.node.find(node => node.info.id === id).info;
+    if (!node) return;
+    const now = Date.now();
+    emitNotification({
+      id: `node/${id}/notif/${now}-${notificationId++}`,
+      time: now,
+      prefix: 'Notification',
+      status: 3,
+      title: `${node.name} : ${stringifyMission(request.payload)}`
+    });
+  });
   MqttClient.on('rpc:response', ({ response }) => {
     const status = response.type === 'success' ? 0 : 2;
     emitNotification({ id: response.payload.id, status }, true);

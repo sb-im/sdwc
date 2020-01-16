@@ -59,6 +59,8 @@ class MqttClient extends EventEmitter {
         const request = jsonrpc.parse(str);
         if (request.type === 'request') {
           this.emit('rpc:request', { id, request });
+        } else if (request.type === 'notification') {
+          this.emit('rpc:notification', { id, request });
         }
       } else if (topic.endsWith('/rpc/recv')) {
         const response = jsonrpc.parse(str);
