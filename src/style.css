@@ -2,6 +2,23 @@ body {
   margin: 0;
 }
 
+/* public status colors */
+.color--green {
+  color: #67c23a;
+}
+.color--blue {
+  color: #409eff;
+}
+.color--orange {
+  color: #e6a23c;
+}
+.color--red {
+  color: #f56c6c;
+}
+.color--grey {
+  color: #606266;
+}
+
 .development-ribbon {
   content: '';
   background-image: url('/assets/images/staging-tip.svg');

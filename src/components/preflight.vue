@@ -82,26 +82,26 @@ import { checkForecast, windSpeedLevel } from '@/api/plan-runnable';
 
 // drone/depot status
 const StatusClass = {
-  0: 'el-icon-success sd-preflight-green',
-  1: 'el-icon-info sd-preflight-grey',
-  2: 'el-icon-error sd-preflight-red',
-  3: 'el-icon-error sd-preflight-grey'
+  0: 'el-icon-success color--green',
+  1: 'el-icon-info color--grey',
+  2: 'el-icon-error color--red',
+  3: 'el-icon-error color--grey'
 };
 
 // realtime/forecast weather level
 const LevelClass = {
-  success: 'el-icon-success sd-preflight-green',
-  primary: 'el-icon-circle-plus sd-preflight-blue',
-  warning: 'el-icon-warning sd-preflight-orange',
-  danger: 'el-icon-remove sd-preflight-red',
-  error: 'el-icon-error sd-preflight-grey'
+  success: 'el-icon-success color--green',
+  primary: 'el-icon-circle-plus color--blue',
+  warning: 'el-icon-warning color--orange',
+  danger: 'el-icon-remove color--red',
+  error: 'el-icon-error color--grey'
 };
 
 // plan run status
 const PlanStatusClass = {
-  0: 'el-icon-success sd-preflight-green',
-  1: 'el-icon-error sd-preflight-red',
-  2: 'el-icon-loading sd-preflight-grey'
+  0: 'el-icon-success color--green',
+  1: 'el-icon-error color--red',
+  2: 'el-icon-loading color--grey'
 };
 
 const DefaultPreflightData = {
@@ -291,6 +291,7 @@ export default {
 .sd-preflight .el-dialog__body {
   padding: 10px 20px;
   height: 260px;
+  box-sizing: content-box;
 }
 .sd-preflight__item {
   margin: 10px 0;
@@ -318,20 +319,5 @@ export default {
 }
 .sd-preflight__plan-status {
   font-size: 60px;
-}
-.sd-preflight-green {
-  color: #67c23a;
-}
-.sd-preflight-blue {
-  color: #409eff;
-}
-.sd-preflight-orange {
-  color: #e6a23c;
-}
-.sd-preflight-red {
-  color: #f56c6c;
-}
-.sd-preflight-grey {
-  color: #606266;
 }
 </style>
