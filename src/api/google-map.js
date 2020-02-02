@@ -3,11 +3,11 @@ import wretchJSONP from './wretch-jsonp';
 const GoogleMapApiURL = {
   com: 'https://maps.googleapis.com/maps/api/js',
   cn: 'https://ditu.google.cn/maps/api/js',
-  gdgdocs: 'https://ditu.gdgdocs.org/maps/api/js'
+  sbim: 'https://sb.im/maps/api/js'
 };
 
 let gmapProm;
-let wr = wretchJSONP.url(GoogleMapApiURL.com);
+let wr = wretchJSONP.url(GoogleMapApiURL.sbim);
 
 /**
  * @param {keyof GoogleMapApiURL} url
