@@ -54,6 +54,8 @@ export default {
         zoom: __GMAP_ZOOM__ || 20,
         center: this.center || __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
+        mapTypeControl: false,
+        fullscreenControl: false,
         streetViewControl: false
       });
     },
