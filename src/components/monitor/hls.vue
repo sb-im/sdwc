@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     loadHls() {
-      import(/* webpackChunkName: "hls" */ 'hls.js').then(Hls => {
+      import(/* webpackChunkName: "hls" */ 'hls.js').then(({ default: Hls }) => {
         if (Hls.isSupported()) {
           this.hls = new Hls();
           this.hls.loadSource(this.source);

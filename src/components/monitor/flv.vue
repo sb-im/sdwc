@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     loadPlayer() {
-      import(/* webpackChunkName: "flv" */ 'flv.js').then(flvjs => {
+      import(/* webpackChunkName: "flv" */ 'flv.js').then(({ default: flvjs }) => {
         if (flvjs.isSupported()) {
           this.player = flvjs.createPlayer(
             {
