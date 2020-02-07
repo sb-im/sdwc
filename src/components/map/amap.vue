@@ -127,6 +127,37 @@ export default {
         });
         this.map.on('movestart', () => this.$emit('cancel-point'));
         this.map.on('zoomstart', () => this.$emit('cancel-point'));
+        // touch gestures
+        let touchContinue = false;
+        this.map.on('touchstart', e => {
+          if (e.target !== this.map) return;
+          touchContinue = true;
+          setTimeout(() => {
+            if (!touchContinue) return;
+            if (this.selectedMarker) {
+              this.selectedMarker.setMap(this.map);
+              this.selectedMarker.setPosition(e.lnglat);
+            } else {
+              /** @type {AMap.Marker} */
+              const marker = new SimpleMarker({
+                iconStyle: 'blue',
+                position: e.lnglat,
+              });
+              marker.setMap(this.map);
+              marker.on('touchstart', () => {
+                marker.setMap(null);
+                this.$emit('cancel-point');
+              });
+              marker.on('touchend', () => this.$nextTick(() => touchContinue = false));
+              this.selectedMarker = marker;
+            }
+            setTimeout(() => {
+              this.$emit('select-point', e.lnglat, this.selectedMarker.domNodes.container);
+            }, 200);
+          }, 500);
+        });
+        this.map.on('touchend', () => touchContinue = false);
+        this.map.on('touchmove', () => touchContinue = false);
       });
     },
     async drawPath() {
