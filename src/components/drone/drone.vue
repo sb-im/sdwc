@@ -4,7 +4,7 @@
     <template v-for="{ point, compo } of points">
       <component :is="compo" :key="point.id" :point="point" :status="status"></component>
       <sd-drone-map
-        v-if="compo === 'sd-node-mointor-drone'"
+        v-if="compo === 'sd-drone-mointor'"
         :key="`${point.id}_map`"
         :drone="node"
         :path="path"

@@ -57,7 +57,7 @@ import throttle from 'lodash/throttle';
 import Monitor from '@/components/monitor/monitor.vue';
 
 export default {
-  name: 'sd-node-mointor-drone',
+  name: 'sd-drone-mointor',
   props: {
     point: {
       type: Object,
