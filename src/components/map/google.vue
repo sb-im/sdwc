@@ -117,6 +117,35 @@ export default {
         });
       });
       this.map.addListener('bounds_changed', () => this.$emit('cancel-point'));
+      event.addListener(this.map, 'mousedown', e => {
+        let touchContinue = true;
+        event.addListenerOnce(this.map, 'mouseup', () => touchContinue = false);
+        event.addListenerOnce(this.map, 'dragstart', () => touchContinue = false);
+        setTimeout(() => {
+          if (!touchContinue) return;
+          if (this.selectedMarker) {
+            this.selectedMarker.setMap(this.map);
+            this.selectedMarker.setPosition(e.latLng);
+          } else {
+            const marker = new Marker({
+              map: this.map,
+              position: e.latLng,
+              title: 'selectedMarker',
+              icon: this.createMarkerPointIcon('dodgerblue')
+            });
+            marker.addListener('mousedown', () => {
+              marker.setMap(null);
+              this.$emit('cancel-point');
+            });
+            this.selectedMarker = marker;
+          }
+          setTimeout(() => {
+            const el = this.$el.querySelector('div[title=selectedMarker]');
+            const point = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+            this.$emit('select-point', point, el);
+          }, 200);
+        }, 500);
+      });
     },
     /**
      * 清除并重新绘制路径
