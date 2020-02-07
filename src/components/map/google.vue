@@ -55,9 +55,27 @@ export default {
         center: this.center || __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
         mapTypeControl: false,
+        scaleControl: true,
         fullscreenControl: false,
-        streetViewControl: false
+        streetViewControl: false,
+        draggableCursor: 'grab',
+        draggingCursor: 'grabbing'
       });
+      this.bindMapEvents();
+    },
+    /**
+     * @param {string} fillColor
+     * @returns {Partial<google.maps.Symbol>}
+     */
+    createMarkerPointIcon(fillColor = '#ea4335') {
+      return {
+        anchor: { x: 20, y: 42 },
+        labelOrigin: { x: 20, y: 15 },
+        path: 'M20,38 C18,36 7.5,24 7.5,14 C7.5,7 13,1.5 20,1.5 S32.5,7 32.5,14 C32.5,24 22,36 20,38 z',
+        fillColor,
+        fillOpacity: 1,
+        strokeColor: '#fff',
+      };
     },
     /**
      * @param {number} rotation
@@ -72,6 +90,33 @@ export default {
         strokeColor: '#fff',
         rotation
       };
+    },
+    async bindMapEvents() {
+      const { Marker, event } = await loadGoogleMap();
+      this.map.addListener('rightclick', e => {
+        if (this.selectedMarker) {
+          this.selectedMarker.setMap(this.map);
+          this.selectedMarker.setPosition(e.latLng);
+        } else {
+          const marker = new Marker({
+            map: this.map,
+            position: e.latLng,
+            title: 'selectedMarker',
+            icon: this.createMarkerPointIcon('dodgerblue')
+          });
+          marker.addListener('rightclick', () => {
+            marker.setMap(null);
+            this.$emit('cancel-point');
+          });
+          this.selectedMarker = marker;
+        }
+        event.addListenerOnce(this.selectedMarker, 'mouseover', () => {
+          const el = this.$el.querySelector('div[title=selectedMarker]');
+          const point = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+          this.$emit('select-point', point, el);
+        });
+      });
+      this.map.addListener('bounds_changed', () => this.$emit('cancel-point'));
     },
     /**
      * 清除并重新绘制路径
@@ -140,9 +185,10 @@ export default {
             mapMarker = new MarkerWithLabel({
               map: this.map,
               position: marker.position,
+              icon: this.createMarkerPointIcon(),
               label: '🚉',
               labelContent: marker.name,
-              labelAnchor: { x: -5, y: 16 },
+              labelAnchor: { x: -6, y: 15 },
               labelClass: 'gmap-label'
             });
           } else if (marker.type === 'drone') {
@@ -263,6 +309,8 @@ export default {
     this.poly = null;
     /** @type {{[key: string]: google.maps.Marker}} */
     this.namedMarkers = {};
+    /** @type {google.maps.Marker} */
+    this.selectedMarker = null;
   },
   mounted() {
     this.initMap().then(() => {
@@ -275,7 +323,7 @@ export default {
     });
   },
   beforeDestroy() {
-    Object.keys(this.namedMarkers).concat('poly').forEach(prop => {
+    Object.keys(this.namedMarkers).concat('poly', 'selectMarker').forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
