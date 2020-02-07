@@ -3,11 +3,17 @@
 </template>
 
 <script>
+import CoordTransform from 'coordtransform';
+
 import { loadAMap, loadAMapUI } from '@/api/amap';
 import { MapActionEmoji } from '@/constants/map-actions';
 
 /**
- * @type {AMap.lnglat}
+ * @typedef {{lng: number, lat: number}} LngLatLiteral
+ */
+
+/**
+ * @type {AMap.LngLat}
  * store map center across instance
  */
 let __AMAP_CENTER__;
@@ -21,7 +27,7 @@ let __AMAP_ZOOM__;
 export default {
   name: 'sd-map-amap',
   props: {
-    /** @type {Vue.PropOptions<{lng: number, lat: number}[]>} */
+    /** @type {Vue.PropOptions<LngLatLiteral[]>} */
     path: {
       type: Array,
       required: false,
@@ -33,7 +39,7 @@ export default {
       required: false,
       default: () => []
     },
-    /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
+    /** @type {Vue.PropOptions<LngLatLiteral>} */
     center: {
       type: Object,
       required: false
@@ -70,13 +76,20 @@ export default {
       this.bindMapEvents();
     },
     /**
-     * @param {{lng: number; lat: number}[]} lnglat
+     * @param {LngLatLiteral[]} lnglat
      * @returns {Promise<AMap.LngLat[]>}
      */
     convertCoordinate(lnglat) {
       if (lnglat.length <= 0) return Promise.resolve([]);
       return new Promise((resolve, reject) => {
         loadAMap().then(AMap => {
+          if (CoordTransform.wgs84togcj02) {
+            const result = lnglat.map(c => {
+              const [lng, lat] = CoordTransform.wgs84togcj02(c.lng, c.lat);
+              return new AMap.LngLat(lng, lat);
+            });
+            return resolve(result);
+          }
           if (lnglat.length <= 40) {
             AMap.convertFrom(lnglat.map(p => [p.lng, p.lat]), 'gps', (status, result) => {
               if (result.info === 'ok') {
@@ -101,15 +114,22 @@ export default {
         });
       });
     },
+    /**
+     * @param {LngLatLiteral} lnglat
+     * @returns {LngLatLiteral}
+     */
+    outputLngLat(lnglat) {
+      const [lng, lat] = CoordTransform.gcj02towgs84(lnglat.lng, lnglat.lat);
+      return { lng, lat };
+    },
     async bindMapEvents() {
       const AMapUI = await loadAMapUI();
-      AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
+      AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         this.map.on('rightclick', e => {
           if (this.selectedMarker) {
             this.selectedMarker.setMap(this.map);
             this.selectedMarker.setPosition(e.lnglat);
           } else {
-            /** @type {AMap.Marker} */
             const marker = new SimpleMarker({
               iconStyle: 'blue',
               position: e.lnglat,
@@ -122,7 +142,7 @@ export default {
             this.selectedMarker = marker;
           }
           setTimeout(() => {
-            this.$emit('select-point', e.lnglat, this.selectedMarker.domNodes.container);
+            this.$emit('select-point', this.outputLngLat(e.lnglat), this.selectedMarker.domNodes.container);
           }, 200);
         });
         this.map.on('movestart', () => this.$emit('cancel-point'));
@@ -152,7 +172,7 @@ export default {
               this.selectedMarker = marker;
             }
             setTimeout(() => {
-              this.$emit('select-point', e.lnglat, this.selectedMarker.domNodes.container);
+              this.$emit('select-point', this.outputLngLat(e.lnglat), this.selectedMarker.domNodes.container);
             }, 200);
           }, 500);
         });
@@ -194,7 +214,7 @@ export default {
         loadAMapUI(),
         this.convertCoordinate(this.markers.map(m => m.position || { lng: 0, lat: 0 }))
       ]);
-      AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
+      AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         for (let i = 0; i < this.markers.length; i++) {
           const marker = this.markers[i];
           if (!marker.position) continue;
@@ -295,6 +315,8 @@ export default {
     this.poly = null;
     /** @type {{[key: string]: AMap.Marker}} */
     this.namedMarkers = {};
+    /** @type {AMap.Marker} */
+    this.selectedMarker = null;
   },
   mounted() {
     this.initMap().then(() => {
