@@ -67,6 +67,7 @@ export default {
         }));
         this.map.addControl(new AMap.Scale);
       });
+      this.bindMapEvents();
     },
     /**
      * @param {{lng: number; lat: number}[]} lnglat
@@ -98,6 +99,34 @@ export default {
             });
           }
         });
+      });
+    },
+    async bindMapEvents() {
+      const AMapUI = await loadAMapUI();
+      AMapUI.loadUI(['overlay/SimpleMarker'], SimpleMarker => {
+        this.map.on('rightclick', e => {
+          if (this.selectedMarker) {
+            this.selectedMarker.setMap(this.map);
+            this.selectedMarker.setPosition(e.lnglat);
+          } else {
+            /** @type {AMap.Marker} */
+            const marker = new SimpleMarker({
+              iconStyle: 'blue',
+              position: e.lnglat,
+            });
+            marker.setMap(this.map);
+            marker.on('rightclick', () => {
+              marker.setMap(null);
+              this.$emit('cancel-point');
+            });
+            this.selectedMarker = marker;
+          }
+          setTimeout(() => {
+            this.$emit('select-point', e.lnglat, this.selectedMarker.domNodes.container);
+          }, 200);
+        });
+        this.map.on('movestart', () => this.$emit('cancel-point'));
+        this.map.on('zoomstart', () => this.$emit('cancel-point'));
       });
     },
     async drawPath() {
@@ -247,7 +276,7 @@ export default {
     });
   },
   beforeDestroy() {
-    Object.keys(this.namedMarkers).concat('poly').forEach(prop => {
+    Object.keys(this.namedMarkers).concat('poly', 'selectedMarker').forEach(prop => {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
