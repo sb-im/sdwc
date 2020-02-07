@@ -23,6 +23,7 @@ import {
   ButtonGroup,
   Table,
   TableColumn,
+  Popover,
   Tooltip,
   Select,
   Option,
@@ -70,6 +71,7 @@ Vue.use(Button);
 Vue.use(ButtonGroup);
 Vue.use(Table);
 Vue.use(TableColumn);
+Vue.use(Popover);
 Vue.use(Tooltip);
 Vue.use(Select);
 Vue.use(Option);

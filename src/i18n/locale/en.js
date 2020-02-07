@@ -125,6 +125,11 @@ export const locale = {
     air_land: 'Landing directly',
     air_emergency_stop: 'Emergency stop',
     air_emergency_stop_tips: 'Paddle blade stop, to be very careful',
+    gotoGPS: 'Fly to here',
+    pointtoGPS: 'Turn towards here',
+    gotorelaltGPS: 'Fly to here (Alter flight altitude)',
+    input_alt: 'Please enter altitude:',
+    invalid_alt_input: 'Invalid altitude value'
   },
   depot: {
     monitor: 'Realtime monitor',

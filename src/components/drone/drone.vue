@@ -3,13 +3,13 @@
     <sd-node-drone-status :node="node" :msg="msg"></sd-node-drone-status>
     <template v-for="{ point, compo } of points">
       <component :is="compo" :key="point.id" :point="point" :status="status"></component>
-      <sd-map
+      <sd-drone-map
         v-if="compo === 'sd-node-mointor-drone'"
         :key="`${point.id}_map`"
         :drone="node"
         :path="path"
         :msg="msg"
-      ></sd-map>
+      ></sd-drone-map>
     </template>
   </div>
 </template>
@@ -20,7 +20,7 @@ import Control from './control.vue';
 import Monitor from './monitor.vue';
 import Debug from '@/components/debug.vue';
 import Battery from '@/components/battery.vue';
-import NodeMap from '@/components/map/map.vue';
+import DroneMap from './map.vue';
 
 const CompoName = {
   'debug': Debug.name,
@@ -56,14 +56,6 @@ export default {
       type: Object,
       required: true
     },
-    log: {
-      type: Array,
-      required: true
-    },
-    position: {
-      type: Object,
-      required: false
-    },
     path: {
       type: Array,
       required: false
@@ -82,7 +74,7 @@ export default {
     [Status.name]: Status,
     [Battery.name]: Battery,
     [Control.name]: Control,
-    [NodeMap.name]: NodeMap,
+    [DroneMap.name]: DroneMap,
     [Monitor.name]: Monitor
   }
 };

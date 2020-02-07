@@ -125,6 +125,11 @@ export const locale = {
     air_land: '直接降落',
     air_emergency_stop: '急停',
     air_emergency_stop_tips: '桨叶急停，需特别小心',
+    gotoGPS: '飞往此处',
+    pointtoGPS: '朝向此处',
+    gotorelaltGPS: '飞往此处（调整高度）',
+    input_alt: '请输入高度：',
+    invalid_alt_input: '无效的高度值'
   },
   depot: {
     monitor: '实时监控',
