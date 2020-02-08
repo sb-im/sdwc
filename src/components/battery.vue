@@ -49,8 +49,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import Card from '@/components/card.vue';
 
 export default {
@@ -60,19 +58,15 @@ export default {
       type: Object,
       required: true
     },
-    status: {
-      type: Number,
+    msg: {
+      type: Object,
       required: true
     }
   },
   computed: {
-    ...mapState({
-      battery(state) {
-        const node = state.node.find(n => n.info.id === this.point.node_id);
-        if (!node || !node.msg.battery) return {};
-        return node.msg.battery;
-      }
-    }),
+    battery() {
+      return this.msg.battery;
+    },
     current() {
       const I = ((this.battery.cur || 0) / 1000);
       return Math.abs(I) > 1 ? I.toFixed(1) : I.toFixed(2);

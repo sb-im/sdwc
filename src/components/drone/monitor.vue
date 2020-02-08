@@ -64,7 +64,7 @@ export default {
       required: true
     },
     status: {
-      type: Number,
+      type: Object,
       required: true
     }
   },
@@ -87,7 +87,7 @@ export default {
   },
   computed: {
     gimbalDisabled() {
-      return this.status != 0 || this.gimbal.mode !== 'mavlink';
+      return this.status.code != 0 || this.gimbal.mode !== 'mavlink';
     },
     wrapperClass() {
       return {

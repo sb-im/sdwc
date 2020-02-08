@@ -1,7 +1,7 @@
 <template>
   <sd-map
     :markers="markers"
-    :path="path"
+    :path="msg.position"
     :follow="follow"
     @map-change="handleCancel"
     @select-point="handleSelect"
@@ -44,17 +44,18 @@ const MapCommands = [
 export default {
   name: 'sd-drone-map',
   props: {
-    drone: {
+    info: {
       type: Object,
       required: true
     },
-    path: {
-      type: Array,
+    point: {
+      type: Object,
       required: true
     },
-    /**
-     * heading/height info
-     */
+    status: {
+      type: Object,
+      required: true
+    },
     msg: {
       type: Object,
       required: true
@@ -63,7 +64,7 @@ export default {
   data() {
     return {
       follow: true,
-      point: null
+      coordinate: null
     };
   },
   computed: {
@@ -76,30 +77,40 @@ export default {
     MapCommands() {
       return MapCommands;
     },
-    markers() {
-      const markers = [
-        {
+    droneMarkers() {
+      const markers = [];
+      const position = this.msg.position[0];
+      if (this.status.code === 0 && typeof position === 'object') {
+        markers.push({
           type: 'drone',
-          id: this.drone.id,
-          name: this.drone.name,
-          position: this.path[0],
-          heading: this.msg.status ? this.msg.status.flight.heading : 0
-        }
-      ];
+          id: this.info.id,
+          name: this.info.name,
+          position,
+          heading: position.heading
+        });
+      }
+      return markers;
+    },
+    depotMarkers() {
+      const markers = [];
       for (const d of this.depots) {
-        if (d.status === 0
-          && d.msg.status
-          && d.msg.status.link_id === this.drone.id
-        ) {
+        const { code, status } = d.status;
+        if (code === 0 && status.link_id === this.info.id) {
           markers.push({
             type: 'depot',
             id: d.info.id,
             name: d.info.name,
-            position: d.position
+            position: {
+              lng: +status.lng,
+              lat: +status.lat,
+            }
           });
         }
       }
       return markers;
+    },
+    markers() {
+      return [...this.droneMarkers, ...this.depotMarkers];
     }
   },
   methods: {
@@ -112,10 +123,10 @@ export default {
       this.setPreference({ mapFollow: this.follow });
     },
     handlePathClear() {
-      this.clearDronePath(this.drone.id);
+      this.clearDronePath(this.info.id);
     },
     handleSelect(latlng, el) {
-      this.point = {
+      this.coordinate = {
         lat: Math.floor(latlng.lat * 1e8) / 1e8,
         lon: Math.floor(latlng.lng * 1e8) / 1e8
       };
@@ -127,12 +138,12 @@ export default {
       p.updatePopper();
     },
     handleCancel() {
-      this.point = null;
+      this.coordinate = null;
       this.$refs.popover.doClose();
     },
     async handleCommand(cmd) {
       this.$refs.popover.doClose();
-      let arg = Object.assign({}, this.point);
+      let arg = Object.assign({}, this.coordinate);
       if (cmd === 'gotorelaltGPS') {
         const input = this.$prompt(this.$t('air.input_alt'), {
           title: this.$t('air.gotorelaltGPS'),
@@ -154,7 +165,7 @@ export default {
           return;
         }
       }
-      this.$mqtt(this.drone.id, {
+      this.$mqtt(this.info.id, {
         mission: cmd,
         arg
       }).catch(() => { /* noop */ });

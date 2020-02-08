@@ -1,35 +1,35 @@
 <template>
   <el-card class="drone__status sd-card sd-card--dense" shadow="never">
     <div class="status__item">
-      <sd-icon value="drone" :size="18"/>
+      <sd-icon value="drone" :size="18" />
       <span class="status__text">{{ flightStatus }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="check-flag" :size="18"/>
+      <sd-icon value="check-flag" :size="18" />
       <span class="status__text">{{ flightMode }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="timespan" :size="18"/>
+      <sd-icon value="timespan" :size="18" />
       <span class="status__text">{{ flightTime }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="speed" :size="18"/>
+      <sd-icon value="speed" :size="18" />
       <span class="status__text">{{ flightSpeed }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="battery-horizontal" :size="18"/>
+      <sd-icon value="battery-horizontal" :size="18" />
       <span class="status__text">{{ batteryPercentage }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="voltage" :size="18"/>
+      <sd-icon value="voltage" :size="18" />
       <span class="status__text">{{ batteryVoltage }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="height" :size="18"/>
+      <sd-icon value="height" :size="18" />
       <span class="status__text">{{ gpsHeight }}</span>
     </div>
     <div class="status__item">
-      <sd-icon value="satellite" :size="18"/>
+      <sd-icon value="satellite" :size="18" />
       <span class="status__text">{{ gpsType }}</span>
     </div>
   </el-card>
@@ -38,42 +38,8 @@
 <script>
 import Icon from '@/components/sd-icon.vue';
 
-const EmptyStatus = {
-  battery: { voltage: 0, remain: 0 },
-  gps: { satellites: 0, height: 0, lat: 0, type: 0, lon: 0 },
-  mount: { yaw: 0, pitch: 0 },
-  flight: { status: 0, mode: 0, speed: 0, time: 0 }
-};
-
-const FlightStatus = {
-  3: 'air.status_standby',
-  4: 'air.status_flying',
-  5: 'air.status_error',
-  none: 'air.status_'
-};
-
-const FlightMode = {
-  3: 'air.mode_auto',
-  4: 'air.mode_guide',
-  5: 'air.mode_fixed',
-  6: 'air.mode_back',
-  9: 'air.mode_land',
-  none: 'air.mode_'
-};
-
-const GPSType = {
-  0: 'NO GPS',
-  1: 'NO FIX',
-  2: '2D FIX',
-  3: '3D FIX',
-  4: 'DGPS',
-  5: 'RTK FLOAT',
-  6: 'RTK FIX',
-  none: '--'
-};
-
 export default {
-  name: 'sd-node-drone-status',
+  name: 'sd-drone-status',
   props: {
     node: {
       type: Object,
@@ -86,43 +52,37 @@ export default {
   },
   computed: {
     status() {
-      if (!this.msg.status) {
-        return EmptyStatus;
-      }
       return this.msg.status;
     },
     flightStatus() {
-      const key = FlightStatus[this.status.flight.status] || FlightStatus.none;
-      return this.$t(key);
+      return this.$t(`air.status_${this.status.status}`);
     },
     flightMode() {
-      const key = FlightMode[this.status.flight.mode] || FlightMode.none;
-      return this.$t(key);
+      return this.$t(`air.mode_${this.status.mode}`);
     },
     flightTime() {
-      const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.flight.time)), 'elapsed');
+      const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.time)), 'elapsed');
       return this.$t('air.flight_time', { t });
     },
     flightSpeed() {
-      const s = this.status.flight.speed.toFixed(2) + 'm/s';
+      const s = this.status.speed.toFixed(2);
       return this.$t('air.flight_speed', { s });
     },
     batteryPercentage() {
-      const num = this.status.battery.remain.toFixed(1) + '%';
+      const num = this.status.battery.percent.toFixed(1);
       return this.$t('air.battery_remain', { num });
     },
     batteryVoltage() {
-      const num = this.status.battery.voltage.toFixed(2) + 'V';
+      const num = this.status.battery.voltage.toFixed(2);
       return this.$t('air.battery_voltage', { num });
     },
     gpsHeight() {
-      const h = this.status.gps.height.toFixed(2) + 'm';
+      const h = this.status.height.toFixed(2);
       return this.$t('air.flight_height', { h });
     },
     gpsType() {
-      const num = this.status.gps.satellites;
-      const type = GPSType[this.status.gps.type] || GPSType.none;
-      return this.$t('air.gps_satellites', { num }) + ' ' + type;
+      const { satcount: num, type } = this.status.gps;
+      return this.$t('air.gps_satellites', { num, type });
     }
   },
   components: {

@@ -1,14 +1,15 @@
 <template>
   <div class="drone">
-    <sd-node-drone-status :node="node" :msg="msg"></sd-node-drone-status>
+    <sd-drone-status :node="node" :msg="node.msg"></sd-drone-status>
     <template v-for="{ point, compo } of points">
-      <component :is="compo" :key="point.id" :point="point" :status="status"></component>
+      <component :is="compo" :key="point.id" :point="point" :status="node.status" :msg="node.msg"></component>
       <sd-drone-map
         v-if="compo === 'sd-drone-mointor'"
         :key="`${point.id}_map`"
-        :drone="node"
-        :path="path"
-        :msg="msg"
+        :info="node.info"
+        :point="point"
+        :status="node.status"
+        :msg="node.msg"
       ></sd-drone-map>
     </template>
   </div>
@@ -47,23 +48,11 @@ export default {
     node: {
       type: Object,
       required: true
-    },
-    status: {
-      type: Number,
-      required: true
-    },
-    msg: {
-      type: Object,
-      required: true
-    },
-    path: {
-      type: Array,
-      required: false
     }
   },
   computed: {
     points() {
-      return this.node.points.map(point => {
+      return this.node.info.points.map(point => {
         const compo = CompoName[point.point_type_name] || '';
         return { point, compo };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
