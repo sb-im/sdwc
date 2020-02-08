@@ -16,7 +16,7 @@ import 'chartist-plugin-tooltips';
 export default {
   name: 'sd-weather-wind',
   props: {
-    weatherRec: {
+    weather: {
       type: Array,
       required: true
     }
@@ -24,11 +24,11 @@ export default {
   methods: {
     draw() {
       let points = [];
-      const len = this.weatherRec.length;
+      const len = this.weather.length;
       if (len >= 60) {
-        points = this.weatherRec.slice(0, 60);
+        points = this.weather.slice(0, 60);
       } else {
-        points = new Array(60 - len).concat(this.weatherRec);
+        points = new Array(60 - len).concat(this.weather);
       }
       /** @type {Chartist.IChartistData} */
       const data = {
@@ -60,7 +60,7 @@ export default {
     }
   },
   watch: {
-    weatherRec() {
+    weather() {
       this.draw();
     }
   },

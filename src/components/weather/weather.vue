@@ -1,7 +1,7 @@
 <template>
   <sd-card class="weather" icon="barometer" :title="$t('depot.weather')">
     <sd-weather-rain :caiyun="caiyun" :loading="caiyunLoading" ref="rain"></sd-weather-rain>
-    <sd-weather-wind :weatherRec="weatherRec"></sd-weather-wind>
+    <sd-weather-wind :weather="msg.weather"></sd-weather-wind>
     <div class="weather__column weather__column--multi">
       <div class="weather__coord">
         <sd-weather-wind-icon :speed="weatherNow.windSpeed" :direction="weatherNow.windDirection"></sd-weather-wind-icon>
@@ -69,12 +69,12 @@ export default {
       required: true
     },
     status: {
-      type: Number,
+      type: Object,
       required: true
     },
-    position: {
+    msg: {
       type: Object,
-      required: false
+      required: true
     }
   },
   data() {
@@ -90,12 +90,8 @@ export default {
     };
   },
   computed: {
-    weatherRec() {
-      const depot = this.$store.getters.depots.find(d => d.info.id === this.point.node_id);
-      return depot ? depot.weatherRec : [];
-    },
     weatherNow() {
-      const latest = this.weatherRec[this.weatherRec.length - 1];
+      const latest = this.msg.weather[this.msg.weather.length - 1];
       if (!latest) return {};
       const w = latest.weather;
       return {
@@ -124,7 +120,8 @@ export default {
   },
   methods: {
     getWeather() {
-      return weather(this.position.lng, this.position.lat).then(res => {
+      const { lng, lat } = this.status.status;
+      return weather(lng, lat).then(res => {
         this.caiyun.minutely = res.result.minutely;
         this.caiyun.realtime = res.result.realtime;
         this.caiyun.alert = res.result.alert;
@@ -132,7 +129,7 @@ export default {
       });
     },
     refreshWeather() {
-      if (!this.position) return;
+      if (this.status.code !== 0) return;
       this.caiyunLoading = true;
       this.getWeather().then(() => {
         this.caiyunLoading = false;

@@ -1,7 +1,7 @@
 <template>
   <div class="depot">
     <template v-for="{ point, compo } of points">
-      <component :is="compo" :key="point.id" :point="point" :status="status" :position="position"></component>
+      <component :is="compo" :key="point.id" :point="point" :status="node.status" :msg="node.msg"></component>
     </template>
   </div>
 </template>
@@ -34,34 +34,15 @@ const CompoOrder = {
 export default {
   name: 'sd-node-depot',
   props: {
+    /** @type {Vue.PropOptions<SDWC.Node>} */
     node: {
       type: Object,
       required: true
-    },
-    status: {
-      type: Number,
-      required: true
-    },
-    msg: {
-      type: Object,
-      required: true
-    },
-    log: {
-      type: Array,
-      required: true
-    },
-    position: {
-      type: Object,
-      required: false
-    },
-    path: {
-      type: Array,
-      required: false
     }
   },
   computed: {
     points() {
-      return this.node.points.map(point => {
+      return this.node.info.points.map(point => {
         const compo = CompoName[point.point_type_name] || '';
         return { point, compo };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);

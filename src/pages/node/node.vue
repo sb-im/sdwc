@@ -1,5 +1,5 @@
 <template>
-  <component :is="componentName" v-bind="componentProps"></component>
+  <component :is="componentName" :node="selectedNode"></component>
 </template>
 
 <script>
@@ -26,24 +26,12 @@ export default {
     ...mapState([
       'node'
     ]),
-    /** @returns {SDWC.Node} */
     selectedNode() {
       return this.node.find(node => node.info.id === this.id);
     },
     componentName() {
       if (!this.selectedNode) return Loading.name;
       return ComponentName[this.selectedNode.info.type_name];
-    },
-    componentProps() {
-      if (!this.selectedNode) return {};
-      return {
-        node: this.selectedNode.info,
-        status: this.selectedNode.status,
-        msg: this.selectedNode.msg,
-        log: this.selectedNode.log,
-        position: this.selectedNode.position,
-        path: this.selectedNode.path
-      };
     }
   },
   components: {

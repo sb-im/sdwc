@@ -49,7 +49,7 @@ export default {
       required: true
     },
     status: {
-      type: Number,
+      type: Object,
       required: true
     }
   },
@@ -60,7 +60,7 @@ export default {
   },
   computed: {
     disabled() {
-      return this.status !== 0;
+      return this.status.code !== 0;
     },
     controls() {
       return Controls;
