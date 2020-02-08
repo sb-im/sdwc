@@ -29,6 +29,7 @@ body {
   height: 120px;
   width: 120px;
   z-index: 1;
+  pointer-events: none;
 }
 
 @media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
