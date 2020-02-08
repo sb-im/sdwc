@@ -3,6 +3,8 @@ import { EventEmitter } from 'events';
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
 
+import { transformMessage } from './mqtt-adapter';
+
 class MqttClient extends EventEmitter {
   constructor() {
     super();
@@ -22,14 +24,24 @@ class MqttClient extends EventEmitter {
    * @param {string} topic
    */
   static parseNodeId(topic) {
-    const [_, id] = /^nodes\/(\d+)\//.exec(topic); // eslint-disable-line no-unused-vars
-    return Number.parseInt(id, 10);
+    const parts = topic.split('/');
+    if (parts[0] !== 'nodes') throw new TypeError(`No id in topic: ${topic}`);
+    return Number.parseInt(parts[1], 10);
+  }
+
+  /**
+   * @param {string} topic
+   */
+  static parseMsgCategory(topic) {
+    const parts = topic.split('/');
+    if (parts[0] !== 'nodes' && parts[2] !== 'msg') throw new TypeError(`No category in topic: ${topic}`);
+    return parts[3];
   }
 
   /**
    * @param {string} prefix
    */
-  setIdPrefix(prefix) {
+  setRpcPrefix(prefix) {
     this.rpcIdPrefix = prefix;
   }
 
@@ -55,41 +67,16 @@ class MqttClient extends EventEmitter {
       const id = MqttClient.parseNodeId(topic);
       MqttClient.log('msg:', topic, str);
       if (topic.endsWith('/rpc/send')) {
-        /** @type {import('jsonrpc-lite').IParsedObjectRequest} */
-        const request = jsonrpc.parse(str);
-        if (request.type === 'request') {
-          this.emit('rpc:request', { id, request });
-        } else if (request.type === 'notification') {
-          this.emit('rpc:notification', { id, request });
-        }
+        this.onRpcSend(id, str);
       } else if (topic.endsWith('/rpc/recv')) {
-        const response = jsonrpc.parse(str);
-        this.emit('rpc:response', { id, response });
-        const res = this.resolveMap.get(response.payload.id);
-        if (!res) return;
-        if (response.type === 'success') {
-          res.resolve(response.payload.result);
-        } else if (response.type === 'error') {
-          res.reject(response.payload.error);
-        } else {
-          res.reject(response.payload);
-        }
-        this.resolveMap.delete(response.payload.id);
+        this.onRpcRecv(id, str);
+      } else if (topic.includes('/msg/')) {
+        const category = MqttClient.parseMsgCategory(topic);
+        this.onMessage(id, str, category);
       } else if (topic.endsWith('/status')) {
-        if (str.trim().startsWith('{')) {
-          const { code, status } = JSON.parse(str);
-          this.emit('status', { id, code, status });
-        } else {
-          this.emit('status', { id, code: Number.parseInt(str, 10) });
-        }
-      } else if (topic.endsWith('/msg/battery')) {
-        const battery = JSON.parse(str);
-        this.emit('message', { id, msg: { battery } });
-      } else if (topic.endsWith('/msg/weather')) {
-        const weather = JSON.parse(str);
-        this.emit('message', { id, msg: { weather } });
-      } else if (topic.endsWith('/message')) {
-        this.emit('message', { id, str });
+        this.onStatus(id, str);
+      } else {
+        this.onMessageLegacy(id, str);
       }
     });
   }
@@ -159,6 +146,74 @@ class MqttClient extends EventEmitter {
         this.resolveMap.set(rpcId, { resolve, reject });
       });
     }
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} str
+   */
+  onRpcSend(id, str) {
+    /** @type {import('jsonrpc-lite').IParsedObjectRequest} */
+    const request = jsonrpc.parse(str);
+    if (request.type === 'request') {
+      this.emit('rpc:request', { id, request });
+    } else if (request.type === 'notification') {
+      this.emit('rpc:notification', { id, request });
+    }
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} str
+   */
+  onRpcRecv(id, str) {
+    const response = jsonrpc.parse(str);
+    this.emit('rpc:response', { id, response });
+    const res = this.resolveMap.get(response.payload.id);
+    if (!res) return;
+    if (response.type === 'success') {
+      res.resolve(response.payload.result);
+    } else if (response.type === 'error') {
+      res.reject(response.payload.error);
+    } else {
+      res.reject(response.payload);
+    }
+    this.resolveMap.delete(response.payload.id);
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} str
+   * @param {string} category
+   */
+  onMessage(id, str, category) {
+    const msg = {
+      [category]: JSON.parse(str)
+    };
+    this.emit('message', id, msg);
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} str
+   */
+  onStatus(id, str) {
+    if (str.trim().startsWith('{')) {
+      const payload = JSON.parse(str);
+      this.emit('status', id, payload);
+    } else {
+      const code = Number.parseInt(str, 10);
+      this.emit('status', id, null, { code });
+    }
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} str
+   */
+  onMessageLegacy(id, str) {
+    const msg = transformMessage(str);
+    this.emit('message', id, msg);
   }
 
   /**
