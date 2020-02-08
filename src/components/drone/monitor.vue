@@ -1,7 +1,12 @@
 <template>
-  <sd-node-monitor :point="point">
+  <sd-node-monitor :point="point" :status="status">
     <template #action>
-      <el-radio-group v-model="gimbal.mode" @change="handleGimbalMode" size="small">
+      <el-radio-group
+        v-model="gimbal.mode"
+        :disabled="gimbalModeDisabled"
+        @change="handleGimbalMode"
+        size="small"
+      >
         <el-radio-button label="mavlink">{{ $t('air.gimbal_mode_mavlink') }}</el-radio-button>
         <el-radio-button label="neutral">{{ $t('air.gimbal_mode_neutral') }}</el-radio-button>
         <el-radio-button label="rc">{{ $t('air.gimbal_mode_rc') }}</el-radio-button>
@@ -86,8 +91,11 @@ export default {
     };
   },
   computed: {
+    gimbalModeDisabled() {
+      return this.status.code !== 0;
+    },
     gimbalDisabled() {
-      return this.status.code != 0 || this.gimbal.mode !== 'mavlink';
+      return this.status.code !== 0 || this.gimbal.mode !== 'mavlink';
     },
     wrapperClass() {
       return {
@@ -100,6 +108,7 @@ export default {
      * @param { 'mavlink' | 'netural' | 'rc' } mode
      */
     handleGimbalMode(mode) {
+      // TODO: make use of mqtt jsonrpc method `gimbal_info` and `gimbal_mode`
       this.gimbal.mode = '';
       this.$mqtt(this.point.node_id, {
         mission: 'gimbalmode',
@@ -114,6 +123,7 @@ export default {
      * @param {{ yaw?: number; pitch?: number }} param
      */
     handleGimbalCtl(param) {
+      // TODO: make use of `msg.gimbal`
       const { yaw, pitch } = this.gimbal;
       this.$mqtt(this.point.node_id, {
         mission: 'gimbal',
