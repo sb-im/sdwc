@@ -31,7 +31,9 @@ export const locale = {
     overview: '概况',
     plan: '任务',
     depot: '机场',
-    air: '无人机'
+    air: '无人机',
+    fold: '收起菜单',
+    unfold: '展开菜单'
   },
   plan: {
     view: {

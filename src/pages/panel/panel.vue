@@ -59,7 +59,7 @@ export default {
 }
 .sd-panel__side {
   height: 100%;
-  min-width: 200px;
+  flex-shrink: 0;
 }
 .sd-panel__main {
   height: 100%;

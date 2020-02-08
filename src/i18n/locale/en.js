@@ -31,7 +31,9 @@ export const locale = {
     overview: 'Overview',
     plan: 'Plans',
     depot: 'Depots',
-    air: 'Drones'
+    air: 'Drones',
+    fold: 'Fold Menu',
+    unfold: 'Unfold Menu'
   },
   plan: {
     view: {
