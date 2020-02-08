@@ -48,13 +48,14 @@ export default {
     droneMarkers() {
       const markers = [];
       for (let d of this.drones) {
-        if (d.status.code === 0) {
+        const position = d.msg.position[0];
+        if (d.status.code === 0 && typeof position === 'object') {
           markers.push({
             type: 'drone',
             id: d.info.id,
             name: d.info.name,
-            position: d.msg.position[0],
-            heading: d.msg.position[0].heading
+            position,
+            heading: position.heading
           });
         }
       }
@@ -63,13 +64,16 @@ export default {
     depotMarkers() {
       const markers = [];
       for (const d of this.depots) {
-        if (d.status.code === 0) {
-          const { lng, lat } = d.status.status;
+        const { code, status } = d.status;
+        if (code === 0) {
           markers.push({
             type: 'depot',
             id: d.info.id,
             name: d.info.name,
-            position: { lng: +lng, lat: +lat, }
+            position: {
+              lng: +status.lng,
+              lat: +status.lat,
+            }
           });
         }
       }
