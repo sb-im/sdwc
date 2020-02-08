@@ -117,7 +117,7 @@ export async function getUserInfo({ commit, dispatch }) {
   const data = await SuperDock.user();
   commit(USER.SET_USER_INFO, data);
   dispatch('storeUser');
-  MqttClient.setIdPrefix(data.id);
+  MqttClient.setRpcPrefix(data.id);
 }
 
 /**
@@ -160,7 +160,7 @@ export async function getNodes({ commit }) {
  * @param {string} id drone id
  */
 export function clearDronePath({ commit }, id) {
-  commit(NODE.CLEAR_NODE_PATH, { id });
+  commit(NODE.CLEAR_NODE_PATH, id);
 }
 
 /**
@@ -169,51 +169,45 @@ export function clearDronePath({ commit }, id) {
  */
 export async function updateDepotStatus({ commit }, id) {
   const status = await MqttClient.invoke(id, 'ncp', ['status']);
-  commit(NODE.ADD_NODE_MSG, { id, msg: { status } });
+  const partial = { status };
+  commit(NODE.SET_NODE_STATUS, { id, partial });
 }
+
+const NodePointTopic = {
+  battery: id => `nodes/${id}/msg/battery`,
+  weather: id => `nodes/${id}/msg/weather`
+};
 
 /**
  * @param {Context} context
  */
-export async function subscribeNodes({ state, getters, commit, dispatch }) {
+export function subscribeNodes({ state, commit, dispatch }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
-    for (const p of node.info.points) {
-      switch (p.point_type_name) {
-        case 'battery':
-          MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/battery`);
-          break;
-        case 'weather':
-          MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/weather`);
-          break;
-      }
+    for (const point of node.info.points) {
+      const topicFn = NodePointTopic[point.point_type_name];
+      if (typeof topicFn !== 'function') continue;
+      MqttClient.mqtt.subscribe(topicFn(point.node_id));
     }
   });
-  MqttClient.on('status', async ({ id, code, status }) => {
-    commit(NODE.SET_NODE_STATUS, { id, status: code });
-    if (code === 0 && getters.depots.find(d => d.info.id === id)) {
-      // `status` object may be empty: older depot does not support
-      // send status via mqtt channel `nodes/:id/status`
-      if (status) {
-        commit(NODE.ADD_NODE_MSG, { id, msg: { status } });
-      } else {
-        // invoke `ncp status` to fetch status
-        dispatch('updateDepotStatus', id);
+  MqttClient.on('status', async (id, payload, partial) => {
+    // `payload` and `partial` cannot be present at the same time
+    if (payload) {
+      commit(NODE.SET_NODE_STATUS, { id, payload });
+      return;
+    }
+    // do not offer status object
+    if (partial.code === 0) {
+      const node = state.node.find(n => n.info.id === id);
+      if (node.info.type_name === 'depot') {
+        await dispatch('updateDepotStatus', id);
       }
+      commit(NODE.SET_NODE_STATUS, { id, partial });
     }
   });
-  MqttClient.on('message', ({ id, msg, str }) => {
-    if (msg) {
-      commit(NODE.ADD_NODE_MSG, { id, msg });
-    }
-    if (str) {
-      try {
-        commit(NODE.ADD_NODE_MSG, { id, msg: JSON.parse(str) });
-      } catch (e) {
-        commit(NODE.ADD_NODE_LOG, { id, log: str });
-      }
-    }
+  MqttClient.on('message', (id, msg) => {
+    commit(NODE.ADD_NODE_MSG, { id, msg });
   });
 }
 
