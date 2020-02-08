@@ -59,6 +59,10 @@ export default {
     point: {
       type: Object,
       required: true
+    },
+    status: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -76,6 +80,7 @@ export default {
       return CompoName[this.point.point_type_name] || '';
     },
     streamAvailable() {
+      if (this.status.code !== 0) return false;
       if (this.point.point_type_name === 'livestream_webrtc2') {
         return true;
       }
