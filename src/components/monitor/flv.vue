@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     loadPlayer() {
-      import(/* webpackChunkName: "flv" */ 'flv.js').then(({ default: flvjs }) => {
+      import(/* webpackChunkName: "flv" */ 'flv.js/dist/flv').then(({ default: flvjs }) => {
         if (flvjs.isSupported()) {
           this.player = flvjs.createPlayer(
             {
@@ -25,8 +25,7 @@ export default {
             },
             {
               enableWorker: true,
-              enableStashBuffer: false,
-              stashInitialSize: 128
+              enableStashBuffer: false
             }
           );
           this.player.attachMediaElement(this.$refs.video);
