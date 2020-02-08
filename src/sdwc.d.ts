@@ -34,30 +34,121 @@ declare namespace SDWC {
     description: string;
     points: NodePoint[];
   }
-  export interface NodePosition {
-    lat: number;
-    lng: number
+  export interface NodeConnectionStatus {
+    code: number;
+    msg: string;
+    status: {
+      link_id: number;
+      position_ok: boolean;
+      lat: string;
+      lng: string;
+      alt: string;
+    };
   }
-  export interface NodeWeather {
+  export interface NodeWeatherData {
     WD: number;
     WS: number;
     T: number;
     RH: number;
     Pa: number;
   }
-  export interface WeatherRecord {
+  export interface NodeWeather {
     time: number;
-    weather: NodeWeather;
+    data: NodeWeatherData;
+  }
+  export interface NodeBattery {
+    id: string;
+    /** Temperature [°C] */
+    temp: number;
+    /** Capacity [mA*h] */
+    cap: number;
+    /** current [mA] If Charging */
+    cur: string;
+    /** remaining battery [%] */
+    remain: number;
+    /** Cycles */
+    cycle: number;
+    /** Cell voltage [mV], eg `'3941/3948/3944/3945/3943/3942'` */
+    vol_cell: string;
+    status: string[];
+    /** Unknown */
+    bal: number;
+  }
+  export interface NodeStatus {
+    status: 'standby' | 'flying' | 'error';
+    mode: 'auto' | 'guide' | 'rtl' | 'land' | 'loiter';
+    /** flight time [s] */
+    time: number;
+    /** Ground speed [m/s] */
+    speed: number;
+    /** Relative height at the takeoff point */
+    height: number;
+    gps: {
+      type: 'NO_GPS' | 'NO_FIX' | '2D_FIX' | '3D_FIX' | 'DGPS' | 'RTK_FLOAT' | 'RTK_FIX';
+      /** GPS satellites count */
+      satcount: number;
+    };
+    battery: {
+      /** 1-100 [%] */
+      percent: number;
+      /** voltage [v] */
+      voltage: number;
+    };
+    /** Signal strength 1-100 [%] */
+    signal: number;
+  }
+  export interface NodeGimbal {
+    mode: string;
+    yaw: number;
+    pitch: number;
+  }
+  export interface NodePosition {
+    /** Latitude */
+    lat: string;
+    /** Longitude */
+    lng: string;
+    /** Altitude */
+    alt: string;
+    /** Heading 0°~360° */
+    heading: number;
+  }
+  export interface NodeNotification {
+    time: string;
+    /** 1: Debug, 2: Info, 3: Warn, 4: Error, 5: Fatal, 6: Panic */
+    level: number;
+    msg: string;
   }
   export interface Node {
     info: NodeInfo;
-    status: number;
-    msg: any;
-    log: string[];
-    position: NodePosition;
-    path: NodePosition[];
-    weatherRec: WeatherRecord[];
+    /** connection status */
+    status: NodeConnectionStatus;
+    msg: {
+      weather: NodeWeather[];
+      battery: NodeBattery;
+      status: NodeStatus;
+      gimbal: NodeGimbal;
+      position: NodePosition[];
+      notification: NodeNotification[];
+    };
   }
+  export type RawNodeMessage = Partial<{
+    weather: NodeWeatherData;
+    battery: NodeBattery;
+    status: NodeStatus;
+    gimbal: NodeGimbal;
+    position: NodePosition;
+    notification: NodeNotification;
+  }>
+  /**
+   * interface won't work here
+   */
+  export type NodeMessageLegacy = Partial<{
+    [key in 'status' | 'heartbeat']: {
+      [key in 'battery' | 'flight' | 'gps' | 'mount']: {
+        [key: string]: NodeMessageLegacy
+      }
+    }
+  }>
 
   // store/modules/notitication.js
   export interface NotificationItem {

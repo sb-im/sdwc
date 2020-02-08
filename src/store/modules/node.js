@@ -18,67 +18,104 @@ export const MutationTypes = {
 const mutations = {
   [MutationTypes.ADD_NODE](state, /** @type {SDWC.NodeInfo} */ payload) {
     const node = state.find(node => node.info.id === payload.id);
-    if (node) {
-      return;
-    }
+    if (node) return;
     state.push({
       info: payload,
-      status: -1,
-      msg: {},
-      log: [],
-      position: null,
-      path: [],
-      weatherRec: []
+      status: {
+        code: -1,
+        msg: '',
+        status: {
+          link_id: -1,
+          position_ok: null,
+          lat: '',
+          lng: '',
+          alt: ''
+        }
+      },
+      msg: {
+        weather: [],
+        battery: {
+          id: '',
+          temp: 0,
+          cap: 0,
+          cur: '',
+          remain: 0,
+          cycle: 0,
+          vol_cell: '',
+          status: [],
+          bal: 0
+        },
+        status: {
+          status: 'error',
+          mode: 'auto',
+          time: 0,
+          speed: 0,
+          height: 0,
+          gps: {
+            type: 'NO_GPS',
+            satcount: 0
+          },
+          battery: {
+            percent: 0,
+            voltage: 0
+          },
+          signal: 0
+        },
+        gimbal: {
+          mode: '',
+          yaw: 0,
+          pitch: 0
+        },
+        position: [],
+        notification: []
+      }
     });
   },
-  [MutationTypes.SET_NODE_STATUS](state, { id, status }) {
+  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: number, payload: SDWC.NodeConnectionStatus, partial: any }} */ { id, payload, partial }) {
     const node = state.find(node => node.info.id === id);
-    if (node) {
-      node.status = status;
+    if (!node) return;
+    if (payload) {
+      node.status = payload;
+    } else if (partial) {
+      Object.assign(node.status, partial);
     }
   },
-  [MutationTypes.ADD_NODE_MSG](state, { id, msg }) {
+  [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg:SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);
-    if (node) {
-      node.msg = { ...node.msg, ...msg };
-      switch (node.info.type_name) {
-        case 'air':
-          if (msg.status) {
-            const { lon: lng, lat } = msg.status.gps;
-            if (typeof lng === 'number' && typeof lat === 'number') {
-              node.position = { lng, lat };
-              node.path.unshift(node.position);
-            }
-          }
-          break;
-        case 'depot':
-          if (msg.status) {
-            const { lng, lat } = msg.status;
-            node.position = { lng: +lng, lat: +lat };
-          } else if (msg.weather) {
-            const time = Date.now();
-            node.weatherRec.push({ time, weather: msg.weather });
-            let earliest = node.weatherRec[0];
-            while (time - earliest.time > 60000) {
-              node.weatherRec.shift();
-              earliest = node.weatherRec[0];
-            }
-          }
-          break;
+    if (!node) return;
+    if (msg.battery) {
+      node.msg.battery = msg.battery;
+    }
+    if (msg.status) {
+      node.msg.status = msg.status;
+    }
+    if (msg.gimbal) {
+      node.msg.gimbal = msg.gimbal;
+    }
+    if (msg.position) {
+      node.msg.position.unshift(msg.position);
+    }
+    if (msg.notification) {
+      node.msg.notification.unshift(msg.notification);
+    }
+    if (msg.weather) {
+      const now = Date.now();
+      const w = {
+        time: now,
+        data: msg.weather
+      };
+      node.msg.weather.push(w);
+      let earliest = node.msg.weather[0];
+      while (now - earliest.time > 60000) {
+        node.msg.weather.shift();
+        earliest = node.msg.weather[0];
       }
     }
   },
-  [MutationTypes.ADD_NODE_LOG](state, { id, log }) {
+  [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {
     const node = state.find(node => node.info.id === id);
-    if (node) {
-      node.log.push(log);
-    }
-  },
-  [MutationTypes.CLEAR_NODE_PATH](state, { id }) {
-    const node = state.find(node => node.info.id === id);
-    if (node) {
-      node.path.splice(1, node.path.length - 1);
-    }
+    if (!node) return;
+    node.msg.position.splice(1, node.msg.position.length - 1);
   },
   [MutationTypes.CLEAR_NODES](state) {
     state.splice(0, state.length);
