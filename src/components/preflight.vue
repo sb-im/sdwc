@@ -22,7 +22,8 @@
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
-          <div>{{ $t('preflight.wind') }} {{ preflightData.realtime.wind_speed }} m/s</div>
+          <div v-if="preflightData.realtime.absent">{{ $t('preflight.wind_absent') }}</div>
+          <div v-else>{{ $t('preflight.wind', { n: preflightData.realtime.wind_speed }) }}</div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
       </div>
@@ -30,13 +31,13 @@
         <sd-icon value="satellite" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title">{{ $t('preflight.forecast') }}</div>
-          <div>{{ $t('preflight.wind') }} {{ preflightData.forecast.wind_speed.toFixed(1) }} m/s</div>
-          <div>{{ $t('preflight.intensity') }} {{ preflightData.forecast.precipitation_intensity }}</div>
+          <div>{{ $t('preflight.wind', { n: preflightData.forecast.wind_speed.toFixed(1) }) }}</div>
+          <div>{{ $t('preflight.intensity', { n: preflightData.forecast.precipitation_intensity }) }}</div>
           <template v-if="preflightData.forecast.precipitation_distance >= 10000">
             <div>{{ $t('preflight.no_precipitation') }}</div>
           </template>
           <template v-else>
-            <div>{{ $t('preflight.distance') }} {{ preflightData.forecast.precipitation_distance }} km</div>
+            <div>{{ $t('preflight.distance', { n: preflightData.forecast.precipitation_distance }) }}</div>
           </template>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
@@ -143,11 +144,11 @@ export default {
     ]),
     drone() {
       return this.drones.find(d => d.info.id === this.plan.node_id)
-        || { info: { name: this.$t('preflight.no_drone') }, status: 3 };
+        || { info: { name: this.$t('preflight.no_drone') }, status: { code: 3 } };
     },
     depot() {
       return this.depots.find(d => d.status.status.link_id === this.plan.node_id)
-        || { info: { name: this.$t('preflight.no_depot'), points: [] }, status: 3, };
+        || { info: { name: this.$t('preflight.no_depot'), points: [] }, status: { code: 3 }, };
     },
     weatherPoint() {
       return this.depot.info.points.find(p => p.point_type_name === 'weather');
@@ -208,18 +209,28 @@ export default {
     },
     async checkRealtime(timestamp) {
       if (!this.weatherPoint) return;
+      let result;
       this.preflightData.realtime = DefaultPreflightData.realtime;
-      /** @type {SDWC.WeatherRecord[]} */
+      /** @type {SDWC.NodeWeather[]} */
       const records = this.depot.msg.weather;
-      const avgSpeed = records.reduce((a, b) => a + b.weather.WS, 0) / records.length;
-      const result = windSpeedLevel(avgSpeed);
+      if (records.length === 0) {
+        result = {
+          absent: true,
+          level: 'error'
+        };
+      } else {
+        const avgSpeed = records.reduce((a, b) => a + b.data.WS, 0) / records.length;
+        result = windSpeedLevel(avgSpeed);
+      }
       if (timestamp === this.checkTime) {
         this.preflightData.realtime = result;
       }
     },
     async checkForecast(timestamp) {
+      const { status } = this.depot.status;
+      if (!status) return;
       this.preflightData.forecast = DefaultPreflightData.forecast;
-      const result = await checkForecast(this.depot.status.status);
+      const result = await checkForecast(status);
       if (timestamp === this.checkTime) {
         this.preflightData.forecast = result;
       }
