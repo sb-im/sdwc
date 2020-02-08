@@ -1,3 +1,8 @@
+const LegacyMessageKeys = [
+  'status',
+  'heartbeat'
+];
+
 const GPSType = {
   0: 'NO_GPS',
   1: 'NO_FIX',
@@ -30,13 +35,14 @@ const FlightMode = {
  * @returns {SDWC.RawNodeMessage}
  */
 export function transformMessage(str) {
-  let msg;
+  let msg = {};
   if (str.trim().startsWith('{')) {
     /** @type {SDWC.NodeMessageLegacy} */
     const payload = JSON.parse(str);
     /** @type {keyof SDWC.NodeMessageLegacy} */
     const keys = Object.keys(payload);
     for (const k of keys) {
+      if (!LegacyMessageKeys.includes(k)) continue;
       const v = payload[k];
       // msg.status
       let status = {};
@@ -63,12 +69,10 @@ export function transformMessage(str) {
       msg = { status, position };
     }
   } else {
-    msg = {
-      notification: {
-        time: Date.now(),
-        msg: str,
-        level: 2 // Info
-      }
+    msg.notification = {
+      time: Date.now(),
+      msg: str,
+      level: 2 // Info
     };
   }
   return msg;
