@@ -5,7 +5,7 @@
       <sd-overview-counter icon="depot" :caption="$t('sidemenu.depot')" :value="depots.length" background-color="#f0f9eb"></sd-overview-counter>
       <sd-overview-counter icon="task" :caption="$t('sidemenu.plan')" :value="plan.info.length" background-color="#fef0f0"></sd-overview-counter>
     </div>
-    <sd-overview-map v-if="configLoaded" :markers="markers"></sd-overview-map>
+    <sd-overview-map v-if="configLoaded"></sd-overview-map>
   </div>
 </template>
 
@@ -31,27 +31,7 @@ export default {
     ...mapGetters([
       'depots',
       'drones'
-    ]),
-    markers() {
-      const result = [];
-      for (let d of this.depots) {
-        if (d.status === 0) {
-          result.push({ id: d.info.id, type: 'depot', name: d.info.name, position: d.position });
-        }
-      }
-      for (let d of this.drones) {
-        if (d.status === 0) {
-          result.push({
-            type: 'drone',
-            id: d.info.id,
-            name: d.info.name,
-            position: d.position,
-            heading: d.msg.status ? d.msg.status.flight.heading : 0
-          });
-        }
-      }
-      return result;
-    }
+    ])
   },
   created() {
     config().then(() => this.configLoaded = true);

@@ -11,12 +11,12 @@
       <div class="sd-preflight__item" v-loading="loading[0]">
         <sd-icon value="drone" :size="30"></sd-icon>
         <div class="sd-preflight__detail sd-preflight__title">{{ drone.info.name }}</div>
-        <i class="sd-preflight__icon" :class="StatusClass[drone.status]"></i>
+        <i class="sd-preflight__icon" :class="StatusClass[drone.status.code]"></i>
       </div>
       <div class="sd-preflight__item" v-loading="loading[1]">
         <sd-icon value="depot" :size="30"></sd-icon>
         <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
-        <i class="sd-preflight__icon" :class="StatusClass[depot.status]"></i>
+        <i class="sd-preflight__icon" :class="StatusClass[depot.status.code]"></i>
       </div>
       <div v-if="weatherPoint" class="sd-preflight__item" v-loading="loading[2]">
         <sd-icon value="barometer" :size="30"></sd-icon>
@@ -146,7 +146,7 @@ export default {
         || { info: { name: this.$t('preflight.no_drone') }, status: 3 };
     },
     depot() {
-      return this.depots.find(d => d.msg.status && d.msg.status.link_id === this.plan.node_id)
+      return this.depots.find(d => d.status.status.link_id === this.plan.node_id)
         || { info: { name: this.$t('preflight.no_depot'), points: [] }, status: 3, };
     },
     weatherPoint() {
@@ -155,9 +155,9 @@ export default {
     checkPassed() {
       return (
         // drone status ok / poweroff
-        (this.drone.status === 0 || this.drone.status === 1)
+        (this.drone.status.code === 0 || this.drone.status.code === 1)
         // depot status ok
-        && this.depot.status === 0
+        && this.depot.status.code === 0
         // have realtime weather && weather ok
         && (!this.weatherPoint.name || this.preflightData.realtime.level !== 'error')
         // caiyun weather forecast ok
@@ -171,7 +171,7 @@ export default {
         // check failed
         || !this.checkPassed
         // drone poweroff
-        || this.drone.status === 1
+        || this.drone.status.code === 1
       );
     },
     planStatusText() {
@@ -210,7 +210,7 @@ export default {
       if (!this.weatherPoint) return;
       this.preflightData.realtime = DefaultPreflightData.realtime;
       /** @type {SDWC.WeatherRecord[]} */
-      const records = this.depot.weatherRec;
+      const records = this.depot.msg.weather;
       const avgSpeed = records.reduce((a, b) => a + b.weather.WS, 0) / records.length;
       const result = windSpeedLevel(avgSpeed);
       if (timestamp === this.checkTime) {
@@ -218,10 +218,8 @@ export default {
       }
     },
     async checkForecast(timestamp) {
-      const { position } = this.depot;
-      if (!position) return;
       this.preflightData.forecast = DefaultPreflightData.forecast;
-      const result = await checkForecast(position);
+      const result = await checkForecast(this.depot.status.status);
       if (timestamp === this.checkTime) {
         this.preflightData.forecast = result;
       }

@@ -114,7 +114,7 @@ export default {
       return this.notification.map(this.notificationToObject);
     },
     status() {
-      return this.node.map(node => this.statusToObject(node.info, node.status));
+      return this.node.map(node => this.statusToObject(node.info, node.status.code));
     },
     locales() {
       return locales;

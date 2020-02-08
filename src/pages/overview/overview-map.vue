@@ -10,12 +10,12 @@
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" :fit="fit"></component>
+    <component :is="type" :markers="markers" :fit="fit"></component>
   </sd-card>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 import Card from '@/components/card.vue';
 import Google from '@/components/map/google.vue';
@@ -38,9 +38,46 @@ export default {
     ...mapState([
       'preference'
     ]),
+    ...mapGetters([
+      'depots',
+      'drones'
+    ]),
     MapType() {
       return MapType;
-    }
+    },
+    droneMarkers() {
+      const markers = [];
+      for (let d of this.drones) {
+        if (d.status.code === 0) {
+          markers.push({
+            type: 'drone',
+            id: d.info.id,
+            name: d.info.name,
+            position: d.msg.position[0],
+            heading: d.msg.position[0].heading
+          });
+        }
+      }
+      return markers;
+    },
+    depotMarkers() {
+      const markers = [];
+      for (const d of this.depots) {
+        if (d.status.code === 0) {
+          const { lng, lat } = d.status.status;
+          markers.push({
+            type: 'depot',
+            id: d.info.id,
+            name: d.info.name,
+            position: { lng: +lng, lat: +lat, }
+          });
+        }
+      }
+      return markers;
+    },
+    markers() {
+      return [...this.depotMarkers, ...this.droneMarkers];
+    },
   },
   methods: {
     ...mapActions([
