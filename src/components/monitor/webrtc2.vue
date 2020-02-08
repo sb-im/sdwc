@@ -23,8 +23,8 @@ import { WebRTC2Client } from './webrtc2-client';
 export default {
   name: 'sd-node-monitor-webrtc2',
   props: {
-    nodeId: {
-      type: Number,
+    point: {
+      type: Object,
       required: true
     }
   },
@@ -45,7 +45,7 @@ export default {
       this.couldRetry = true;
       const client = new WebRTC2Client(this.config.ice_servers || this.config.ice_server);
       client.on('candidatecomplete', () => {
-        this.$mqtt(this.nodeId, {
+        this.$mqtt(this.point.node_id, {
           mission: 'webrtc',
           arg: client.pc.localDescription
         }).then(remoteSdp => {

@@ -1,6 +1,6 @@
 <template>
   <iframe
-    :src="source"
+    :src="point.name"
     class="monitor-iframe"
     width="100%"
     height="100%"
@@ -12,8 +12,8 @@
 export default {
   name: 'sd-node-monitor-iframe',
   props: {
-    source: {
-      type: String,
+    point: {
+      type: Object,
       required: true
     }
   }

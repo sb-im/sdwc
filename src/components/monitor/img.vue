@@ -1,13 +1,13 @@
 <template>
-  <img class="monitor-img" :src="source">
+  <img class="monitor-img" :src="point.name">
 </template>
 
 <script>
 export default {
   name: 'sd-node-monitor-img',
   props: {
-    source: {
-      type: String,
+    point: {
+      type: Object,
       required: true
     }
   }

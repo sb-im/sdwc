@@ -11,7 +11,7 @@
     </template>
     <template v-if="streamAvailable">
       <div class="monitor__content">
-        <component :is="compoName" :nodeId="point.node_id" :source="point.name"></component>
+        <component :is="compoName" :point="point"></component>
       </div>
       <slot></slot>
       <div class="monitor__control">

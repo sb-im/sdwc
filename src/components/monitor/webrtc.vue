@@ -23,8 +23,8 @@ import { WebSocketSignalingChannel } from './webrtc-client';
 export default {
   name: 'sd-node-monitor-webrtc',
   props: {
-    source: {
-      type: String,
+    point: {
+      type: Object,
       required: true
     }
   },
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     createChannel() {
-      this.channel = new WebSocketSignalingChannel(this.source, this.$refs.video, this.config.ice_server);
+      this.channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_server);
       this.channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;

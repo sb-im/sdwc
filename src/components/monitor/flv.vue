@@ -6,8 +6,8 @@
 export default {
   name: 'sd-node-monitor-flv',
   props: {
-    source: {
-      type: String,
+    point: {
+      type: Object,
       required: true
     }
   },
@@ -21,7 +21,7 @@ export default {
               isLive: true,
               hasAudio: false,
               hasVideo: true,
-              url: this.source
+              url: this.point.name
             },
             {
               enableWorker: true,
