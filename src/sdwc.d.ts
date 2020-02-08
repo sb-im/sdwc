@@ -74,7 +74,7 @@ declare namespace SDWC {
     /** Unknown */
     bal: number;
   }
-  export interface NodeStatus {
+  export interface NodeDroneStatus {
     status: 'standby' | 'flying' | 'error';
     mode: 'auto' | 'guide' | 'rtl' | 'land' | 'loiter';
     /** flight time [s] */
@@ -125,7 +125,7 @@ declare namespace SDWC {
     msg: {
       weather: NodeWeather[];
       battery: NodeBattery;
-      status: NodeStatus;
+      status: NodeDroneStatus;
       gimbal: NodeGimbal;
       position: NodePosition[];
       notification: NodeNotification[];
@@ -134,7 +134,7 @@ declare namespace SDWC {
   export type RawNodeMessage = Partial<{
     weather: NodeWeatherData;
     battery: NodeBattery;
-    status: NodeStatus;
+    status: NodeDroneStatus;
     gimbal: NodeGimbal;
     position: NodePosition;
     notification: NodeNotification;

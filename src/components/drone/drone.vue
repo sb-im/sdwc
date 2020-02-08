@@ -1,16 +1,14 @@
 <template>
   <div class="drone">
-    <sd-drone-status :node="node" :msg="node.msg"></sd-drone-status>
     <template v-for="{ point, compo } of points">
-      <component :is="compo" :key="point.id" :point="point" :status="node.status" :msg="node.msg"></component>
-      <sd-drone-map
-        v-if="compo === 'sd-drone-mointor'"
-        :key="`${point.id}_map`"
+      <component
+        :is="compo"
+        :key="point.id"
         :info="node.info"
         :point="point"
         :status="node.status"
         :msg="node.msg"
-      ></sd-drone-map>
+      ></component>
     </template>
   </div>
 </template>
@@ -24,6 +22,8 @@ import Battery from '@/components/battery.vue';
 import DroneMap from './map.vue';
 
 const CompoName = {
+  'drone_status': Status.name,
+  'map': DroneMap.name,
   'debug': Debug.name,
   'battery': Battery.name,
   'console': Control.name,
@@ -36,7 +36,9 @@ const CompoName = {
 };
 
 const CompoOrder = {
-  [Monitor.name]: 0,
+  [Status.name]: 0,
+  [Monitor.name]: 2,
+  [DroneMap.name]: 3,
   [Battery.name]: 5,
   [Control.name]: 9,
   [Debug.name]: 99,

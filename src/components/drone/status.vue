@@ -41,10 +41,6 @@ import Icon from '@/components/sd-icon.vue';
 export default {
   name: 'sd-drone-status',
   props: {
-    node: {
-      type: Object,
-      required: true
-    },
     msg: {
       type: Object,
       required: true
