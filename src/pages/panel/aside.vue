@@ -13,13 +13,14 @@
     </div>
     <el-menu-item index="overview" :route="{ name: 'overview' }">
       <sd-icon value="info-circle"></sd-icon>
-      <span>{{ $t('sidemenu.overview') }}</span>
+      <span slot="title">{{ $t('sidemenu.overview') }}</span>
     </el-menu-item>
     <el-submenu index="plan">
       <template #title>
-        <sd-icon value="task"></sd-icon>
+        <sd-icon value="tasks-blue"></sd-icon>
         <span>{{ $t('sidemenu.plan') }}</span>
       </template>
+      <li v-if="collapse" class="aside__subtitle">{{ $t('sidemenu.plan') }}</li>
       <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
         <i class="el-icon-plus"></i>
         <span>{{ $t('plan.edit.add') }}</span>
@@ -34,8 +35,9 @@
     <el-submenu index="drone">
       <template #title>
         <sd-icon value="drone-blue"></sd-icon>
-        <span>{{ $t('sidemenu.air') }}</span>
+        <span slot="title">{{ $t('sidemenu.air') }}</span>
       </template>
+      <li v-if="collapse" class="aside__subtitle">{{ $t('sidemenu.air') }}</li>
       <el-menu-item
         v-for="drone in drones"
         :key="drone.info.id"
@@ -46,8 +48,9 @@
     <el-submenu index="depot">
       <template #title>
         <sd-icon value="depot-blue"></sd-icon>
-        <span>{{ $t('sidemenu.depot') }}</span>
+        <span slot="title">{{ $t('sidemenu.depot') }}</span>
       </template>
+      <li v-if="collapse" class="aside__subtitle">{{ $t('sidemenu.depot') }}</li>
       <el-menu-item
         v-for="depot in depots"
         :key="depot.info.id"
@@ -57,7 +60,7 @@
     </el-submenu>
     <el-menu-item class="aside__toggle" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
-      <span>{{ $t(`sidemenu.${collapse ? 'un' : ''}fold`) }}</span>
+      <span slot="title">{{ $t(`sidemenu.${collapse ? 'un' : ''}fold`) }}</span>
     </el-menu-item>
   </el-menu>
 </template>
@@ -142,6 +145,14 @@ export default {
   width: 50px;
   height: 50px;
 }
+.aside__subtitle {
+  padding: 7px 0 7px 20px;
+  font-size: 14px;
+  color: #ccc;
+}
+.aside__toggle {
+  margin-top: auto;
+}
 .el-menu--collapse .aside__header {
   min-height: 60px;
 }
@@ -153,10 +164,11 @@ export default {
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
+.el-menu--collapse .el-submenu.is-active,
 .el-menu .el-menu-item.is-active {
-  box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 rgba(0, 0, 0, 0.2);
+  box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 #434a50;
 }
-.aside__toggle {
-  margin-top: auto;
+.el-menu--collapse .el-submenu.is-active .el-submenu__title {
+  background: none !important;
 }
 </style>
