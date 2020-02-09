@@ -45,6 +45,10 @@ export default {
     follow: {
       type: Boolean,
       default: false
+    },
+    popoverShown: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -93,59 +97,40 @@ export default {
     },
     async bindMapEvents() {
       const { Marker, event } = await loadGoogleMap();
-      this.map.addListener('rightclick', e => {
+      /** @type { (position: google.maps.LatLng) => void } */
+      const placeMarker = position => {
         if (this.selectedMarker) {
           this.selectedMarker.setMap(this.map);
-          this.selectedMarker.setPosition(e.latLng);
+          this.selectedMarker.setPosition(position);
         } else {
-          const marker = new Marker({
+          this.selectedMarker = new Marker({
             map: this.map,
-            position: e.latLng,
+            position,
             title: 'selectedMarker',
             icon: this.createMarkerPointIcon('dodgerblue')
           });
-          marker.addListener('rightclick', () => {
-            marker.setMap(null);
-            this.$emit('cancel-point');
-          });
-          this.selectedMarker = marker;
         }
-        event.addListenerOnce(this.selectedMarker, 'mouseover', () => {
+        setTimeout(() => {
           const el = this.$el.querySelector('div[title=selectedMarker]');
-          const point = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+          const point = { lat: position.lat(), lng: position.lng() };
           this.$emit('select-point', point, el);
-        });
-      });
-      this.map.addListener('bounds_changed', () => this.$emit('cancel-point'));
-      event.addListener(this.map, 'mousedown', e => {
+        }, 200);
+      };
+      this.map.addListener('rightclick', (/** @type {google.maps.MouseEvent} */ e) => placeMarker(e.latLng));
+      this.map.addListener('mousedown', (/** @type {google.maps.MouseEvent} */ e) => {
         let touchContinue = true;
         event.addListenerOnce(this.map, 'mouseup', () => touchContinue = false);
         event.addListenerOnce(this.map, 'dragstart', () => touchContinue = false);
-        setTimeout(() => {
-          if (!touchContinue) return;
-          if (this.selectedMarker) {
-            this.selectedMarker.setMap(this.map);
-            this.selectedMarker.setPosition(e.latLng);
-          } else {
-            const marker = new Marker({
-              map: this.map,
-              position: e.latLng,
-              title: 'selectedMarker',
-              icon: this.createMarkerPointIcon('dodgerblue')
-            });
-            marker.addListener('mousedown', () => {
-              marker.setMap(null);
-              this.$emit('cancel-point');
-            });
-            this.selectedMarker = marker;
-          }
-          setTimeout(() => {
-            const el = this.$el.querySelector('div[title=selectedMarker]');
-            const point = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-            this.$emit('select-point', point, el);
-          }, 200);
-        }, 500);
+        setTimeout(() => touchContinue && placeMarker(e.latLng), 500);
       });
+      this.map.addListener('bounds_changed', () => {
+        this.$emit('cancel-point');
+        this.removeSeletedMarker();
+      });
+    },
+    removeSeletedMarker() {
+      if (!this.selectedMarker) return;
+      this.selectedMarker.setMap(null);
     },
     /**
      * 清除并重新绘制路径
@@ -329,6 +314,11 @@ export default {
       if (!val) return;
       if (this.path.length <= 0) return;
       this.map.setCenter(this.path[0]);
+    },
+    popoverShown(val) {
+      if (val === false) {
+        this.removeSeletedMarker();
+      }
     }
   },
   created() {

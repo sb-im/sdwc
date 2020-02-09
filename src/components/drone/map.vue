@@ -3,6 +3,7 @@
     :markers="markers"
     :path="msg.position"
     :follow="follow"
+    :popover-shown="popover.show"
     @map-change="handleCancel"
     @select-point="handleSelect"
     @cancel-point="handleCancel"
@@ -14,7 +15,7 @@
         @click="handleFollow"
       >{{ $t(`map.${follow ? 'follow' : 'manual'}`) }}</el-button>
       <el-button icon="el-icon-delete" size="small" @click="handlePathClear">{{ $t('map.clear') }}</el-button>
-      <el-popover ref="popover" trigger="manual" popper-class="map__popover">
+      <el-popover ref="popover" trigger="manual" popper-class="map__popover" v-model="popover.show">
         <div
           v-for="cmd in MapCommands"
           :key="cmd"
@@ -48,10 +49,6 @@ export default {
       type: Object,
       required: true
     },
-    point: {
-      type: Object,
-      required: true
-    },
     status: {
       type: Object,
       required: true
@@ -64,7 +61,10 @@ export default {
   data() {
     return {
       follow: true,
-      coordinate: null
+      popover: {
+        show: false,
+        coordinate: null
+      }
     };
   },
   computed: {
@@ -126,32 +126,29 @@ export default {
       this.clearDronePath(this.info.id);
     },
     handleSelect(latlng, el) {
-      this.coordinate = {
+      if (this.status.code !== 0) return;
+      this.popover.coordinate = {
         lat: Math.floor(latlng.lat * 1e8) / 1e8,
         lon: Math.floor(latlng.lng * 1e8) / 1e8
       };
-      const p = this.$refs.popover;
-      p.referenceElm = el;
-      if (!p.showPopover) {
-        p.doShow();
-      }
-      p.updatePopper();
+      this.$refs.popover.referenceElm = el;
+      this.popover.show = true;
     },
     handleCancel() {
-      this.coordinate = null;
-      this.$refs.popover.doClose();
+      this.popover.coordinate = null;
+      this.popover.show = false;
     },
     async handleCommand(cmd) {
       this.$refs.popover.doClose();
-      let arg = Object.assign({}, this.coordinate);
+      let arg = Object.assign({}, this.popover.coordinate);
       if (cmd === 'gotorelaltGPS') {
         const input = this.$prompt(this.$t('air.input_alt'), {
           title: this.$t('air.gotorelaltGPS'),
           type: 'info',
-          inputValue: `${this.msg.status ? this.msg.status.gps.height : 0}`,
+          inputValue: `${this.msg.status.height}`,
           inputValidator: str => {
             let num = Number.parseFloat(str);
-            return !Number.isNaN(num) && Number.isFinite(num) && num.toString() === str;
+            return !Number.isNaN(num) && Number.isFinite(num) && `${num}` === str;
           },
           inputErrorMessage: this.$t('air.invalid_alt_input'),
           closeOnClickModal: false,

@@ -51,6 +51,10 @@ export default {
     follow: {
       type: Boolean,
       default: false
+    },
+    popoverShown: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -125,60 +129,39 @@ export default {
     async bindMapEvents() {
       const AMapUI = await loadAMapUI();
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
-        this.map.on('rightclick', e => {
+        /** @type { (position: AMap.LngLat) => void } */
+        const placeMarker = position => {
           if (this.selectedMarker) {
             this.selectedMarker.setMap(this.map);
-            this.selectedMarker.setPosition(e.lnglat);
+            this.selectedMarker.setPosition(position);
           } else {
             const marker = new SimpleMarker({
               iconStyle: 'blue',
-              position: e.lnglat,
+              position,
             });
             marker.setMap(this.map);
-            marker.on('rightclick', () => {
-              marker.setMap(null);
-              this.$emit('cancel-point');
-            });
             this.selectedMarker = marker;
           }
           setTimeout(() => {
-            this.$emit('select-point', this.outputLngLat(e.lnglat), this.selectedMarker.domNodes.container);
+            this.$emit('select-point', this.outputLngLat(position), this.selectedMarker.domNodes.container);
           }, 200);
-        });
+        };
+        this.map.on('rightclick', e => placeMarker(e.lnglat));
         this.map.on('movestart', () => this.$emit('cancel-point'));
         this.map.on('zoomstart', () => this.$emit('cancel-point'));
         // touch gestures
         let touchContinue = false;
         this.map.on('touchstart', e => {
-          if (e.target !== this.map) return;
           touchContinue = true;
-          setTimeout(() => {
-            if (!touchContinue) return;
-            if (this.selectedMarker) {
-              this.selectedMarker.setMap(this.map);
-              this.selectedMarker.setPosition(e.lnglat);
-            } else {
-              /** @type {AMap.Marker} */
-              const marker = new SimpleMarker({
-                iconStyle: 'blue',
-                position: e.lnglat,
-              });
-              marker.setMap(this.map);
-              marker.on('touchstart', () => {
-                marker.setMap(null);
-                this.$emit('cancel-point');
-              });
-              marker.on('touchend', () => this.$nextTick(() => touchContinue = false));
-              this.selectedMarker = marker;
-            }
-            setTimeout(() => {
-              this.$emit('select-point', this.outputLngLat(e.lnglat), this.selectedMarker.domNodes.container);
-            }, 200);
-          }, 500);
+          setTimeout(() => touchContinue && placeMarker(e.lnglat), 500);
         });
         this.map.on('touchend', () => touchContinue = false);
         this.map.on('touchmove', () => touchContinue = false);
       });
+    },
+    removeSeletedMarker() {
+      if (!this.selectedMarker) return;
+      this.selectedMarker.setMap(null);
     },
     async drawPath() {
       if (this.path.length === 0) {
@@ -306,6 +289,11 @@ export default {
       const path = this.poly.getPath();
       if (!path.length <= 0) return;
       this.map.setCenter(path[0]);
+    },
+    popoverShown(val) {
+      if (val === false) {
+        this.removeSeletedMarker();
+      }
     }
   },
   created() {
