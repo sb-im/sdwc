@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 62 (91390) - https://sketch.com -->
-    <title>Untitled 2</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group">
-            <rect id="Rectangle" stroke="#7496C4" fill="#E2F5FF" x="4.5" y="13.5" width="15" height="10"></rect>
-            <path d="M22.7410463,13.2919607 C22.4650013,13.4395912 22.1860349,13.5 21.4361148,13.5 L14.5,13.5 L14.5,0.5 L21.4361148,0.5 C22.1860349,0.5 22.4650013,0.560408843 22.7410463,0.708039303 C22.9785491,0.835057224 23.1649428,1.02145086 23.2919607,1.25895373 C23.4395912,1.53499868 23.5,1.81396507 23.5,2.5638852 L23.5,11.4361148 C23.5,12.1860349 23.4395912,12.4650013 23.2919607,12.7410463 C23.1649428,12.9785491 22.9785491,13.1649428 22.7410463,13.2919607 Z" id="Rectangle" stroke="#7496C4" fill="#FFFFFF"></path>
-            <path d="M9.5,13.5 L2.5638852,13.5 C1.81396507,13.5 1.53499868,13.4395912 1.25895373,13.2919607 C1.02145086,13.1649428 0.835057224,12.9785491 0.708039303,12.7410463 C0.560408843,12.4650013 0.5,12.1860349 0.5,11.4361148 L0.5,2.5638852 C0.5,1.81396507 0.560408843,1.53499868 0.708039303,1.25895373 C0.835057224,1.02145086 1.02145086,0.835057224 1.25895373,0.708039303 C1.53499868,0.560408843 1.81396507,0.5 2.5638852,0.5 L9.5,0.5 L9.5,13.5 Z" id="Rectangle-Copy" stroke="#7496C4" fill="#FFFFFF"></path>
-            <line x1="9.5" y1="16.5" x2="3.5" y2="13.5" id="Line" stroke="#7496C4" stroke-linecap="round"></line>
-            <line x1="9.5" y1="0.756187533" x2="9.5" y2="13.2389428" id="Line-3" stroke="#E12020" stroke-width="1.5" stroke-linecap="square"></line>
-            <line x1="20" y1="16.5" x2="14" y2="13.5" id="Line" stroke="#7496C4" stroke-linecap="round" transform="translate(17.250000, 15.000000) scale(-1, 1) translate(-17.250000, -15.000000) "></line>
-        </g>
-    </g>
-</svg>
+<svg width="48" height="48" xmlns="http://www.w3.org/2000/svg"><path stroke="#66798f" fill="#c8d1db" d="M9 25h30v20H9z"/><path d="M21 3H6Q3 3 3 6v20q0 3 3 3h15zm6 0h15q3 0 3 3v20q0 3-3 3H27z" fill="#fff" stroke="#66798f"/><path stroke="#c04141" stroke-width="3" d="M19 3.5v25"/><path stroke="#66798f" stroke-linecap="round" d="M19 35L7 29m22 6l12-6"/></svg>
