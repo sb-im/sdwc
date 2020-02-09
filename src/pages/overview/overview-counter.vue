@@ -1,6 +1,6 @@
 <template>
   <el-card class="sd-overview-counter" shadow="never" :style="{ backgroundColor: backgroundColor }">
-    <sd-icon :value="icon" :size="48"></sd-icon>
+    <sd-icon :value="icon" :size="40"></sd-icon>
     <div class="overview-counter__text">
       <div class="overview-counter__caption">{{caption}}</div>
       <div class="overview-counter__value">{{value}}</div>
