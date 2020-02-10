@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     status() {
-      return this.msg.status;
+      return this.msg.drone_status;
     },
     flightStatus() {
       return this.$t(`air.status_${this.status.status}`);

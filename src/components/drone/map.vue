@@ -145,7 +145,7 @@ export default {
         const input = this.$prompt(this.$t('air.input_alt'), {
           title: this.$t('air.gotorelaltGPS'),
           type: 'info',
-          inputValue: `${this.msg.status.height}`,
+          inputValue: `${this.msg.drone_status.height}`,
           inputValidator: str => {
             let num = Number.parseFloat(str);
             return !Number.isNaN(num) && Number.isFinite(num) && `${num}` === str;

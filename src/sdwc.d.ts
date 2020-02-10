@@ -21,6 +21,7 @@ declare namespace SDWC {
   export interface NodePoint {
     id: number;
     name: string;
+    params: Record<string, any>;
     node_id: number;
     point_type_id: number;
     point_type_name: string;
@@ -125,7 +126,7 @@ declare namespace SDWC {
     msg: {
       weather: NodeWeather[];
       battery: NodeBattery;
-      status: NodeDroneStatus;
+      drone_status: NodeDroneStatus;
       gimbal: NodeGimbal;
       position: NodePosition[];
       notification: NodeNotification[];
@@ -134,7 +135,7 @@ declare namespace SDWC {
   export type RawNodeMessage = Partial<{
     weather: NodeWeatherData;
     battery: NodeBattery;
-    status: NodeDroneStatus;
+    drone_status: NodeDroneStatus;
     gimbal: NodeGimbal;
     position: NodePosition;
     notification: NodeNotification;

@@ -24,8 +24,8 @@ const FlightStatus = {
 const FlightMode = {
   3: 'auto',
   4: 'guide',
-  5: 'fixed',
-  6: 'back',
+  5: 'fixed',  // not present in new modes, keep it as-is
+  6: 'rtl',    // previously 'back'
   9: 'land',
   none: 'N/A'
 };
@@ -44,29 +44,32 @@ export function transformMessage(str) {
     for (const k of keys) {
       if (!LegacyMessageKeys.includes(k)) continue;
       const v = payload[k];
-      // msg.status
-      let status = {};
-      status.battery = {
+      // msg.drone_status
+      let ds = {};
+      ds.battery = {
         percent: v.battery.remain,
         voltage: v.battery.voltage
       };
-      status.gps = {
+      ds.gps = {
         type: GPSType[v.gps.type],
         satcount: v.gps.satellites
       };
-      status.status = FlightStatus[v.flight.status];
-      status.mode = FlightMode[v.flight.mode];
-      status.time = v.flight.time;
-      status.speed = v.flight.speed;
-      status.height = v.gps.height;
+      ds.status = FlightStatus[v.flight.status];
+      ds.mode = FlightMode[v.flight.mode];
+      ds.time = v.flight.time;
+      ds.speed = v.flight.speed;
+      ds.height = v.gps.height;
       // msg.position
-      let position = {
+      let pos = {
         lat: v.gps.lat,
         lng: v.gps.lon,
-        alt: v.gps.heihgt,
+        alt: -1,
         heading: v.flight.heading
       };
-      msg = { status, position };
+      msg = {
+        drone_status: ds,
+        position: pos
+      };
     }
   } else {
     msg.notification = {

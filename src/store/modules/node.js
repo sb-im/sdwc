@@ -45,7 +45,7 @@ const mutations = {
           status: [],
           bal: 0
         },
-        status: {
+        drone_status: {
           status: 'error',
           mode: 'auto',
           time: 0,
@@ -86,8 +86,8 @@ const mutations = {
     if (msg.battery) {
       node.msg.battery = msg.battery;
     }
-    if (msg.status) {
-      node.msg.status = msg.status;
+    if (msg.drone_status) {
+      node.msg.drone_status = msg.drone_status;
     }
     if (msg.gimbal) {
       node.msg.gimbal = msg.gimbal;
