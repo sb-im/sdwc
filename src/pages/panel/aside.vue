@@ -99,7 +99,7 @@ export default {
         case 'plan/new':
           return 'plan-new';
       }
-      return '';
+      return 'dummy';
     }
   },
   methods: {
