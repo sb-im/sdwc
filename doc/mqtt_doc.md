@@ -50,8 +50,15 @@ Or
 ```
 
 
-# Message
-## `nodes/:id/msg/weather`
+# Point
+
+## weather
+### params
+```json
+{}
+```
+
+### `nodes/:id/msg/weather`
 -> `{"WD":0,"WS":0,"T":66115,"RH":426,"Pa":99780}`
 ```go
 type Weather struct {
@@ -75,7 +82,8 @@ AtmosphericPressure int `json:"Pa"`
 }
 ```
 
-## `nodes/:id/msg/battery`
+## battery
+### `nodes/:id/msg/battery`
 ```json
 {"temp": 27, "cap": 8634, "cur": "2561", "remain": 71, "cycle": 0, "vol_cell": "3941/3948/3944/3945/3943/3942", "status": ["Switch OFF Discharging", "Switch OFF Charging"], "bal": 0, "id": "591906111641001"}
 ```
@@ -112,8 +120,8 @@ PROTECTION(Overcurrent Charging)
 PROTECTION(Overcurrent Discharging)
 ```
 
-
-## `nodes/:id/msg/status`
+## drone_status
+### `nodes/:id/msg/drone_status`
 ```json
 {"status":"standby","mode":"auto","time":0,"speed":0.15,"height":-0.07,"gps":{"type":"RTK_FIX","satcount":10},"battery":{"percent":100,"voltage":12.59},"signal":50}
 ```
@@ -132,7 +140,13 @@ battery.voltage| float  | voltage [v]
 signal| uint  | Signal strength 1-100 [%]
 
 
-## `nodes/:id/msg/gimbal`
+## monitor
+### Params
+```json
+{"mode":["manual","auto","rc"],"yaw":[-90,90],"pitch":[-90,45]}
+```
+
+### Sub: `nodes/:id/msg/gimbal`
 ```json
 {"mode":"auto","yaw":0,"pitch":0}
 ```
@@ -143,24 +157,12 @@ mode | string | gimbal_mode
 yaw  | int    |
 pitch| int    |
 
-### RPC: gimbal_info
-#### Request:
-```json
-{"jsonrpc":"2.0","method":"gimbal_info","id":"sdwc-1"}
-```
-#### Response:
-```json
-{"jsonrpc":"2.0","result":{"mode":["manual","auto","rc"],"yaw":[-90,90],"pitch":[-90,45]},"id":"sdwc-1"}
-```
-##### Or
-```json
-{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found"},"id":"sdwc-1"}
-```
-**IF have error{}, Need Disable gimbal_mode && gimbal_ctl**
-
-
 ### RPC: gimbal_mode
 #### Request:
+```json
+{"jsonrpc":"2.0","method":"gimbal_mode","params":["manual"]}
+```
+Or
 ```json
 {"jsonrpc":"2.0","method":"gimbal_mode","params":["manual"],"id":"sdwc-2"}
 ```
@@ -173,6 +175,10 @@ pitch| int    |
 ### RPC: gimbal_ctl
 #### Request:
 ```json
+{"jsonrpc":"2.0","method":"gimbal_ctl","params":{"yaw":-37,"pitch":0}}
+```
+Or
+```json
 {"jsonrpc":"2.0","method":"gimbal_ctl","params":{"yaw":-37,"pitch":0},"id":"sdwc-3"}
 ```
 #### Response:
@@ -180,23 +186,57 @@ pitch| int    |
 {"jsonrpc":"2.0","result":{"yaw":-37,"pitch":0},"id":"sdwc-3"}
 ```
 
-
-## `nodes/:id/msg/position`
+## map
+### Params
 ```json
-{"lat":"22.6876399","lng":"114.2248704","alt":"0.07","Az":10}
+{
+  "common":{
+    "move":[
+      {"method":"goto"},
+      {"method":"pointto"},
+      {"method":"goto_params","params":{"alt":{ "type": "number", "required": true}}}
+    ]
+  },
+  "map":{
+    "google":{"proxy":"sb.im"},
+    "amap":{}
+  }
+}
+```
+
+### Sub: `nodes/:id/msg/position`
+```json
+{"lat":22.6876423001,"lng":114.2248673001,"alt":0.07,"heading":10}
 ```
 
 Name | Type   | Description
 ---- | ------ | -----------
-lat  | string | Latitude
-lng  | string | Longitude
-alt  | string | Altitude
+lat  | float | Latitude
+lng  | float | Longitude
+alt  | float | Altitude
 heading| uint | Heading 0°~360°
+
+### RPC: move
+#### Request:
+```json
+{
+  "jsonrpc":"2.0","method":"<common.move.method>",
+  "params":{
+    "lat":22.6876423001,"lng":114.2248673001,
+    "<common.move.params.key>":"<input: default=common.move.params.value.default>"
+  },
+  "id":"sdwc-3"
+}
+```
+#### Response:
+```json
+{"jsonrpc":"2.0","result":{"current":{"lat":22.6876423001,"lng":114.2248673001}},"id":"sdwc-3"}
+```
 
 
 ## `nodes/:id/msg/notification`
 ```json
-{"time":"1565413755","msg":""}
+{"time":"1565413755","level":1,"msg":""}
 ```
 
 Name | Type   | Description
@@ -204,6 +244,18 @@ Name | Type   | Description
 time | string | timestamp length `10`
 level| uint   | 0-7 `1: Debug, 2: Info, 3: Warn, 4: Error, 5: Fatal, 6: Panic`
 msg  | string | message body
+
+
+## debug
+### Params
+```json
+[
+  {"method":"move_x_open"},
+  {"method":"move_x_close"},
+  {"method":"goto_params","params":{"alt":{"type": "number", "default": 0, "required": true}}}
+]
+```
+
 
 ### ~~Sub: `nodes/:id/message`~~ *Discard*
 ```json
