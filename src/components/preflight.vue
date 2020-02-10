@@ -160,7 +160,7 @@ export default {
         // depot status ok
         && this.depot.status.code === 0
         // have realtime weather && weather ok
-        && (!this.weatherPoint.name || this.preflightData.realtime.level !== 'error')
+        && (!this.weatherPoint || this.preflightData.realtime.level !== 'error')
         // caiyun weather forecast ok
         && this.preflightData.forecast.level !== 'error'
       );
