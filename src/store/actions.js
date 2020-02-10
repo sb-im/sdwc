@@ -176,7 +176,9 @@ export async function updateDepotStatus({ commit }, id) {
 const NodePointTopic = {
   drone_status: 'drone_status',
   battery: 'battery',
-  weather: 'weather'
+  weather: 'weather',
+  livestream: 'gimbal',
+  map: 'position'
 };
 
 /**
@@ -186,6 +188,9 @@ export function subscribeNodes({ state, commit, dispatch }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
+    if (node.info.points.some(p => p.point_type_name.startsWith('livestream_'))) {
+      MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/${NodePointTopic.livestream}`);
+    }
     for (const point of node.info.points) {
       const topic = NodePointTopic[point.point_type_name];
       if (topic) {
