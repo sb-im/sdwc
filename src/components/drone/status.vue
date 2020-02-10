@@ -51,34 +51,34 @@ export default {
       return this.msg.drone_status;
     },
     flightStatus() {
-      return this.$t(`air.status_${this.status.status}`);
+      return this.$t(`air.status.${this.status.status}`);
     },
     flightMode() {
-      return this.$t(`air.mode_${this.status.mode}`);
+      return this.$t(`air.mode.${this.status.mode}`);
     },
     flightTime() {
       const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.time)), 'elapsed');
-      return this.$t('air.flight_time', { t });
+      return this.$t('air.flight.time', { t });
     },
     flightSpeed() {
       const s = this.status.speed.toFixed(2);
-      return this.$t('air.flight_speed', { s });
+      return this.$t('air.flight.speed', { s });
     },
     batteryPercentage() {
       const num = this.status.battery.percent.toFixed(1);
-      return this.$t('air.battery_remain', { num });
+      return this.$t('air.battery.remain', { num });
     },
     batteryVoltage() {
       const num = this.status.battery.voltage.toFixed(2);
-      return this.$t('air.battery_voltage', { num });
+      return this.$t('air.battery.voltage', { num });
     },
     gpsHeight() {
       const h = this.status.height.toFixed(2);
-      return this.$t('air.flight_height', { h });
+      return this.$t('air.flight.height', { h });
     },
     gpsType() {
       const { satcount: num, type } = this.status.gps;
-      return this.$t('air.gps_satellites', { num, type });
+      return this.$t('air.gps.satellites', { num, type });
     }
   },
   components: {

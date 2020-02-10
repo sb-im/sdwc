@@ -3,7 +3,7 @@
     class="monitor"
     :class="monitorClassName"
     icon="monitor"
-    :title="$t('depot.monitor')"
+    :title="$t('monitor.title')"
     dense
   >
     <template #action>
@@ -15,7 +15,7 @@
       </div>
       <slot></slot>
       <div class="monitor__control">
-        <el-tooltip :content="$t(`common.${fullscreen ? 'exit_' : ''}fullscreen`)" placement="top">
+        <el-tooltip :content="$t(`monitor.${fullscreen ? 'exit_' : ''}fullscreen`)" placement="top">
           <el-button
             size="mini"
             :type="fullscreen ? 'primary' : ''"
@@ -27,7 +27,7 @@
     </template>
     <template v-else>
       <div class="monitor__content monitor__content--empty">
-        <span class="monitor__tip">{{ $t('common.no_video') }}</span>
+        <span class="monitor__tip">{{ $t('monitor.no_video') }}</span>
       </div>
     </template>
   </sd-card>

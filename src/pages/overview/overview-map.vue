@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="overview-map" icon="map-marker" :title="$t('sidemenu.overview')" dense>
+  <sd-card class="overview-map" icon="map-marker" :title="$t('common.overview')" dense>
     <template #action>
       <el-button
         :icon="fit ? 'el-icon-data-line' : 'el-icon-data-board'"

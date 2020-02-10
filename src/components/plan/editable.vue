@@ -1,9 +1,9 @@
 <template>
   <el-form label-width="100px" :model="plan">
-    <el-form-item :label="$t('plan.plan_name')">
+    <el-form-item :label="$t('plan.name')">
       <el-input v-model="plan.name" :placeholder="$t('plan.edit.name_inp')"></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_desc')">
+    <el-form-item :label="$t('plan.desc')">
       <el-input
         type="textarea"
         :rows="2"
@@ -11,24 +11,24 @@
         v-model="plan.description"
       ></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_air')">
+    <el-form-item :label="$t('plan.air')">
       <el-select v-model="plan.node_id" :placeholder="$t('plan.edit.air_inp')">
         <el-option v-for="d in drones" :key="d.id" :label="d.info.name" :value="d.info.id"></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_cycle')">
+    <el-form-item :label="$t('plan.cycle')">
       <el-select v-model="plan.cycle_types_id" :placeholder="$t('plan.edit.cycle_inp')">
-        <el-option v-for="i in 6" :key="i" :label="$t(`plan.edit.cycle_type_${i}`)" :value="i - 1"></el-option>
+        <el-option v-for="i in 6" :key="i" :label="$t(`plan.edit.cycle.${i}`)" :value="i - 1"></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_first_time')">
+    <el-form-item :label="$t('plan.first_time')">
       <el-date-picker
         v-model="plan.start_time"
         type="datetime"
         :placeholder="$t('plan.edit.first_time_inp')"
       ></el-date-picker>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_mapfile')">
+    <el-form-item :label="$t('plan.mapfile')">
       <el-upload
         ref="upload"
         action="//dummy"

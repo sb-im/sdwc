@@ -1,9 +1,9 @@
 <template>
   <div class="sd-overview">
     <div class="sd-overview__counters">
-      <sd-overview-counter icon="drone" :caption="$t('sidemenu.air')" :value="drones.length" background-color="#ecf5ff"></sd-overview-counter>
-      <sd-overview-counter icon="depot" :caption="$t('sidemenu.depot')" :value="depots.length" background-color="#f0f9eb"></sd-overview-counter>
-      <sd-overview-counter icon="tasks" :caption="$t('sidemenu.plan')" :value="plan.info.length" background-color="#fef0f0"></sd-overview-counter>
+      <sd-overview-counter icon="drone" :caption="$t('common.air')" :value="drones.length" background-color="#ecf5ff"></sd-overview-counter>
+      <sd-overview-counter icon="depot" :caption="$t('common.depot')" :value="depots.length" background-color="#f0f9eb"></sd-overview-counter>
+      <sd-overview-counter icon="tasks" :caption="$t('common.plan')" :value="plan.info.length" background-color="#fef0f0"></sd-overview-counter>
     </div>
     <sd-overview-map v-if="configLoaded"></sd-overview-map>
   </div>

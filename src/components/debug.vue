@@ -1,10 +1,10 @@
 <template>
-  <sd-card class="debug" icon="maintenance" :title="$t('common.debug')">
+  <sd-card class="debug" icon="maintenance" :title="$t('debug.title')">
     <div
       v-loading="disabled"
       element-loading-custom-class="control--disable"
       element-loading-spinner="el-icon-warning-outline"
-      :element-loading-text="$t('common.not_operational')"
+      :element-loading-text="$t('control.abnormal')"
     >
       <div class="debug__control control__buttons">
         <el-button
@@ -19,7 +19,7 @@
       </div>
       <el-input class="debug__input" size="medium" ref="inputCommand" v-model="command">
         <template #append>
-          <el-button @click="handleCmdSend">{{ $t('common.send') }}</el-button>
+          <el-button @click="handleCmdSend">{{ $t('debug.send') }}</el-button>
         </template>
       </el-input>
     </div>

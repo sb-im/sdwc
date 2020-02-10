@@ -6,38 +6,38 @@ const Controls = [
   {
     icon: 'drone-blue',
     item: [
-      { name: 'air.air_hover', mission: 'mode_loiter' }
+      { name: 'air.ctl.hover', mission: 'mode_loiter' }
     ]
   },
   {
     icon: 'takeoff',
     item: [
-      { name: 'air.air_takeoff', mission: 'take_off' }
+      { name: 'air.ctl.takeoff', mission: 'take_off' }
     ]
   },
   {
     icon: 'land',
     item: [
-      { name: 'air.air_return', mission: 'model_rtl' }
+      { name: 'air.ctl.return', mission: 'model_rtl' }
     ]
   },
   {
     icon: 'map-waypoint-blue',
     item: [
-      { name: 'air.air_runplan', mission: 'readyMsission' }
+      { name: 'air.ctl.runplan', mission: 'readyMsission' }
     ]
   },
   {
     icon: 'updown',
     item: [
-      { name: 'air.air_up', values: { num: 5 }, mission: 'up_5' },
-      { name: 'air.air_down', values: { num: 5 }, mission: 'down_5' }
+      { name: 'air.ctl.up', values: { num: 5 }, mission: 'up_5' },
+      { name: 'air.ctl.down', values: { num: 5 }, mission: 'down_5' }
     ]
   },
   {
     icon: 'ambulance',
     item: [
-      { name: 'air.air_landpoint', mission: 'land_bakup' }
+      { name: 'air.ctl.land_bakup', mission: 'land_bakup' }
     ]
   }
 ];
@@ -57,13 +57,13 @@ export default {
         this.$msgbox({
           type: 'info',
           title: this.$t(name),
-          message: this.$t('common.operate_pending')
+          message: this.$t('control.pending')
         });
         MqttClient.invoke(this.point.node_id, 'startmission_ready', [])
           .then(() => {
             // 'startmission_ready' returns 'OK'
             this.$msgbox.close();
-            this.$confirm(this.$t('common.plan_ready'), {
+            this.$confirm(this.$t('air.ctl.plan_ready'), {
               type: 'warning',
               title: this.$t(name)
             }).then(() => {
@@ -79,7 +79,7 @@ export default {
             const h = this.$createElement;
             // message can be VNode
             const message = h('div', [
-              h('p', this.$t('common.operate_error')),
+              h('p', this.$t('control.error')),
               h('p', `${e.code}: ${e.message}`)
             ]);
             this.$alert(message, {

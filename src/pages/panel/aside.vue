@@ -13,14 +13,14 @@
     </div>
     <el-menu-item index="overview" :route="{ name: 'overview' }">
       <sd-icon value="info-circle"></sd-icon>
-      <span slot="title">{{ $t('sidemenu.overview') }}</span>
+      <span slot="title">{{ $t('common.overview') }}</span>
     </el-menu-item>
     <el-submenu index="plan">
       <template #title>
         <sd-icon value="tasks-blue"></sd-icon>
-        <span>{{ $t('sidemenu.plan') }}</span>
+        <span>{{ $t('common.plan') }}</span>
       </template>
-      <li v-if="collapse" class="aside__subtitle">{{ $t('sidemenu.plan') }}</li>
+      <li v-if="collapse" class="aside__subtitle">{{ $t('common.plan') }}</li>
       <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
         <i class="el-icon-plus"></i>
         <span>{{ $t('plan.edit.add') }}</span>
@@ -35,9 +35,9 @@
     <el-submenu index="drone">
       <template #title>
         <sd-icon value="drone-blue"></sd-icon>
-        <span slot="title">{{ $t('sidemenu.air') }}</span>
+        <span slot="title">{{ $t('common.air') }}</span>
       </template>
-      <li v-if="collapse" class="aside__subtitle">{{ $t('sidemenu.air') }}</li>
+      <li v-if="collapse" class="aside__subtitle">{{ $t('common.air') }}</li>
       <el-menu-item
         v-for="drone in drones"
         :key="drone.info.id"
@@ -48,9 +48,9 @@
     <el-submenu index="depot">
       <template #title>
         <sd-icon value="depot-blue"></sd-icon>
-        <span slot="title">{{ $t('sidemenu.depot') }}</span>
+        <span slot="title">{{ $t('common.depot') }}</span>
       </template>
-      <li v-if="collapse" class="aside__subtitle">{{ $t('sidemenu.depot') }}</li>
+      <li v-if="collapse" class="aside__subtitle">{{ $t('common.depot') }}</li>
       <el-menu-item
         v-for="depot in depots"
         :key="depot.info.id"
@@ -60,7 +60,7 @@
     </el-submenu>
     <el-menu-item class="aside__toggle" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
-      <span slot="title">{{ $t(`sidemenu.${collapse ? 'un' : ''}fold`) }}</span>
+      <span slot="title">{{ $t(`aside.${collapse ? 'un' : ''}fold`) }}</span>
     </el-menu-item>
   </el-menu>
 </template>

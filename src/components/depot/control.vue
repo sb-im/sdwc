@@ -5,36 +5,36 @@ const Controls = [
   {
     icon: 'reset',
     item: [
-      { name: 'depot.emergency_stop', mission: 'ncp', arg: ['shell', 'stop'], type: 'danger' },
-      { name: 'depot.air_reset', mission: 'reset' }
+      { name: 'depot.ctl.stop', mission: 'ncp', arg: ['shell', 'stop'], type: 'danger' },
+      { name: 'depot.ctl.reset', mission: 'reset' }
     ]
   },
   {
     icon: 'depot',
     item: [
-      { name: 'depot.open_door', mission: 'dooropen' },
-      { name: 'depot.close_door', mission: 'doorclose' }
+      { name: 'depot.ctl.dooropen', mission: 'dooropen' },
+      { name: 'depot.ctl.doorclose', mission: 'doorclose' }
     ]
   },
   {
     icon: 'battery',
     item: [
-      { name: 'depot.start_charge', mission: 'power_chargedrone_on' },
-      { name: 'depot.stop_charge', mission: 'power_chargedrone_off' }
+      { name: 'depot.ctl.charge_on', mission: 'power_chargedrone_on' },
+      { name: 'depot.ctl.charge_off', mission: 'power_chargedrone_off' }
     ]
   },
   {
     icon: 'expand',
     item: [
-      { name: 'depot.air_fixed', mission: 'fixdrone' },
-      { name: 'depot.air_release', mission: 'freedrone' }
+      { name: 'depot.ctl.fixdrone', mission: 'fixdrone' },
+      { name: 'depot.ctl.freedrone', mission: 'freedrone' }
     ]
   },
   {
     icon: 'robot-arm',
     item: [
-      { name: 'depot.air_bat_pickout', mission: 'pickdronebattery' },
-      { name: 'depot.air_bat_putin', mission: 'mountdronebattery' }
+      { name: 'depot.ctl.pickbattery', mission: 'pickdronebattery' },
+      { name: 'depot.ctl.mountbattery', mission: 'mountdronebattery' }
     ]
   }
 ];

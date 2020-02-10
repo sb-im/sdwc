@@ -61,13 +61,13 @@
         ></sd-slide-confirm>
       </template>
       <template v-else>
-        <el-button size="medium" @click="toDrone">{{ $t('common.air') }}</el-button>
+        <el-button size="medium" @click="toDrone">{{ $t('preflight.drone') }}</el-button>
         <sd-countdown-button
           size="medium"
           mode="timeout"
           ref="btnToDepot"
           @click="toDepot"
-        >{{ $t('common.depot') }}</sd-countdown-button>
+        >{{ $t('preflight.depot') }}</sd-countdown-button>
       </template>
     </template>
   </el-dialog>

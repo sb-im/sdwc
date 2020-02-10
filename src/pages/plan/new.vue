@@ -6,7 +6,7 @@
         size="medium"
         icon="el-icon-document"
         @click="handleCreate"
-      >{{ $t('plan.edit.save_plan') }}</el-button>
+      >{{ $t('plan.edit.save') }}</el-button>
     </template>
     <sd-plan-editable :initial="initial" ref="edit"></sd-plan-editable>
   </sd-card>

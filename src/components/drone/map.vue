@@ -180,6 +180,5 @@ export default {
 <style>
 .map__popover {
   padding: 10px 0;
-  width: 180px;
 }
 </style>

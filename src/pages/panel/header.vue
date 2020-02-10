@@ -11,17 +11,17 @@
     >
       <span class="header-dropdown-content">
         <sd-icon :value="notifyAlert ? 'warning' :'trumpet'" />
-        <span class="header-dropdown-text">{{ $t('header.notify') }}</span>
+        <span class="header-dropdown-text">{{ $t('header.notify.title') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item class="notify__clear" command="clear">
             <i class="el-icon-delete"></i>
-            {{ $t('header.notify_clear') }}
+            {{ $t('header.notify.clear') }}
           </el-dropdown-item>
           <el-dropdown-item v-if="notify.length === 0" disabled divided>
-            <span>{{ $t('header.notify_empty') }}</span>
+            <span>{{ $t('header.notify.empty') }}</span>
           </el-dropdown-item>
           <div v-else class="notify__list">
             <el-dropdown-item v-for="n of notify" :key="n.notif.id" class="notify">
@@ -39,7 +39,7 @@
     <el-dropdown class="header-dropdown">
       <span class="header-dropdown-content">
         <sd-icon value="connected" />
-        <span class="header-dropdown-text">{{ $t('header.status') }}</span>
+        <span class="header-dropdown-text">{{ $t('header.status.title') }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
@@ -144,8 +144,8 @@ export default {
      */
     statusToObject({ id, name, type_name }, status) {
       const icon = NodeStatusClass[status] || NodeStatusClass.default;
-      const type = this.$t(`header.${type_name}`);
-      const st = this.$t(`header.status_${status}`);
+      const type = this.$t(`common.${type_name}`);
+      const st = this.$t(`header.status.${status}`);
       const text = `${type} ${name} ${st}`;
       return { id, icon, text };
     },

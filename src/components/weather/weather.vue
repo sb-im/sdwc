@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="weather" icon="barometer" :title="$t('depot.weather')">
+  <sd-card class="weather" icon="barometer" :title="$t('weather.title')">
     <sd-weather-rain :caiyun="caiyun" :loading="caiyunLoading" ref="rain"></sd-weather-rain>
     <sd-weather-wind :weather="msg.weather"></sd-weather-wind>
     <div class="weather__column weather__column--multi">
@@ -7,12 +7,12 @@
         <sd-weather-wind-icon :speed="weatherNow.windSpeed" :direction="weatherNow.windDirection"></sd-weather-wind-icon>
       </div>
       <el-form label-width="70px" size="mini">
-        <el-form-item :label="$t('depot.wind_speed')">
+        <el-form-item :label="$t('weather.wind.speed')">
           <el-input readonly :value="weatherNow.windSpeed">
             <template #append>m/s</template>
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('depot.wind_direction')">
+        <el-form-item :label="$t('weather.wind.direction')">
           <el-input readonly :value="weatherNow.windDirection">
             <template #append>deg</template>
           </el-input>
@@ -22,15 +22,15 @@
         </el-form-item>
       </el-form>
       <el-form label-width="70px" size="mini">
-        <el-form-item :label="$t('depot.weather_feel')">
+        <el-form-item :label="$t('weather.feel')">
           <el-input readonly :value="caiyunText.weather"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('depot.temperature')">
+        <el-form-item :label="$t('weather.temp')">
           <el-input readonly :value="caiyunText.temperature">
             <template #append>℃</template>
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('depot.humidity')">
+        <el-form-item :label="$t('weather.hum')">
           <el-input readonly :value="caiyunText.humidity">
             <template #append>%</template>
           </el-input>
@@ -55,9 +55,9 @@ const Skycon = {
   PARTLY_CLOUDY_DAY: 'weather.partly_cloudy',
   PARTLY_CLOUDY_NIGHT: 'weather.partly_cloudy',
   CLOUDY: 'weather.cloudy',
-  RAIN: 'weather.rain',
-  SNOW: 'weather.snow',
-  WIND: 'weather.wind',
+  RAIN: 'weather.rainy',
+  SNOW: 'weather.snowy',
+  WIND: 'weather.windy',
   HAZE: 'weather.haze',
 };
 

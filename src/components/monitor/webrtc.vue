@@ -48,7 +48,7 @@ export default {
           this.couldRetry = true;
         }
       });
-      this.msg = this.$t('common.connecting');
+      this.msg = this.$t('monitor.connecting');
       this.channel.on('pc:connected', () => this.msg = '');
       this.channel.once('ws:error', () => this.recreateChannel());
       this.channel.once('pc:closed', () => this.recreateChannel());

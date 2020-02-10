@@ -6,19 +6,19 @@
         size="medium"
         icon="el-icon-document"
         @click="handleUpdate"
-      >{{ $t('plan.edit.save_plan') }}</el-button>
+      >{{ $t('plan.edit.save') }}</el-button>
       <el-button
         type="danger"
         size="medium"
         icon="el-icon-delete"
         @click="handleDelete"
-      >{{ $t('plan.edit.delete_plan') }}</el-button>
+      >{{ $t('plan.edit.delete') }}</el-button>
       <el-button
         type="info"
         size="medium"
         icon="el-icon-close"
         @click="handleCancel"
-      >{{ $t('common.back') }}</el-button>
+      >{{ $t('plan.edit.back') }}</el-button>
     </template>
     <sd-plan-editable :initial="plan" ref="edit"></sd-plan-editable>
   </sd-card>
@@ -55,8 +55,7 @@ export default {
     },
     handleDelete() {
       this.$confirm(this.$t('plan.edit.delete_tips'), {
-        type: 'warning',
-        title: this.$t('common.system_tips')
+        type: 'warning'
       })
         .then(() => this.deletePlan(this.initial.id))
         .then(() => this.$router.push({ name: 'panel' }))

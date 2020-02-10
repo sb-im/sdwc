@@ -7,9 +7,9 @@
         @change="handleGimbalMode"
         size="small"
       >
-        <el-radio-button label="mavlink">{{ $t('air.gimbal_mode_mavlink') }}</el-radio-button>
-        <el-radio-button label="neutral">{{ $t('air.gimbal_mode_neutral') }}</el-radio-button>
-        <el-radio-button label="rc">{{ $t('air.gimbal_mode_rc') }}</el-radio-button>
+        <el-radio-button label="mavlink">{{ $t('air.gimbal.mavlink') }}</el-radio-button>
+        <el-radio-button label="neutral">{{ $t('air.gimbal.neutral') }}</el-radio-button>
+        <el-radio-button label="rc">{{ $t('air.gimbal.rc') }}</el-radio-button>
       </el-radio-group>
     </template>
     <template>

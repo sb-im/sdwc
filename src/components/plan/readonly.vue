@@ -1,27 +1,27 @@
 <template>
   <el-form label-width="100px" :model="plan">
-    <el-form-item :label="$t('plan.plan_name')">
+    <el-form-item :label="$t('plan.name')">
       <el-input v-model="plan.name" readonly></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_desc')">
+    <el-form-item :label="$t('plan.desc')">
       <el-input
         type="textarea"
         resize="none"
-        :placeholder="$t('plan.plan_desc_no')"
+        :placeholder="$t('plan.desc_no')"
         v-model="plan.description"
         readonly
       ></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_createtime')">
+    <el-form-item :label="$t('plan.ctime')">
       <el-date-picker v-model="plan.created_at" type="datetime" readonly></el-date-picker>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_air')">
+    <el-form-item :label="$t('plan.air')">
       <el-input v-model="droneName" :placeholder="$t('common.none')" readonly></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_cycle')">
+    <el-form-item :label="$t('plan.cycle')">
       <el-input v-model="cycleTypeName" readonly></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_first_time')">
+    <el-form-item :label="$t('plan.first_time')">
       <el-date-picker
         v-model="plan.start_time"
         type="datetime"
@@ -29,7 +29,7 @@
         readonly
       ></el-date-picker>
     </el-form-item>
-    <el-form-item :label="$t('plan.plan_mapfile')">
+    <el-form-item :label="$t('plan.mapfile')">
       <el-button
         type="primary"
         size="medium"
@@ -63,7 +63,7 @@ export default {
       return '';
     },
     cycleTypeName() {
-      return this.$t(`plan.edit.cycle_type_${this.plan.cycle_types_id + 1}`);
+      return this.$t(`plan.edit.cycle.${this.plan.cycle_types_id + 1}`);
     }
   },
   methods: {

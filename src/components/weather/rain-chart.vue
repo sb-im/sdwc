@@ -1,6 +1,6 @@
 <template>
   <div class="weather__column">
-    <div class="weather__caption">{{$t('depot.weather_caption')}}</div>
+    <div class="weather__caption">{{$t('weather.rain.caption')}}</div>
     <div class="weather__chart" ref="chart" v-loading="loading"></div>
   </div>
 </template>

@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     createClient() {
-      this.msg = this.$t('common.connecting');
+      this.msg = this.$t('monitor.connecting');
       this.couldRetry = true;
       const client = new WebRTC2Client(this.config.ice_servers || this.config.ice_server);
       client.on('candidatecomplete', () => {
@@ -62,7 +62,7 @@ export default {
             break;
           case 'disconnected':
             this.couldRetry = true;
-            this.msg = this.$t('common.disconnected');
+            this.msg = this.$t('monitor.disconnected');
             break;
         }
       });

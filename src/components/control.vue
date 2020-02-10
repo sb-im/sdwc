@@ -1,11 +1,11 @@
 <template>
-  <sd-card class="control" icon="compass" :title="$t('common.advanced_control')">
+  <sd-card class="control" icon="compass" :title="$t('control.title')">
     <div
       class="control__body"
       v-loading="disabled"
       element-loading-custom-class="control--disable"
       element-loading-spinner="el-icon-warning-outline"
-      :element-loading-text="$t('common.not_operational')"
+      :element-loading-text="$t('control.abnormal')"
     >
       <div class="control__group control__buttons" v-for="group in controls" :key="group.icon">
         <sd-icon :value="group.icon" :size="36"></sd-icon>
