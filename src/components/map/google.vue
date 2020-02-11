@@ -48,6 +48,10 @@ export default {
       type: Boolean,
       default: false
     },
+    selectable: {
+      type: Boolean,
+      default: false
+    },
     popoverShown: {
       type: Boolean,
       default: false
@@ -67,7 +71,9 @@ export default {
         draggableCursor: 'grab',
         draggingCursor: 'grabbing'
       });
-      this.bindMapEvents();
+      if (this.selectable) {
+        this.bindMapEvents();
+      }
     },
     /**
      * @param {string} fillColor

@@ -3,6 +3,7 @@
     :markers="markers"
     :path="msg.position"
     :follow="follow"
+    selectable
     :popover-shown="popover.show"
     @map-change="handleCancel"
     @select-point="handleSelect"
@@ -137,7 +138,11 @@ export default {
         lon: Math.floor(latlng.lng * 1e8) / 1e8
       };
       this.$refs.popover.referenceElm = el;
-      this.popover.show = true;
+      if (this.popover.show) {
+        this.$refs.popover.updatePopper();
+      } else {
+        this.popover.show = true;
+      }
     },
     handleCancel() {
       this.popover.coordinate = null;

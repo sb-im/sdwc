@@ -54,6 +54,10 @@ export default {
       type: Boolean,
       default: false
     },
+    selectable: {
+      type: Boolean,
+      default: false
+    },
     popoverShown: {
       type: Boolean,
       default: false
@@ -79,7 +83,9 @@ export default {
         }));
         this.map.addControl(new AMap.Scale);
       });
-      this.bindMapEvents();
+      if (this.selectable) {
+        this.bindMapEvents();
+      }
     },
     /**
      * @param {LngLatLiteral[]} lnglat
