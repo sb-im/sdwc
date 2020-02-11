@@ -6,6 +6,8 @@
 import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
 import { MapActionEmoji } from '@/constants/map-actions';
 
+import { waitSelector } from './common';
+
 /**
  * @type {google.maps.LatLng}
  * store map center across instance
@@ -106,15 +108,14 @@ export default {
           this.selectedMarker = new Marker({
             map: this.map,
             position,
-            title: 'selectedMarker',
+            title: 'SelectedMarker',
             icon: this.createMarkerPointIcon('dodgerblue')
           });
         }
-        setTimeout(() => {
-          const el = this.$el.querySelector('div[title=selectedMarker]');
+        waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(el => {
           const point = { lat: position.lat(), lng: position.lng() };
           this.$emit('select-point', point, el);
-        }, 200);
+        });
       };
       this.map.addListener('rightclick', (/** @type {google.maps.MouseEvent} */ e) => placeMarker(e.latLng));
       this.map.addListener('mousedown', (/** @type {google.maps.MouseEvent} */ e) => {

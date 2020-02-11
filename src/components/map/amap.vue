@@ -8,6 +8,8 @@ import CoordTransform from 'coordtransform';
 import { loadAMap, loadAMapUI } from '@/api/amap';
 import { MapActionEmoji } from '@/constants/map-actions';
 
+import { waitSelector } from './common';
+
 /**
  * @typedef {{lng: number, lat: number}} LngLatLiteral
  */
@@ -138,13 +140,14 @@ export default {
             const marker = new SimpleMarker({
               iconStyle: 'blue',
               position,
+              title: 'SelectedMarker',
             });
             marker.setMap(this.map);
             this.selectedMarker = marker;
           }
-          setTimeout(() => {
+          waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(() => {
             this.$emit('select-point', this.outputLngLat(position), this.selectedMarker.domNodes.container);
-          }, 200);
+          });
         };
         this.map.on('rightclick', e => placeMarker(e.lnglat));
         this.map.on('movestart', () => this.$emit('cancel-point'));
