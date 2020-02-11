@@ -6,7 +6,9 @@
       :type="val.level"
       @click="showAlert(val)"
       size="medium"
-    >{{ $t(`weather.alert.${val.type}`) }}</el-tag>
+    >
+      <span v-t="`weather.alert.${val.type}`"></span>
+    </el-tag>
   </div>
 </template>
 

@@ -37,7 +37,7 @@ const Controls = [
   {
     icon: 'ambulance',
     item: [
-      { name: 'air.ctl.land_bakup', mission: 'land_bakup' }
+      { name: 'air.ctl.land_backup', mission: 'land_bakup' }
     ]
   }
 ];

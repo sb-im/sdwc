@@ -13,18 +13,20 @@
         :icon="follow ? 'el-icon-location' : 'el-icon-location-outline'"
         size="small"
         @click="handleFollow"
-      >{{ $t(`map.${follow ? 'follow' : 'manual'}`) }}</el-button>
-      <el-button icon="el-icon-delete" size="small" @click="handlePathClear">{{ $t('map.clear') }}</el-button>
+        v-t="`map.${follow ? 'follow' : 'manual'}`"
+      ></el-button>
+      <el-button icon="el-icon-delete" size="small" @click="handlePathClear" v-t="'map.clear'"></el-button>
       <el-popover ref="popover" trigger="manual" popper-class="map__popover" v-model="popover.show">
         <div
           v-for="cmd in MapCommands"
           :key="cmd"
           class="el-dropdown-menu__item"
           @click="handleCommand(cmd)"
-        >{{ $t(`air.${cmd}`) }}</div>
+          v-t="`air.${cmd}`"
+        ></div>
         <div class="el-dropdown-menu__item el-dropdown-menu__item--divided" @click="handleCancel">
           <i class="el-icon-close"></i>
-          {{ $t('common.cancel') }}
+          <span v-t="'common.cancel'"></span>
         </div>
       </el-popover>
     </template>

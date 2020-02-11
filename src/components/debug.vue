@@ -1,10 +1,10 @@
 <template>
-  <sd-card class="debug" icon="maintenance" :title="$t('debug.title')">
+  <sd-card class="debug" icon="maintenance" title="debug.title">
     <div
       v-loading="disabled"
       element-loading-custom-class="control--disable"
       element-loading-spinner="el-icon-warning-outline"
-      :element-loading-text="$t('control.abnormal')"
+      :element-loading-text="disabledText"
     >
       <div class="debug__control control__buttons">
         <el-button
@@ -19,7 +19,7 @@
       </div>
       <el-input class="debug__input" size="medium" ref="inputCommand" v-model="command">
         <template #append>
-          <el-button @click="handleCmdSend">{{ $t('debug.send') }}</el-button>
+          <el-button @click="handleCmdSend" v-t="'debug.send'"></el-button>
         </template>
       </el-input>
     </div>
@@ -51,6 +51,9 @@ export default {
   computed: {
     disabled() {
       return this.status.code !== 0;
+    },
+    disabledText() {
+      return this.$t('control.abnormal');
     },
     controls() {
       return this.point.name.trim().split(' ');

@@ -32,7 +32,7 @@ export const locale = {
     notify: {
       title: 'Notification',
       clear: 'Clear',
-      empty: 'No history notification',
+      none: 'No history notification',
     },
     status: {
       title: 'Communication',
@@ -77,12 +77,12 @@ export const locale = {
       air_inp: 'Select the drone',
       cycle_inp: 'Select the run cycle',
       cycle: {
-        1: 'Manual',
-        2: 'Once',
-        3: 'EveryHour',
-        4: 'EveryDay',
-        5: 'EveryWeek',
-        6: 'EveryMonth',
+        0: 'Manual',
+        1: 'Once',
+        2: 'EveryHour',
+        3: 'EveryDay',
+        4: 'EveryWeek',
+        5: 'EveryMonth',
       },
       select_map: 'Select map',
       please_name: 'Please enter the name of plan!',
@@ -134,6 +134,8 @@ export const locale = {
     gimbal: {
       mavlink: 'Manual',
       neutral: 'Auto',
+      manual: 'Manual',
+      auto: 'Auto',
       rc: 'Remote-Control',
       center: 'Center'
     },
@@ -160,7 +162,7 @@ export const locale = {
     error: 'Error!'
   },
   monitor: {
-    monitor: 'Realtime Monitor',
+    title: 'Realtime Monitor',
     connecting: 'Connecting...',
     disconnected: 'Disconnected',
     no_video: 'Video source not found',
@@ -178,7 +180,7 @@ export const locale = {
       freedrone: 'Release Drone',
       pickbattery: 'Install-Bat',
       mountbattery: 'Remove-Bat',
-      air_reset: 'Reset',
+      reset: 'Reset',
     }
   },
   battery: {

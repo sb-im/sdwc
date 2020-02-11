@@ -77,12 +77,12 @@ export const locale = {
       air_inp: '请选择执飞无人机',
       cycle_inp: '请选择执行频次',
       cycle: {
-        1: '手动',
-        2: '一次',
-        3: '每小时',
-        4: '每天',
-        5: '每周',
-        6: '每月',
+        0: '手动',
+        1: '一次',
+        2: '每小时',
+        3: '每天',
+        4: '每周',
+        5: '每月',
       },
       select_map: '选择地图',
       please_name: '请输入任务名称！',
@@ -134,6 +134,8 @@ export const locale = {
     gimbal: {
       mavlink: '手动',
       neutral: '自动',
+      manual: '手动',
+      auto: '自动',
       rc: '遥控器',
       center: '回中'
     },
@@ -144,7 +146,7 @@ export const locale = {
       runplan: '开始任务',
       up: '上升 {num} 米',
       down: '下降 {num} 米',
-      land_bakup: '降落到备用点',
+      land_backup: '降落到备用点',
       plan_ready: '任务准备就绪，是否立即执行？'
     },
     gotoGPS: '飞往此处',

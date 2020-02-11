@@ -41,7 +41,7 @@ export default {
       return this.fit ? 'map-waypoint' : 'map-marker';
     },
     title() {
-      return this.$t(this.fit ? 'map.waypoint' : 'map.satellite');
+      return this.fit ? 'map.waypoint' : 'map.satellite';
     }
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <sd-card class="weather" icon="barometer" :title="$t('weather.title')">
+  <sd-card class="weather" icon="barometer" title="weather.title">
     <sd-weather-rain :caiyun="caiyun" :loading="caiyunLoading" ref="rain"></sd-weather-rain>
     <sd-weather-wind :weather="msg.weather"></sd-weather-wind>
     <div class="weather__column weather__column--multi">
@@ -7,12 +7,14 @@
         <sd-weather-wind-icon :speed="weatherNow.windSpeed" :direction="weatherNow.windDirection"></sd-weather-wind-icon>
       </div>
       <el-form label-width="70px" size="mini">
-        <el-form-item :label="$t('weather.wind.speed')">
+        <el-form-item>
+          <span slot="label" v-t="'weather.wind.speed'"></span>
           <el-input readonly :value="weatherNow.windSpeed">
             <template #append>m/s</template>
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('weather.wind.direction')">
+        <el-form-item>
+          <span slot="label" v-t="'weather.wind.direction'"></span>
           <el-input readonly :value="weatherNow.windDirection">
             <template #append>deg</template>
           </el-input>
@@ -22,15 +24,18 @@
         </el-form-item>
       </el-form>
       <el-form label-width="70px" size="mini">
-        <el-form-item :label="$t('weather.feel')">
+        <el-form-item>
+          <span slot="label" v-t="'weather.feel'"></span>
           <el-input readonly :value="caiyunText.weather"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('weather.temp')">
+        <el-form-item>
+          <span slot="label" v-t="'weather.temp'"></span>
           <el-input readonly :value="caiyunText.temperature">
             <template #append>℃</template>
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('weather.hum')">
+        <el-form-item>
+          <span slot="label" v-t="'weather.hum'"></span>
           <el-input readonly :value="caiyunText.humidity">
             <template #append>%</template>
           </el-input>

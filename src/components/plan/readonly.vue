@@ -1,42 +1,50 @@
 <template>
   <el-form label-width="100px" :model="plan">
-    <el-form-item :label="$t('plan.name')">
-      <el-input v-model="plan.name" readonly></el-input>
+    <el-form-item>
+      <span slot="label" v-t="'plan.name'"></span>
+      <el-input :value="plan.name" readonly></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.desc')">
+    <el-form-item>
+      <span slot="label" v-t="'plan.desc'"></span>
       <el-input
         type="textarea"
         resize="none"
         :placeholder="$t('plan.desc_no')"
-        v-model="plan.description"
+        :value="plan.description"
         readonly
       ></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.ctime')">
-      <el-date-picker v-model="plan.created_at" type="datetime" readonly></el-date-picker>
+    <el-form-item>
+      <span slot="label" v-t="'plan.ctime'"></span>
+      <el-date-picker :value="plan.created_at" type="datetime" readonly></el-date-picker>
     </el-form-item>
-    <el-form-item :label="$t('plan.air')">
-      <el-input v-model="droneName" :placeholder="$t('common.none')" readonly></el-input>
+    <el-form-item>
+      <span slot="label" v-t="'plan.air'"></span>
+      <el-input :value="droneName" :placeholder="$t('common.none')" readonly></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.cycle')">
-      <el-input v-model="cycleTypeName" readonly></el-input>
+    <el-form-item>
+      <span slot="label" v-t="'plan.cycle'"></span>
+      <el-input :value="cycleTypeName" readonly></el-input>
     </el-form-item>
-    <el-form-item :label="$t('plan.first_time')">
+    <el-form-item>
+      <span slot="label" v-t="'plan.first_time'"></span>
       <el-date-picker
-        v-model="plan.start_time"
+        :value="plan.start_time"
         type="datetime"
         :placeholder="$t('common.none')"
         readonly
       ></el-date-picker>
     </el-form-item>
-    <el-form-item :label="$t('plan.mapfile')">
+    <el-form-item>
+      <span slot="label" v-t="'plan.mapfile'"></span>
       <el-button
         type="primary"
         size="medium"
         icon="el-icon-download"
         :disabled="!plan.map_path"
         @click="handleMapDownload"
-      >{{ $t('common.download') }}</el-button>
+        v-t="'common.download'"
+      ></el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -63,7 +71,7 @@ export default {
       return '';
     },
     cycleTypeName() {
-      return this.$t(`plan.edit.cycle.${this.plan.cycle_types_id + 1}`);
+      return this.$t(`plan.edit.cycle.${this.plan.cycle_types_id}`);
     }
   },
   methods: {

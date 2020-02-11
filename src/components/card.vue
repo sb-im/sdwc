@@ -2,7 +2,7 @@
   <div class="el-card is-never-shadow sd-card" :class="className">
     <div class="el-card__header sd-card__head">
       <sd-icon :value="icon" :size="36"></sd-icon>
-      <span class="sd-card__title">{{ title }}</span>
+      <span class="sd-card__title" v-t="title"></span>
       <div class="sd-card__action">
         <slot name="action"></slot>
       </div>

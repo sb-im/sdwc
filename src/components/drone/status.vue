@@ -51,10 +51,12 @@ export default {
       return this.msg.drone_status;
     },
     flightStatus() {
-      return this.$t(`air.status.${this.status.status}`);
+      const key = `air.status.${this.status.status}`;
+      return this.$te(key) ? this.$t(key) : this.status.status;
     },
     flightMode() {
-      return this.$t(`air.mode.${this.status.mode}`);
+      const key = `air.mode.${this.status.mode}`;
+      return this.$te(key) ? this.$t(key) : this.status.mode;
     },
     flightTime() {
       const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.time)), 'elapsed');

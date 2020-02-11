@@ -1,12 +1,13 @@
 <template>
-  <sd-card icon="doc-add" :title="$t('plan.edit.add')">
+  <sd-card icon="doc-add" title="plan.edit.add">
     <template #action>
       <el-button
         type="success"
         size="medium"
         icon="el-icon-document"
         @click="handleCreate"
-      >{{ $t('plan.edit.save') }}</el-button>
+        v-t="'plan.edit.save'"
+      ></el-button>
     </template>
     <sd-plan-editable :initial="initial" ref="edit"></sd-plan-editable>
   </sd-card>

@@ -1,7 +1,7 @@
 <template>
   <el-header class="header">
     <!-- title -->
-    <span class="header-title">{{ $t('header.title') }}</span>
+    <span class="header-title" v-t="'header.title'"></span>
     <!-- notification dropdown -->
     <el-dropdown
       class="header-dropdown"
@@ -11,17 +11,17 @@
     >
       <span class="header-dropdown-content">
         <sd-icon :value="notifyAlert ? 'warning' :'trumpet'" />
-        <span class="header-dropdown-text">{{ $t('header.notify.title') }}</span>
+        <span class="header-dropdown-text" v-t="'header.notify.title'"></span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item class="notify__clear" command="clear">
             <i class="el-icon-delete"></i>
-            {{ $t('header.notify.clear') }}
+            <span v-t="'header.notify.clear'"></span>
           </el-dropdown-item>
           <el-dropdown-item v-if="notify.length === 0" disabled divided>
-            <span>{{ $t('header.notify.empty') }}</span>
+            <span v-t="'header.notify.none'"></span>
           </el-dropdown-item>
           <div v-else class="notify__list">
             <el-dropdown-item v-for="n of notify" :key="n.notif.id" class="notify">
@@ -39,7 +39,7 @@
     <el-dropdown class="header-dropdown">
       <span class="header-dropdown-content">
         <sd-icon value="connected" />
-        <span class="header-dropdown-text">{{ $t('header.status.title') }}</span>
+        <span class="header-dropdown-text" v-t="'header.status.title'"></span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
@@ -67,7 +67,7 @@
           </el-dropdown-item>
           <el-dropdown-item command="logout" divided>
             <i class="el-icon-back"></i>
-            <span>{{ $t('header.logout') }}</span>
+            <span v-t="'header.logout'"></span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>

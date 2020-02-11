@@ -15,10 +15,12 @@
     <div class="login__form">
       <h1 class="login__title">S Dashboard Web Console</h1>
       <el-form label-width="80px" label-position="left">
-        <el-form-item :label="$t('login.username')" :error="errorUsername">
+        <el-form-item :error="errorUsername">
+          <span slot="label" v-t="'login.username'"></span>
           <el-input ref="inputUsr" type="text" v-model="username" autofocus></el-input>
         </el-form-item>
-        <el-form-item :label="$t('login.password')" :error="errorPassword">
+        <el-form-item :error="errorPassword">
+          <span slot="label" v-t="'login.password'"></span>
           <el-input ref="inputPwd" type="password" show-password v-model="password"></el-input>
         </el-form-item>
         <el-button
@@ -26,7 +28,8 @@
           icon="el-icon-minus"
           @click="handleLogin"
           :loading="pending"
-        >{{ $t('login.button') }}</el-button>
+          v-t="'login.button'"
+        ></el-button>
       </el-form>
     </div>
   </div>

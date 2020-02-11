@@ -1,6 +1,6 @@
 <template>
   <div class="sd-slide-confirm" :class="containerClass" :style="containerStyle">
-    <div class="sd-slide-confirm__text" :style="textStyle">{{text}}</div>
+    <div class="sd-slide-confirm__text" :style="textStyle" v-t="text"></div>
     <el-button
       class="sd-slide-confirm__inner"
       ref="button"

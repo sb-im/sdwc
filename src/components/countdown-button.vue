@@ -1,7 +1,7 @@
 <template>
   <el-button v-bind="$attrs" v-on="$listeners" :disabled="disabled" ref="button">
-    <slot></slot>
-    {{confirmSuffix}}
+    <span v-t="text"></span>
+    <span>{{confirmSuffix}}</span>
   </el-button>
 </template>
 
@@ -24,6 +24,10 @@ export default {
       validator(v) {
         return ['delay', 'timeout'].includes(v);
       }
+    },
+    text: {
+      type: String,
+      default: ''
     }
   },
   data() {

@@ -1,12 +1,12 @@
 <template>
   <el-dialog
     custom-class="sd-preflight"
-    :title="$t('preflight.title')"
     :visible.sync="show"
     :close-on-click-modal="false"
     @open="check"
     @closed="reset"
   >
+    <span slot="title" class="el-dialog__title" v-t="'preflight.title'"></span>
     <template v-if="!activated">
       <div class="sd-preflight__item" v-loading="loading[0]">
         <sd-icon value="drone" :size="30"></sd-icon>
@@ -21,24 +21,18 @@
       <div v-if="weatherPoint" class="sd-preflight__item" v-loading="loading[2]">
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
-          <div class="sd-preflight__title">{{ $t('preflight.realtime') }}</div>
-          <div v-if="preflightData.realtime.absent">{{ $t('preflight.wind_absent') }}</div>
-          <div v-else>{{ $t('preflight.wind', { n: preflightData.realtime.wind_speed }) }}</div>
+          <div class="sd-preflight__title" v-t="'preflight.realtime'"></div>
+          <div v-t="preflightData.realtime.absent ? 'preflight.wind_absent' : { path: 'preflight.wind', args: { n: preflightData.realtime.wind_speed } }"></div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
       </div>
       <div class="sd-preflight__item" v-loading="loading[3]">
         <sd-icon value="satellite" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
-          <div class="sd-preflight__title">{{ $t('preflight.forecast') }}</div>
-          <div>{{ $t('preflight.wind', { n: preflightData.forecast.wind_speed.toFixed(1) }) }}</div>
-          <div>{{ $t('preflight.intensity', { n: preflightData.forecast.precipitation_intensity }) }}</div>
-          <template v-if="preflightData.forecast.precipitation_distance >= 10000">
-            <div>{{ $t('preflight.no_precipitation') }}</div>
-          </template>
-          <template v-else>
-            <div>{{ $t('preflight.distance', { n: preflightData.forecast.precipitation_distance }) }}</div>
-          </template>
+          <div class="sd-preflight__title" v-t="'preflight.forecast'"></div>
+          <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }" ></div>
+          <div v-t="{ path:  'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
+          <div v-t="preflightData.forecast.precipitation_distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: preflightData.forecast.precipitation_distance } }"></div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
       </div>
@@ -50,24 +44,25 @@
       </div>
     </template>
     <template slot="footer">
-      <el-button size="medium" icon="el-icon-circle-close" @click="toggle">{{ $t('common.cancel') }}</el-button>
+      <el-button size="medium" icon="el-icon-circle-close" @click="toggle" v-t="'common.cancel'"></el-button>
       <template v-if="!activated">
         <sd-slide-confirm
           size="medium"
           ref="slide"
           :disabled="slideDisabled"
-          :text="$t('preflight.slide2confirm')"
           @confirm="emitRun"
+          text="preflight.slide2confirm"
         ></sd-slide-confirm>
       </template>
       <template v-else>
-        <el-button size="medium" @click="toDrone">{{ $t('preflight.drone') }}</el-button>
+        <el-button size="medium" @click="toDrone" v-t="'preflight.drone'"></el-button>
         <sd-countdown-button
           size="medium"
           mode="timeout"
           ref="btnToDepot"
           @click="toDepot"
-        >{{ $t('preflight.depot') }}</sd-countdown-button>
+          text="preflight.depot"
+        ></sd-countdown-button>
       </template>
     </template>
   </el-dialog>

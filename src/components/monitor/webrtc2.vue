@@ -9,7 +9,8 @@
           size="small"
           icon="el-icon-refresh-right"
           @click="handleRetry"
-        >{{ $t('common.retry') }}</el-button>
+          v-t="'common.retry'"
+        ></el-button>
       </template>
     </div>
   </div>

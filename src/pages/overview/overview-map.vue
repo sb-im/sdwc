@@ -1,11 +1,12 @@
 <template>
-  <sd-card class="overview-map" icon="map-marker" :title="$t('common.overview')" dense>
+  <sd-card class="overview-map" icon="map-marker" title="common.overview" dense>
     <template #action>
       <el-button
         :icon="fit ? 'el-icon-data-line' : 'el-icon-data-board'"
         size="small"
         @click="handleFit"
-      >{{ $t(`map.${fit ? 'fit' : 'manual'}`) }}</el-button>
+        v-t="`map.${fit ? 'fit' : 'manual'}`"
+      ></el-button>
       <el-radio-group class="map__switch" size="small" v-model="type" @change="handleMapChange">
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>

@@ -1,10 +1,11 @@
 <template>
   <div class="weather__column">
-    <div class="weather__caption">{{$t('weather.wind.caption')}}</div>
+    <div class="weather__caption" v-t="'weather.wind.caption'"></div>
     <div class="weather__chart" ref="chart"></div>
     <div class="weather__label ct-label">
-      <span>(m/s) {{$t('weather.min_before')}}</span>
-      <span>{{$t('weather.now')}}</span>
+      <span>(m/s)&nbsp;</span>
+      <span v-t="'weather.min_before'"></span>
+      <span v-t="'weather.now'"></span>
     </div>
   </div>
 </template>

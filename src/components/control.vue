@@ -1,11 +1,11 @@
 <template>
-  <sd-card class="control" icon="compass" :title="$t('control.title')">
+  <sd-card class="control" icon="compass" title="control.title">
     <div
       class="control__body"
       v-loading="disabled"
       element-loading-custom-class="control--disable"
       element-loading-spinner="el-icon-warning-outline"
-      :element-loading-text="$t('control.abnormal')"
+      :element-loading-text="disabledText"
     >
       <div class="control__group control__buttons" v-for="group in controls" :key="group.icon">
         <sd-icon :value="group.icon" :size="36"></sd-icon>
@@ -16,7 +16,8 @@
             :disabled="pending[ctl.mission]"
             v-loading="pending[ctl.mission]"
             @click="handleControl(ctl)"
-          >{{ $t(ctl.name, ctl.values) }}</el-button>
+            v-t="{ path: ctl.name, args: ctl.values }"
+          ></el-button>
         </div>
       </div>
     </div>
@@ -61,6 +62,9 @@ export default {
   computed: {
     disabled() {
       return this.status.code !== 0;
+    },
+    disabledText() {
+      return this.$t('control.abnormal');
     },
     controls() {
       return Controls;

@@ -1,11 +1,5 @@
 <template>
-  <sd-card
-    class="monitor"
-    :class="monitorClassName"
-    icon="monitor"
-    :title="$t('monitor.title')"
-    dense
-  >
+  <sd-card class="monitor" :class="monitorClassName" icon="monitor" title="monitor.title" dense>
     <template #action>
       <slot name="action"></slot>
     </template>
@@ -15,19 +9,17 @@
       </div>
       <slot></slot>
       <div class="monitor__control">
-        <el-tooltip :content="$t(`monitor.${fullscreen ? 'exit_' : ''}fullscreen`)" placement="top">
-          <el-button
-            size="mini"
-            :type="fullscreen ? 'primary' : ''"
-            icon="el-icon-full-screen"
-            @click="handleFullscreen"
-          ></el-button>
-        </el-tooltip>
+        <el-button
+          size="mini"
+          :type="fullscreen ? 'primary' : ''"
+          icon="el-icon-full-screen"
+          @click="handleFullscreen"
+        ></el-button>
       </div>
     </template>
     <template v-else>
       <div class="monitor__content monitor__content--empty">
-        <span class="monitor__tip">{{ $t('monitor.no_video') }}</span>
+        <span class="monitor__tip" v-t="'monitor.no_video'"></span>
       </div>
     </template>
   </sd-card>
