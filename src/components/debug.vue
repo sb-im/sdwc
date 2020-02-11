@@ -6,22 +6,30 @@
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="disabledText"
     >
+      <!-- button controls -->
       <div class="debug__control control__buttons">
         <el-button
-          v-for="ctl in controls"
-          :key="ctl"
+          v-for="c in commands"
+          :key="c"
           size="medium"
           type="warning"
-          :disabled="pending[ctl]"
-          v-loading="pending[ctl]"
-          @click="handleControl(ctl)"
-        >{{ ctl }}</el-button>
+          :disabled="pending[c]"
+          v-loading="pending[c]"
+          @click="handleCmd(c)"
+        >{{ c }}</el-button>
       </div>
-      <el-input class="debug__input" size="medium" ref="inputCommand" v-model="command">
-        <template #append>
-          <el-button @click="handleCmdSend" v-t="'debug.send'"></el-button>
-        </template>
-      </el-input>
+      <!-- command input -->
+      <el-form class="debug__form" inline>
+        <el-form-item class="debug__mission">
+          <el-input class="debug__input" size="medium" placeholder="mission" v-model="mission"></el-input>
+        </el-form-item>
+        <el-form-item class="debug__arg">
+          <el-input class="debug__input" size="medium" placeholder="arg (JSON)" v-model="arg"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="medium" type="primary" @click="handleSend" v-t="'debug.send'"></el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </sd-card>
 </template>
@@ -45,7 +53,8 @@ export default {
   data() {
     return {
       pending: {},
-      command: ''
+      mission: '',
+      arg: ''
     };
   },
   computed: {
@@ -55,38 +64,47 @@ export default {
     disabledText() {
       return this.$t('control.abnormal');
     },
-    controls() {
+    commands() {
       return this.point.name.trim().split(' ');
     }
   },
   methods: {
     /**
-     * @param {string} ctl
+     * @param {string} mission
+     * @param {any} arg
      */
-    handleControl(ctl) {
-      this.$set(this.pending, ctl, true);
-      this.$mqtt(this.point.node_id, { mission: ctl })
+    handleCmd(mission, arg) {
+      this.$set(this.pending, mission, true);
+      this.$mqtt(this.point.node_id, { mission, arg })
         .catch(() => { /* noop */ })
-        .then(() => this.$set(this.pending, ctl, false));
+        .then(() => this.$set(this.pending, mission, false));
     },
-    handleCmdSend() {
-      const [mission, ...arg] = this.command.split(' ');
-      this.handleControl(mission, arg);
-      this.command = '';
+    handleSend() {
+      const mission = this.mission.trim();
+      if (!mission) return;
+      let arg = [];
+      try {
+        arg = JSON.parse(this.arg);
+      } catch(e) {
+        arg = this.arg.split(' ');
+      }
+      this.handleCmd(mission, arg);
+    }
+  },
+  created() {
+    for (const it of this.commands) {
+      this.$set(this.pending, it, false);
     }
   },
   mounted() {
-    for (const it of this.controls) {
-      this.$set(this.pending, it, false);
-    }
-    const inputCommand = this.$refs.inputCommand.$el.getElementsByTagName('input')[0];
-    if (inputCommand) {
-      inputCommand.addEventListener('keypress', (ev) => {
+    const inputs = this.$el.querySelectorAll('input.el-input__inner');
+    inputs.forEach(i => {
+      i.addEventListener('keypress', (ev) => {
         if (ev.keyCode === 13 || ev.key === 'Enter') {
-          this.handleCmdSend();
+          this.handleSend();
         }
       });
-    }
+    });
   },
   components: {
     [Card.name]: Card,
@@ -102,8 +120,23 @@ export default {
 .debug__control .el-button {
   margin: 0 6px 6px 0;
 }
-.debug__input {
-  width: 500px;
+.debug__form {
+  display: flex;
+}
+.debug .el-form-item {
+  margin: 0 6px 6px 0;
+}
+.debug .el-form-item:last-child {
+  margin-right: 0;
+}
+.debug__mission {
+  width: 175px;
+}
+.debug__arg {
+  flex-grow: 1;
+}
+.debug__arg .el-form-item__content {
+  width: 100%;
 }
 .debug__input .el-input__inner {
   font-family: monospace;
