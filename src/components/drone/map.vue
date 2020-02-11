@@ -10,12 +10,15 @@
   >
     <template #action>
       <el-button
-        :icon="follow ? 'el-icon-location' : 'el-icon-location-outline'"
+        :icon="`el-icon-location${follow ? '' : '-outline'}`"
         size="small"
         @click="handleFollow"
-        v-t="`map.${follow ? 'follow' : 'manual'}`"
-      ></el-button>
-      <el-button icon="el-icon-delete" size="small" @click="handlePathClear" v-t="'map.clear'"></el-button>
+      >
+        <span v-t="`map.${follow ? 'follow' : 'manual'}`"></span>
+      </el-button>
+      <el-button icon="el-icon-delete" size="small" @click="handlePathClear">
+        <span v-t="'map.clear'"></span>
+      </el-button>
       <el-popover ref="popover" trigger="manual" popper-class="map__popover" v-model="popover.show">
         <div
           v-for="cmd in MapCommands"

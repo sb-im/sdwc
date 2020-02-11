@@ -23,13 +23,9 @@
           <span slot="label" v-t="'login.password'"></span>
           <el-input ref="inputPwd" type="password" show-password v-model="password"></el-input>
         </el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-minus"
-          @click="handleLogin"
-          :loading="pending"
-          v-t="'login.button'"
-        ></el-button>
+        <el-button type="primary" icon="el-icon-minus" @click="handleLogin" :loading="pending">
+          <span v-t="'login.button'"></span>
+        </el-button>
       </el-form>
     </div>
   </div>
