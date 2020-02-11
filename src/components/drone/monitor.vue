@@ -7,9 +7,9 @@
         @change="handleGimbalMode"
         size="small"
       >
-        <el-radio-button label="mavlink">{{ $t('air.gimbal.mavlink') }}</el-radio-button>
-        <el-radio-button label="neutral">{{ $t('air.gimbal.neutral') }}</el-radio-button>
-        <el-radio-button label="rc">{{ $t('air.gimbal.rc') }}</el-radio-button>
+        <el-radio-button v-for="m in range.mode" :key="m" :label="m">
+          <span v-t="$te(`air.gimbal.${m}`) ? `air.gimbal.${m}` : m"></span>
+        </el-radio-button>
       </el-radio-group>
     </template>
     <template>
@@ -18,18 +18,15 @@
           <!-- pitch angle right -->
           <el-slider
             v-model="gimbal.yaw"
-            :max="90"
-            :min="-90"
+            :min="range.yaw[0]"
+            :max="range.yaw[1]"
             :disabled="gimbalDisabled"
             @change="handleGimbalCtl({ yaw: $event })"
             style="width:180px"
           />
           <!-- button 'center' -->
-          <el-tooltip
-            class="monitor-drone-control__restore"
-            placement="top"
-            :content="$t('air.gimbal_center')"
-          >
+          <el-tooltip class="monitor-drone-control__restore" placement="top">
+            <span slot="content" v-t="'air.gimbal.center'"></span>
             <el-button
               circle
               size="mini"
@@ -44,8 +41,8 @@
           <el-slider
             vertical
             v-model="gimbal.pitch"
-            :max="45"
-            :min="-90"
+            :min="range.pitch[0]"
+            :max="range.pitch[1]"
             :disabled="gimbalDisabled"
             @change="handleGimbalCtl({ pitch: $event })"
             height="135px"
@@ -71,6 +68,10 @@ export default {
     status: {
       type: Object,
       required: true
+    },
+    msg: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -79,6 +80,11 @@ export default {
         mode: '',
         yaw: 0,
         pitch: 0
+      },
+      range: {
+        mode: ['mavlink', 'neutral', 'rc'],
+        yaw: [-90, 90],
+        pitch: [-90, 45]
       },
       gesture: {
         valid: false,
@@ -105,13 +111,12 @@ export default {
   },
   methods: {
     /**
-     * @param { 'mavlink' | 'netural' | 'rc' } mode
+     * @param {string} mode
      */
     handleGimbalMode(mode) {
-      // TODO: make use of mqtt jsonrpc method `gimbal_info` and `gimbal_mode`
       this.gimbal.mode = '';
       this.$mqtt(this.point.node_id, {
-        mission: 'gimbalmode',
+        mission: 'gimbal_mode',
         arg: [mode]
       }, {
         notification: true
@@ -123,10 +128,9 @@ export default {
      * @param {{ yaw?: number; pitch?: number }} param
      */
     handleGimbalCtl(param) {
-      // TODO: make use of `msg.gimbal`
       const { yaw, pitch } = this.gimbal;
       this.$mqtt(this.point.node_id, {
-        mission: 'gimbal',
+        mission: 'gimbal_ctl',
         arg: Object.assign({ yaw, pitch }, param)
       }, {
         notification: true
@@ -223,6 +227,12 @@ export default {
           this.handleGestureEnd(ev.x, ev.y);
         });
       }
+    }
+  },
+  created() {
+    this.gimbal = { ...this.msg.gimbal };
+    if (this.point.params) {
+      this.range = this.point.params;
     }
   },
   mounted() {
