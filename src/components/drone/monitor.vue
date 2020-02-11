@@ -187,46 +187,48 @@ export default {
     bindGestures() {
       /** @type {HTMLDivElement} */
       const el = this.$el.getElementsByClassName('monitor-drone-control')[0];
-      if (el) {
-        // Gesture Start
-        el.addEventListener('mousedown', ev => {
-          if (ev.target !== el && event.target.parentElement !== el) return;
-          this.handleGestureStart(ev.x, ev.y);
-        });
-        el.addEventListener('touchstart', ev => {
-          if (ev.target !== el && event.target.parentElement !== el) return;
-          // do not prevent scroll when control disabled
-          if (this.gimbalDisabled) return;
-          ev.preventDefault();
-          const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
-          if (!t) return;
-          this.handleGestureStart(t.pageX, t.pageY);
-        });
-        // Gesture Move
-        el.addEventListener('mousemove', ev => {
-          this.handleGestureMoveThrottled(ev.x, ev.y);
-        });
-        el.addEventListener('touchmove', ev => {
-          if (ev.target !== el && event.target.parentElement !== el) return;
-          const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
-          if (!t) return;
-          this.handleGestureMoveThrottled(t.pageX, t.pageY);
-        });
-        // Gesture End
-        el.addEventListener('mouseup', ev => {
-          this.handleGestureEnd(ev.x, ev.y);
-        });
-        el.addEventListener('touchend', ev => {
-          if (ev.target !== el && event.target.parentElement !== el) return;
-          const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
-          if (!t) return;
-          this.handleGestureEnd(t.pageX, t.pageY);
-        });
-        // Gesture Cancel
-        el.addEventListener('mouseleave', ev => {
-          this.handleGestureEnd(ev.x, ev.y);
-        });
+      if (!el) {
+        setTimeout(() => this.bindGestures(), 150);
+        return;
       }
+      // Gesture Start
+      el.addEventListener('mousedown', ev => {
+        if (ev.target !== el && event.target.parentElement !== el) return;
+        this.handleGestureStart(ev.x, ev.y);
+      });
+      el.addEventListener('touchstart', ev => {
+        if (ev.target !== el && event.target.parentElement !== el) return;
+        // do not prevent scroll when control disabled
+        if (this.gimbalDisabled) return;
+        ev.preventDefault();
+        const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
+        if (!t) return;
+        this.handleGestureStart(t.pageX, t.pageY);
+      });
+      // Gesture Move
+      el.addEventListener('mousemove', ev => {
+        this.handleGestureMoveThrottled(ev.x, ev.y);
+      });
+      el.addEventListener('touchmove', ev => {
+        if (ev.target !== el && event.target.parentElement !== el) return;
+        const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
+        if (!t) return;
+        this.handleGestureMoveThrottled(t.pageX, t.pageY);
+      });
+      // Gesture End
+      el.addEventListener('mouseup', ev => {
+        this.handleGestureEnd(ev.x, ev.y);
+      });
+      el.addEventListener('touchend', ev => {
+        if (ev.target !== el && event.target.parentElement !== el) return;
+        const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
+        if (!t) return;
+        this.handleGestureEnd(t.pageX, t.pageY);
+      });
+      // Gesture Cancel
+      el.addEventListener('mouseleave', ev => {
+        this.handleGestureEnd(ev.x, ev.y);
+      });
     }
   },
   created() {
@@ -237,7 +239,7 @@ export default {
   },
   mounted() {
     this.handleGestureMoveThrottled = throttle(this.handleGestureMove, 55);
-    this.bindGestures();
+    this.$nextTick(() => this.bindGestures());
   },
   components: {
     [Monitor.name]: Monitor
