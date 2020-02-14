@@ -27,16 +27,13 @@ export default {
     plan() {
       return this.plans.find(p => p.id === this.id);
     },
-    log() {
-      return this.logs.filter(l => l.plan_id === this.id);
-    },
     key() {
       const { name, params: { id } } = this.$route;
       return `${name}-${id}`;
     },
     componentProps() {
       if (!this.plan) {
-        return { plan: {}, log: [], initial: {} };
+        return { plan: {}, initial: {} };
       }
       switch (this.$route.name) {
         case 'plan/view': return { plan: this.plan, log: this.log };

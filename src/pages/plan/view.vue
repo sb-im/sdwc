@@ -27,10 +27,22 @@
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </sd-card>
-    <sd-map :path="mapPath" :markers="mapMarkers" fit></sd-map>
+    <sd-map v-bind="map" fit></sd-map>
     <sd-card class="plan__history" icon="paper-busy" title="plan.view.history" dense>
-      <el-table stripe :data="log" :default-sort="{ prop: 'created_at', order: 'descending' }">
-        <el-table-column align="center" prop="created_at" sortable :formatter="dateFormatter">
+      <el-table
+        stripe
+        v-loading="log.loading"
+        :data="logsToShow"
+        :default-sort="{ prop: 'created_at', order: 'descending' }"
+        @sort-change="handleSortChange"
+      >
+        <el-table-column
+          align="center"
+          prop="created_at"
+          sortable="custom"
+          :sort-orders="['ascending', 'descending']"
+          :formatter="dateFormatter"
+        >
           <span slot="header" class="cell" v-t="'plan.view.run_time'"></span>
         </el-table-column>
         <el-table-column align="center">
@@ -84,6 +96,11 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        layout="total, prev, pager, next"
+        :total="logs.length"
+        :current-page.sync="pagination.current"
+      ></el-pagination>
     </sd-card>
     <sd-preflight ref="preflight" :plan="plan" @run="handleRunComfirm"></sd-preflight>
   </div>
@@ -91,7 +108,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { getPlanMissionQueue, runPlan, stopPlan } from '@/api/super-dock';
+import { getPlanMissionQueue, runPlan, stopPlan, planLogs } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -104,23 +121,36 @@ export default {
     plan: {
       type: Object,
       required: true
-    },
-    log: {
-      type: Array,
-      required: true
     }
   },
   data() {
     return {
       running: null,
-      mapPath: [],
-      mapMarkers: []
+      map: {
+        path: [],
+        markers: []
+      },
+      logs: [],
+      log: {
+        loading: false,
+        order: 'descending'
+      },
+      pagination: {
+        size: 10,
+        current: 1
+      }
     };
+  },
+  computed: {
+    logsToShow() {
+      const { size, current } = this.pagination;
+      const end = current * size;
+      return this.logs.slice(end - size, end);
+    }
   },
   methods: {
     ...mapActions([
       'retrievePlan',
-      'getPlanLogs',
       'downloadFile',
       'getMapPath'
     ]),
@@ -164,21 +194,38 @@ export default {
         n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
       }).then(this.checkPlanRunning);
     },
+    sortPlanLogs(order = 'descending') {
+      const modifier = order === 'descending' ? -1 : 1;
+      this.logs.sort((a, b) => (a.created_at - b.created_at) * modifier);
+    },
+    async getPlanLogs() {
+      this.log.loading = true;
+      const raw = await planLogs(this.plan.id);
+      raw.forEach(l => l.created_at = new Date(l.created_at));
+      this.logs = raw;
+      this.sortPlanLogs();
+      this.log.loading = false;
+    },
+    handleSortChange({ order }) {
+      this.log.order = order;
+      this.pagination.current = 1;
+      this.sortPlanLogs(order);
+    },
     handleDownload(url, name) {
       this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });
     },
     dateFormatter(row, column, cellValue /*, index */) {
-      return this.$d(new Date(cellValue), 'long');
+      return this.$d(cellValue, 'long');
     }
   },
   mounted() {
     this.retrievePlan(this.plan.id)
       .then(plan => this.getMapPath(plan.map_path))
       .then(r => {
-        this.mapPath = r.path;
-        this.mapMarkers = r.actions;
+        this.map.path = r.path;
+        this.map.markers = r.actions;
       });
-    this.getPlanLogs(this.plan.id);
+    this.getPlanLogs();
     this.checkPlanRunning();
   },
   components: {
@@ -189,3 +236,18 @@ export default {
   }
 };
 </script>
+
+<style>
+.plan__view .el-table__body-wrapper {
+  min-height: 390px;
+}
+.plan__view .el-table td {
+  padding: 6px 0;
+}
+.plan__view .el-table .el-button--mini {
+  padding: 6px 10px;
+}
+.plan__view .el-pagination {
+  padding: 8px 25px;
+}
+</style>

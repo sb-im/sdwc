@@ -5,6 +5,7 @@
 
 import Vue from 'vue';
 import {
+  Pagination,
   Dialog,
   Card,
   DatePicker,
@@ -53,6 +54,7 @@ import i18n from '@/i18n';
  */
 ElementLocale.i18n((key, value) => i18n.t(key, value));
 
+Vue.use(Pagination);
 Vue.use(Dialog);
 Vue.use(Card);
 Vue.use(DatePicker);
