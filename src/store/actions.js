@@ -230,17 +230,6 @@ export async function getPlans({ commit }) {
 
 /**
  * @param {Context} context
- * @param {number} id
- */
-export async function getPlanLogs({ commit }, id) {
-  const data = await SuperDock.planLogs(id);
-  data.forEach(log => {
-    commit(PLAN.ADD_PLAN_LOG, log);
-  });
-}
-
-/**
- * @param {Context} context
  * @param {SDWC.PlanInfo} plan
  */
 export async function createPlan({ commit }, plan) {

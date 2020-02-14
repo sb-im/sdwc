@@ -2,16 +2,13 @@
 
 const state = {
   /** @type {SDWC.PlanInfo[]} */
-  info: [],
-  /** @type {SDWC.PlanLog[]} */
-  log: []
+  info: []
 };
 
 export const MutationTypes = {
   ADD_PLAN: 'ADD_PLAN',
   UPDATE_PLAN: 'UPDATE_PLAN',
   DELETE_PLAN: 'DELETE_PLAN',
-  ADD_PLAN_LOG: 'ADD_PLAN_LOG',
   CLEAR_PLANS: 'CLEAR_PLANS'
 };
 
@@ -38,10 +35,6 @@ const mutations = {
     while ((logIndex = state.log.findIndex(l => l.plan_id === id)) > 0) {
       state.log.splice(logIndex, 1);
     }
-  },
-  [MutationTypes.ADD_PLAN_LOG](state, /** @type {SDWC.PlanLog} */ payload) {
-    if (state.log.findIndex(log => log.id === payload.id) >= 0) return;
-    state.log.push(payload);
   },
   [MutationTypes.CLEAR_PLANS](state) {
     state.info = [];
