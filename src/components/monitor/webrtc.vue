@@ -9,8 +9,9 @@
           size="small"
           icon="el-icon-refresh-right"
           @click="handleRetry"
-          v-t="'common.retry'"
-        ></el-button>
+        >
+          <span v-t="'common.retry'"></span>
+        </el-button>
       </template>
     </div>
   </div>
