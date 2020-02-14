@@ -7,6 +7,7 @@ declare namespace SDWC {
   /// Vuex store state modules
   // store/modules/config.js
   export interface Config {
+    beian: string;
     super_dock_api_server: string;
     oauth_client_id: string;
     oauth_client_secret: string;

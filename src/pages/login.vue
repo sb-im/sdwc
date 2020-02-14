@@ -28,11 +28,17 @@
         </el-button>
       </el-form>
     </div>
+    <div class="login__footer">
+      <a class="login__beian" href="http://www.beian.miit.gov.cn/">
+        <i class="el-icon-document-checked"></i>
+        {{ footerText }}
+      </a>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'sd-login',
@@ -47,9 +53,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(['config']),
     video() {
       const i = Math.floor(Math.random() * 7);
       return `/assets/videos/aerial${i}-10s.mp4`;
+    },
+    footerText() {
+      return this.config.beian;
     }
   },
   methods: {
@@ -109,8 +119,9 @@ export default {
 <style>
 .login {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   height: 100vh;
 }
 
@@ -123,8 +134,6 @@ export default {
 }
 
 .login__form {
-  width: 320px;
-  height: 230px;
   padding: 36px;
   background: #fff9;
   border-radius: 4px;
@@ -144,5 +153,21 @@ export default {
   object-fit: cover;
   width: 100%;
   height: 100%;
+}
+
+.login__footer {
+  margin-top: calc(50vh - 130px);
+  margin-bottom: 24px;
+  height: 20px;
+}
+
+.login__beian {
+  text-decoration: none;
+  color: #606266;
+  font-size: 14px;
+}
+
+.login__beian:hover {
+  color: #409eff;
 }
 </style>
