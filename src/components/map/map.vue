@@ -6,7 +6,7 @@
         <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
       </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" v-on="$listeners"></component>
+    <component :is="type" :fit="fit" v-bind="$attrs" v-on="$listeners"></component>
   </sd-card>
 </template>
 
@@ -25,6 +25,12 @@ const MapType = {
 export default {
   name: 'sd-map',
   inheritAttrs: false,
+  props: {
+    fit: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       type: ''
