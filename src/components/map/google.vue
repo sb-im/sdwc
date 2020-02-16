@@ -157,7 +157,7 @@ export default {
       this.poly.setMap(this.map);
       if (this.fit) {
         this.fitPath();
-      } else if (this.follow) {
+      } else if (this.follow && !this.popoverShown) {
         this.map.setCenter(this.path[0]);
       }
     },
@@ -179,7 +179,7 @@ export default {
       }
       if (this.fit) {
         this.fitPath();
-      } else if (this.follow) {
+      } else if (this.follow && !this.popoverShown) {
         this.map.setCenter(this.path[0]);
       }
     },

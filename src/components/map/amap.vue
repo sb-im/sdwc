@@ -196,7 +196,7 @@ export default {
       }
       if (this.fit) {
         this.fitPath();
-      } else if (this.follow) {
+      } else if (this.follow && !this.popoverShown) {
         this.map.setCenter(path[0]);
       }
     },
@@ -296,7 +296,7 @@ export default {
       if (!val) return;
       if (!this.poly) return;
       const path = this.poly.getPath();
-      if (!path.length <= 0) return;
+      if (path.length <= 0) return;
       this.map.setCenter(path[0]);
     },
     popoverShown(val) {
