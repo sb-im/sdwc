@@ -249,7 +249,10 @@ declare namespace SDWC {
     type: 'drone';
     heading: number;
   }
-  export type Marker = MarkerAction | MarkerDepot | MarkerDrone;
+  export interface MarkerPlace extends MarkerBase {
+    type: 'place';
+  }
+  export type Marker = MarkerAction | MarkerDepot | MarkerDrone | MarkerPlace;
   export type DroneMapControlParamDescriptor = {
     type: 'string';
     required?: boolean;

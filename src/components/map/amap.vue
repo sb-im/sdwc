@@ -201,21 +201,26 @@ export default {
       }
     },
     async drawNamedMarkers() {
-      const [AMap, AMapUI, position] = await Promise.all([
+      const [AMap, AMapUI, coordinate] = await Promise.all([
         loadAMap(),
         loadAMapUI(),
         this.convertCoordinate(this.markers.map(m => m.position || { lng: 0, lat: 0 }))
       ]);
+      for (const [name, m] of Object.entries(this.namedMarkers)) {
+        if (this.markers.findIndex(m => m.id == name) < 0) {
+          m.setMap(null);
+        }
+      }
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         for (let i = 0; i < this.markers.length; i++) {
           const marker = this.markers[i];
           if (!marker.position) continue;
           /** @type {AMap.Marker} */
           let mapMarker = this.namedMarkers[marker.id];
-          const pos = position[i];
+          const position = coordinate[i];
           if (mapMarker) {
             // marker has been created
-            mapMarker.setPosition(pos);
+            mapMarker.setPosition(position);
             if (marker.type === 'drone') {
               /** @type {{ heading: number; img: HTMLImageElement }} */
               const extData = mapMarker.getExtData();
@@ -228,7 +233,7 @@ export default {
               mapMarker = new SimpleMarker({
                 iconStyle: 'red',
                 iconLabel: '🚉',
-                position: pos,
+                position,
                 label: {
                   content: marker.name,
                   offset: { x: 25, y: 30 }
@@ -241,7 +246,7 @@ export default {
               mapMarker = new AMap.Marker({
                 content: img,
                 offset: { x: -20, y: -20 },
-                position: pos,
+                position,
                 extData: {
                   img,
                   heading: marker.heading
@@ -254,9 +259,20 @@ export default {
             } else if (marker.type === 'action') {
               mapMarker = new AMap.Marker({
                 content: `<div class="amap-marker--action">${marker.action.map(a => MapActionEmoji[a]).join('')}</div>`,
-                position: pos,
+                position,
                 offset: new AMap.Pixel(-11, -11)
               });
+            } else if (marker.type === 'place') {
+              mapMarker = new SimpleMarker({
+                iconStyle: 'red',
+                position,
+                label: {
+                  content: marker.name,
+                  offset: { x: 25, y: 30 }
+                }
+              });
+            } else {
+              continue;
             }
             this.namedMarkers[marker.id] = mapMarker;
             this.map.add(mapMarker);

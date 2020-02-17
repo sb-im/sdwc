@@ -144,8 +144,22 @@ export default {
       }
       return markers;
     },
+    placeMarkers() {
+      const position = this.msg.position[0];
+      const markers = [];
+      if (!position || !position.place) return markers;
+      for (const [name, pos] of Object.entries(position.place)) {
+        markers.push({
+          type: 'place',
+          id: name,
+          name,
+          position: pos
+        });
+      }
+      return markers;
+    },
     markers() {
-      return [...this.droneMarkers, ...this.depotMarkers];
+      return [...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
     }
   },
   methods: {

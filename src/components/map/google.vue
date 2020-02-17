@@ -81,7 +81,7 @@ export default {
      */
     createMarkerPointIcon(fillColor = '#ea4335') {
       return {
-        anchor: { x: 20, y: 42 },
+        anchor: { x: 20, y: 39 },
         labelOrigin: { x: 20, y: 15 },
         path: 'M20,38 C18,36 7.5,24 7.5,14 C7.5,7 13,1.5 20,1.5 S32.5,7 32.5,14 C32.5,24 22,36 20,38 z',
         fillColor,
@@ -188,6 +188,12 @@ export default {
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
       const bounds = new LatLngBounds();
+      for (const [name, m] of Object.entries(this.namedMarkers)) {
+        if (this.markers.findIndex(m => m.id == name) < 0) {
+          m.setMap(null);
+          delete this.namedMarkers[name];
+        }
+      }
       for (const marker of this.markers) {
         if (!marker.position) continue;
         /** @type {google.maps.Marker} */
@@ -209,7 +215,7 @@ export default {
               icon: this.createMarkerPointIcon(),
               label: '🚉',
               labelContent: marker.name,
-              labelAnchor: { x: -6, y: 15 },
+              labelAnchor: { x: -6, y: 12 },
               labelClass: 'gmap-label'
             });
           } else if (marker.type === 'drone') {
@@ -234,6 +240,17 @@ export default {
               labelAnchor: { x: 10, y: 10 },
               labelClass: 'gmap-action'
             });
+          } else if (marker.type === 'place') {
+            mapMarker = new MarkerWithLabel({
+              map: this.map,
+              position: marker.position,
+              icon: this.createMarkerPointIcon(),
+              labelContent: marker.name,
+              labelAnchor: { x: -6, y: 12 },
+              labelClass: 'gmap-label'
+            });
+          } else {
+            continue;
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
