@@ -22,11 +22,11 @@
       </el-button>
       <el-popover ref="popover" trigger="manual" popper-class="map__popover" v-model="popover.show">
         <div
-          v-for="cmd in MapCommands"
-          :key="cmd"
+          v-for="c of commands"
+          :key="c.method"
           class="el-dropdown-menu__item"
-          @click="handleCommand(cmd)"
-          v-t="`air.${cmd}`"
+          @click="handleCommand(c)"
+          v-t="$te(`air.map.${c.method}`) ?`air.map.${c.method}`: c.method "
         ></div>
         <div class="el-dropdown-menu__item el-dropdown-menu__item--divided" @click="handleCancel">
           <i class="el-icon-close"></i>
@@ -42,16 +42,44 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 
 import NodeMap from '@/components/map/map.vue';
 
-const MapCommands = [
-  'gotoGPS',
-  'pointtoGPS',
-  'gotorelaltGPS'
+/** @type {SDWC.DroneMapControl[]} */
+const DefaultCommands = [
+  {
+    method: 'setTarget',
+    params: {
+      lng: { type: 'number', required: true },
+      lat: { type: 'number', required: true }
+    }
+  },
+  {
+    method: 'setROI',
+    params: {
+      lng: { type: 'number', required: true },
+      lat: { type: 'number', required: true },
+      height: { type: 'number', required: false }
+    }
+  },
+  {
+    method: 'setROInone'
+  },
+  {
+    method: 'setTargetHeight',
+    params: {
+      lng: { type: 'number', required: true },
+      lat: { type: 'number', required: true },
+      height: { type: 'number', required: false }
+    }
+  }
 ];
 
 export default {
   name: 'sd-drone-map',
   props: {
     info: {
+      type: Object,
+      required: true
+    },
+    point: {
       type: Object,
       required: true
     },
@@ -80,8 +108,9 @@ export default {
     ...mapGetters([
       'depots'
     ]),
-    MapCommands() {
-      return MapCommands;
+    commands() {
+      if (!this.point.params) return DefaultCommands;
+      return this.point.params.common.move;
     },
     droneMarkers() {
       const markers = [];
@@ -132,10 +161,10 @@ export default {
       this.clearDronePath(this.info.id);
     },
     handleSelect(latlng, el) {
-      if (this.status.code !== 0) return;
+      if (this.status.code !== 0 || this.commands.length <= 0) return;
       this.popover.coordinate = {
         lat: Math.floor(latlng.lat * 1e8) / 1e8,
-        lon: Math.floor(latlng.lng * 1e8) / 1e8
+        lng: Math.floor(latlng.lng * 1e8) / 1e8
       };
       this.$refs.popover.referenceElm = el;
       if (this.popover.show) {
@@ -148,32 +177,61 @@ export default {
       this.popover.coordinate = null;
       this.popover.show = false;
     },
+    /**
+     * @param {string} k
+     * @param {SDWC.DroneMapControlParamDescriptor} v
+     */
+    async promptParamInput(k, v) {
+      return this.$prompt(`${k}: ${v.type}`, {
+        title: this.$t('air.map.prompt'),
+        inputValue: (v.default || '').toString(),
+        inputValidator: str => {
+          if (str.length === 0) {
+            return !v.required;
+          }
+          if (v.type === 'number') {
+            const num = Number.parseFloat(str);
+            return !Number.isNaN(num) && Number.isFinite(num) && num.toString() === str;
+          }
+          return true;
+        },
+        inputErrorMessage: this.$t('air.map.invalid_input'),
+        closeOnClickModal: false,
+      }).then(({ value }) => {
+        if (value.length === 0 && !v.required) {
+          // `undefined` value won't be serialized to JSON
+          return undefined;
+        }
+        if (v.type === 'number') {
+          return Number.parseFloat(value);
+        }
+        return value;
+      });
+    },
+    /**
+     * @param {SDWC.DronMapControl} cmd
+     */
     async handleCommand(cmd) {
       this.$refs.popover.doClose();
-      let arg = Object.assign({}, this.popover.coordinate);
-      if (cmd === 'gotorelaltGPS') {
-        const input = this.$prompt(this.$t('air.input_alt'), {
-          title: this.$t('air.gotorelaltGPS'),
-          type: 'info',
-          inputValue: `${this.msg.drone_status.height}`,
-          inputValidator: str => {
-            let num = Number.parseFloat(str);
-            return !Number.isNaN(num) && Number.isFinite(num) && `${num}` === str;
-          },
-          inputErrorMessage: this.$t('air.invalid_alt_input'),
-          closeOnClickModal: false,
-        }).then(({ value }) => {
-          const num = Number.parseFloat(value);
-          arg.relalt = num;
-        });
-        try {
-          await input;
-        } catch (e) {
-          return;
+      const cord = this.popover.coordinate;
+      let arg;
+      for (const [k, v] of Object.entries(cmd.params || {})) {
+        if (!arg) arg = {};
+        if (Object.prototype.hasOwnProperty.call(cord, k) && typeof cord[k] === v.type) {
+          arg[k] = cord[k];
+        } else {
+          let input;
+          try {
+            input = await this.promptParamInput(k, v);
+          } catch (e) {
+            // prompt canceled
+            return;
+          }
+          arg[k] = input;
         }
       }
       this.$mqtt(this.info.id, {
-        mission: cmd,
+        mission: cmd.method,
         arg
       }).catch(() => { /* noop */ });
     }

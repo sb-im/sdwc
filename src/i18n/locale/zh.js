@@ -149,11 +149,14 @@ export const locale = {
       land_backup: '降落到备用点',
       plan_ready: '任务准备就绪，是否立即执行？'
     },
-    gotoGPS: '飞往此处',
-    pointtoGPS: '朝向此处',
-    gotorelaltGPS: '飞往此处（调整高度）',
-    input_alt: '请输入高度：',
-    invalid_alt_input: '无效的高度值'
+    map: {
+      setTarget: '飞往此处',
+      setROI: '朝向此处',
+      setROInone: '取消朝向',
+      setTargetHeight: '调整高度飞往此处',
+      prompt: '请输入参数',
+      invalid_input: '参数值无效'
+    }
   },
   control: {
     title: '高级控制',

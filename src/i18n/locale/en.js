@@ -149,11 +149,14 @@ export const locale = {
       land_backup: 'Land backup',
       plan_ready: 'Plan is ready, start right now?'
     },
-    gotoGPS: 'Fly here',
-    pointtoGPS: 'Turn towards here',
-    gotorelaltGPS: 'Fly here (Change altitude)',
-    input_alt: 'Please enter altitude:',
-    invalid_alt_input: 'Invalid altitude value'
+    map: {
+      setTarget: 'Fly Here',
+      setROI: 'Turn Towards Here',
+      setROInone: 'Cancel Turn',
+      setTargetHeight: 'Change Height and Fly Here',
+      prompt: 'Please enter parameter',
+      invalid_input: 'Invaild parameter input'
+    }
   },
   control: {
     title: 'Advance Control',

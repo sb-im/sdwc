@@ -22,7 +22,9 @@ declare namespace SDWC {
   export interface NodePoint {
     id: number;
     name: string;
-    params: Record<string, any>;
+    params: {
+      [key: string]: any;
+    };
     node_id: number;
     point_type_id: number;
     point_type_name: string;
@@ -248,6 +250,21 @@ declare namespace SDWC {
     heading: number;
   }
   export type Marker = MarkerAction | MarkerDepot | MarkerDrone;
+  export type DroneMapControlParamDescriptor = {
+    type: 'string';
+    required?: boolean;
+    default?: string;
+  } | {
+    type: 'number';
+    required?: boolean;
+    default?: number;
+  }
+  export interface DroneMapControl {
+    method: string;
+    params?: {
+      [key: string]: DroneMapControlParamDescriptor;
+    }
+  }
 
   export interface MqttControlOptions {
     /** send as JSONRPC Notification */
