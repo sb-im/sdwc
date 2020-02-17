@@ -171,8 +171,12 @@ export default {
     }
   },
   created() {
-    this.$store.subscribe(({ type, payload }) => {
-      if (type === NOTI.MOD_NOTI && payload.status === 2) {
+    this.$store.subscribe(({ type, payload }, state) => {
+      if (
+        type === NOTI.MOD_NOTI &&
+        payload.status === 2 &&
+        state.notification.findIndex(n => n.id === payload.id) >= 0
+      ) {
         this.notifyAlert = true;
       }
     });
