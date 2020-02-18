@@ -194,19 +194,36 @@ Or
     "move":[
       {"method":"goto"},
       {"method":"pointto"},
-      {"method":"goto_params","params":{"alt":{ "type": "number", "required": true}}}
+      {"method":"setROI","params":{"height":{ "type": "number", "required": false }}},
+      {"method":"goto_params","params":{
+        "height":{ "type": "number", "required": true },
+        "speed":{ "type": "number", "default": 3, "required": false }
+        }
+      }
     ]
   },
   "map":{
     "google":{"proxy":"sb.im"},
     "amap":{}
+  },
+  "place":{
+    "home":{"style":"dotted", "color":"#ddffff"},
+    "target":{"style":"dashed", "color":"auto"},
+    "roi":{"style":"solid", "color":"auto"},
+    "point_to":{"style":"glow"}
   }
 }
 ```
 
 ### Sub: `nodes/:id/msg/position`
 ```json
-{"lat":22.6876423001,"lng":114.2248673001,"alt":0.07,"heading":10}
+{"lat":22.6876423001,"lng":114.2248673001,"alt":51.57,"heading":10,
+  "place":{
+    "home":{"lat":22.6876423001,"lng":114.2248673001,"alt":41.85},
+    "roi":{"lat":22.6876423001,"lng":114.2248673001,"alt":0.07},
+    "target":{"lat":22.6876423001,"lng":114.2248673001,"alt":41.85}
+  }
+}
 ```
 
 Name | Type   | Description
@@ -215,6 +232,11 @@ lat  | float | Latitude
 lng  | float | Longitude
 alt  | float | Altitude
 heading| uint | Heading 0°~360°
+place  | object | Opt: (May not exist)
+place.<name> | string | Can have multiple
+place.<name>.lat  | float | Latitude
+place.<name>.lng  | float | Longitude
+place.<name>.alt  | float | Altitude
 
 ### RPC: move
 #### Request:
@@ -236,13 +258,13 @@ heading| uint | Heading 0°~360°
 
 ## `nodes/:id/msg/notification`
 ```json
-{"time":"1565413755","level":1,"msg":""}
+{"time":1565413755,"level":1,"msg":""}
 ```
 
 Name | Type   | Description
 ---- | ------ | -----------
-time | string | timestamp length `10`
-level| uint   | 0-7 `1: Debug, 2: Info, 3: Warn, 4: Error, 5: Fatal, 6: Panic`
+time | uint64 | timestamp length `10`
+level| uint   | 0-7 `0: Emergency, 1: Alert, 2: Critical, 3: Error, 4: Warn, 5: Notice, 6: Info, 7: Debug` Reference: [RFC5424](https://tools.ietf.org/html/rfc5424#section-6.2.1)
 msg  | string | message body
 
 
