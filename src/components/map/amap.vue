@@ -93,36 +93,13 @@ export default {
      */
     convertCoordinate(lnglat) {
       if (lnglat.length <= 0) return Promise.resolve([]);
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         loadAMap().then(AMap => {
-          if (CoordTransform.wgs84togcj02) {
-            const result = lnglat.map(c => {
-              const [lng, lat] = CoordTransform.wgs84togcj02(c.lng, c.lat);
-              return new AMap.LngLat(lng, lat);
-            });
-            return resolve(result);
-          }
-          if (lnglat.length <= 40) {
-            AMap.convertFrom(lnglat.map(p => [p.lng, p.lat]), 'gps', (status, result) => {
-              if (result.info === 'ok') {
-                resolve(result.locations);
-              } else {
-                console.error('convertCoordinate', lnglat, status, result); // eslint-disable-line no-console
-                reject({ status, result });
-              }
-            });
-          } else {
-            const left = lnglat.slice(0, 40);
-            const right = lnglat.slice(40);
-            Promise.all([
-              this.convertCoordinate(left),
-              this.convertCoordinate(right)
-            ]).then(([l, r]) => {
-              resolve(l.concat(r));
-            }).catch(e => {
-              reject(e);
-            });
-          }
+          const result = lnglat.map(c => {
+            const [lng, lat] = CoordTransform.wgs84togcj02(c.lng, c.lat);
+            return new AMap.LngLat(lng, lat);
+          });
+          return resolve(result);
         });
       });
     },
@@ -212,6 +189,8 @@ export default {
         }
       }
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
+        // it's async, `this.markers` may have changed when executed
+        if (coordinate.length !== this.markers.length) return;
         for (let i = 0; i < this.markers.length; i++) {
           const marker = this.markers[i];
           if (!marker.position) continue;
