@@ -233,10 +233,10 @@ lng  | float | Longitude
 alt  | float | Altitude
 heading| uint | Heading 0°~360°
 place  | object | Opt: (May not exist)
-place.<name> | string | Can have multiple
-place.<name>.lat  | float | Latitude
-place.<name>.lng  | float | Longitude
-place.<name>.alt  | float | Altitude
+place.[name] | string | Can have multiple
+place.[name].lat  | float | Latitude
+place.[name].lng  | float | Longitude
+place.[name].alt  | float | Altitude
 
 ### RPC: move
 #### Request:
