@@ -5,6 +5,7 @@
     :follow="follow"
     selectable
     :popover-shown="popover.show"
+    :marker-styling="styling"
     @map-change="handleCancel"
     @select-point="handleSelect"
     @cancel-point="handleCancel"
@@ -72,6 +73,12 @@ const DefaultCommands = [
   }
 ];
 
+const DefaultStyling = {
+  target: { stroke: 'dotted', color: '#409eff' },
+  roi: { point: 'glow', color: '#f69730' },
+  home: { color: '#67c23a' }
+};
+
 export default {
   name: 'sd-drone-map',
   props: {
@@ -112,6 +119,10 @@ export default {
       if (!this.point.params) return DefaultCommands;
       return this.point.params.common.move;
     },
+    styling() {
+      if (!this.point.params) return DefaultStyling;
+      return this.point.params.common.place;
+    },
     droneMarkers() {
       const markers = [];
       const position = this.msg.position[0];
@@ -149,12 +160,15 @@ export default {
       const markers = [];
       if (!position || !position.place) return markers;
       for (const [name, pos] of Object.entries(position.place)) {
-        markers.push({
-          type: 'place',
-          id: name,
-          name,
-          position: pos
-        });
+        const arr = Array.isArray(pos) ? pos : [pos];
+        for (let i = 0; i < arr.length; i++) {
+          markers.push({
+            type: 'place',
+            id: `${name}_${i}`,
+            name,
+            position: arr[i]
+          });
+        }
       }
       return markers;
     },

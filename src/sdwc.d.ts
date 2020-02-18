@@ -106,15 +106,20 @@ declare namespace SDWC {
     yaw: number;
     pitch: number;
   }
-  export interface NodePosition {
+  interface GPSCoordinate {
     /** Latitude */
     lat: string;
     /** Longitude */
     lng: string;
     /** Altitude */
     alt: string;
+  }
+  export interface NodePosition extends GPSCoordinate {
     /** Heading 0°~360° */
     heading: number;
+    place: {
+      [key: string]: GPSCoordinate | GPSCoordinate[];
+    }
   }
   export interface NodeNotification {
     time: string;
