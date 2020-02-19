@@ -9,16 +9,18 @@
     :popover-shown="popover.show"
     :marker-styling="styling"
     @map-change="handleCancel"
+    @map-move="handleMove"
     @select-point="handleSelect"
     @cancel-point="handleCancel"
   >
     <template #action>
       <el-button
         :icon="`el-icon-location${follow ? '' : '-outline'}`"
+        :type="follow ? 'primary' : ''"
         size="small"
         @click="handleFollow"
       >
-        <span v-t="`map.${follow ? 'follow' : 'manual'}`"></span>
+        <span v-t="'map.follow'"></span>
       </el-button>
       <el-button icon="el-icon-delete" size="small" @click="handlePathClear">
         <span v-t="'map.clear'"></span>
@@ -194,12 +196,15 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setPreference',
       'clearDronePath'
     ]),
     handleFollow() {
       this.follow = !this.follow;
-      this.setPreference({ mapFollow: this.follow });
+    },
+    handleMove() {
+      if (this.follow) {
+        this.follow = false;
+      }
     },
     handlePathClear() {
       this.clearDronePath(this.info.id);
@@ -279,9 +284,6 @@ export default {
         arg
       }).catch(() => { /* noop */ });
     }
-  },
-  created() {
-    this.follow = this.preference.mapFollow;
   },
   components: {
     [NodeMap.name]: NodeMap

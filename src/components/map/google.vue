@@ -130,6 +130,7 @@ export default {
     },
     async bindMapEvents() {
       const { Marker, event } = await loadGoogleMap();
+      this.map.addListener('dragstart', () => this.$emit('map-move'));
       /** @type { (position: google.maps.LatLng) => void } */
       const placeMarker = position => {
         if (this.selectedMarker) {

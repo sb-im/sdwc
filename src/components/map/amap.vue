@@ -109,6 +109,7 @@ export default {
       return { lng, lat };
     },
     async bindMapEvents() {
+      this.map.on('dragstart', () => this.$emit('map-move'));
       const AMapUI = await loadAMapUI();
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         /** @type { (position: AMap.LngLat) => void } */
@@ -236,7 +237,8 @@ export default {
                 label: {
                   content: marker.name,
                   offset: { x: 25, y: 30 }
-                }
+                },
+                zIndex: 200
               });
             } else if (marker.type === 'action') {
               mapMarker = new AMap.Marker({
