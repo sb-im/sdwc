@@ -9,7 +9,6 @@ class MqttClient extends EventEmitter {
   constructor() {
     super();
     this.queue = [];
-    this.topics = [];
     this.rpcIdPrefix = null;
     this.resolveMap = new Map();
   }
@@ -96,9 +95,7 @@ class MqttClient extends EventEmitter {
       `nodes/${id}/message`,
       `nodes/${id}/status`
     ].forEach(topic => {
-      if (this.topics.indexOf(topic) < 0) {
-        this.mqtt.subscribe(topic);
-      }
+      this.mqtt.subscribe(topic);
     });
   }
 
@@ -111,7 +108,7 @@ class MqttClient extends EventEmitter {
    * @returns {Promise<any>}
    */
   invoke(target, method, arg, options) {
-    if (this.mqtt === undefined || this.mqtt.connected === false) {
+    if (this.mqtt === undefined) {
       return new Promise((resolve, reject) => {
         this.queue.push({ arg: [target, method, arg, options], resolve, reject });
       });
