@@ -8,7 +8,7 @@
       </div>
       <div class="sd-panel__footer">
         <span>SDWC v{{version}}</span>
-        <span class="sd-panel__cpy">Copyright © 2017-2019 StrawBerry Tech.</span>
+        <span class="sd-panel__cpy">Copyright © 2017-2020 StrawBerry Tech.</span>
       </div>
     </div>
   </div>
