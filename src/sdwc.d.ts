@@ -273,6 +273,11 @@ declare namespace SDWC {
       [key: string]: DroneMapControlParamDescriptor;
     }
   }
+  export interface DroneMapStyling {
+    stroke?: 'dotted' | 'dashed' | 'solid';
+    color?: string;
+    point?: 'glow';
+  }
 
   export interface MqttControlOptions {
     /** send as JSONRPC Notification */

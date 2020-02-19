@@ -26,13 +26,15 @@ export default {
     /** @type {Vue.PropOptions<{lng: number, lat: number}[]>} */
     path: {
       type: Array,
-      required: false,
       default: () => []
     },
     /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
-      required: false,
+      default: () => []
+    },
+    places: {
+      type: Array,
       default: () => []
     },
     /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
@@ -80,7 +82,7 @@ export default {
       }
     },
     /**
-     * @param {{stroke: string; color: string}} style
+     * @param {SDWC.DroneMapStyling} style
      * @returns {google.maps.Symbol}
      */
     createPathIcon(style) {
@@ -218,7 +220,7 @@ export default {
     /**
      * @param {string} name
      * @param {google.maps.latLng[]} points
-     * @param {{ color?: string; stroke?: string; }} style
+     * @param {SDWC.DroneMapStyling} style
      */
     async drawAnimatedPath(name, points, style) {
       if (!this.map) return;
@@ -250,24 +252,16 @@ export default {
       requestAnimationFrame(callback);
     },
     async drawPlacePaths() {
-      let drone = [], place = {};
-      for (const m of this.markers) {
-        if (m.type === 'drone') {
-          drone.push(m.position);
-        } else if (m.type === 'place') {
-          if (!place[m.name]) {
-            place[m.name] = [m.position];
-          } else {
-            place[m.name].push(m.position);
-          }
+      for (const [name, line] of Object.entries(this.placePaths)) {
+        if (!Object.prototype.hasOwnProperty.call(this.places, name)) {
+          line.setMap(null);
+          delete this.placePaths[name];
         }
       }
-      if (Object.keys(place).length < 1) return;
-      for (const [name, points] of Object.entries(place)) {
+      for (const { name, path } of this.places) {
         const style = this.markerStyling[name] || {};
         if (style.stroke) {
-          this.drawAnimatedPath(name, drone.concat(points), style);
-          // TODO: destroy path?
+          this.drawAnimatedPath(name, path, style);
         }
       }
     },
@@ -443,6 +437,8 @@ export default {
     this.map = null;
     /** @type {google.maps.Polyline} */
     this.poly = null;
+    /** @type {google.maps.Polyline} */
+    this.polyB = null;
     /** @type {{[key: string]: google.maps.Polyline}} */
     this.placePaths = {};
     /** @type {{[key: string]: google.maps.Marker}} */

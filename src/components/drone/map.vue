@@ -2,6 +2,7 @@
   <sd-map
     :markers="markers"
     :path="msg.position"
+    :places="places"
     :follow="follow"
     selectable
     :popover-shown="popover.show"
@@ -73,6 +74,7 @@ const DefaultCommands = [
   }
 ];
 
+/** @type {SDWC.DroneMapStyling[]} */
 const DefaultStyling = {
   target: { stroke: 'dotted', color: '#409eff' },
   roi: { point: 'glow', color: '#f69730' },
@@ -174,6 +176,19 @@ export default {
     },
     markers() {
       return [...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
+    },
+    places() {
+      const position = this.msg.position[0];
+      const paths = [];
+      if (!position || !position.place) return paths;
+      const p = [position];
+      for (const [name, pos] of Object.entries(position.place)) {
+        paths.push({
+          name,
+          path: p.concat(pos)
+        });
+      }
+      return paths;
     }
   },
   methods: {
