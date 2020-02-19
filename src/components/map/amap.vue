@@ -32,19 +32,12 @@ export default {
     /** @type {Vue.PropOptions<LngLatLiteral[]>} */
     path: {
       type: Array,
-      required: false,
       default: () => []
     },
     /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
-      required: false,
       default: () => []
-    },
-    /** @type {Vue.PropOptions<LngLatLiteral>} */
-    center: {
-      type: Object,
-      required: false
     },
     fit: {
       type: Boolean,
@@ -58,6 +51,10 @@ export default {
       type: Boolean,
       default: false
     },
+    pathColor: {
+      type: String,
+      default: '#d33d29'
+    },
     popoverShown: {
       type: Boolean,
       default: false
@@ -66,7 +63,7 @@ export default {
   methods: {
     async initMap() {
       const AMap = await loadAMap();
-      const center = this.center || __AMAP_CENTER__ || { lat: 30, lng: 120 };
+      const center = __AMAP_CENTER__ || { lat: 30, lng: 120 };
       this.map = new AMap.Map(this.$refs.map, {
         zoom: __AMAP_ZOOM__ || 20,
         zooms: [3, 20],
@@ -162,12 +159,18 @@ export default {
       if (this.poly) {
         this.poly.setPath(path);
       } else {
+        const colorValue = Number.parseInt(this.pathColor.slice(1), 16);
+        const colorValueB =
+          (((colorValue & 0xff0000) * 0.8) & 0xff0000) +
+          (((colorValue & 0x00ff00) * 0.8) & 0x00ff00) +
+          (((colorValue & 0x0000ff) * 0.8) & 0x0000ff);
         this.poly = new Polyline({
           map: this.map,
-          geodesic: true,
           path: path,
-          strokeColor: 'red',
+          strokeColor: this.pathColor,
           strokeWeight: 2,
+          isOutline: true,
+          outlineColor: `#${colorValueB.toString(16)}`,
           lineJoin: 'round'
         });
       }
@@ -278,10 +281,6 @@ export default {
     markers() {
       this.drawNamedMarkers();
     },
-    center(val) {
-      if (!this.map) return;
-      this.map.setCenter(val);
-    },
     fit(val) {
       if (val === true) {
         this.fitPath();
@@ -321,12 +320,17 @@ export default {
     });
   },
   beforeDestroy() {
-    Object.keys(this.namedMarkers).concat('poly', 'selectedMarker').forEach(prop => {
+    const objects = [
+      'poly',
+      'selectedMarker',
+      ...Object.keys(this.namedMarkers)
+    ];
+    for (const prop of objects) {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
       }
-    });
+    }
     if (this.map) {
       __AMAP_CENTER__ = this.map.getCenter();
       __AMAP_ZOOM__ = this.map.getZoom();
@@ -357,12 +361,12 @@ export default {
   color: white;
   font-size: 12px;
   white-space: nowrap;
-  background: rgba(211, 61, 41, 0.5);
+  background: #d33d2980;
   opacity: 0.8;
   transition: background-color 0.3s;
 }
 .amap-marker--action:hover {
-  background: rgba(211, 61, 41, 1);
+  background: #d33d29;
   opacity: 1;
 }
 </style>

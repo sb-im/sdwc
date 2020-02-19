@@ -23,7 +23,7 @@ let __GMAP_ZOOM__;
 export default {
   name: 'sd-map-google',
   props: {
-    /** @type {Vue.PropOptions<{lng: number, lat: number}[]>} */
+    /** @type {Vue.PropOptions<google.maps.LatLngLiteral[]>} */
     path: {
       type: Array,
       default: () => []
@@ -37,11 +37,6 @@ export default {
       type: Array,
       default: () => []
     },
-    /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
-    center: {
-      type: Object,
-      required: false
-    },
     fit: {
       type: Boolean,
       default: false
@@ -53,6 +48,10 @@ export default {
     selectable: {
       type: Boolean,
       default: false
+    },
+    pathColor: {
+      type: String,
+      default: '#ea4335'
     },
     popoverShown: {
       type: Boolean,
@@ -68,7 +67,7 @@ export default {
       const { Map, MapTypeId } = await loadGoogleMap();
       this.map = new Map(this.$refs.map, {
         zoom: __GMAP_ZOOM__ || 20,
-        center: this.center || __GMAP_CENTER__ || { lat: 30, lng: 120 },
+        center: __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
         mapTypeControl: false,
         scaleControl: true,
@@ -184,7 +183,7 @@ export default {
       this.poly = new Polyline({
         map: this.map,
         path: this.path,
-        strokeColor: '#909399',
+        strokeColor: this.pathColor,
         strokeWeight: 2
       });
       if (this.fit) {
@@ -195,7 +194,7 @@ export default {
     },
     /**
      * 向已经画在地图上的路径折线增加点
-     * @param {{lng: number; lat: number}[]} newPath
+     * @param {google.maps.LatLngLiteral[]} newPath
      */
     async patchPath(newPath) {
       const { LatLng } = await loadGoogleMap();
@@ -219,7 +218,7 @@ export default {
     },
     /**
      * @param {string} name
-     * @param {google.maps.latLng[]} points
+     * @param {google.maps.LatLng[]} points
      * @param {SDWC.DroneMapStyling} style
      */
     async drawAnimatedPath(name, points, style) {
@@ -366,7 +365,7 @@ export default {
     /**
      * 判断能否只通过增新点来得到新的路线
      * 换言之，判断旧路径是否与新路径的开始点一致，且旧路径的点集为新路径点集的真子集
-     * @param {{lng: number; lat: number}[]} newPath
+     * @param {google.maps.LatLngLiteral[]} newPath
      */
     path(newPath) {
       // 任务路径点，每次都重绘
@@ -411,10 +410,6 @@ export default {
     markers() {
       this.drawPlacePaths();
       this.drawNamedMarkers();
-    },
-    center(val) {
-      if (!this.map) return;
-      this.map.setCenter(val);
     },
     fit(val) {
       if (val === true) {
@@ -499,7 +494,7 @@ export default {
   border: 1px solid white;
   font-size: 12px;
   line-height: 14px;
-  background: rgba(234, 67, 53, 0.6);
+  background: #ea433599;
   opacity: 0.8;
 }
 </style>

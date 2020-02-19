@@ -5,6 +5,7 @@
     :places="places"
     :follow="follow"
     selectable
+    path-color="#909399"
     :popover-shown="popover.show"
     :marker-styling="styling"
     @map-change="handleCancel"
