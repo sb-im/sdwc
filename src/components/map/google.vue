@@ -84,26 +84,20 @@ export default {
      * @returns {google.maps.Symbol}
      */
     createPathIcon(style) {
-      const vary = {
-        dotted: {
-          path: 0, // google.maps.SymbolPath.CIRCLE
-          scale: 2.2,
-        },
-        dashed: {
-          path: 'M-1.5 -1.5 h3 v6 h-3 z',
-          scale: 1
-        }
+      const PathStyle = {
+        dotted: 'M0 -2 c1.10456949966 0 2 0.895430500338 2 2 s-0.895430500338 2 -2 2 s-2 -0.895430500338 -2 -2 s0.895430500338 -2 2 -2 z',
+        dashed: 'M-1.5 -1.5 h3 v6 h-3 z'
       };
       /** @type {google.maps.Symbol} */
-      const symbol = {
+      return {
+        path: PathStyle[style.stroke],
+        scale: 1,
         fillColor: style.color,
         fillOpacity: 1,
         strokeColor: '#fff',
         strokeOpacity: 1,
-        strokeWeight: 0.8,
-        ...vary[style.stroke]
+        strokeWeight: 1
       };
-      return symbol;
     },
     /**
      * @param {string} fillColor
@@ -183,13 +177,13 @@ export default {
         map: this.map,
         path: this.path,
         strokeColor: '#fff',
-        strokeWeight: 4.6
+        strokeWeight: 4
       });
       this.poly = new Polyline({
         map: this.map,
         path: this.path,
         strokeColor: '#909399',
-        strokeWeight: 3
+        strokeWeight: 2
       });
       if (this.fit) {
         this.fitPath();
@@ -317,6 +311,7 @@ export default {
               map: this.map,
               position: marker.position,
               icon: this.createMarkerDroneIcon(marker.heading),
+              labelInBackground: true,
               labelContent: marker.name,
               labelAnchor: { x: 0, y: -10 },
               labelClass: 'gmap-label',
