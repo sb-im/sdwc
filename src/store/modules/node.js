@@ -118,10 +118,10 @@ const mutations = {
   [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
-    node.msg.position.splice(1, node.msg.position.length - 1);
+    node.msg.position.splice(1);
   },
   [MutationTypes.CLEAR_NODES](state) {
-    state.splice(0, state.length);
+    state.splice(0);
   }
 };
 
