@@ -94,6 +94,9 @@ const mutations = {
     }
     if (msg.position) {
       node.msg.position.unshift(msg.position);
+      if (node.msg.position.length > 1024) {
+        node.msg.position.splice(1024);
+      }
     }
     if (msg.notification) {
       node.msg.notification.unshift(msg.notification);
