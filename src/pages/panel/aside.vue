@@ -75,7 +75,7 @@ export default {
   name: 'sd-aside',
   data() {
     return {
-      collapse: true
+      collapse: window.innerWidth < 1580
     };
   },
   computed: {
@@ -111,7 +111,6 @@ export default {
     const fn = () => {
       this.collapse = window.innerWidth < 1580;
     };
-    fn();
     this.resizeListener = throttle(fn, 300);
     window.addEventListener('resize', this.resizeListener, { passive: true });
   },
