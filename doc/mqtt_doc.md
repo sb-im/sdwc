@@ -140,6 +140,53 @@ battery.voltage| float  | voltage [v]
 signal| uint  | Signal strength 1-100 [%]
 
 
+## depot_status
+### `nodes/:id/msg/depot_status`
+```json
+{"status": "running","power":"cable","door":"close","fix":"close"}
+```
+
+Name | Type   | Description
+---- | ------ | -----------
+status|string | Enum `ready, running, protect, error`
+power |string | Enum `cable, ups, solar`
+door  |string | Enum `opened, moving, closed`
+fix   |string | Enum `opened, moving, closed`
+
+## charger
+### `nodes/:id/msg/charger`
+```json
+{"status": "ready","V":"1.7","A":"0.4"}
+```
+
+Name | Type   | Description
+---- | ------ | -----------
+status|string | Enum `ready, charging, protect, error`
+V     |float | Voltage [V]
+A     |float | Electric current [A]
+
+### RPC: charger_info
+#### Request:
+```json
+{"jsonrpc":"2.0","method":"charger_info","id":"sdwc-3"}
+```
+#### Response:
+```json
+{"jsonrpc":"2.0",
+  "result":{
+    "info":{"set_voltage":5.5, "set_current": 3.5},
+    "history_info":{"timestamp":1582975681,"intervalsl":30},
+    "history": [
+      {"V":"1.7","A":"0.4"},
+      {"V":"1.7","A":"0.5"},
+      {"V":"1.7","A":"0.7"}
+    ]
+  },
+"id":"sdwc-3"}
+```
+
+**`history_info.timestamp` is `history[0]` timestamp**
+
 ## monitor
 ### Params
 ```json
