@@ -58,7 +58,7 @@
         :route="{ name: 'node', params: { id: depot.info.id } }"
       >{{ depot.info.name }}</el-menu-item>
     </el-submenu>
-    <el-menu-item class="aside__toggle" @click="toggleCollpase">
+    <el-menu-item class="aside__toggle" index="never" :route="{}" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
       <span slot="title" v-t="`aside.${collapse ? 'un' : ''}fold`"></span>
     </el-menu-item>
@@ -99,7 +99,7 @@ export default {
         case 'plan/new':
           return 'plan-new';
       }
-      return 'dummy';
+      return '';
     }
   },
   methods: {
@@ -107,7 +107,7 @@ export default {
       this.collapse = !this.collapse;
     }
   },
-  created() {
+  mounted() {
     const fn = () => {
       this.collapse = window.innerWidth < 1580;
     };

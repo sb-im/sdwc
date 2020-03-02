@@ -254,10 +254,10 @@ Or
     "amap":{}
   },
   "place":{
-    "home":{"style":"dotted", "color":"#ddffff"},
-    "target":{"style":"dashed", "color":"auto"},
-    "roi":{"style":"solid", "color":"auto"},
-    "point_to":{"style":"glow"}
+    "home":{"stroke":"dotted", "color":"#67c23a"},
+    "target":{"stroke":"dashed"},
+    "roi":{"stroke":"solid", "color":"#f69730"},
+    "point_to":{"point":"glow", "color":"#f69730"}
   }
 }
 ```

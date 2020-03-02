@@ -24,7 +24,7 @@
     </el-form-item>
     <el-form-item>
       <span slot="label" v-t="'plan.cycle'"></span>
-      <el-input :value="cycleTypeName" readonly></el-input>
+      <el-input :value="cycleTypeName" :placeholder="$t('common.none')" readonly></el-input>
     </el-form-item>
     <el-form-item>
       <span slot="label" v-t="'plan.first_time'"></span>
@@ -71,7 +71,8 @@ export default {
       return '';
     },
     cycleTypeName() {
-      return this.$t(`plan.edit.cycle.${this.plan.cycle_types_id}`);
+      const t = this.plan.cycle_types_id;
+      return typeof t === 'number' ? this.$t(`plan.edit.cycle.${t}`) : '';
     }
   },
   methods: {

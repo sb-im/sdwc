@@ -1,5 +1,4 @@
 <script>
-import MqttClient from '@/api/mqtt';
 import Control from '@/components/control.vue';
 
 const Controls = [
@@ -59,7 +58,7 @@ export default {
           title: this.$t(name),
           message: this.$t('control.pending')
         });
-        MqttClient.invoke(this.point.node_id, 'startmission_ready', [])
+        this.$mqtt(this.point.node_id, { mission: 'startmission_ready' })
           .then(() => {
             // 'startmission_ready' returns 'OK'
             this.$msgbox.close();

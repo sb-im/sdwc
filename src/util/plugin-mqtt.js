@@ -28,6 +28,9 @@ function replacer(key, value) {
 }
 
 function stringifyMission({ method, params }) {
+  if (!params) {
+    return method;
+  }
   const a = JSON.stringify(params, replacer);
   if (a === '[]' || a === '{}') {
     return method;
@@ -40,6 +43,9 @@ function stringifyMission({ method, params }) {
  * @param {boolean} mod
  */
 function emitNotification(n, mod = false) {
+  if (store.state.notification.findIndex(item => item.id === n.id) > -1) {
+    mod = true;
+  }
   store.commit(mod ? NOTI.MOD_NOTI : NOTI.ADD_NOTI, n);
 }
 
@@ -62,7 +68,7 @@ function registerRpcListener() {
     if (!node) return;
     const now = Date.now();
     emitNotification({
-      id: `node/${id}/notif/${now}-${notificationId++}`,
+      id: `nodes/${id}/notif/${notificationId++}`,
       time: now,
       prefix: 'Notification',
       status: 3,
@@ -82,7 +88,7 @@ function registerStatusListener() {
     const now = Date.now();
     const st = i18n.t(`header.status_${code}`);
     emitNotification({
-      id: `node/${id}/status/${now}`,
+      id: `nodes/${id}/status/${now}`,
       time: now,
       prefix: 'Status',
       status: code,

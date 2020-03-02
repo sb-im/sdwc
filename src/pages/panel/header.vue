@@ -36,7 +36,7 @@
       </template>
     </el-dropdown>
     <!-- node status dropdown -->
-    <el-dropdown class="header-dropdown">
+    <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
         <sd-icon value="connected" />
         <span class="header-dropdown-text" v-t="'header.status.title'"></span>
@@ -44,11 +44,9 @@
       </span>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item v-for="st in status" :key="st.id">
-            <router-link tag="span" :to="{ name: 'node', params: { id: st.id } }">
-              <i :class="st.icon"></i>
-              <span>{{ st.text }}</span>
-            </router-link>
+          <el-dropdown-item v-for="st in status" :key="st.id" :command="{ node: st.id }">
+            <i :class="st.icon"></i>
+            <span>{{ st.text }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -150,7 +148,7 @@ export default {
       return { id, icon, text };
     },
     /**
-     * @param {{lang: string}|'logout'|'clear'} cmd
+     * @param {{node: number} | {lang: string} | 'logout'|'clear'} cmd
      */
     handleCommand(cmd) {
       if (!cmd) return;
@@ -167,6 +165,8 @@ export default {
         }
       } else if (typeof cmd.lang === 'string') {
         this.setPreference(cmd);
+      } else if (typeof cmd.node === 'number') {
+        this.$router.push({ name: 'node', params: { id: cmd.node } }).catch(() => { /* noop */ });
       }
     }
   },

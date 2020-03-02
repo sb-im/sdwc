@@ -6,7 +6,7 @@
 import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
 import { MapActionEmoji } from '@/constants/map-actions';
 
-import { waitSelector } from './common';
+import { waitSelector, randColor } from './common';
 
 /**
  * @type {google.maps.LatLng}
@@ -23,22 +23,19 @@ let __GMAP_ZOOM__;
 export default {
   name: 'sd-map-google',
   props: {
-    /** @type {Vue.PropOptions<{lng: number, lat: number}[]>} */
+    /** @type {Vue.PropOptions<google.maps.LatLngLiteral[]>} */
     path: {
       type: Array,
-      required: false,
       default: () => []
     },
     /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
       type: Array,
-      required: false,
       default: () => []
     },
-    /** @type {Vue.PropOptions<{lat: number; lng: number}>} */
-    center: {
-      type: Object,
-      required: false
+    places: {
+      type: Array,
+      default: () => []
     },
     fit: {
       type: Boolean,
@@ -52,9 +49,17 @@ export default {
       type: Boolean,
       default: false
     },
+    pathColor: {
+      type: String,
+      default: '#ea4335'
+    },
     popoverShown: {
       type: Boolean,
       default: false
+    },
+    markerStyling: {
+      type: Object,
+      required: false
     }
   },
   methods: {
@@ -62,7 +67,7 @@ export default {
       const { Map, MapTypeId } = await loadGoogleMap();
       this.map = new Map(this.$refs.map, {
         zoom: __GMAP_ZOOM__ || 20,
-        center: this.center || __GMAP_CENTER__ || { lat: 30, lng: 120 },
+        center: __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
         mapTypeControl: false,
         scaleControl: true,
@@ -74,6 +79,26 @@ export default {
       if (this.selectable) {
         this.bindMapEvents();
       }
+    },
+    /**
+     * @param {SDWC.DroneMapStyling} style
+     * @returns {google.maps.Symbol}
+     */
+    createPathIcon(style) {
+      const PathStyle = {
+        dotted: 'M0 -2 c1.10456949966 0 2 0.895430500338 2 2 s-0.895430500338 2 -2 2 s-2 -0.895430500338 -2 -2 s0.895430500338 -2 2 -2 z',
+        dashed: 'M-1.5 -1.5 h3 v6 h-3 z'
+      };
+      /** @type {google.maps.Symbol} */
+      return {
+        path: PathStyle[style.stroke],
+        scale: 1,
+        fillColor: style.color,
+        fillOpacity: 1,
+        strokeColor: '#fff',
+        strokeOpacity: 1,
+        strokeWeight: 1
+      };
     },
     /**
      * @param {string} fillColor
@@ -105,6 +130,7 @@ export default {
     },
     async bindMapEvents() {
       const { Marker, event } = await loadGoogleMap();
+      this.map.addListener('dragstart', () => this.$emit('map-move'));
       /** @type { (position: google.maps.LatLng) => void } */
       const placeMarker = position => {
         if (this.selectedMarker) {
@@ -115,7 +141,7 @@ export default {
             map: this.map,
             position,
             title: 'SelectedMarker',
-            icon: this.createMarkerPointIcon('dodgerblue')
+            icon: this.createMarkerPointIcon('#409eff')
           });
         }
         waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(el => {
@@ -145,16 +171,22 @@ export default {
     async drawPath() {
       const { Polyline } = await loadGoogleMap();
       if (this.poly) {
+        this.polyB.setMap(null);
         this.poly.setMap(null);
       }
-      this.poly = new Polyline({
-        geodesic: true,
+      // wider polyline as border
+      this.polyB = new Polyline({
+        map: this.map,
         path: this.path,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
+        strokeColor: '#fff',
+        strokeWeight: 4
+      });
+      this.poly = new Polyline({
+        map: this.map,
+        path: this.path,
+        strokeColor: this.pathColor,
         strokeWeight: 2
       });
-      this.poly.setMap(this.map);
       if (this.fit) {
         this.fitPath();
       } else if (this.follow && !this.popoverShown) {
@@ -163,24 +195,74 @@ export default {
     },
     /**
      * 向已经画在地图上的路径折线增加点
-     * @param {{lng: number; lat: number}[]} newPath
+     * @param {google.maps.LatLngLiteral[]} newPath
      */
     async patchPath(newPath) {
       const { LatLng } = await loadGoogleMap();
       // 已经画在地图上的折线点集
       /** @type {google.maps.MVCArray} */
       const mvcArray = this.poly.getPath();
+      const mvcArrayB = this.polyB.getPath();
       const oldLength = mvcArray.getLength();
       // 遍历每个新增的点（index 越小的点越新）
       for (let i = 0; i < newPath.length - oldLength; i++) {
         const point = newPath[i];
         // 将点的经纬度加入点集，GoogleMap 会自动更新折线
         mvcArray.insertAt(0, new LatLng(point.lat, point.lng));
+        mvcArrayB.insertAt(0, new LatLng(point.lat, point.lng));
       }
       if (this.fit) {
         this.fitPath();
       } else if (this.follow && !this.popoverShown) {
         this.map.setCenter(this.path[0]);
+      }
+    },
+    /**
+     * @param {string} name
+     * @param {google.maps.LatLng[]} points
+     * @param {SDWC.DroneMapStyling} style
+     */
+    async drawAnimatedPath(name, points, style) {
+      if (!this.map) return;
+      const { Polyline } = await loadGoogleMap();
+      const path = this.placePaths[name];
+      if (path) {
+        path.setPath(points);
+        return;
+      }
+      /** @type {google.maps.IconSequence} */
+      const icon = {
+        icon: this.createPathIcon(style),
+        offset: '0px',
+        repeat: '10px'
+      };
+      const p = new Polyline({
+        map: this.map,
+        icons: [icon],
+        path: points,
+        strokeOpacity: 0
+      });
+      this.placePaths[name] = p;
+      const callback = (time) => {
+        if (!this.map) return;
+        icon.offset = `${((time / 100) % 10)}px`;
+        p.set('icons', [icon]);
+        requestAnimationFrame(callback);
+      };
+      requestAnimationFrame(callback);
+    },
+    async drawPlacePaths() {
+      for (const [name, line] of Object.entries(this.placePaths)) {
+        if (!Object.prototype.hasOwnProperty.call(this.places, name)) {
+          line.setMap(null);
+          delete this.placePaths[name];
+        }
+      }
+      for (const { name, path } of this.places) {
+        const style = this.markerStyling[name] || {};
+        if (style.stroke) {
+          this.drawAnimatedPath(name, path, style);
+        }
       }
     },
     async drawNamedMarkers() {
@@ -223,6 +305,7 @@ export default {
               map: this.map,
               position: marker.position,
               icon: this.createMarkerDroneIcon(marker.heading),
+              labelInBackground: true,
               labelContent: marker.name,
               labelAnchor: { x: 0, y: -10 },
               labelClass: 'gmap-label',
@@ -241,13 +324,16 @@ export default {
               labelClass: 'gmap-action'
             });
           } else if (marker.type === 'place') {
+            const style = this.markerStyling[marker.name] || {};
+            const color = style.color || randColor(marker.name);
             mapMarker = new MarkerWithLabel({
               map: this.map,
               position: marker.position,
-              icon: this.createMarkerPointIcon(),
+              icon: this.createMarkerPointIcon(color),
               labelContent: marker.name,
               labelAnchor: { x: -6, y: 12 },
-              labelClass: 'gmap-label'
+              labelClass: 'gmap-label',
+              labelStyle: { backgroundColor: color }
             });
           } else {
             continue;
@@ -280,7 +366,7 @@ export default {
     /**
      * 判断能否只通过增新点来得到新的路线
      * 换言之，判断旧路径是否与新路径的开始点一致，且旧路径的点集为新路径点集的真子集
-     * @param {{lng: number; lat: number}[]} newPath
+     * @param {google.maps.LatLngLiteral[]} newPath
      */
     path(newPath) {
       // 任务路径点，每次都重绘
@@ -323,11 +409,8 @@ export default {
       }
     },
     markers() {
+      this.drawPlacePaths();
       this.drawNamedMarkers();
-    },
-    center(val) {
-      if (!this.map) return;
-      this.map.setCenter(val);
     },
     fit(val) {
       if (val === true) {
@@ -350,6 +433,10 @@ export default {
     this.map = null;
     /** @type {google.maps.Polyline} */
     this.poly = null;
+    /** @type {google.maps.Polyline} */
+    this.polyB = null;
+    /** @type {{[key: string]: google.maps.Polyline}} */
+    this.placePaths = {};
     /** @type {{[key: string]: google.maps.Marker}} */
     this.namedMarkers = {};
     /** @type {google.maps.Marker} */
@@ -361,17 +448,25 @@ export default {
         this.drawPath();
       }
       if (this.markers.length !== 0) {
+        this.drawPlacePaths();
         this.drawNamedMarkers();
       }
     });
   },
   beforeDestroy() {
-    Object.keys(this.namedMarkers).concat('poly', 'selectMarker').forEach(prop => {
+    const objects = [
+      'poly',
+      'polyB',
+      'selectedMarker',
+      ...Object.keys(this.placePaths),
+      ...Object.keys(this.namedMarkers)
+    ];
+    for (const prop of objects) {
       if (this[prop]) {
         this[prop].setMap(null);
         this[prop] = null;
       }
-    });
+    }
     if (this.map) {
       __GMAP_CENTER__ = this.map.getCenter();
       __GMAP_ZOOM__ = this.map.getZoom();
@@ -400,7 +495,7 @@ export default {
   border: 1px solid white;
   font-size: 12px;
   line-height: 14px;
-  background: rgba(234, 67, 53, 0.6);
+  background: #ea433599;
   opacity: 0.8;
 }
 </style>

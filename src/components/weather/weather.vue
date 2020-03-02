@@ -143,7 +143,7 @@ export default {
     }
   },
   watch: {
-    position() {
+    ['status.code']() {
       this.refreshWeather();
     }
   },
