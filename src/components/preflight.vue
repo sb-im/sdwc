@@ -191,15 +191,15 @@ export default {
       const timeout = (1.5 + Math.random()) * 1000;
       return new Promise(resolve => setTimeout(resolve, timeout));
     },
-    async preCheck() {
-      this.$mqtt(this.depot.info.id, { mission: 'power_chargedrone_on' });
+    preCheck() {
+      return this.$mqtt(this.depot.info.id, { mission: 'power_chargedrone_on' });
     },
     async checkDrone() {
       // nothing to check though
     },
     async checkDepot() {
-      const { id } = this.depot.info;
-      if (!id) return;
+      const { info: { id }, status: { legacy } } = this.depot;
+      if (!id || !legacy) return;
       await this.updateDepotStatus(id);
     },
     async checkRealtime(timestamp) {
@@ -238,9 +238,9 @@ export default {
           this.$set(this.loading, index, false);
         }
       };
-      this.preCheck();
       this.checkTime = t;
       this.loading = Array(4).fill(true);
+      await this.preCheck();
       await Promise.all([
         wrap(this.checkDrone(), 0),
         wrap(this.checkDepot(), 1),
