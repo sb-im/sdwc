@@ -187,11 +187,14 @@ export default {
         loadAMapUI(),
         this.convertCoordinate(this.markers.map(m => m.position || { lng: 0, lat: 0 }))
       ]);
-      for (const [name, m] of Object.entries(this.namedMarkers)) {
+      // remove mapMarker which disappeared in markers
+      for (const [name, mapMarker] of Object.entries(this.namedMarkers)) {
         if (this.markers.findIndex(m => m.id == name) < 0) {
-          m.setMap(null);
+          mapMarker.setMap(null);
+          delete this.namedMarkers[name];
         }
       }
+      // update/create mapMarker from markers
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         // it's async, `this.markers` may have changed when executed
         if (coordinate.length !== this.markers.length) return;
@@ -202,7 +205,6 @@ export default {
           let mapMarker = this.namedMarkers[marker.id];
           const position = coordinate[i];
           if (mapMarker) {
-            // marker has been created
             mapMarker.setPosition(position);
             if (marker.type === 'drone') {
               /** @type {{ heading: number; img: HTMLImageElement }} */

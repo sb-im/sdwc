@@ -270,12 +270,14 @@ export default {
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
       const bounds = new LatLngBounds();
-      for (const [name, m] of Object.entries(this.namedMarkers)) {
+      // remove mapMarker which disappeared in markers
+      for (const [name, mapMarker] of Object.entries(this.namedMarkers)) {
         if (this.markers.findIndex(m => m.id == name) < 0) {
-          m.setMap(null);
+          mapMarker.setMap(null);
           delete this.namedMarkers[name];
         }
       }
+      // update/create mapMarker from markers
       for (const marker of this.markers) {
         if (!marker.position) continue;
         /** @type {google.maps.Marker} */
