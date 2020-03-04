@@ -8,6 +8,7 @@ import { transformMessage } from './mqtt-adapter';
 class MqttClient extends EventEmitter {
   constructor() {
     super();
+    this.seq = 0;
     this.queue = [];
     this.rpcIdPrefix = null;
     this.resolveMap = new Map();
@@ -81,7 +82,7 @@ class MqttClient extends EventEmitter {
   }
 
   nextRpcId() {
-    return `sdwc.${this.rpcIdPrefix}-${Date.now()}`;
+    return `sdwc.${this.rpcIdPrefix}-${Date.now()}-${this.seq++}`;
   }
 
   /**
