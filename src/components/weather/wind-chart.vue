@@ -3,8 +3,7 @@
     <div class="weather__caption" v-t="'weather.wind.caption'"></div>
     <div class="weather__chart" ref="chart"></div>
     <div class="weather__label ct-label">
-      <span>(m/s)&nbsp;</span>
-      <span v-t="'weather.min_before'"></span>
+      <span>(m/s)&nbsp;<span v-t="'weather.min_before'"></span></span>
       <span v-t="'weather.now'"></span>
     </div>
   </div>
@@ -81,8 +80,8 @@ export default {
 .weather__label {
   position: absolute;
   bottom: 18px;
-  left: 18px;
-  right: 16px;
+  left: 17px;
+  right: 15px;
   display: flex;
   justify-content: space-between;
 }
