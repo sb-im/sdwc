@@ -11,7 +11,6 @@
 
 <script>
 import Chartist from 'chartist';
-import 'chartist-plugin-tooltips';
 
 export default {
   name: 'sd-weather-wind',

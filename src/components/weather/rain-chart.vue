@@ -7,7 +7,6 @@
 
 <script>
 import Chartist from 'chartist';
-import 'chartist-plugin-tooltips';
 
 export default {
   name: 'sd-weather-rain',
@@ -50,7 +49,8 @@ export default {
           showArea: true,
           plugins: [
             Chartist.plugins.tooltip({
-              tooltipOffset: { x: 0, y: -22 },
+              anchorToPoint: true,
+              tooltipOffset: { x: 0, y: -14 },
               tooltipFnc: (meta, value) => {
                 const [minute, rain] = value.split(',');
                 return `${this.shortTime(minute)} , ${rain}`;
@@ -87,33 +87,12 @@ export default {
   width: 600px;
 }
 
-/* chartist line-chart style */
-.weather .ct-series-a .ct-line,
-.weather .ct-series-a .ct-point {
-  stroke: rgb(135, 206, 250);
+/* chartist line-chart color */
+.weather .ct-series .ct-line,
+.weather .ct-series .ct-point:hover {
+  stroke: #87cefa;
 }
-.weather .ct-series-a .ct-area {
-  fill: rgb(135, 206, 250);
-}
-.weather .ct-series-a .ct-line {
-  stroke-width: 2px;
-}
-.weather .ct-series-a .ct-point {
-  stroke: transparent;
-  stroke-width: 8px;
-}
-.weather .ct-series-a .ct-point:hover {
-  stroke: rgb(65, 178, 223);
-}
-
-/* chartist-plugin-tooltips tooltip style */
-.weather .chartist-tooltip {
-  font-family: inherit;
-  font-weight: normal;
-  background: white;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
-}
-.weather .chartist-tooltip::before {
-  border-top-color: white;
+.weather .ct-series .ct-area {
+  fill: #87cefa;
 }
 </style>

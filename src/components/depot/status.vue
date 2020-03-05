@@ -52,7 +52,7 @@
           </el-input>
         </el-form-item>
       </el-form>
-      <div class="status__caption ct-label" v-t="`depot.charger.${popover.type}_chart`"></div>
+      <div class="status__caption" v-t="`depot.charger.${popover.type}_chart`"></div>
       <div class="status__chart" :class="popover.type" ref="chart"></div>
     </el-popover>
   </el-card>
@@ -60,7 +60,6 @@
 
 <script>
 import Chartist from 'chartist';
-import 'chartist-plugin-tooltips';
 
 import Icon from '@/components/sd-icon.vue';
 
@@ -172,7 +171,7 @@ export default {
               tooltipOffset: { x: 0, y: -14 },
               tooltipFnc: (meta, value) => {
                 const [offset, num] = value.split(',');
-                return `${this.formatTime(offset)}, ${num}`;
+                return `${this.formatTime(offset)} , ${num}`;
               }
             })
           ]
@@ -240,44 +239,22 @@ export default {
   width: 420px;
 }
 .status__caption {
+  font-size: 14px;
   text-align: center;
+  color: #606266;
 }
 
-/* chartist style */
-.status__chart .ct-label {
-  white-space: nowrap;
-}
-.status__chart .ct-series .ct-line {
-  stroke-width: 2px;
-}
-.status__chart .ct-series .ct-point {
-  stroke-width: 8px;
-  stroke: transparent;
-}
-.status__chart.voltage .ct-series .ct-line,
-.status__chart.voltage .ct-series .ct-point:hover {
+/* chartist line-chart color */
+.voltage .ct-series .ct-line,
+.voltage .ct-series .ct-point:hover {
   stroke: #409eff;
 }
-.status__chart.current .ct-series .ct-line,
-.status__chart.current .ct-series .ct-point:hover {
+.current .ct-series .ct-line,
+.current .ct-series .ct-point:hover {
   stroke: #67c23a;
 }
-.status__chart.power .ct-series .ct-line,
-.status__chart.power .ct-series .ct-point:hover {
+.power .ct-series .ct-line,
+.power .ct-series .ct-point:hover {
   stroke: #e6a23c;
-}
-
-/* chartist-plugin-tooltips tooltip style */
-.status__chart .chartist-tooltip {
-  font-family: inherit;
-  font-weight: normal;
-  background: white;
-  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.1));
-  border: 1px solid #ebeef5;
-}
-.status__chart .chartist-tooltip::before {
-  margin-left: -6px;
-  border-width: 6px;
-  border-top-color: white;
 }
 </style>

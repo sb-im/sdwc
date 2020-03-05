@@ -9,9 +9,12 @@ import router from './router';
 import './util/browser-hacks';
 
 import App from './App.vue';
-import './style.css';
+import './styles/global.css';
+import 'chartist';
+import 'chartist-plugin-tooltips';
 import 'chartist/dist/chartist.min.css';
 import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
+import './styles/chartist.css';
 
 const configurePromise = store.dispatch('configure');
 /**
@@ -50,6 +53,7 @@ store.subscribe((mutation) => {
 });
 
 if (__SDWC_DEV__) {
+  import('./styles/development.css');
   const el = document.createElement('div');
   el.classList.add('development-ribbon');
   document.body.append(el);

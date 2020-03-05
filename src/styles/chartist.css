@@ -1,0 +1,34 @@
+/* chartist chart style */
+
+.ct-label {
+  white-space: nowrap;
+}
+
+.ct-series .ct-line {
+  stroke-width: 2px;
+}
+
+.ct-series .ct-point {
+  stroke-width: 8px;
+  stroke: transparent;
+}
+
+/* chartist-plugin-tooltips tooltip style */
+
+.chartist-tooltip {
+  color: #606266;
+  background: white;
+  font: 14px inherit normal;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px #00000020;
+}
+
+.chartist-tooltip::before {
+  margin-left: -6px;
+  border-width: 6px;
+  border-top-color: white;
+  filter: drop-shadow(0 2px 12px #00000020) drop-shadow(0 1px 0 #ebeef5);
+}
