@@ -7,12 +7,14 @@
 </template>
 
 <script>
+import Status from './status.vue';
 import Control from './control.vue';
 import Debug from '@/components/debug.vue';
 import Monitor from '@/components/monitor/monitor.vue';
 import Weather from '@/components/weather/weather.vue';
 
 const CompoName = {
+  'depot_status': Status.name,
   'debug': Debug.name,
   'weather': Weather.name,
   'console': Control.name,
@@ -25,7 +27,8 @@ const CompoName = {
 };
 
 const CompoOrder = {
-  [Monitor.name]: 0,
+  [Status.name]: 0,
+  [Monitor.name]: 3,
   [Weather.name]: 5,
   [Control.name]: 9,
   [Debug.name]: 99,
@@ -49,6 +52,7 @@ export default {
     }
   },
   components: {
+    [Status.name]: Status,
     [Debug.name]: Debug,
     [Control.name]: Control,
     [Monitor.name]: Monitor,
