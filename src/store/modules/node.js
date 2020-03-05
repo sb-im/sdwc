@@ -45,6 +45,17 @@ const mutations = {
           status: [],
           bal: 0
         },
+        charger: {
+          status: 'error',
+          V: 0,
+          A: 0
+        },
+        depot_status: {
+          status: 'error',
+          power: 'cable',
+          door: 'closed',
+          fix: 'closed'
+        },
         drone_status: {
           status: 'error',
           mode: 'auto',
@@ -85,6 +96,12 @@ const mutations = {
     if (!node) return;
     if (msg.battery) {
       node.msg.battery = msg.battery;
+    }
+    if (msg.charger) {
+      node.msg.charger = msg.charger;
+    }
+    if (msg.depot_status) {
+      node.msg.depot_status = msg.depot_status;
     }
     if (msg.drone_status) {
       node.msg.drone_status = msg.drone_status;

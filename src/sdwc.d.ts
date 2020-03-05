@@ -80,6 +80,17 @@ declare namespace SDWC {
     /** Unknown */
     bal: number;
   }
+  export interface NodeCharger {
+    status: 'ready' | 'running' | 'protect' | 'error';
+    V: number;
+    A: number;
+  }
+  export interface NodeDepotStatus {
+    status: 'ready' | 'running' | 'protect' | 'error';
+    power: 'cable' | 'ups' | 'solar';
+    door: 'opened' | 'moving' | 'closed';
+    fix: 'opened' | 'moving' | 'closed';
+  }
   export interface NodeDroneStatus {
     status: 'standby' | 'flying' | 'error';
     mode: 'auto' | 'guide' | 'rtl' | 'land' | 'loiter';
@@ -136,6 +147,8 @@ declare namespace SDWC {
     msg: {
       weather: NodeWeather[];
       battery: NodeBattery;
+      charger: NodeCharger;
+      depot_status: NodeDepotStatus;
       drone_status: NodeDroneStatus;
       gimbal: NodeGimbal;
       position: NodePosition[];
@@ -145,6 +158,8 @@ declare namespace SDWC {
   export type RawNodeMessage = Partial<{
     weather: NodeWeatherData;
     battery: NodeBattery;
+    charger: NodeCharger;
+    depot_status: NodeDepotStatus;
     drone_status: NodeDroneStatus;
     gimbal: NodeGimbal;
     position: NodePosition;
