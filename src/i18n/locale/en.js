@@ -173,6 +173,42 @@ export const locale = {
     exit_fullscreen: 'Exit fullscreen'
   },
   depot: {
+    status: {
+      ready: 'Ready',
+      charging: 'Charging',
+      running: 'Running',
+      protect: 'Protect',
+      error: 'Error'
+    },
+    power: {
+      status: 'Power {s}',
+      cable: 'Cable',
+      solar: 'Solar',
+      ups: 'UPS'
+    },
+    door: {
+      status: 'Hatch {s}',
+      opened: 'Opened',
+      moving: 'Moving',
+      closed: 'Closed'
+    },
+    fix: {
+      status: 'Fixator {s}',
+      opened: 'Opened',
+      moving: 'Moving',
+      closed: 'Closed'
+    },
+    charger: {
+      status: 'Charger {s}',
+      voltage: 'Voltage {V}V',
+      set_voltage: 'Voltage Set',
+      voltage_chart: 'Voltage Chart (V)',
+      current: 'Current {A}A',
+      set_current: 'Current Set',
+      current_chart: 'Current Chart (A)',
+      power: 'Power {W}W',
+      power_chart: 'Power Chart (W)',
+    },
     ctl: {
       charge_on: 'S-charge',
       charge_off: 'E-charge',

@@ -173,6 +173,42 @@ export const locale = {
     exit_fullscreen: '退出全屏',
   },
   depot: {
+    status: {
+      ready: '就绪',
+      charging: '充电中',
+      running: '运行中',
+      protect: '异常保护',
+      error: '错误'
+    },
+    power: {
+      status: '供电 {s}',
+      cable: '市电',
+      solar: '光伏',
+      ups: 'UPS'
+    },
+    door: {
+      status: '舱门 {s}',
+      opened: '开启',
+      moving: '运动中',
+      closed: '关闭'
+    },
+    fix: {
+      status: '固定器 {s}',
+      opened: '开启',
+      moving: '运动中',
+      closed: '关闭'
+    },
+    charger: {
+      status: '充电器 {s}',
+      voltage: '电压 {V}V',
+      set_voltage: '设定电压',
+      voltage_chart: '电压图表 (V)',
+      current: '电流 {A}A',
+      set_current: '设定电流',
+      current_chart: '电流图表 (A)',
+      power: '功率 {W}W',
+      power_chart: '功率图表 (W)',
+    },
     ctl: {
       charge_on: '开始充电',
       charge_off: '停止充电',
