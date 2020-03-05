@@ -122,23 +122,23 @@ export default {
 .control__buttons .el-button .el-loading-mask {
   background-color: rgba(255, 255, 255, 0.55);
 }
-.control__buttons .el-button .el-loading-spinner .circular circle {
+.control__buttons .el-button circle {
   r: 10;
   animation-name: loading-dash--small;
 }
-.control__buttons .el-button--danger .el-loading-spinner .circular circle {
+.control__buttons .el-button--danger circle {
   stroke: #f56c6c;
 }
-.control__buttons .el-button--warning .el-loading-spinner .circular circle {
+.control__buttons .el-button--warning circle {
   stroke: #e6a23c;
 }
-.control__buttons .el-button--primary .el-loading-spinner .circular circle {
+.control__buttons .el-button--primary circle {
   stroke: #409eff;
 }
-.control__buttons .el-button--success .el-loading-spinner .circular circle {
+.control__buttons .el-button--success circle {
   stroke: #67c23a;
 }
-.control__buttons .el-button--info .el-loading-spinner .circular circle {
+.control__buttons .el-button--info circle {
   stroke: #909399;
 }
 @keyframes loading-dash--small {
