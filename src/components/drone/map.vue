@@ -215,7 +215,7 @@ export default {
         lat: Math.floor(latlng.lat * 1e8) / 1e8,
         lng: Math.floor(latlng.lng * 1e8) / 1e8
       };
-      if (!this.$refs.popper.popperJS) {
+      if (!this.$refs.popover.popperJS) {
         this.$refs.popover.referenceElm = el;
         this.popover.show = true;
       } else if (this.popover.show) {
