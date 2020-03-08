@@ -129,7 +129,7 @@ PROTECTION(Overcurrent Discharging)
 Name | Type   | Description
 ---- | ------ | -----------
 status|string | Enum `standby, flying, error`
-mode | string | Enum `auto, guide, rtl, land, loiter` http://ardupilot.org/copter/docs/flight-modes.html
+mode | string | Enum `auto, guide, rtl, land, loiter, unknown` http://ardupilot.org/copter/docs/flight-modes.html
 time | uint   | flight time [s]
 speed| float  | Ground speed [m/s]
 height| float | Relative height at the takeoff point
