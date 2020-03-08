@@ -65,7 +65,7 @@ export default {
       return this.$t('control.abnormal');
     },
     commands() {
-      return this.point.name.trim().split(' ');
+      return this.point.name.trim().split(' ').filter(c => c !== '');
     }
   },
   methods: {
