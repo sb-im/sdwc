@@ -110,15 +110,15 @@ export default {
     },
     V() {
       const { V } = this.c;
-      return this.$t('depot.charger.voltage', { V });
+      return this.$t('depot.charger.voltage', { V: V.toFixed(2) });
     },
     A() {
       const { A } = this.c;
-      return this.$t('depot.charger.current', { A });
+      return this.$t('depot.charger.current', { A: A.toFixed(2) });
     },
     W() {
       const { V, A } = this.c;
-      return this.$t('depot.charger.power', { W: V * A });
+      return this.$t('depot.charger.power', { W: (V * A).toFixed(2) });
     }
   },
   methods: {
