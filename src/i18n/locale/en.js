@@ -117,7 +117,7 @@ export const locale = {
       loiter: 'Loiter',
       rtl: 'Return',
       land: 'Landing',
-      '': '-- Mode'
+      unknown: 'Unknown'
     },
     flight: {
       time: 'Flying for {t}',

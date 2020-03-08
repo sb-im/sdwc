@@ -93,7 +93,7 @@ declare namespace SDWC {
   }
   export interface NodeDroneStatus {
     status: 'standby' | 'flying' | 'error';
-    mode: 'auto' | 'guide' | 'rtl' | 'land' | 'loiter';
+    mode: 'auto' | 'guide' | 'rtl' | 'land' | 'loiter' | 'unknown';
     /** flight time [s] */
     time: number;
     /** Ground speed [m/s] */

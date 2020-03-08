@@ -56,7 +56,7 @@ export default {
     },
     flightMode() {
       const key = `air.mode.${this.status.mode}`;
-      return this.$te(key) ? this.$t(key) : this.status.mode;
+      return this.$t(this.$te(key) ? key : 'air.mode.unknown');
     },
     flightTime() {
       const t = this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, this.status.time)), 'elapsed');

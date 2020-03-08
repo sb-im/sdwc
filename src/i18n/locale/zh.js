@@ -117,7 +117,7 @@ export const locale = {
       loiter: '悬停模式',
       rtl: '返航模式',
       land: '降落模式',
-      '': '--模式'
+      unknown: '未知模式'
     },
     flight: {
       time: '时长 {t}',

@@ -58,7 +58,7 @@ const mutations = {
         },
         drone_status: {
           status: 'error',
-          mode: 'auto',
+          mode: 'unknown',
           time: 0,
           speed: 0,
           height: 0,
