@@ -20,21 +20,40 @@
       <sd-icon value="battery" :size="18" />
       <span class="status__text">{{ chargerStatus }}</span>
     </div>
-    <div class="status__item" ref="voltage" @click="triggerPopover('voltage')">
+    <div
+      ref="voltage"
+      class="status__item expand"
+      :class="{ active: popover.show && popover.type === 'voltage' }"
+      @click="triggerPopover('voltage')"
+    >
       <sd-icon value="voltage" :size="18" />
       <span class="status__text">{{ V }}</span>
+      <i class="el-icon-arrow-down el-icon--right"></i>
     </div>
-    <div class="status__item" ref="current" @click="triggerPopover('current')">
+    <div
+      ref="current"
+      class="status__item expand"
+      :class="{ active: popover.show &&  popover.type === 'current' }"
+      @click="triggerPopover('current')"
+    >
       <sd-icon value="electricity" :size="18" />
       <span class="status__text">{{ A }}</span>
+      <i class="el-icon-arrow-down el-icon--right"></i>
     </div>
-    <div class="status__item" ref="power" @click="triggerPopover('power')">
+    <div
+      ref="power"
+      class="status__item expand"
+      :class="{ active: popover.show &&  popover.type === 'power' }"
+      @click="triggerPopover('power')"
+    >
       <sd-icon value="lightning-bolt" :size="18" />
       <span class="status__text">{{ W }}</span>
+      <i class="el-icon-arrow-down el-icon--right"></i>
     </div>
     <el-popover
       ref="popover"
       trigger="manual"
+      style="display:none"
       popper-class="status__popover"
       v-model="popover.show"
     >
@@ -78,7 +97,7 @@ export default {
   data: () => ({
     popover: {
       show: false,
-      type: 'voltage'
+      type: ''
     },
     charge: {
       info: { /* set_voltage: 5.5, set_current: 3.5 */ },
@@ -147,7 +166,7 @@ export default {
         const h = this.charge.history[i];
         const time = this.formatTime(i);
         data.labels.push(time);
-        data.series[0].push({x: i, y:datum(h)});
+        data.series[0].push({ x: i, y: datum(h) });
       }
       const size = data.series[0].length;
       let step = 1;
@@ -181,9 +200,15 @@ export default {
         this.chart.update(data);
       }
     },
+    closePopover() {
+      this.popover.show = false;
+      setTimeout(() => {
+        if (!this.popover.show) this.popover.type = '';
+      }, 350);
+    },
     triggerPopover(type) {
       if (this.popover.type === type && this.popover.show === true) {
-        this.popover.show = false;
+        this.closePopover();
         return;
       }
       this.updateChart(type);
@@ -199,8 +224,8 @@ export default {
       }
     },
     handleDocumentClick(e) {
-      if (!this.popover.show || this.$refs[this.popover.type].contains(e.target)) return;
-      this.popover.show = false;
+      if (!this.popover.show || !this.popover.type || this.$refs[this.popover.type].contains(e.target)) return;
+      this.closePopover();
     }
   },
   created() {
@@ -220,6 +245,15 @@ export default {
 </script>
 
 <style>
+.status__item.expand {
+  padding: 20px 4px;
+  user-select: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.status__item.active {
+  background-color: #00000014;
+}
 .status__popover {
   width: 420px;
 }

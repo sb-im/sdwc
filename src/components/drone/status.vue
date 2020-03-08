@@ -92,10 +92,10 @@ export default {
 <style>
 .drone__status .el-card__body {
   display: flex;
-  padding: 20px 0;
   justify-content: space-around;
 }
 .status__item {
+  padding: 20px 0;
   font-size: 14px;
   display: flex;
   align-items: center;

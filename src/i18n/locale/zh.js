@@ -208,6 +208,7 @@ export const locale = {
       current_chart: '电流图表 (A)',
       power: '功率 {W}W',
       power_chart: '功率图表 (W)',
+      _chart: '暂无图表'
     },
     ctl: {
       charge_on: '开始充电',

@@ -208,6 +208,7 @@ export const locale = {
       current_chart: 'Current Chart (A)',
       power: 'Power {W}W',
       power_chart: 'Power Chart (W)',
+      _chart: 'Chart Unavailable'
     },
     ctl: {
       charge_on: 'S-charge',
