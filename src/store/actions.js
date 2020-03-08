@@ -194,7 +194,7 @@ export function subscribeNodes({ state, commit, dispatch }) {
     }
     for (const point of node.info.points) {
       const t = NodePointTopic[point.point_type_name];
-      if (!t) return;
+      if (!t) continue;
       const topics = Array.isArray(t) ? t : [t];
       for (const topic of topics) {
         MqttClient.mqtt.subscribe(`nodes/${point.node_id}/msg/${topic}`);
