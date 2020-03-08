@@ -33,7 +33,7 @@
     <div
       ref="current"
       class="status__item expand"
-      :class="{ active: popover.show &&  popover.type === 'current' }"
+      :class="{ active: popover.show && popover.type === 'current' }"
       @click="triggerPopover('current')"
     >
       <sd-icon value="electricity" :size="18" />
@@ -43,7 +43,7 @@
     <div
       ref="power"
       class="status__item expand"
-      :class="{ active: popover.show &&  popover.type === 'power' }"
+      :class="{ active: popover.show && popover.type === 'power' }"
       @click="triggerPopover('power')"
     >
       <sd-icon value="lightning-bolt" :size="18" />
@@ -141,15 +141,32 @@ export default {
     }
   },
   methods: {
-    updateChargerInfo() {
-      this.$mqtt(this.point.node_id, { mission: 'charger_info' })
-        .then(result => {
-          for (const h of result.history) {
-            h.V = Number.parseFloat(h.V);
-            h.A = Number.parseFloat(h.A);
-          }
-          this.charge = result;
-        });
+    async updateChargerInfo() {
+      const result = await this.$mqtt(this.point.node_id, { mission: 'charger_info' });
+      for (const h of result.history) {
+        h.V = Number.parseFloat(h.V);
+        h.A = Number.parseFloat(h.A);
+      }
+      this.charge = result;
+      if (this.popover.show) {
+        this.updateChart(this.popover.type);
+      }
+      return result;
+    },
+    scheduleChargerInfoUpdate() {
+      const now = Date.now();
+      const { timestamp = 0, intervalsl = 0 } = this.charge.history_info;
+      if (this.chargerInfoInterval > 0 || now < (timestamp + intervalsl) * 1000) return;
+      // 立即更新
+      this.updateChargerInfo().then(info => {
+        const { timestamp, intervalsl } = info.history_info;
+        const timeout = (timestamp + intervalsl + 1) * 1000 - now;
+        setTimeout(() => {
+          if (this.chargerInfoInterval > 0 || !this.popover.show) return;
+          this.updateChargerInfo();
+          this.chargerInfoInterval = setInterval(() => this.updateChargerInfo(), intervalsl * 1000);
+        }, timeout);
+      });
     },
     formatTime(offset) {
       const { timestamp, intervalsl } = this.charge.history_info;
@@ -161,56 +178,51 @@ export default {
         : type === 'current' ? (h => h.A)
           : (h => h.V * h.A);
       /** @type {Chartist.IChartistData} */
-      const data = { labels: [], series: [[]] };
+      const data = { series: [[]] };
       for (let i = this.charge.history.length - 1; i >= 0; i--) {
         const h = this.charge.history[i];
-        const time = this.formatTime(i);
-        data.labels.push(time);
         data.series[0].push({ x: i, y: datum(h) });
       }
       const size = data.series[0].length;
-      let step = 1;
-      if (size > 5) {
-        step = Math.ceil(size / 4);
-      }
-      if (this.chart === null) {
-        /** @type {Chartist.ILineChartOptions} */
-        const options = {
-          width: '420px',
-          height: '150px',
-          axisX: {
-            labelInterpolationFnc: (value, index) => {
-              return (index % step === 0) ? value : null;
+      const step = size <= 4 ? 1 : Math.ceil(size / 4);
+      /** @type {Chartist.ILineChartOptions} */
+      const options = {
+        width: '420px',
+        height: '150px',
+        axisX: {
+          labelInterpolationFnc: (value, index) => {
+            return (index % step === 0) ? this.formatTime(index) : null;
+          }
+        },
+        axisY: { low: 0 },
+        plugins: [
+          Chartist.plugins.tooltip({
+            anchorToPoint: true,
+            tooltipOffset: { x: 0, y: -14 },
+            tooltipFnc: (meta, value) => {
+              const [offset, num] = value.split(',');
+              return `${this.formatTime(Number.parseInt(offset))} , ${num}`;
             }
-          },
-          axisY: { low: 0 },
-          plugins: [
-            Chartist.plugins.tooltip({
-              anchorToPoint: true,
-              tooltipOffset: { x: 0, y: -14 },
-              tooltipFnc: (meta, value) => {
-                const [offset, num] = value.split(',');
-                return `${this.formatTime(offset)} , ${num}`;
-              }
-            })
-          ]
-        };
+          })
+        ]
+      };
+      if (this.chart === null) {
         this.chart = new Chartist.Line(this.$refs.chart, data, options);
       } else {
-        this.chart.update(data);
+        this.chart.update(data, options);
       }
     },
     closePopover() {
       this.popover.show = false;
-      setTimeout(() => {
-        if (!this.popover.show) this.popover.type = '';
-      }, 350);
+      clearTimeout(this.chargerInfoInterval);
+      this.chargerInfoInterval = 0;
     },
     triggerPopover(type) {
       if (this.popover.type === type && this.popover.show === true) {
         this.closePopover();
         return;
       }
+      this.scheduleChargerInfoUpdate();
       this.updateChart(type);
       this.popover.type = type;
       if (!this.$refs.popover.popperJS) {
@@ -230,13 +242,16 @@ export default {
   },
   created() {
     this.chart = null;
-    this.updateChargerInfo();
+    this.chargerInfoInterval = 0;
   },
   mounted() {
     window.document.addEventListener('click', this.handleDocumentClick);
   },
   beforeDestroy() {
     window.document.removeEventListener('click', this.handleDocumentClick);
+    if (this.chargerInfoInterval > 0) {
+      clearInterval(this.chargerInfoInterval);
+    }
   },
   components: {
     [Icon.name]: Icon
