@@ -22,6 +22,7 @@ export default {
   },
   methods: {
     draw() {
+      /** @type {SDWC.NodeWeather[]} */
       let points = [];
       const len = this.weather.length;
       if (len >= 60) {
@@ -31,7 +32,7 @@ export default {
       }
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [points.map(r => r.weather.WS / 10)]
+        series: [points.map(r => r.data.WS / 10)]
       };
       if (this.chart === null) {
         /** @type {Chartist.ILineChartOptions} */
@@ -47,7 +48,8 @@ export default {
           showArea: true,
           plugins: [
             Chartist.plugins.tooltip({
-              tooltipOffset: { x: 0, y: -22 },
+              anchorToPoint: true,
+              tooltipOffset: { x: 0, y: -14 },
               tooltipFnc: (meta, value) => value + ' m/s'
             })
           ]

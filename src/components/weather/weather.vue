@@ -96,9 +96,10 @@ export default {
   },
   computed: {
     weatherNow() {
+      /** @type {SDWC.NodeWeather} */
       const latest = this.msg.weather[this.msg.weather.length - 1];
       if (!latest) return {};
-      const w = latest.weather;
+      const w = latest.data;
       return {
         windSpeed: w.WS / 10,
         windDirection: w.WD,
