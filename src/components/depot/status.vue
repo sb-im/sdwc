@@ -189,6 +189,7 @@ export default {
       const options = {
         width: '420px',
         height: '150px',
+        showArea: true,
         axisX: {
           labelInterpolationFnc: (value, index) => {
             return (index % step === 0) ? this.formatTime(index) : null;
@@ -201,7 +202,7 @@ export default {
             tooltipOffset: { x: 0, y: -14 },
             tooltipFnc: (meta, value) => {
               const [offset, num] = value.split(',');
-              return `${this.formatTime(Number.parseInt(offset))} , ${num}`;
+              return `${this.formatTime(Number.parseInt(offset))} , ${Number.parseFloat(num).toFixed(2)}`;
             }
           })
         ]
@@ -298,12 +299,21 @@ export default {
 .voltage .ct-series .ct-point:hover {
   stroke: #409eff;
 }
+.voltage .ct-series .ct-area {
+  fill: #409eff;
+}
 .current .ct-series .ct-line,
 .current .ct-series .ct-point:hover {
   stroke: #67c23a;
 }
+.current .ct-series .ct-area {
+  fill: #67c23a;
+}
 .power .ct-series .ct-line,
 .power .ct-series .ct-point:hover {
   stroke: #e6a23c;
+}
+.power .ct-series .ct-area {
+  fill: #e6a23c;
 }
 </style>
