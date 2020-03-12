@@ -78,7 +78,7 @@ export default {
       if (this.point.point_type_name === 'livestream_webrtc2') {
         return true;
       }
-      return this.compoName !== '';
+      return this.point.name !== '';
     }
   },
   methods: {
