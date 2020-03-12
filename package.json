@@ -8,8 +8,6 @@
   "scripts": {
     "dev": "webpack-dev-server --config scripts/webpack.config.js --env.mode=development --env.dev",
     "build": "webpack --config scripts/webpack.config.js --env.mode=production",
-    "client": "nwbuild -p $P client",
-    "cdev": "nwbuild -v 0.30.0 -p linux64 -r client",
     "test": "eslint --ext .js,.vue src/"
   },
   "dependencies": {
