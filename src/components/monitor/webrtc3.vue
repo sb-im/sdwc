@@ -47,7 +47,7 @@ export default {
       this.couldRetry = true;
       const result = await this.$mqtt(this.point.node_id, {
         mission: 'webrtc3',
-        arg: { url: this.point.name || 'wss://staging.sblab.xyz/lightcable/1234' }
+        arg: { url: this.point.name }
       });
       const client = new WebRTC3Client(this.config.ice_servers || this.config.ice_server, result.url);
       client.on('icestatechange', (/** @type {RTCIceConnectionState} */ state) => {
