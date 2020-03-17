@@ -32,7 +32,7 @@ export default {
       }
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [points.map(r => r.data.WS / 10)]
+        series: [points.map(r => r.data.WS)]
       };
       if (this.chart === null) {
         /** @type {Chartist.ILineChartOptions} */

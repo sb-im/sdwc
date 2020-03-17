@@ -101,7 +101,7 @@ export default {
       if (!latest) return {};
       const w = latest.data;
       return {
-        windSpeed: w.WS / 10,
+        windSpeed: w.WS,
         windDirection: w.WD,
         // temperature: w.T,
         // humidity: w.RH,
