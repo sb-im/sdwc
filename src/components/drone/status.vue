@@ -95,10 +95,12 @@ export default {
   justify-content: space-around;
 }
 .status__item {
+  flex-basis: calc(100% / 8);
   padding: 20px 0;
   font-size: 14px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .status__text {
   margin-left: 4px;
