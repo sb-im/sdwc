@@ -59,28 +59,27 @@ Or
 ```
 
 ### `nodes/:id/msg/weather`
--> `{"WD":0,"WS":0,"T":66115,"RH":426,"Pa":99780}`
-```go
-type Weather struct {
-// http://shortof.com/suolueci/wdir-wind-direction
-// 0 ~ 360
-WindDirection int `json:"WD"`
-// http://shortof.com/search/luceneapi_node/wind_speed
-// 0.1 m/s
-WindSpeed int `json:"WS"`
+-> `{"WS":1}`
 
-// https://en.wikipedia.org/wiki/Kelvin
-// [°C] = [K] − 273.15
-// 0.01 K
-Temperature int `json:"T"`
+Or
 
-// Relative humidity (0 ~ 99)％ * 0.1
-Humidity int `json:"RH"`
+-> `{"WD":0,"WS":1}`
 
-// Atmospheric pressure Pa
-AtmosphericPressure int `json:"Pa"`
-}
-```
+Or
+
+-> `{"WD":0,"WS":1,"t":25,"RH":42}`
+
+Name | Type | Description
+---- | ---- | -----------
+WD   | uint | Opt: Wind Direction (0 ~ 360) °
+WS   | float| Opt: Wind Speed [m/s]
+T    | float| Opt: Temperature Kelvin [K] **Priority: (T > t > F)**
+t    | float| Opt: Temperature Celsius [°C]
+F    | float| Opt: Temperature Fahrenheie [°F]
+RH   | uint | Opt: Relative humidity (0 ~ 99)％
+
+**Real-time weather PATCH Weather forecast**
+
 
 ## battery
 ### `nodes/:id/msg/battery`
