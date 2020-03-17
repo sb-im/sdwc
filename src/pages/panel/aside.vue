@@ -60,7 +60,7 @@
     </el-submenu>
     <el-menu-item class="aside__toggle" index="never" :route="{}" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
-      <span slot="title" v-t="`aside.${collapse ? 'un' : ''}fold`"></span>
+      <span slot="title">{{ $t(`aside.${collapse ? 'un' : ''}fold`) }}</span>
     </el-menu-item>
   </el-menu>
 </template>

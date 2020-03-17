@@ -1,7 +1,7 @@
 <template>
   <el-header class="header">
     <!-- title -->
-    <span class="header-title" v-t="'header.title'"></span>
+    <span class="header-title">{{ $t('header.title') }}</span>
     <!-- notification dropdown -->
     <el-dropdown
       class="header-dropdown"
