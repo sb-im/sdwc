@@ -1,62 +1,6 @@
 <template>
-  <el-card class="depot__status drone__status sd-card sd-card--dense" shadow="never">
-    <div class="status__item">
-      <sd-icon value="depot-blue" :size="18" />
-      <span class="status__text">{{ depotStatus }}</span>
-    </div>
-    <div class="status__item">
-      <sd-icon value="electrical" :size="18" />
-      <span class="status__text">{{ power }}</span>
-    </div>
-    <div class="status__item">
-      <sd-icon value="depot" :size="18" />
-      <span class="status__text">{{ door }}</span>
-    </div>
-    <div class="status__item">
-      <sd-icon value="expand" :size="18" />
-      <span class="status__text">{{ fix }}</span>
-    </div>
-    <div class="status__item">
-      <sd-icon value="battery" :size="18" />
-      <span class="status__text">{{ chargerStatus }}</span>
-    </div>
-    <div
-      ref="voltage"
-      class="status__item expand"
-      :class="{ active: popover.show && popover.type === 'voltage' }"
-      @click="triggerPopover('voltage')"
-    >
-      <sd-icon value="voltage" :size="18" />
-      <span class="status__text">{{ V }}</span>
-      <i class="el-icon-arrow-down el-icon--right"></i>
-    </div>
-    <div
-      ref="current"
-      class="status__item expand"
-      :class="{ active: popover.show && popover.type === 'current' }"
-      @click="triggerPopover('current')"
-    >
-      <sd-icon value="electricity" :size="18" />
-      <span class="status__text">{{ A }}</span>
-      <i class="el-icon-arrow-down el-icon--right"></i>
-    </div>
-    <div
-      ref="power"
-      class="status__item expand"
-      :class="{ active: popover.show && popover.type === 'power' }"
-      @click="triggerPopover('power')"
-    >
-      <sd-icon value="lightning-bolt" :size="18" />
-      <span class="status__text">{{ W }}</span>
-      <i class="el-icon-arrow-down el-icon--right"></i>
-    </div>
-    <el-popover
-      ref="popover"
-      trigger="manual"
-      style="display:none"
-      popper-class="status__popover"
-      v-model="popover.show"
-    >
+  <sd-status :items="items" @popover="handlePopover">
+    <template #popover>
       <el-form size="mini" inline>
         <el-form-item>
           <span slot="label" v-t="'depot.charger.set_voltage'"></span>
@@ -73,14 +17,14 @@
       </el-form>
       <div class="status__caption" v-t="`depot.charger.${popover.type}_chart`"></div>
       <div class="status__chart" :class="popover.type" ref="chart"></div>
-    </el-popover>
-  </el-card>
+    </template>
+  </sd-status>
 </template>
 
 <script>
 import Chartist from 'chartist';
 
-import Icon from '@/components/sd-icon.vue';
+import Status from '@/components/status.vue';
 
 export default {
   name: 'sd-depot-status',
@@ -106,38 +50,56 @@ export default {
     }
   }),
   computed: {
-    s() {
-      return this.msg.depot_status;
-    },
-    c() {
-      return this.msg.charger;
-    },
-    depotStatus() {
-      return this.$t(`depot.status.${this.s.status}`);
-    },
-    power() {
-      return this.$t('depot.power.status', { s: this.$t(`depot.power.${this.s.power}`) });
-    },
-    door() {
-      return this.$t('depot.door.status', { s: this.$t(`depot.door.${this.s.door}`) });
-    },
-    fix() {
-      return this.$t('depot.fix.status', { s: this.$t(`depot.fix.${this.s.fix}`) });
-    },
-    chargerStatus() {
-      return this.$t('depot.charger.status', { s: this.$t(`depot.status.${this.c.status}`) });
-    },
-    V() {
-      const { V } = this.c;
-      return this.$t('depot.charger.voltage', { V: V.toFixed(2) });
-    },
-    A() {
-      const { A } = this.c;
-      return this.$t('depot.charger.current', { A: A.toFixed(2) });
-    },
-    W() {
-      const { V, A } = this.c;
-      return this.$t('depot.charger.power', { W: (V * A).toFixed(2) });
+    items() {
+      const s = this.msg.depot_status;
+      const c = this.msg.charger;
+      return [
+        {
+          icon: 'depot-blue',
+          value: this.$t(`depot.status.${s.status}`)
+        },
+        {
+          icon: 'electrical',
+          name: 'depot.power.status',
+          value: this.$t(`depot.power.${s.power}`)
+        },
+        {
+          icon: 'depot',
+          name: 'depot.door.status',
+          value: this.$t(`depot.door.${s.door}`)
+        },
+        {
+          icon: 'expand',
+          name: 'depot.fix.status',
+          value: this.$t(`depot.fix.${s.fix}`)
+        },
+        {
+          icon: 'battery',
+          name: 'depot.charger.status',
+          value: this.$t(`depot.status.${c.status}`)
+        },
+        {
+          icon: 'voltage',
+          name: 'depot.charger.voltage',
+          value: c.V.toFixed(2),
+          unit: 'A',
+          popover: 'voltage'
+        },
+        {
+          icon: 'electricity',
+          name: 'depot.charger.current',
+          value: c.A.toFixed(2),
+          unit: 'V',
+          popover: 'current'
+        },
+        {
+          icon: 'lightning-bolt',
+          name: 'depot.charger.power',
+          value: (c.V * c.A).toFixed(2),
+          unit: 'W',
+          popover: 'power'
+        },
+      ];
     }
   },
   methods: {
@@ -173,9 +135,9 @@ export default {
       const dt = new Date((timestamp - intervalsl * offset) * 1000);
       return dt.toLocaleString('zh', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, });
     },
-    updateChart(type) {
-      const datum = type === 'voltage' ? (h => h.V)
-        : type === 'current' ? (h => h.A)
+    updateChart() {
+      const datum = this.popover.type === 'voltage' ? (h => h.V)
+        : this.popover.type === 'current' ? (h => h.A)
           : (h => h.V * h.A);
       /** @type {Chartist.IChartistData} */
       const data = { series: [[]] };
@@ -213,66 +175,31 @@ export default {
         this.chart.update(data, options);
       }
     },
-    closePopover() {
-      this.popover.show = false;
-      clearTimeout(this.chargerInfoInterval);
-      this.chargerInfoInterval = 0;
-    },
-    triggerPopover(type) {
-      if (this.popover.type === type && this.popover.show === true) {
-        this.closePopover();
-        return;
-      }
+    handlePopover(show, type) {
+      this.popover.show = show;
+      if (!show) return;
+      if (type) this.popover.type = type;
       this.scheduleChargerInfoUpdate();
-      this.updateChart(type);
-      this.popover.type = type;
-      if (!this.$refs.popover.popperJS) {
-        this.$refs.popover.referenceElm = this.$refs[type];
-        this.popover.show = true;
-      } else if (this.popover.show) {
-        this.$refs.popover.popperJS._reference = this.$refs[type];
-        this.$refs.popover.updatePopper();
-      } else {
-        this.popover.show = true;
-      }
-    },
-    handleDocumentClick(e) {
-      if (!this.popover.show || !this.popover.type || this.$refs[this.popover.type].contains(e.target)) return;
-      this.closePopover();
+      this.updateChart();
     }
   },
   created() {
     this.chart = null;
     this.chargerInfoInterval = 0;
   },
-  mounted() {
-    window.document.addEventListener('click', this.handleDocumentClick);
-  },
   beforeDestroy() {
-    window.document.removeEventListener('click', this.handleDocumentClick);
     if (this.chargerInfoInterval > 0) {
       clearInterval(this.chargerInfoInterval);
     }
   },
   components: {
-    [Icon.name]: Icon
+    [Status.name]: Status
   }
 };
 </script>
 
 <style>
-.status__item.expand {
-  padding: 20px 4px;
-  user-select: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-.status__item.active {
-  background-color: #00000014;
-}
-.status__popover {
-  width: 420px;
-}
+/* popover chart */
 .status__popover .el-form-item {
   width: 210px;
   margin-right: 0;
@@ -293,7 +220,6 @@ export default {
   text-align: center;
   color: #606266;
 }
-
 /* chartist line-chart color */
 .voltage .ct-series .ct-line,
 .voltage .ct-series .ct-point:hover {

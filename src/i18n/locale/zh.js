@@ -120,16 +120,16 @@ export const locale = {
       unknown: '未知模式'
     },
     flight: {
-      time: '时长 {t}',
-      speed: '速度 {s}m/s',
-      height: '高度 {h}m'
+      time: '时长',
+      speed: '速度',
+      height: '高度'
     },
     battery: {
-      remain: '电量 {num}%',
-      voltage: '电压 {num}V'
+      remain: '电量',
+      voltage: '电压'
     },
     gps: {
-      satellites: ' {num} 星 {type}'
+      satellites: '{satcount} 星 {type}'
     },
     gimbal: {
       mavlink: '手动',
@@ -181,32 +181,32 @@ export const locale = {
       error: '错误'
     },
     power: {
-      status: '供电 {s}',
+      status: '供电',
       cable: '市电',
       solar: '光伏',
       ups: 'UPS'
     },
     door: {
-      status: '舱门 {s}',
+      status: '舱门',
       opened: '开启',
       moving: '运动中',
       closed: '关闭'
     },
     fix: {
-      status: '固定器 {s}',
+      status: '固定器',
       opened: '开启',
       moving: '运动中',
       closed: '关闭'
     },
     charger: {
-      status: '充电器 {s}',
-      voltage: '电压 {V}V',
+      status: '充电器',
+      voltage: '电压',
       set_voltage: '设定电压',
       voltage_chart: '电压图表 (V)',
-      current: '电流 {A}A',
+      current: '电流',
       set_current: '设定电流',
       current_chart: '电流图表 (A)',
-      power: '功率 {W}W',
+      power: '功率',
       power_chart: '功率图表 (W)',
       _chart: '暂无图表'
     },

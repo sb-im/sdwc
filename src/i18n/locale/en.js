@@ -120,16 +120,16 @@ export const locale = {
       unknown: 'Unknown'
     },
     flight: {
-      time: 'Flying for {t}',
-      speed: 'Speed {s}m/s',
-      height: 'Height {h}m'
+      time: 'Flying for',
+      speed: 'Speed',
+      height: 'Height'
     },
     battery: {
-      remain: 'Battery {num}%',
-      voltage: 'Voltage {num}V'
+      remain: 'Battery',
+      voltage: 'Voltage'
     },
     gps: {
-      satellites: '{num} Satellite(s) {type}'
+      satellites: '{satcount} Satellite(s) {type}'
     },
     gimbal: {
       mavlink: 'Manual',
@@ -181,32 +181,32 @@ export const locale = {
       error: 'Error'
     },
     power: {
-      status: 'Power {s}',
+      status: 'Power',
       cable: 'Cable',
       solar: 'Solar',
       ups: 'UPS'
     },
     door: {
-      status: 'Hatch {s}',
+      status: 'Hatch',
       opened: 'Opened',
       moving: 'Moving',
       closed: 'Closed'
     },
     fix: {
-      status: 'Fixator {s}',
+      status: 'Fixator',
       opened: 'Opened',
       moving: 'Moving',
       closed: 'Closed'
     },
     charger: {
-      status: 'Charger {s}',
-      voltage: 'Voltage {V}V',
+      status: 'Charger',
+      voltage: 'Voltage',
       set_voltage: 'Voltage Set',
       voltage_chart: 'Voltage Chart (V)',
-      current: 'Current {A}A',
+      current: 'Current',
       set_current: 'Current Set',
       current_chart: 'Current Chart (A)',
-      power: 'Power {W}W',
+      power: 'Power',
       power_chart: 'Power Chart (W)',
       _chart: 'Chart Unavailable'
     },
