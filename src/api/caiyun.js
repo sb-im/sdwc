@@ -17,6 +17,7 @@ export function setApiKey(key) {
  */
 function get(url) {
   return wr.url(url)
+    .query({ unit: 'SI' })
     .get()
     .json()
     .then(res => {

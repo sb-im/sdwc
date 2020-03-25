@@ -38,15 +38,14 @@ function realtimeLevel(data) {
 /**
  * @param {ApiTypes.CaiYunRealtime} data
  */
-function forecastLevel(data) {
-  let {
-    wind: { speed: wind_speed }, // unit: km/h
+export function forecastLevel(data) {
+  const {
+    wind: { speed: wind_speed }, // unit: m/s
     precipitation: {
       local: { intensity: precipitation_intensity },
       nearest: { distance: precipitation_distance } = { distance: 65535 }
     }
   } = data.result;
-  wind_speed /= 3.6;             // unit: m/s
   let level;
   if (wind_speed >= 10 || precipitation_intensity >= 0.4 || precipitation_distance < 0) {
     level = Level.Error;
@@ -64,29 +63,6 @@ function forecastLevel(data) {
     wind_speed,
     precipitation_distance,
     precipitation_intensity
-  };
-}
-
-/**
- * @param {number} ws wind speed, unit: 0.1 m/s
- */
-export function windSpeedLevel(ws) {
-  let level;
-  const wind_speed = ws / 10; // unit: m/s
-  if (wind_speed >= 10) {
-    level = Level.Error;
-  } else if (wind_speed >= 6) {
-    level = Level.Danger;
-  } else if (wind_speed >= 4) {
-    level = Level.Warning;
-  } else if (wind_speed >= 2) {
-    level = Level.Primary;
-  } else {
-    level = Level.Success;
-  }
-  return {
-    wind_speed: wind_speed.toFixed(1),
-    level
   };
 }
 

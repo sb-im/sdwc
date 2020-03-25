@@ -18,20 +18,12 @@
         <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
         <i class="sd-preflight__icon" :class="StatusClass[depot.status.code]"></i>
       </div>
-      <div v-if="weatherPoint" class="sd-preflight__item" v-loading="loading[2]">
+      <div class="sd-preflight__item" v-loading="loading[2]">
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title" v-t="'preflight.realtime'"></div>
-          <div v-t="preflightData.realtime.absent ? 'preflight.wind_absent' : { path: 'preflight.wind', args: { n: preflightData.realtime.wind_speed } }"></div>
-        </div>
-        <i class="sd-preflight__icon" :class="LevelClass[preflightData.realtime.level]"></i>
-      </div>
-      <div class="sd-preflight__item" v-loading="loading[3]">
-        <sd-icon value="satellite" :size="30"></sd-icon>
-        <div class="sd-preflight__detail">
-          <div class="sd-preflight__title" v-t="'preflight.forecast'"></div>
           <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }" ></div>
-          <div v-t="{ path:  'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
+          <div v-t="{ path: 'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
           <div v-t="preflightData.forecast.precipitation_distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: preflightData.forecast.precipitation_distance } }"></div>
         </div>
         <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
@@ -71,10 +63,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
+import { realtime } from '@/api/caiyun';
+import { forecastLevel } from '@/api/plan-runnable';
+
 import Icon from '@/components/sd-icon.vue';
 import SlideConfirm from '@/components/slide-confirm.vue';
 import CountdownButton from '@/components/countdown-button.vue';
-import { checkForecast, windSpeedLevel } from '@/api/plan-runnable';
 
 // drone/depot status
 const StatusClass = {
@@ -101,10 +95,6 @@ const PlanStatusClass = {
 };
 
 const DefaultPreflightData = {
-  realtime: {
-    wind_speed: 0,
-    level: 'error'
-  },
   forecast: {
     precipitation_intensity: 0,
     precipitation_distance: 0,
@@ -154,8 +144,6 @@ export default {
         (this.drone.status.code === 0 || this.drone.status.code === 1)
         // depot status ok
         && this.depot.status.code === 0
-        // have realtime weather && weather ok
-        && (!this.weatherPoint || this.preflightData.realtime.level !== 'error')
         // caiyun weather forecast ok
         && this.preflightData.forecast.level !== 'error'
       );
@@ -192,6 +180,10 @@ export default {
       return new Promise(resolve => setTimeout(resolve, timeout));
     },
     preCheck() {
+      if (this.depot.status.code === 3) {
+        // no depot; skip pre-check
+        return;
+      }
       return this.$mqtt(this.depot.info.id, { mission: 'power_chargedrone_on' });
     },
     async checkDrone() {
@@ -202,30 +194,36 @@ export default {
       if (!id || !legacy) return;
       await this.updateDepotStatus(id);
     },
-    async checkRealtime(timestamp) {
-      if (!this.weatherPoint) return;
-      let result;
-      this.preflightData.realtime = DefaultPreflightData.realtime;
-      /** @type {SDWC.NodeWeather[]} */
-      const records = this.depot.msg.weather;
-      if (records.length === 0) {
-        result = {
-          absent: true,
-          level: 'error'
-        };
-      } else {
-        const avgSpeed = records.reduce((a, b) => a + b.data.WS, 0) / records.length;
-        result = windSpeedLevel(avgSpeed);
-      }
-      if (timestamp === this.checkTime) {
-        this.preflightData.realtime = result;
-      }
-    },
-    async checkForecast(timestamp) {
+    async checkWeather(timestamp) {
+      this.preflightData.forecast = DefaultPreflightData.forecast;
       const { status } = this.depot.status;
       if (!status) return;
-      this.preflightData.forecast = DefaultPreflightData.forecast;
-      const result = await checkForecast(status);
+      let averageWindSpeed;
+      if (this.weatherPoint) {
+        // calculate average wind speed from history data
+        try {
+          /** @type {Record<string, SDWC.NodeWeather>} */
+          const history = await this.$mqtt(this.depot.info.id, {
+            mission: 'history',
+            arg: { topic: 'msg/weather', time: '1m' }
+          });
+          let sum = 0;
+          let duration = 0;
+          let time = Math.trunc(timestamp / 1000);
+          for (let [t, data] of Object.entries(history).sort((a, b) => b[0] - a[0])) {
+            let span = time - Number.parseInt(t);
+            sum += span * data.WS;
+            duration += span;
+            time = t;
+          }
+          averageWindSpeed = sum / duration;
+        } catch (e) { /* noop */ }
+      }
+      const r = await realtime(status.lng, status.lat);
+      if (typeof averageWindSpeed === 'number') {
+        r.result.wind.speed = averageWindSpeed;
+      }
+      const result = await forecastLevel(r);
       if (timestamp === this.checkTime) {
         this.preflightData.forecast = result;
       }
@@ -239,13 +237,12 @@ export default {
         }
       };
       this.checkTime = t;
-      this.loading = Array(4).fill(true);
+      this.loading = Array(3).fill(true);
       await this.preCheck();
       await Promise.all([
         wrap(this.checkDrone(), 0),
         wrap(this.checkDepot(), 1),
-        wrap(this.checkRealtime(t), 2),
-        wrap(this.checkForecast(t), 3)
+        wrap(this.checkWeather(t), 2)
       ]);
     },
     emitRun() {
