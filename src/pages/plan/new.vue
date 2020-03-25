@@ -1,13 +1,9 @@
 <template>
   <sd-card icon="doc-add" title="plan.edit.add">
     <template #action>
-      <el-button
-        type="success"
-        size="medium"
-        icon="el-icon-document"
-        @click="handleCreate"
-        v-t="'plan.edit.save'"
-      ></el-button>
+      <el-button type="success" size="medium" icon="el-icon-document" @click="handleCreate">
+        <span v-t="'plan.edit.save'"></span>
+      </el-button>
     </template>
     <sd-plan-editable :initial="initial" ref="edit"></sd-plan-editable>
   </sd-card>

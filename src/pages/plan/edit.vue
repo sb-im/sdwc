@@ -1,27 +1,15 @@
 <template>
   <sd-card icon="doc-edit" title="plan.edit.alter">
     <template #action>
-      <el-button
-        type="success"
-        size="medium"
-        icon="el-icon-document"
-        @click="handleUpdate"
-        v-t="'plan.edit.save'"
-      ></el-button>
-      <el-button
-        type="danger"
-        size="medium"
-        icon="el-icon-delete"
-        @click="handleDelete"
-        v-t="'plan.edit.delete'"
-      ></el-button>
-      <el-button
-        type="info"
-        size="medium"
-        icon="el-icon-close"
-        @click="handleCancel"
-        v-t="'plan.edit.back'"
-      ></el-button>
+      <el-button type="success" size="medium" icon="el-icon-document" @click="handleUpdate">
+        <span v-t="'plan.edit.save'"></span>
+      </el-button>
+      <el-button type="danger" size="medium" icon="el-icon-delete" @click="handleDelete">
+        <span v-t="'plan.edit.delete'"></span>
+      </el-button>
+      <el-button type="info" size="medium" icon="el-icon-close" @click="handleCancel">
+        <span v-t="'plan.edit.back'"></span>
+      </el-button>
     </template>
     <sd-plan-editable :initial="plan" ref="edit"></sd-plan-editable>
   </sd-card>
