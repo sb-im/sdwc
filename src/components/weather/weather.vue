@@ -1,21 +1,21 @@
 <template>
   <sd-card class="weather" icon="barometer" title="weather.title">
     <sd-weather-rain :caiyun="caiyun" :loading="caiyunLoading" ref="rain"></sd-weather-rain>
-    <sd-weather-wind :weather="msg.weather"></sd-weather-wind>
+    <sd-weather-wind :point="point" :status="status" :weather="msg.weather"></sd-weather-wind>
     <div class="weather__column weather__column--multi">
       <div class="weather__coord">
-        <sd-weather-wind-icon :speed="weatherNow.windSpeed" :direction="weatherNow.windDirection"></sd-weather-wind-icon>
+        <sd-weather-wind-icon :speed="msg.weather.WS" :direction="msg.weather.WD"></sd-weather-wind-icon>
       </div>
       <el-form label-width="70px" size="mini">
         <el-form-item>
           <span slot="label" v-t="'weather.wind.speed'"></span>
-          <el-input readonly :value="weatherNow.windSpeed">
+          <el-input readonly :value="msg.weather.WS">
             <template #append>m/s</template>
           </el-input>
         </el-form-item>
         <el-form-item>
           <span slot="label" v-t="'weather.wind.direction'"></span>
-          <el-input readonly :value="weatherNow.windDirection">
+          <el-input readonly :value="msg.weather.WD">
             <template #append>deg</template>
           </el-input>
         </el-form-item>
@@ -95,19 +95,6 @@ export default {
     };
   },
   computed: {
-    weatherNow() {
-      /** @type {SDWC.NodeWeather} */
-      const latest = this.msg.weather[this.msg.weather.length - 1];
-      if (!latest) return {};
-      const w = latest.data;
-      return {
-        windSpeed: w.WS,
-        windDirection: w.WD,
-        // temperature: w.T,
-        // humidity: w.RH,
-        // airPressure: w.Pa
-      };
-    },
     caiyunText() {
       if (!this.caiyun.realtime || this.caiyun.realtime.status !== 'ok') {
         return {
