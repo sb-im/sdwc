@@ -169,8 +169,7 @@ export function clearDronePath({ commit }, id) {
  */
 export async function updateDepotStatus({ commit }, id) {
   const status = await MqttClient.invoke(id, 'ncp', ['status']);
-  const partial = { status };
-  commit(NODE.SET_NODE_STATUS, { id, partial });
+  commit(NODE.SET_NODE_STATUS, { id, payload: { status } });
 }
 
 const NodePointTopic = {
@@ -201,19 +200,17 @@ export function subscribeNodes({ state, commit, dispatch }) {
       }
     }
   });
-  MqttClient.on('status', async (id, payload, partial) => {
-    // `payload` and `partial` cannot be present at the same time
-    if (payload) {
+  MqttClient.on('status', async (id, payload) => {
+    if (!payload.legacy) {
       commit(NODE.SET_NODE_STATUS, { id, payload });
       return;
     }
-    // do not offer status object
-    if (partial.code === 0) {
+    if (payload.code === 0) {
       const node = state.node.find(n => n.info.id === id);
       if (node.info.type_name === 'depot') {
         await dispatch('updateDepotStatus', id);
       }
-      commit(NODE.SET_NODE_STATUS, { id, partial });
+      commit(NODE.SET_NODE_STATUS, { id, payload });
     }
   });
   MqttClient.on('message', (id, msg) => {

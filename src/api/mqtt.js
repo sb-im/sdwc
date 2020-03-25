@@ -201,7 +201,7 @@ class MqttClient extends EventEmitter {
       this.emit('status', id, payload);
     } else {
       const code = Number.parseInt(str, 10);
-      this.emit('status', id, null, { legacy: true, code });
+      this.emit('status', id, { legacy: true, code });
     }
   }
 

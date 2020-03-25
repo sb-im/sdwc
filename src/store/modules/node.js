@@ -84,14 +84,10 @@ const mutations = {
       }
     });
   },
-  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: number, payload: SDWC.NodeConnectionStatus, partial: any }} */ { id, payload, partial }) {
+  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: number, payload: Partial<SDWC.NodeConnectionStatus> }} */ { id, payload }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
-    if (payload) {
-      node.status = payload;
-    } else if (partial) {
-      Object.assign(node.status, partial);
-    }
+    Object.assign(node.status, payload);
   },
   [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);
