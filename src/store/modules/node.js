@@ -33,7 +33,9 @@ const mutations = {
         }
       },
       msg: {
-        weather: [],
+        weather: {
+          WS: 0
+        },
         battery: {
           id: '',
           temp: 0,
@@ -91,9 +93,12 @@ const mutations = {
       Object.assign(node.status, partial);
     }
   },
-  [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg:SDWC.RawNodeMessage }} */ { id, msg }) {
+  [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
+    if (msg.weather) {
+      node.msg.weather = msg.weather;
+    }
     if (msg.battery) {
       node.msg.battery = msg.battery;
     }
@@ -117,19 +122,6 @@ const mutations = {
     }
     if (msg.notification) {
       node.msg.notification.unshift(msg.notification);
-    }
-    if (msg.weather) {
-      const now = Date.now();
-      const w = {
-        time: now,
-        data: msg.weather
-      };
-      node.msg.weather.push(w);
-      let earliest = node.msg.weather[0];
-      while (now - earliest.time > 60000) {
-        node.msg.weather.shift();
-        earliest = node.msg.weather[0];
-      }
     }
   },
   [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {

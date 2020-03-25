@@ -51,16 +51,19 @@ declare namespace SDWC {
       alt: string;
     };
   }
-  export interface NodeWeatherData {
-    WD: number;
-    WS: number;
-    T: number;
-    RH: number;
-    Pa: number;
-  }
   export interface NodeWeather {
-    time: number;
-    data: NodeWeatherData;
+    /** wind speed */
+    WS: number;
+    /** Wind Direction (0 ~ 360) ° */
+    WD?: number;
+    /**Temperature Kelvin [K]. **Priority: (T > t > F)** */
+    T?: number;
+    /** Temperature Celsius [°C] */
+    t?: number;
+    /** Temperature Fahrenheie [°F] */
+    F?: number;
+    /** Relative humidity (0 ~ 99)％ */
+    RH?: number;
   }
   export interface NodeBattery {
     id: string;
@@ -145,7 +148,7 @@ declare namespace SDWC {
     /** connection status */
     status: NodeConnectionStatus;
     msg: {
-      weather: NodeWeather[];
+      weather: NodeWeather;
       battery: NodeBattery;
       charger: NodeCharger;
       depot_status: NodeDepotStatus;
@@ -156,7 +159,7 @@ declare namespace SDWC {
     };
   }
   export type RawNodeMessage = Partial<{
-    weather: NodeWeatherData;
+    weather: NodeWeather;
     battery: NodeBattery;
     charger: NodeCharger;
     depot_status: NodeDepotStatus;
