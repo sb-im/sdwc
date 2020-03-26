@@ -106,7 +106,7 @@ export default {
       const r = this.caiyun.realtime;
       return {
         weather: this.$t(Skycon[r.skycon]),
-        temperature: r.temperature,
+        temperature: (r.temperature - 273.15).toFixed(1),
         humidity: (r.humidity * 100).toFixed(0)
       };
     }
