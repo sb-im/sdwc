@@ -82,14 +82,14 @@ export default {
           icon: 'voltage',
           name: 'depot.charger.voltage',
           value: c.V.toFixed(2),
-          unit: 'A',
+          unit: 'V',
           popover: 'voltage'
         },
         {
           icon: 'electricity',
           name: 'depot.charger.current',
           value: c.A.toFixed(2),
-          unit: 'V',
+          unit: 'A',
           popover: 'current'
         },
         {
