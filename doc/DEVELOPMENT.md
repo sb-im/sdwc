@@ -35,12 +35,12 @@
 .
 ├── assets/             # 静态资源，图标、视频等
 ├── dist/               # 构建产物
-├── doc/
-├── nwjs-client/        # nwjs 客户端打包相关
+├── doc/                # 文档
 ├── scripts/            # CI 构建脚本，webpack 配置文件
 └── src/
     ├── api/            # 所用到的 HTTP 与 MQTT 接口的封装
     ├── components/     # 可复用组件
+    ├── constants/      # 应用运行中不会更改的常量或配置项
     ├── i18n/           # 国际化翻译
     │   ├── locale/     # 语言文件
     │   ├── common.js   # 各语言间通用的常规格式
@@ -56,14 +56,17 @@
     │   ├── actions.js
     │   ├── getters.js
     │   └── index.js
+    ├── styles/         # 公共样式
     ├── util/
-    │   ├── element.js  # element-ui 按需引入
-    │   └── plugin-mqtt.js  # 封装 mqtt 请求方法为 vue 插件
+    │   ├── browser-hacks.js  # 判断操作系统及浏览器，并在 document.body 上添加类名
+    │   ├── element.js        # element-ui 按需引入
+    │   └── plugin-mqtt.js    # 封装 mqtt 请求方法为 vue 插件
     ├── App.vue         # vue 应用的根组件
     ├── config.json     # 示例配置文件
+    ├── index.d.ts      # 全局类型定义
     ├── main.js         # 单页应用的入口点
     ├── router.js       # 路由配置
-    └── style.css       # 全局样式及响应式布局处理
+    └── sdwc.d.ts       # SDWC 内部数据类型定义
 ```
 
 ## 项目构建
@@ -157,12 +160,16 @@ SDWC 使用 MQTT over Websocket 与节点后端进行数据交换。SDWC 建立 
 - `nodes/${id}/message`
 - `nodes/${id}/status`
 
-若节点包含指定的 Point 类型，则额外订阅对应的 topic:
+若节点包含指定的 Point 类型，则额外订阅对应的 topic （前缀均为 `nodes/${id}/msg/` ）：
 
 |point_type_name|topic            |
 |:-----:|:-----------------------:|
-|weather|`nodes/${id}/msg/weather`|
-|battery|`nodes/${id}/msg/battery`|
+|drone_status|`depot_status`, `notification`, `charger`|
+|depot_status|`drone_status`, `notification`|
+|weather|`weather` |
+|battery|`battery` |
+|gimbal |`gimbal`  |
+|map    |`position`|
 
 ### JSON-RPC 调用
 
