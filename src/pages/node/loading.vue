@@ -12,4 +12,8 @@ export default {
 .node-loading {
   height: 100%;
 }
+
+.sd--safari .node-loading {
+  height: calc(100vh - 120px);
+}
 </style>
