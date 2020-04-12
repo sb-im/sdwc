@@ -16,7 +16,7 @@
     <template #action>
       <el-button
         :icon="`el-icon-location${follow ? '' : '-outline'}`"
-        :type="follow ? 'primary' : ''"
+        :type="follow ? 'primary' : 'default'"
         size="small"
         @click="handleFollow"
       >
