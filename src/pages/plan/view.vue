@@ -27,7 +27,7 @@
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </sd-card>
-    <sd-map v-bind="map" fit></sd-map>
+    <sd-map icon="map-marker" title="map.satellite" fit v-bind="map"></sd-map>
     <sd-card class="plan__history" icon="paper-busy" title="plan.view.history" dense>
       <el-table
         stripe

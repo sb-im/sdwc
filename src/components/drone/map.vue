@@ -1,5 +1,7 @@
 <template>
   <sd-map
+    icon="map-marker"
+    title="map.satellite"
     :markers="markers"
     :path="msg.position"
     :places="places"
