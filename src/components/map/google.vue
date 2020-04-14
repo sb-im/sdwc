@@ -86,7 +86,7 @@ export default {
      */
     createPathIcon(style) {
       const PathStyle = {
-        dotted: 'M0 -2 c1.10456949966 0 2 0.895430500338 2 2 s-0.895430500338 2 -2 2 s-2 -0.895430500338 -2 -2 s0.895430500338 -2 2 -2 z',
+        dotted: 'M0 -2 a2 2 180 0 0 0 4 a2 2 180 0 0 0 -4',
         dashed: 'M-1.5 -1.5 h3 v6 h-3 z'
       };
       /** @type {google.maps.Symbol} */
