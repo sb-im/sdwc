@@ -1,32 +1,30 @@
 <template>
-  <sd-card class="overview-map" icon="map-marker" title="common.overview" dense>
+  <sd-map
+    class="overview-map"
+    icon="map-marker"
+    title="common.overview"
+    :markers="markers"
+    :fit="fit"
+    selectable
+    @map-move="handleMove"
+  >
     <template #action>
       <el-button
         :icon="`el-icon-data-${fit ? 'line' : 'board'}`"
+        :type="fit ? 'primary' : 'default'"
         size="small"
         @click="handleFit"
       >
-        <span v-t="`map.${fit ? 'fit' : 'manual'}`"></span>
+        <span v-t="'map.fit'"></span>
       </el-button>
-      <el-radio-group class="map__switch" size="small" v-model="type" @change="handleMapChange">
-        <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
-      </el-radio-group>
     </template>
-    <component :is="type" :markers="markers" :fit="fit"></component>
-  </sd-card>
+  </sd-map>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-import Card from '@/components/card.vue';
-import Google from '@/components/map/google.vue';
-import AMap from '@/components/map/amap.vue';
-
-const MapType = {
-  Google: Google.name,
-  AMap: AMap.name
-};
+import SdMap from '@/components/map/map.vue';
 
 export default {
   name: 'sd-overview-map',
@@ -44,9 +42,6 @@ export default {
       'depots',
       'drones'
     ]),
-    MapType() {
-      return MapType;
-    },
     droneMarkers() {
       const markers = [];
       for (let d of this.drones) {
@@ -89,6 +84,11 @@ export default {
     ...mapActions([
       'setPreference',
     ]),
+    handleMove() {
+      if (this.fit) {
+        this.fit = false;
+      }
+    },
     handleFit() {
       this.fit = !this.fit;
       this.setPreference({ overviewFit: this.fit });
@@ -102,9 +102,7 @@ export default {
     this.fit = this.preference.overviewFit;
   },
   components: {
-    [Card.name]: Card,
-    [AMap.name]: AMap,
-    [Google.name]: Google
+    [SdMap.name]: SdMap
   }
 };
 </script>
