@@ -4,6 +4,11 @@ declare namespace SDWC {
     [P in keyof T]: T[P] extends ((...args: any[]) => any) ? ReturnType<T[P]> : T[P];
   }
 
+  export interface LatLng {
+    lat: number;
+    lng: number;
+  }
+
   /// Vuex store state modules
   // store/modules/config.js
   export interface Config {

@@ -1,6 +1,5 @@
 // @ts-check
 
-import Papaparse from 'papaparse';
 import ContentDisposition from 'content-disposition';
 
 import { setLocale, locales } from '@/i18n';
@@ -10,7 +9,7 @@ import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
 import * as SuperDock from '@/api/super-dock';
 import * as GoogleMap from '@/api/google-map';
-import { MapActions } from '@/constants/map-actions';
+import { parseWaypoints } from '@/util/waypoint-parser';
 
 import { MutationTypes as PREF } from './modules/preference';
 import { MutationTypes as CONF } from './modules/config';
@@ -291,41 +290,11 @@ export async function downloadFile(_, { url, name }) {
   });
 }
 
-function isSamePosition(p1, p2) {
-  return p1.lat === p2.lat && p1.lng === p2.lng;
-}
-
 /**
  * @param {Context} _
  * @param {string} url
  */
 export async function getMapPath(_, url) {
   const text = await SuperDock.getFile(url).then(r => r.text());
-  /** @type {{lat: number; lng: number}[]} */
-  const path = [];
-  /** @type {SDWC.MarkerAction[]} */
-  const actions = [];
-  Papaparse.parse(text).data.forEach((/** @type {string[]} */ dt) => {
-    if (dt[3] === '16') {
-      path.push({
-        lat: Number.parseFloat(dt[8]),
-        lng: Number.parseFloat(dt[9])
-      });
-    } else if (MapActions.includes(dt[3])) {
-      const position = path[path.length - 1];
-      const lastAction = actions[actions.length - 1];
-      if (actions.length > 0 && isSamePosition(lastAction.position, position)) {
-        lastAction.action.push(dt[3]);
-      } else {
-        actions.push({
-          type: 'action',
-          id: `a${actions.length}`,
-          name: '',
-          position: position,
-          action: [dt[3]]
-        });
-      }
-    }
-  });
-  return { path, actions };
+  return parseWaypoints(text);
 }
