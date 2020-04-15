@@ -22,6 +22,7 @@ body {
 @media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
   /* container */
   .plan__view,
+  .plan__edit,
   .drone,
   .depot {
     display: flex;
@@ -29,11 +30,11 @@ body {
   }
 
   /* plan */
-  .plan__history {
-    width: 100%;
+  .plan .sd-card {
+    flex-basis: calc(50% - 2px);
   }
-  .plan__view .sd-card {
-    flex-grow: 1;
+  .plan .plan__history {
+    flex-basis: 100%;
   }
   .sd-map .el-card__body {
     height: calc(100% - 73px); /* 73 = 36 + 12*2 + 1 */

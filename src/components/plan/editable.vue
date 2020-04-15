@@ -37,6 +37,7 @@
       <span slot="label" v-t="'plan.mapfile'"></span>
       <el-upload
         ref="upload"
+        class="plan__upload"
         action="//dummy"
         :limit="1"
         :multiple="false"
@@ -56,6 +57,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
+
+import { parseWaypoints } from '@/util/waypoint-parser';
+
 import Icon from '@/components/sd-icon.vue';
 
 export default {
@@ -89,8 +93,18 @@ export default {
       });
       return result;
     },
+    emitWaypointChange() {
+      if (!this.plan.file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const result = parseWaypoints(e.target.result);
+        this.$emit('waypoint-change', { path: result.path, markers: result.actions });
+      };
+      reader.readAsText(this.plan.file);
+    },
     handleFileAdd({ raw }) {
       this.plan.file = raw;
+      this.emitWaypointChange();
     },
     handleFileExeceed(files, fileList) {
       const rawFile = files[0];
@@ -109,6 +123,7 @@ export default {
       };
       fileList.splice(0, 1, f);
       this.plan.file = rawFile;
+      this.emitWaypointChange();
     },
     handleFileUpload() { /* noop */ }
   },
@@ -117,3 +132,26 @@ export default {
   }
 };
 </script>
+
+<style>
+.plan__upload {
+  display: flex;
+  align-items: center;
+}
+
+.plan__upload .el-upload-list {
+  margin-left: 10px;
+}
+
+.plan__upload .el-upload-list__item {
+  margin: 0;
+  transform: none;
+  -webkit-transform: none;
+  transition: none;
+  -webkit-transition: none;
+}
+
+.plan__upload .el-upload-list__item:nth-child(2) {
+  display: none;
+}
+</style>
