@@ -22,6 +22,18 @@ export default {
       const key = `air.mode.${this.msg.drone_status.mode}`;
       return this.$t(this.$te(key) ? key : 'air.mode.unknown');
     },
+    flightTime() {
+      const { time } = this.msg.drone_status;
+      /** @type {Intl.DateTimeFormatOptions} */
+      const options = {
+        timeZone: 'UTC',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+      if (time >= 3600) options.hour = 'numeric';
+      return new Date(time * 1000).toLocaleString('en-US', options);
+    },
     items() {
       const s = this.msg.drone_status;
       return [
@@ -36,7 +48,7 @@ export default {
         {
           icon: 'timespan',
           name: 'air.flight.time',
-          value: this.$d(new Date(Date.UTC(0, 0, 0, 0, 0, s.time)), 'elapsed')
+          value: this.flightTime
         },
         {
           icon: 'speed',
