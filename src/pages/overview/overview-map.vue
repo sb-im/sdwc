@@ -4,8 +4,10 @@
     icon="map-marker"
     title="common.overview"
     :markers="markers"
+    :places="places"
     :fit="fit"
     selectable
+    :marker-styling="styling"
     @map-move="handleMove"
   >
     <template #action>
@@ -76,9 +78,43 @@ export default {
       }
       return markers;
     },
-    markers() {
-      return [...this.depotMarkers, ...this.droneMarkers];
+    placeMarkers() {
+      const markers = [];
+      for (const d of this.drones) {
+        const position = d.msg.position[0];
+        if (!position || !position.place) continue;
+        for (const [name, pos] of Object.entries(position.place)) {
+          const arr = Array.isArray(pos) ? pos : [pos];
+          for (let i = 0; i < arr.length; i++) {
+            markers.push({
+              type: 'place',
+              id: `${name}_${i}`,
+              name,
+              position: arr[i]
+            });
+          }
+        }
+      }
+      return markers;
     },
+    markers() {
+      return [...this.depotMarkers, ...this.droneMarkers, ...this.placeMarkers];
+    },
+    places() {
+      const paths = [];
+      for (const d of this.drones) {
+        const position = d.msg.position[0];
+        if (!position || !position.place) continue;
+        const p = [position];
+        for (const [name, pos] of Object.entries(position.place)) {
+          paths.push({
+            name,
+            path: p.concat(pos)
+          });
+        }
+      }
+      return paths;
+    }
   },
   methods: {
     ...mapActions([
@@ -100,6 +136,11 @@ export default {
   created() {
     this.type = this.preference.mapType;
     this.fit = this.preference.overviewFit;
+    this.styling = {
+      target: { stroke: 'dotted', color: '#409eff' },
+      roi: { point: 'glow', color: '#f69730' },
+      home: { color: '#67c23a' }
+    };
   },
   components: {
     [SdMap.name]: SdMap
