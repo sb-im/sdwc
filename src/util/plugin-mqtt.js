@@ -1,9 +1,12 @@
 import Vue from 'vue';
 
+import { Notification } from 'element-ui';
+
 import i18n from '@/i18n';
 import store from '@/store';
-import { MutationTypes as NOTI } from '@/store/modules/notification';
 import MqttClient from '@/api/mqtt';
+import { MutationTypes as NOTI } from '@/store/modules/notification';
+import { Levels as NotificationLevels } from '@/constants/notification-levels';
 
 /**
  * @this {Vue}
@@ -27,6 +30,10 @@ function replacer(key, value) {
   return value;
 }
 
+/**
+ * @param {import('jsonrpc-lite').RequestObject} _
+ * @returns {string}
+ */
 function stringifyMission({ method, params }) {
   if (!params) {
     return method;
@@ -97,10 +104,33 @@ function registerStatusListener() {
   });
 }
 
+function registerNotificationListener() {
+  MqttClient.on('message', (id, msg) => {
+    if (!msg.notification) return;
+    const n = msg.notification;
+    const node = store.state.node.find(node => node.info.id === id).info;
+    if (!node || !store.state.preference.notifyPopup.includes(node.id)) return;
+    const notify = Notification({
+      message: 'REPLACED_BY_VNODE',
+      customClass: 'sd-notification--popup'
+    });
+    const h = notify.$createElement;
+    notify.$slots.default = [
+      h('div', null, [
+        h('span', { class: 'sd-notification__title' }, [node.name]),
+        h('span', null, [' · ', i18n.d(n.time * 1000, 'seconds')]),
+      ]),
+      h('span', { class: ['sd-notification__level', `lv${n.level}`] }, [` [${NotificationLevels[n.level]}] `]),
+      h('span', null, [n.msg])
+    ];
+  });
+}
+
 Vue.use({
   install(Vue) {
     Vue.prototype.$mqtt = mqtt;
     registerRpcListener();
     registerStatusListener();
+    registerNotificationListener();
   }
 });
