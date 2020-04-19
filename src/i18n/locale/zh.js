@@ -158,6 +158,12 @@ export const locale = {
       invalid_input: '参数值无效'
     }
   },
+  status: {
+    log: '日志',
+    no_log: '暂无日志',
+    popup: '弹出',
+    history: '历史'
+  },
   control: {
     title: '高级控制',
     abnormal: '通讯状态异常，无法发送控制指令。',

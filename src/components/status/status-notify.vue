@@ -1,9 +1,9 @@
 <template>
   <div class="status__line status__noti">
-    <div class="status__label">日志</div>
+    <div class="status__label" v-t="'status.log'"></div>
     <div class="status__body">
       <sd-notification v-if="notification.length > 0" :notification="notification[0]"></sd-notification>
-      <span v-else>暂无日志</span>
+      <span v-else v-t="'status.no_log'"></span>
     </div>
     <el-button-group class="status__buttons">
       <el-button
@@ -12,17 +12,17 @@
         size="small"
         @click="handlePopup"
       >
-        <span>弹出</span>
+        <span v-t="'status.popup'"></span>
       </el-button>
       <el-dropdown trigger="click" :hide-on-click="false">
         <el-button type="default" size="small">
-          <span>历史</span>
+          <span v-t="'status.history'"></span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <template #dropdown>
           <el-dropdown-menu class="status__noti-history">
             <el-dropdown-item v-if="notification.length === 0" disabled>
-              <span>暂无日志</span>
+              <span v-t="'status.no_log'"></span>
             </el-dropdown-item>
             <template v-else>
               <el-dropdown-item v-for="(n, i) of notification" :key="notification.length - i">

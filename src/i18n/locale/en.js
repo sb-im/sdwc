@@ -158,6 +158,12 @@ export const locale = {
       invalid_input: 'Invaild parameter input'
     }
   },
+  status: {
+    log: 'Log',
+    no_log: 'No log',
+    popup: 'Popup',
+    history: 'History'
+  },
   control: {
     title: 'Advance Control',
     abnormal: 'Communication status abnormal, unable to control.',
