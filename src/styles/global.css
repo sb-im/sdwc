@@ -29,18 +29,20 @@ body {
     flex-wrap: wrap;
   }
 
+  /* map */
+  .sd-map:not(.overview-map) .el-card__body {
+    height: calc(100% - 73px); /* 73 = 36 + 12*2 + 1 */
+  }
+  .sd-map .map__el {
+    height: 100%;
+  }
+
   /* plan */
   .plan .sd-card {
     flex-basis: calc(50% - 2px);
   }
   .plan .plan__history {
     flex-basis: 100%;
-  }
-  .sd-map .el-card__body {
-    height: calc(100% - 73px); /* 73 = 36 + 12*2 + 1 */
-  }
-  .map__el {
-    height: 100%;
   }
 
   /* drone & depot */
