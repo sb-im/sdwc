@@ -1,5 +1,10 @@
 <template>
-  <sd-status :items="items" @popover="handlePopover">
+  <sd-status
+    :items="items"
+    :node-id="point.node_id"
+    :notification="msg.notification"
+    @popover="handlePopover"
+  >
     <template #popover>
       <el-form size="mini" inline>
         <el-form-item>
@@ -24,7 +29,7 @@
 <script>
 import Chartist from 'chartist';
 
-import Status from '@/components/status.vue';
+import Status from '@/components/status/status.vue';
 
 export default {
   name: 'sd-depot-status',

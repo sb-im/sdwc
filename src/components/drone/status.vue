@@ -1,13 +1,17 @@
 <template>
-  <sd-status :items="items"></sd-status>
+  <sd-status :items="items" :node-id="point.node_id" :notification="msg.notification"></sd-status>
 </template>
 
 <script>
-import Status from '@/components/status.vue';
+import Status from '@/components/status/status.vue';
 
 export default {
   name: 'sd-drone-status',
   props: {
+    point: {
+      type: Object,
+      required: true
+    },
     msg: {
       type: Object,
       required: true

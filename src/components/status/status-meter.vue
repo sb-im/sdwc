@@ -1,5 +1,5 @@
 <template>
-  <el-card class="status sd-card sd-card--dense" shadow="never">
+  <div class="status__line">
     <div
       v-for="item of items"
       :key="item.name"
@@ -25,14 +25,14 @@
         <span>{{ popover.type }}</span>
       </slot>
     </el-popover>
-  </el-card>
+  </div>
 </template>
 
 <script>
 import Icon from '@/components/sd-icon.vue';
 
 export default {
-  name: 'sd-status',
+  name: 'sd-status-meter',
   props: {
     items: {
       type: Array,
@@ -83,6 +83,9 @@ export default {
   mounted() {
     window.document.addEventListener('click', this.handleDocumentClick);
   },
+  beforeDestroy() {
+    window.document.removeEventListener('click', this.handleDocumentClick);
+  },
   components: {
     [Icon.name]: Icon
   }
@@ -90,16 +93,10 @@ export default {
 </script>
 
 <style>
-/* status line */
-.status .el-card__body {
-  display: flex;
-  justify-content: space-around;
-}
 .status__item {
   flex-basis: calc(100% / var(--status-count, 8));
   box-sizing: border-box;
   padding: 20px 0;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
