@@ -119,6 +119,9 @@ export default {
 .control__buttons .el-button.is-disabled {
   border-color: transparent;
 }
+.control__buttons .el-button.el-loading-parent--relative {
+  overflow: hidden;
+}
 .control__buttons .el-button .el-loading-mask {
   background-color: rgba(255, 255, 255, 0.55);
 }
