@@ -2,10 +2,11 @@
 
 /** @type {SDWC.Preference} */
 const state = {
+  lang: '',
   mapType: 'sd-map-amap',
   mapFollow: true,
   overviewFit: true,
-  lang: ''
+  notifyPopup: []
 };
 
 export const MutationTypes = {

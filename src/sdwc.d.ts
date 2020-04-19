@@ -218,10 +218,11 @@ declare namespace SDWC {
 
   // store/modules/preference.js
   export interface Preference {
+    lang: string;
     mapType: string;
     mapFollow: boolean;
     overviewFit: boolean;
-    lang: string;
+    notifyPopup: number[];
   }
 
   // store/modules/user.js
