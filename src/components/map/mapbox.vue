@@ -8,7 +8,7 @@ import { loadMapbox } from '@/api/mapbox';
 import { h, hs } from '@/util/create-element';
 import { MapActionEmoji } from '@/constants/map-actions';
 
-import { randColor } from './common';
+import { waitSelector, randColor } from './common';
 
 /**
  * @typedef {{lng: number, lat: number}} LngLatLiteral
@@ -125,10 +125,51 @@ export default {
       map.addControl(new ScaleControl(), 'bottom-left');
       map.addControl(new NavigationControl(), 'bottom-right');
       this.map = map;
+      if (this.selectable) {
+        this.bindMapEvents();
+      }
       return new Promise((resolve, reject) => {
         map.once('load', resolve);
         map.once('error', reject);
       });
+    },
+    async bindMapEvents() {
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
+      map.on('dragstart', () => this.$emit('map-move'));
+      map.on('movestart', () => this.$emit('cancel-point'));
+      map.on('zoomstart', () => this.$emit('cancel-point'));
+      const { Marker } = await loadMapbox();
+      /** @type { (position: mapboxgl.LngLat) => void } */
+      const placeMarker = position => {
+        if (this.selectedMarker) {
+          this.selectedMarker.addTo(map);
+          this.selectedMarker.setLngLat(position);
+        } else {
+          const element = createMarkerElement('', '#409eff');
+          element.classList.add('mapbox-marker--selected');
+          this.selectedMarker = new Marker({ element, anchor: 'bottom' })
+            .setLngLat(position)
+            .addTo(map);
+        }
+        waitSelector(this.$refs.map, 'div.mapbox-marker--selected', true).then(el => {
+          const { lng, lat } = position;
+          this.$emit('select-point', { lng, lat }, el);
+        });
+      };
+      map.on('contextmenu', e => placeMarker(e.lngLat));
+      // touch screen long press
+      let touchContinue = false;
+      map.on('touchstart', e => {
+        touchContinue = true;
+        setTimeout(() => touchContinue && placeMarker(e.lngLat), 500);
+      });
+      map.on('touchend', () => touchContinue = false);
+      map.on('touchmove', () => touchContinue = false);
+    },
+    removeSeletedMarker() {
+      if (!this.selectedMarker) return;
+      this.selectedMarker.remove();
     },
     async fitPath() {
       if (!this.pathData) return;
@@ -238,20 +279,19 @@ export default {
       this.drawNamedMarkers();
     },
     fit(val) {
-      if (val === true) {
-        this.fitPath();
-      }
+      if (!val) return;
+      this.fitPath();
     },
     follow(val) {
       if (!val) return;
       if (this.path.length <= 0) return;
-      this.map.setCenter(this.path[0]);
+      this.map.setCenter(this.pathData.geometry.coordinates[0]);
     },
-    // popoverShown(val) {
-    //   if (val === false) {
-    //     this.removeSeletedMarker();
-    //   }
-    // }
+    popoverShown(val) {
+      if (val === false) {
+        this.removeSeletedMarker();
+      }
+    }
   },
   created() {
     /** @type {mapboxgl.Map} */
@@ -260,6 +300,8 @@ export default {
     this.pathData = null;
     /** @type {{ [key: string]: mapboxgl.Marker }} */
     this.namedMarkers = {};
+    /** @type {mapboxgl.Marker} */
+    this.selectedMarker = null;
   },
   mounted() {
     this.initMap().then(() => {
@@ -273,6 +315,24 @@ export default {
     });
   },
   beforeDestroy() {
+    const data = [
+      'pathData'
+    ];
+    for (const prop of data) {
+      if (this[prop]) {
+        this[prop] = null;
+      }
+    }
+    const objects = [
+      'selectedMarker',
+      ...Object.keys(this.namedMarkers)
+    ];
+    for (const prop of objects) {
+      if (this[prop]) {
+        this[prop].remove();
+        this[prop] = null;
+      }
+    }
     if (this.map) {
       __MAPBOX_ZOOM__ = this.map.getZoom();
       __MAPBOX_CENTER__ = this.map.getCenter();
