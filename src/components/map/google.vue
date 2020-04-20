@@ -66,6 +66,7 @@ export default {
     async initMap() {
       const { Map, MapTypeId } = await loadGoogleMap();
       this.map = new Map(this.$refs.map, {
+        maxZoom: 20,
         zoom: __GMAP_ZOOM__ || 20,
         center: __GMAP_CENTER__ || { lat: 30, lng: 120 },
         mapTypeId: MapTypeId.SATELLITE,
