@@ -79,17 +79,20 @@ export default {
   },
   methods: {
     async initMap() {
-      const { Map } = await loadMapbox();
-      this.map = new Map({
+      const { Map, ScaleControl, NavigationControl } = await loadMapbox();
+      const map = new Map({
         container: this.$refs.map,
         style: GoogleRasterStyle,
         maxZoom: 19,
         zoom: __MAPBOX_ZOOM__ || 20,
         center: __MAPBOX_CENTER__ || { lat: 30, lng: 120 },
       });
+      map.addControl(new ScaleControl(), 'bottom-left');
+      map.addControl(new NavigationControl(), 'bottom-right');
+      this.map = map;
       return new Promise((resolve, reject) => {
-        this.map.once('load', resolve);
-        this.map.once('error', reject);
+        map.once('load', resolve);
+        map.once('error', reject);
       });
     },
     async fitPath() {
