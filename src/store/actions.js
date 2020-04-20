@@ -7,6 +7,7 @@ import * as S from '@/api/sdwc';
 import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
+import * as Mapbox from '@/api/mapbox';
 import * as SuperDock from '@/api/super-dock';
 import * as GoogleMap from '@/api/google-map';
 import { parseWaypoints } from '@/util/waypoint-parser';
@@ -70,6 +71,7 @@ export async function configure({ state, commit }) {
   SuperDock.setBaseURL(config.super_dock_api_server);
   GoogleMap.setApiKey(config.gmap_key);
   CaiYun.setApiKey(config.caiyun_key);
+  Mapbox.setAccessToken(config.mapbox_key);
   AMap.setApiKey(config.amap_key);
   setLocale(state.preference.lang);
 }

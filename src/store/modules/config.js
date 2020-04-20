@@ -10,6 +10,7 @@ const state = {
   amap_key: '',
   gmap_key: '',
   caiyun_key: '',
+  mapbox_key: '',
   mqtt_url: '',
 };
 

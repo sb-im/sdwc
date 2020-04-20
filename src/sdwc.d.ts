@@ -20,6 +20,7 @@ declare namespace SDWC {
     amap_key: string;
     gmap_key: string;
     caiyun_key: string;
+    mapbox_key: string;
     mqtt_url: string;
   }
 
