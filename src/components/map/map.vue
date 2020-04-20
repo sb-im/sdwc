@@ -14,12 +14,15 @@
 import { mapActions, mapState } from 'vuex';
 
 import Card from '@/components/card.vue';
-import Google from './google.vue';
+
 import AMap from './amap.vue';
+import Google from './google.vue';
+import Mapbox from './mapbox.vue';
 
 const MapType = {
+  AMap: AMap.name,
   Google: Google.name,
-  AMap: AMap.name
+  Mapbox: Mapbox.name
 };
 
 export default {
@@ -61,7 +64,8 @@ export default {
   components: {
     [Card.name]: Card,
     [AMap.name]: AMap,
-    [Google.name]: Google
+    [Google.name]: Google,
+    [Mapbox.name]: Mapbox
   }
 };
 </script>
