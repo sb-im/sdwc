@@ -15,9 +15,25 @@ let __MAPBOX_ZOOM__;
 /** @type {mapboxgl.LngLat} */
 let __MAPBOX_CENTER__;
 
+/** @type {mapboxgl.Style} */
+const GoogleRasterStyle = {
+  version: 8,
+  sources: {
+    google: {
+      type: 'raster',
+      tileSize: 256,
+      tiles: ['https://mt1.google.cn/maps/vt?lyrs=s&x={x}&y={y}&z={z}']
+    }
+  },
+  layers: [{ id: 'GoogleRasterLayer', type: 'raster', source: 'google' }]
+};
+
 const PathSource = 'PathSource';
 const PathLayer = 'PathLayer';
 const PathOutlineLayer = 'PathOutlineLayer';
+
+/** @type {mapboxgl.LineLayout} */
+const PathLayout = { 'line-cap': 'round', 'line-join': 'round' };
 
 export default {
   name: 'sd-map-mapbox',
@@ -66,8 +82,8 @@ export default {
       const { Map } = await loadMapbox();
       this.map = new Map({
         container: this.$refs.map,
-        style: 'mapbox://styles/mapbox/satellite-v9',
-        maxZoom: 20,
+        style: GoogleRasterStyle,
+        maxZoom: 19,
         zoom: __MAPBOX_ZOOM__ || 20,
         center: __MAPBOX_CENTER__ || { lat: 30, lng: 120 },
       });
@@ -102,14 +118,14 @@ export default {
           id: PathOutlineLayer,
           type: 'line',
           source: PathSource,
-          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          layout: PathLayout,
           paint: { 'line-color': '#fff', 'line-width': 4, }
         });
         map.addLayer({
           id: PathLayer,
           type: 'line',
           source: PathSource,
-          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          layout: PathLayout,
           paint: { 'line-color': this.pathColor, 'line-width': 2 }
         });
       }
