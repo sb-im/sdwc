@@ -5,6 +5,7 @@
 <script>
 import CoordTransform from 'coordtransform';
 
+import { h } from '@/util/create-element';
 import { loadAMap, loadAMapUI } from '@/api/amap';
 import { MapActionEmoji } from '@/constants/map-actions';
 
@@ -25,6 +26,18 @@ let __AMAP_CENTER__;
  * store zoom level across instance
  */
 let __AMAP_ZOOM__;
+
+/**
+ * @param {string} rgb
+ * @param {number} factor
+ */
+function multiplyRGB(rgb, factor) {
+  let res = '#';
+  for (const val of rgb.match(/[0-9A-F]{2}/gi)) {
+    res += Math.trunc((Number.parseInt(val, 16) * factor)).toString(16);
+  }
+  return res;
+}
 
 export default {
   name: 'sd-map-amap',
@@ -64,7 +77,7 @@ export default {
     async initMap() {
       const AMap = await loadAMap();
       const center = __AMAP_CENTER__ || { lat: 30, lng: 120 };
-      this.map = new AMap.Map(this.$refs.map, {
+      const map = new AMap.Map(this.$refs.map, {
         zoom: __AMAP_ZOOM__ || 20,
         zooms: [3, 20],
         expandZoomRange: true,
@@ -72,14 +85,15 @@ export default {
         center: new AMap.LngLat(center.lng, center.lat)
       });
       AMap.plugin(['AMap.ToolBar', 'AMap.MapType', 'AMap.Scale'], () => {
-        this.map.addControl(new AMap.ToolBar({
+        map.addControl(new AMap.ToolBar({
           liteStyle: true
         }));
-        this.map.addControl(new AMap.MapType({
+        map.addControl(new AMap.MapType({
           defaultType: 1, // satellite
         }));
-        this.map.addControl(new AMap.Scale);
+        map.addControl(new AMap.Scale);
       });
+      this.map = map;
       if (this.selectable) {
         this.bindMapEvents();
       }
@@ -100,22 +114,16 @@ export default {
         });
       });
     },
-    /**
-     * @param {LngLatLiteral} lnglat
-     * @returns {LngLatLiteral}
-     */
-    outputLngLat(lnglat) {
-      const [lng, lat] = CoordTransform.gcj02towgs84(lnglat.lng, lnglat.lat);
-      return { lng, lat };
-    },
     async bindMapEvents() {
-      this.map.on('dragstart', () => this.$emit('map-move'));
+      /** @type {AMap.Map} */
+      const map = this.map;
+      map.on('dragstart', () => this.$emit('map-move'));
       const AMapUI = await loadAMapUI();
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         /** @type { (position: AMap.LngLat) => void } */
         const placeMarker = position => {
           if (this.selectedMarker) {
-            this.selectedMarker.setMap(this.map);
+            this.selectedMarker.setMap(map);
             this.selectedMarker.setPosition(position);
           } else {
             const marker = new SimpleMarker({
@@ -123,24 +131,25 @@ export default {
               position,
               title: 'SelectedMarker',
             });
-            marker.setMap(this.map);
+            marker.setMap(map);
             this.selectedMarker = marker;
           }
           waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(() => {
-            this.$emit('select-point', this.outputLngLat(position), this.selectedMarker.domNodes.container);
+            const [lng, lat] = CoordTransform.gcj02towgs84(position.getLng(), position.getLat());
+            this.$emit('select-point', { lng, lat }, this.selectedMarker.domNodes.container);
           });
         };
-        this.map.on('rightclick', e => placeMarker(e.lnglat));
-        this.map.on('movestart', () => this.$emit('cancel-point'));
-        this.map.on('zoomstart', () => this.$emit('cancel-point'));
+        map.on('rightclick', e => placeMarker(e.lnglat));
+        map.on('movestart', () => this.$emit('cancel-point'));
+        map.on('zoomstart', () => this.$emit('cancel-point'));
         // touch gestures
         let touchContinue = false;
-        this.map.on('touchstart', e => {
+        map.on('touchstart', e => {
           touchContinue = true;
           setTimeout(() => touchContinue && placeMarker(e.lnglat), 500);
         });
-        this.map.on('touchend', () => touchContinue = false);
-        this.map.on('touchmove', () => touchContinue = false);
+        map.on('touchend', () => touchContinue = false);
+        map.on('touchmove', () => touchContinue = false);
       });
     },
     removeSeletedMarker() {
@@ -160,18 +169,13 @@ export default {
       if (this.poly) {
         this.poly.setPath(path);
       } else {
-        const colorValue = Number.parseInt(this.pathColor.slice(1), 16);
-        const colorValueB =
-          (((colorValue & 0xff0000) * 0.8) & 0xff0000) +
-          (((colorValue & 0x00ff00) * 0.8) & 0x00ff00) +
-          (((colorValue & 0x0000ff) * 0.8) & 0x0000ff);
         this.poly = new Polyline({
           map: this.map,
           path: path,
           strokeColor: this.pathColor,
           strokeWeight: 2,
           isOutline: true,
-          outlineColor: `#${colorValueB.toString(16)}`,
+          outlineColor: multiplyRGB(this.pathColor, 0.8),
           lineJoin: 'round'
         });
       }
@@ -225,9 +229,10 @@ export default {
                 }
               });
             } else if (marker.type === 'drone') {
-              const img = document.createElement('img');
-              img.src = '/assets/icons/drone-marker-amap.svg';
-              img.style.transform = `rotate(${marker.heading}deg)`;
+              const img = h('img', {
+                src: '/assets/icons/drone-marker-amap.svg',
+                style: `transform:rotate(${marker.heading}deg)`
+              });
               mapMarker = new AMap.Marker({
                 content: img,
                 offset: { x: -20, y: -20 },
@@ -244,7 +249,7 @@ export default {
               });
             } else if (marker.type === 'action') {
               mapMarker = new AMap.Marker({
-                content: `<div class="amap-marker--action">${marker.action.map(a => MapActionEmoji[a]).join('')}</div>`,
+                content: h('div', { class: 'amap-marker--action' }, marker.action.map(a => MapActionEmoji[a])),
                 position,
                 offset: new AMap.Pixel(-11, -11)
               });
@@ -337,6 +342,7 @@ export default {
       __AMAP_CENTER__ = this.map.getCenter();
       __AMAP_ZOOM__ = this.map.getZoom();
       this.map.destroy();
+      this.map = null;
     }
   }
 };
