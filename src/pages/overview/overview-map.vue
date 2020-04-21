@@ -6,7 +6,6 @@
     :markers="markers"
     :places="places"
     :fit="fit"
-    selectable
     :marker-styling="styling"
     @map-move="handleMove"
   >
