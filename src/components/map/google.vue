@@ -192,11 +192,6 @@ export default {
         strokeColor: this.pathColor,
         strokeWeight: 2
       });
-      if (this.fit) {
-        this.fitPath();
-      } else if (this.follow && !this.popoverShown) {
-        this.map.setCenter(this.path[0]);
-      }
     },
     /**
      * 向已经画在地图上的路径折线增加点
@@ -215,11 +210,6 @@ export default {
         // 将点的经纬度加入点集，GoogleMap 会自动更新折线
         mvcArray.insertAt(0, new LatLng(point.lat, point.lng));
         mvcArrayB.insertAt(0, new LatLng(point.lat, point.lng));
-      }
-      if (this.fit) {
-        this.fitPath();
-      } else if (this.follow && !this.popoverShown) {
-        this.map.setCenter(this.path[0]);
       }
     },
     /**
@@ -271,10 +261,8 @@ export default {
       }
     },
     async drawNamedMarkers() {
-      const { LatLngBounds } = await loadGoogleMap();
       /** @type {google.maps.Marker} */
       const MarkerWithLabel = await loadGoogleMapMarker();
-      const bounds = new LatLngBounds();
       // remove mapMarker which disappeared in markers
       for (const [name, mapMarker] of Object.entries(this.namedMarkers)) {
         if (this.markers.findIndex(m => m.id == name) < 0) {
@@ -347,11 +335,6 @@ export default {
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
-        bounds.extend(mapMarker.getPosition());
-      }
-      if ((!this.path || this.path.length === 0) && this.fit && !bounds.isEmpty()) {
-        // only fit to markers if no path persent
-        this.map.fitBounds(bounds);
       }
     },
     /**
@@ -367,6 +350,27 @@ export default {
         });
         this.map.fitBounds(bounds);
       }
+    },
+    /**
+     * 自动缩放地图以适应标记点
+     */
+    async fitMarkers() {
+      const { LatLngBounds } = await loadGoogleMap();
+      const bounds = new LatLngBounds();
+      for (const marker of this.markers) {
+        bounds.extend(marker.position);
+      }
+      this.map.fitBounds(bounds);
+    },
+    /**
+     * 自动缩放地图，以适应路径或标记点
+     */
+    autoFit() {
+      if (this.path.length > 0) {
+        this.fitPath();
+      } else if (this.markers.length > 0) {
+        this.fitMarkers();
+      }
     }
   },
   watch: {
@@ -378,7 +382,7 @@ export default {
     path(newPath) {
       // 任务路径点，每次都重绘
       if (this.fit) {
-        return this.drawPath();
+        this.drawPath().then(() => this.fitPath());
       }
       // 假设能
       let patchable = true;
@@ -409,20 +413,23 @@ export default {
           }
         }
       }
-      if (patchable) {
-        this.patchPath(newPath);
-      } else {
-        this.drawPath();
-      }
+      const op = patchable ? this.patchPath(newPath) : this.drawPath();
+      op.then(() => {
+        if (this.follow && !this.popoverShown && newPath > 0) {
+          this.map.setCenter(newPath[0]);
+        }
+      });
     },
     markers() {
       this.drawPlacePaths();
       this.drawNamedMarkers();
+      if (this.fit && !this.popoverShown && this.path.length <= 0) {
+        this.fitMarkers();
+      }
     },
     fit(val) {
-      if (val === true) {
-        this.fitPath();
-      }
+      if (!val) return;
+      this.autoFit();
     },
     follow(val) {
       if (!val) return;
@@ -451,10 +458,16 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
-      if (this.path.length !== 0) {
-        this.drawPath();
+      if (this.fit) {
+        this.autoFit();
       }
-      if (this.markers.length !== 0) {
+      if (this.path.length > 0) {
+        this.drawPath();
+        if (this.follow) {
+          this.map.setCenter(this.path[0]);
+        }
+      }
+      if (this.markers.length > 0) {
         this.drawPlacePaths();
         this.drawNamedMarkers();
       }
@@ -477,6 +490,7 @@ export default {
     if (this.map) {
       __GMAP_CENTER__ = this.map.getCenter();
       __GMAP_ZOOM__ = this.map.getZoom();
+      this.map = null;
     }
   }
 };
