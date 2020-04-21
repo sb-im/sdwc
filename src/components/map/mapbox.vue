@@ -11,7 +11,8 @@ import { MapActionEmoji } from '@/constants/map-actions';
 import { waitSelector, randColor } from './common';
 
 /**
- * @typedef {{lng: number, lat: number}} LngLatLiteral
+ * @typedef {{ lng: number, lat: number }} LngLatLiteral
+ * @typedef {{ data: GeoJSON.Feature<GeoJSON.Geometry>, source: string, layers: string[] }} PathDescriptor
  */
 
 /** @type {number} */
@@ -33,15 +34,35 @@ const GoogleRasterStyle = {
   layers: [{ id: 'GoogleRasterLayer', type: 'raster', source: 'google' }]
 };
 
-const PathSource = 'PathSource';
-const PathLayer = 'PathLayer';
-const PathOutlineLayer = 'PathOutlineLayer';
+const Path = {
+  Source: 'PathSource',
+  Layer: 'PathLayer',
+  OutlineLayer: 'PathOutlineLayer',
+  /** @type {mapboxgl.LineLayout} */
+  Layout: { 'line-cap': 'round', 'line-join': 'round' }
+};
 
-/** @type {mapboxgl.LineLayout} */
-const PathLayout = { 'line-cap': 'round', 'line-join': 'round' };
+/** @type {{ [key: string]: { layout: mapboxgl.LineLayout, outline: mapboxgl.LinePaint, paint: mapboxgl.LinePaint } }} */
+const PlacePathStyle = {
+  solid: {
+    layout: Path.Layout,
+    paint: { 'line-width': 2 },
+    outline: { 'line-width': 2, 'line-gap-width': 1, 'line-color': '#fff' }
+  },
+  dotted: {
+    layout: Path.Layout,
+    paint: { 'line-dasharray': [0, 3], 'line-width': 3 },
+    outline: { 'line-dasharray': [0, 1.8], 'line-width': 5, 'line-color': '#fff' }
+  },
+  dashed: {
+    layout: { 'line-cap': 'butt' },
+    paint: { 'line-dasharray': [3, 1], 'line-width': 3 },
+    outline: { 'line-dasharray': [1.8, 0.6], 'line-width': 5, 'line-color': '#fff' }
+  },
+};
 
 function createMarkerElement(label = '', color = '#ea4335') {
-  return h('div', { width: 29, height: 37 }, [
+  return h('div', { style: 'width:29px;height:37px' }, [
     hs('svg', { width: 29, height: 37 }, [
       hs('path', {
         fill: color,
@@ -54,7 +75,7 @@ function createMarkerElement(label = '', color = '#ea4335') {
 }
 
 function createDroneElement(label = '', color = '#ea4335') {
-  return h('div', { width: 34, height: 34 }, [
+  return h('div', { style: 'width:34px;height:34px' }, [
     hs('svg', { width: 34, height: 34 }, [
       hs('path', {
         fill: color,
@@ -191,21 +212,21 @@ export default {
         geometry: { type: 'LineString', coordinates }
       };
       if (this.pathData) {
-        map.getSource(PathSource).setData(pathData);
+        map.getSource(Path.Source).setData(pathData);
       } else {
-        map.addSource(PathSource, { type: 'geojson', data: pathData });
+        map.addSource(Path.Source, { type: 'geojson', data: pathData });
         map.addLayer({
-          id: PathOutlineLayer,
+          id: Path.OutlineLayer,
           type: 'line',
-          source: PathSource,
-          layout: PathLayout,
+          source: Path.Source,
+          layout: Path.Layout,
           paint: { 'line-color': '#fff', 'line-width': 4, }
         });
         map.addLayer({
-          id: PathLayer,
+          id: Path.Layer,
           type: 'line',
-          source: PathSource,
-          layout: PathLayout,
+          source: Path.Source,
+          layout: Path.Layout,
           paint: { 'line-color': this.pathColor, 'line-width': 2 }
         });
       }
@@ -214,6 +235,64 @@ export default {
         this.fitPath();
       } else if (this.follow && !this.popoverShown) {
         map.setCenter(coordinates[0]);
+      }
+    },
+    /**
+     * @param {string} name
+     * @param {mapboxgl.LngLat[]} points
+     * @param {SDWC.DroneMapStyling} style
+     */
+    drawAnimatedPath(name, points, style) {
+      const coordinates = points.map(p => [p.lng, p.lat]);
+      /** @type {GeoJSON.Feature<GeoJSON.Geometry>} */
+      const data = {
+        type: 'Feature',
+        geometry: { type: 'LineString', coordinates }
+      };
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
+      /** @type {PathDescriptor} */
+      let pd = this.placePaths[name];
+      if (pd) {
+        pd.data = data;
+        map.getSource(pd.source).setData(data);
+        return;
+      } else {
+        pd = { layers: [`${name}_layer`, `${name}_outline_layer`], source: `${name}_source`, data };
+        this.placePaths[name] = pd;
+        const layerStyle = PlacePathStyle[style.stroke];
+        map.addSource(pd.source, { type: 'geojson', data });
+        map.addLayer({
+          id: pd.layers[1],
+          type: 'line',
+          source: pd.source,
+          layout: layerStyle.layout,
+          paint: layerStyle.outline
+        });
+        map.addLayer({
+          id: pd.layers[0],
+          type: 'line',
+          source: pd.source,
+          layout: layerStyle.layout,
+          paint: { ...layerStyle.paint, 'line-color': style.color }
+        });
+      }
+    },
+    drawPlacePaths() {
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
+      for (const [name, pd] of Object.entries(this.placePaths)) {
+        if (this.places.findIndex(place => place.name === name) < 0) {
+          pd.layers.forEach(l => map.removeLayer(l));
+          map.removeSource(pd.source);
+          delete this.placePaths[name];
+        }
+      }
+      for (const { name, path } of this.places) {
+        const style = this.markerStyling[name] || {};
+        if (style.stroke) {
+          this.drawAnimatedPath(name, path, style);
+        }
       }
     },
     async drawNamedMarkers() {
@@ -275,7 +354,7 @@ export default {
       this.drawPath();
     },
     markers() {
-      // this.drawPlacePaths();
+      this.drawPlacePaths();
       this.drawNamedMarkers();
     },
     fit(val) {
@@ -298,6 +377,8 @@ export default {
     this.map = null;
     /** @type {GeoJSON.Feature<GeoJSON.Geometry>} */
     this.pathData = null;
+    /** @type {{ [key: string]: PathDescriptor }} */
+    this.placePaths = {};
     /** @type {{ [key: string]: mapboxgl.Marker }} */
     this.namedMarkers = {};
     /** @type {mapboxgl.Marker} */
@@ -309,33 +390,31 @@ export default {
         this.drawPath();
       }
       if (this.markers.length !== 0) {
-        // this.drawPlacePaths();
+        this.drawPlacePaths();
         this.drawNamedMarkers();
       }
     });
   },
   beforeDestroy() {
-    const data = [
-      'pathData'
-    ];
-    for (const prop of data) {
-      if (this[prop]) {
-        this[prop] = null;
-      }
-    }
     const objects = [
+      'pathData',
       'selectedMarker',
+      ...Object.keys(this.placePaths),
       ...Object.keys(this.namedMarkers)
     ];
     for (const prop of objects) {
       if (this[prop]) {
-        this[prop].remove();
+        if (typeof this[prop].remove === 'function') {
+          this[prop].remove();
+        }
         this[prop] = null;
       }
     }
     if (this.map) {
       __MAPBOX_ZOOM__ = this.map.getZoom();
       __MAPBOX_CENTER__ = this.map.getCenter();
+      this.map.remove();
+      this.map = null;
     }
   }
 };
