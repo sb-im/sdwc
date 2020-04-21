@@ -20,6 +20,58 @@ let __GMAP_CENTER__;
  */
 let __GMAP_ZOOM__;
 
+const PathStyle = {
+  dotted: 'M0 -2 c1.1 0 2 0.9 2 2 s-0.9 2 -2 2 s-2 -0.9 -2 -2 s0.9 -2 2 -2 z',
+  dashed: 'M-1.5 -1.5 h3 v6 h-3 z'
+};
+
+/**
+ * @param {SDWC.DroneMapStyling} style
+ * @returns {google.maps.Symbol}
+ */
+function createPathIcon(style) {
+  /** @type {google.maps.Symbol} */
+  return {
+    path: PathStyle[style.stroke],
+    scale: 1,
+    fillColor: style.color,
+    fillOpacity: 1,
+    strokeColor: '#fff',
+    strokeOpacity: 1,
+    strokeWeight: 1
+  };
+}
+
+/**
+ * @param {string} fillColor
+ * @returns {Partial<google.maps.Symbol>}
+ */
+function createMarkerPointIcon(fillColor = '#ea4335') {
+  return {
+    anchor: { x: 20, y: 39 },
+    labelOrigin: { x: 20, y: 15 },
+    path: 'M20,38 C18,36 7.5,24 7.5,14 C7.5,7 13,1.5 20,1.5 S32.5,7 32.5,14 C32.5,24 22,36 20,38 z',
+    fillColor,
+    fillOpacity: 1,
+    strokeColor: '#fff',
+  };
+}
+
+/**
+ * @param {number} rotation
+ * @returns {Partial<google.maps.Symbol>}
+ */
+function createMarkerDroneIcon(rotation) {
+  return {
+    anchor: { x: 20, y: 20 },
+    path: 'M20,2L8 33.5 20 28 32 33.5z',
+    fillColor: '#ea4335',
+    fillOpacity: 1,
+    strokeColor: '#fff',
+    rotation
+  };
+}
+
 export default {
   name: 'sd-map-google',
   props: {
@@ -81,54 +133,6 @@ export default {
         this.bindMapEvents();
       }
     },
-    /**
-     * @param {SDWC.DroneMapStyling} style
-     * @returns {google.maps.Symbol}
-     */
-    createPathIcon(style) {
-      const PathStyle = {
-        dotted: 'M0 -2 a2 2 180 0 0 0 4 a2 2 180 0 0 0 -4',
-        dashed: 'M-1.5 -1.5 h3 v6 h-3 z'
-      };
-      /** @type {google.maps.Symbol} */
-      return {
-        path: PathStyle[style.stroke],
-        scale: 1,
-        fillColor: style.color,
-        fillOpacity: 1,
-        strokeColor: '#fff',
-        strokeOpacity: 1,
-        strokeWeight: 1
-      };
-    },
-    /**
-     * @param {string} fillColor
-     * @returns {Partial<google.maps.Symbol>}
-     */
-    createMarkerPointIcon(fillColor = '#ea4335') {
-      return {
-        anchor: { x: 20, y: 39 },
-        labelOrigin: { x: 20, y: 15 },
-        path: 'M20,38 C18,36 7.5,24 7.5,14 C7.5,7 13,1.5 20,1.5 S32.5,7 32.5,14 C32.5,24 22,36 20,38 z',
-        fillColor,
-        fillOpacity: 1,
-        strokeColor: '#fff',
-      };
-    },
-    /**
-     * @param {number} rotation
-     * @returns {Partial<google.maps.Symbol>}
-     */
-    createMarkerDroneIcon(rotation) {
-      return {
-        anchor: { x: 20, y: 20 },
-        path: 'M20,2L8 33.5 20 28 32 33.5z',
-        fillColor: '#ea4335',
-        fillOpacity: 1,
-        strokeColor: '#fff',
-        rotation
-      };
-    },
     async bindMapEvents() {
       const { Marker, event } = await loadGoogleMap();
       this.map.addListener('dragstart', () => this.$emit('map-move'));
@@ -142,7 +146,7 @@ export default {
             map: this.map,
             position,
             title: 'SelectedMarker',
-            icon: this.createMarkerPointIcon('#409eff')
+            icon: createMarkerPointIcon('#409eff')
           });
         }
         waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(el => {
@@ -233,7 +237,7 @@ export default {
       }
       /** @type {google.maps.IconSequence} */
       const icon = {
-        icon: this.createPathIcon(style),
+        icon: createPathIcon(style),
         offset: '0px',
         repeat: '10px'
       };
@@ -297,7 +301,7 @@ export default {
             mapMarker = new MarkerWithLabel({
               map: this.map,
               position: marker.position,
-              icon: this.createMarkerPointIcon(),
+              icon: createMarkerPointIcon(),
               label: '🚉',
               labelContent: marker.name,
               labelAnchor: { x: -6, y: 12 },
@@ -307,7 +311,7 @@ export default {
             mapMarker = new MarkerWithLabel({
               map: this.map,
               position: marker.position,
-              icon: this.createMarkerDroneIcon(marker.heading),
+              icon: createMarkerDroneIcon(marker.heading),
               labelInBackground: true,
               labelContent: marker.name,
               labelAnchor: { x: 0, y: -10 },
@@ -332,7 +336,7 @@ export default {
             mapMarker = new MarkerWithLabel({
               map: this.map,
               position: marker.position,
-              icon: this.createMarkerPointIcon(color),
+              icon: createMarkerPointIcon(color),
               labelContent: marker.name,
               labelAnchor: { x: -6, y: 12 },
               labelClass: 'gmap-label',
