@@ -249,7 +249,7 @@ export default {
       });
       this.placePaths[name] = p;
       const callback = (time) => {
-        if (!this.map) return;
+        if (!this.placePaths[name] || !this.map) return;
         icon.offset = `${((time / 100) % 10)}px`;
         p.set('icons', [icon]);
         requestAnimationFrame(callback);
@@ -258,7 +258,7 @@ export default {
     },
     async drawPlacePaths() {
       for (const [name, line] of Object.entries(this.placePaths)) {
-        if (!Object.prototype.hasOwnProperty.call(this.places, name)) {
+        if (this.places.findIndex(place => place.name === name) < 0) {
           line.setMap(null);
           delete this.placePaths[name];
         }
