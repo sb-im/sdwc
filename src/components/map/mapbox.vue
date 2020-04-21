@@ -192,16 +192,6 @@ export default {
       if (!this.selectedMarker) return;
       this.selectedMarker.remove();
     },
-    async fitPath() {
-      if (!this.pathData) return;
-      const { LngLatBounds } = await loadMapbox();
-      const bounds = new LngLatBounds();
-      const { coordinates } = this.pathData.geometry;
-      for (const cord of coordinates) {
-        bounds.extend(cord);
-      }
-      this.map.fitBounds(bounds, { padding: 40, linear: true });
-    },
     async drawPath() {
       const coordinates = this.path.map(p => [p.lng, p.lat]);
       /** @type {mapboxgl.Map} */
@@ -298,6 +288,8 @@ export default {
     async drawNamedMarkers() {
       const { LngLat, LngLatBounds, Marker } = await loadMapbox();
       const bounds = new LngLatBounds();
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
       // remove mapMarker which disappeared in markers
       for (const [name, mapMarker] of Object.entries(this.namedMarkers)) {
         if (this.markers.findIndex(m => m.id == name) < 0) {
@@ -322,31 +314,49 @@ export default {
             element.querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
             mapMarker = new Marker({ element })
               .setLngLat(lnglat)
-              .addTo(this.map);
+              .addTo(map);
           } else if (marker.type === 'depot') {
             mapMarker = new Marker({ element: createMarkerElement(marker.name), anchor: 'bottom' })
               .setLngLat(lnglat)
-              .addTo(this.map);
+              .addTo(map);
           } else if (marker.type === 'action') {
             const label = marker.action.map(a => MapActionEmoji[a]).join('');
             mapMarker = new Marker({ element: createPointElement(label) })
               .setLngLat(lnglat)
-              .addTo(this.map);
+              .addTo(map);
           } else if (marker.type === 'place') {
             const style = this.markerStyling[marker.name] || {};
             const color = style.color || randColor(marker.name);
             mapMarker = new Marker({ element: createMarkerElement(marker.name, color), anchor: 'bottom' })
               .setLngLat(lnglat)
-              .addTo(this.map);
+              .addTo(map);
+          } else {
+            continue;
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
         bounds.extend(lnglat);
       }
-      if (this.fit && !bounds.isEmpty() && this.path.length === 0) {
+      if (this.fit && !bounds.isEmpty() && !this.popoverShown && this.path.length <= 0) {
         // only fit to markers if no path persent
-        this.map.fitBounds(bounds, { padding: 40, linear: true });
+        map.fitBounds(bounds, { padding: 40, linear: true });
       }
+    },
+    async fitPath() {
+      const { LngLatBounds } = await loadMapbox();
+      const bounds = new LngLatBounds();
+      for (const point of this.path) {
+        bounds.extend(point);
+      }
+      this.map.fitBounds(bounds, { padding: 40, linear: true });
+    },
+    async fitMarkers() {
+      const { LngLat, LngLatBounds } = await loadMapbox();
+      const bounds = new LngLatBounds();
+      for (const { position: { lng, lat } } of this.markers) {
+        bounds.extend(new LngLat(lng, lat));
+      }
+      this.map.fitBounds(bounds, { padding: 40, linear: true });
     }
   },
   watch: {
@@ -359,12 +369,16 @@ export default {
     },
     fit(val) {
       if (!val) return;
-      this.fitPath();
+      if (this.path.length > 0) {
+        this.fitPath();
+      } else if (this.markers.length > 0) {
+        this.fitMarkers();
+      }
     },
     follow(val) {
       if (!val) return;
       if (this.path.length <= 0) return;
-      this.map.setCenter(this.pathData.geometry.coordinates[0]);
+      this.map.setCenter(this.path[0]);
     },
     popoverShown(val) {
       if (val === false) {
