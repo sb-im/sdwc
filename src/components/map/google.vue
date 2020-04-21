@@ -341,20 +341,20 @@ export default {
      * 自动缩放地图以适应路径
      */
     async fitPath() {
+      if (!this.map || !this.poly) return;
       const { LatLngBounds } = await loadGoogleMap();
-      if (this.map && this.poly) {
-        const bounds = new LatLngBounds();
-        const mvcArray = this.poly.getPath();
-        mvcArray.forEach(elem => {
-          bounds.extend(elem);
-        });
-        this.map.fitBounds(bounds);
-      }
+      const bounds = new LatLngBounds();
+      const mvcArray = this.poly.getPath();
+      mvcArray.forEach(elem => {
+        bounds.extend(elem);
+      });
+      this.map.fitBounds(bounds);
     },
     /**
      * 自动缩放地图以适应标记点
      */
     async fitMarkers() {
+      if (!this.map || this.markers.length <= 0) return;
       const { LatLngBounds } = await loadGoogleMap();
       const bounds = new LatLngBounds();
       for (const marker of this.markers) {
