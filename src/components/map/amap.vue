@@ -176,7 +176,7 @@ export default {
         });
       }
       if (this.fit) {
-        this.fitPath();
+        this.autoFit();
       } else if (this.follow && !this.popoverShown) {
         this.map.setCenter(path[0]);
       }
@@ -263,19 +263,17 @@ export default {
             this.namedMarkers[marker.id] = mapMarker;
             this.map.add(mapMarker);
           }
-          if (this.fit) {
-            this.map.setFitView(null, false, [8, 8, 8, 8], 20);
+          if (this.fit && !this.popoverShown) {
+            this.autoFit();
           }
         }
       });
     },
     /**
-     * 自动缩放地图以适应路径
+     * 自动缩放地图以适应路径及标记点
      */
-    fitPath() {
-      if (this.poly) {
-        this.map.setFitView([this.poly], false, [8, 8, 8, 8], 20);
-      }
+    autoFit() {
+      this.map.setFitView(null, false, [20, 20, 20, 20], 20);
     }
   },
   watch: {
@@ -287,7 +285,7 @@ export default {
     },
     fit(val) {
       if (val === true) {
-        this.fitPath();
+        this.autoFit();
       }
     },
     follow(val) {
