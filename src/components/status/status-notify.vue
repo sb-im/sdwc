@@ -5,34 +5,38 @@
       <sd-notification v-if="notification.length > 0" :notification="notification[0]"></sd-notification>
       <span v-else v-t="'status.no_log'"></span>
     </div>
-    <el-button-group class="status__buttons">
-      <el-button
-        :icon="`el-icon-${popup ? 'bell' : 'close-notification'}`"
-        :type="popup ? 'primary' : 'default'"
-        size="small"
-        @click="handlePopup"
-      >
-        <span v-t="'status.popup'"></span>
-      </el-button>
-      <el-dropdown trigger="click" :hide-on-click="false">
-        <el-button type="default" size="small">
+    <el-popover
+      class="status__buttons"
+      popper-class="status__noti-history"
+      trigger="manual"
+      placement="bottom-end"
+      :value="historyShown"
+    >
+      <el-button-group slot="reference">
+        <el-button
+          :icon="`el-icon-${popup ? 'bell' : 'close-notification'}`"
+          :type="popup ? 'primary' : 'default'"
+          size="small"
+          @click="handlePopup"
+        >
+          <span v-t="'status.popup'"></span>
+        </el-button>
+        <el-button type="default" size="small" @click="handleHistory">
           <span v-t="'status.history'"></span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
-        <template #dropdown>
-          <el-dropdown-menu class="status__noti-history">
-            <el-dropdown-item v-if="notification.length === 0" disabled>
-              <span v-t="'status.no_log'"></span>
-            </el-dropdown-item>
-            <template v-else>
-              <el-dropdown-item v-for="(n, i) of notification" :key="notification.length - i">
-                <sd-notification :notification="n"></sd-notification>
-              </el-dropdown-item>
-            </template>
-          </el-dropdown-menu>
+      </el-button-group>
+      <template>
+        <el-dropdown-item v-if="notification.length === 0" disabled>
+          <span v-t="'status.no_log'"></span>
+        </el-dropdown-item>
+        <template v-else>
+          <el-dropdown-item v-for="(n, i) of notification" :key="notification.length - i">
+            <sd-notification :notification="n"></sd-notification>
+          </el-dropdown-item>
         </template>
-      </el-dropdown>
-    </el-button-group>
+      </template>
+    </el-popover>
   </div>
 </template>
 
@@ -53,6 +57,11 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      historyShown: false
+    };
+  },
   computed: {
     ...mapState(['preference']),
     popup() {
@@ -69,6 +78,9 @@ export default {
         arr.push(this.nodeId);
       }
       this.setPreference({ notifyPopup: arr });
+    },
+    handleHistory() {
+      this.historyShown = !this.historyShown;
     }
   },
   components: {
@@ -100,19 +112,8 @@ export default {
 .status__buttons {
   flex-shrink: 0;
 }
-/* fix el-button border of el-dropdown's trigger element in el-button-group */
-.status__buttons .el-button--small.el-dropdown-selfdefine {
-  border-left-color: #dcdfe6;
-}
-.status__buttons .el-button--small.el-dropdown-selfdefine:focus,
-.status__buttons .el-button--small.el-dropdown-selfdefine:hover {
-  border-left-color: #c6e2ff;
-}
-.status__buttons .el-button--small.el-dropdown-selfdefine:active {
-  border-left-color: #3a8ee6;
-}
-/* end fix */
 .status__noti-history {
+  padding: 10px 0;
   min-width: 200px;
   max-width: 75%;
 }
