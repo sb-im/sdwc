@@ -1,11 +1,22 @@
 <template>
-  <div class="sd-slide-confirm" :class="containerClass" :style="containerStyle">
+  <div
+    class="sd-slide-confirm"
+    :class="containerClass"
+    :style="containerStyle"
+    @mouseup="handleMouseUp"
+    @mousemove="handleMouseMove"
+    @mouseleave="handleMouseLeave"
+    @touchend="handleMouseUp"
+    @touchmove="handleMouseMove"
+  >
     <div class="sd-slide-confirm__text" :style="textStyle" v-t="text"></div>
     <el-button
       class="sd-slide-confirm__inner"
       ref="button"
       v-bind="buttonAttrs"
       :style="buttonStyle"
+      @mousedown.native="activate"
+      @touchstart.native="activate"
     ></el-button>
   </div>
 </template>
@@ -68,6 +79,7 @@ export default {
     /** @param {MouseEvent} ev */
     activate(ev) {
       if (this.$attrs.disabled) return;
+      ev.preventDefault();
       this.dragable = true;
       this.initialX = ev.pageX;
       this.buttonWidth = this.$refs.button.$el.getBoundingClientRect().width;
@@ -103,14 +115,6 @@ export default {
         this.position = pos;
       }
     }
-  },
-  mounted() {
-    const button = this.$refs.button.$el;
-    button.addEventListener('mousedown', ev => this.activate(ev));
-    const container = this.$el;
-    container.addEventListener('mouseup', () => this.handleMouseUp());
-    container.addEventListener('mouseleave', () => this.handleMouseLeave());
-    container.addEventListener('mousemove', ev => this.handleMouseMove(ev));
   }
 };
 </script>
