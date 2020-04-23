@@ -343,10 +343,10 @@ export default {
       }
     },
     async fitPath() {
-      const { LngLatBounds } = await loadMapbox();
+      const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
-      for (const point of this.path) {
-        bounds.extend(point);
+      for (const { lng, lat } of this.path) {
+        bounds.extend(new LngLat(lng, lat));
       }
       this.map.fitBounds(bounds, { padding: 40, linear: true });
     },
