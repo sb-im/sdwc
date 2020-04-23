@@ -59,4 +59,8 @@ export default {
 .plan.el-loading-parent--relative {
   height: 100%;
 }
+
+.sd--safari .plan.el-loading-parent--relative {
+  height: calc(100vh - 120px);
+}
 </style>
