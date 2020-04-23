@@ -1,6 +1,7 @@
 <template>
   <el-dialog
     custom-class="sd-preflight"
+    append-to-body
     :visible.sync="show"
     :close-on-click-modal="false"
     @open="check"
@@ -176,7 +177,7 @@ export default {
       this.show = !this.show;
     },
     wait() {
-      const timeout = (1.5 + Math.random()) * 1000;
+      const timeout = Math.random() * 1000;
       return new Promise(resolve => setTimeout(resolve, timeout));
     },
     preCheck() {
