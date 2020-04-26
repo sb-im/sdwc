@@ -98,6 +98,8 @@ export default {
         }));
         map.addControl(new AMap.Scale);
       });
+      map.on('dragstart', () => this.$emit('map-move'));
+      map.on('mousewheel', () => this.$emit('map-move'));
       this.map = map;
       if (this.selectable) {
         this.bindMapEvents();
@@ -122,7 +124,6 @@ export default {
     async bindMapEvents() {
       /** @type {AMap.Map} */
       const map = this.map;
-      map.on('dragstart', () => this.$emit('map-move'));
       const AMapUI = await loadAMapUI();
       AMapUI.loadUI(['overlay/SimpleMarker'], (/** @type {AMap.Marker} */  SimpleMarker) => {
         /** @type { (position: AMap.LngLat) => void } */

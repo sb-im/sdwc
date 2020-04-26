@@ -155,6 +155,8 @@ export default {
       });
       map.addControl(new ScaleControl(), 'bottom-left');
       map.addControl(new NavigationControl(), 'bottom-right');
+      map.on('wheel', () => this.$emit('map-move'));
+      map.on('dragstart', () => this.$emit('map-move'));
       this.map = map;
       if (this.selectable) {
         this.bindMapEvents();
@@ -167,7 +169,6 @@ export default {
     async bindMapEvents() {
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      map.on('dragstart', () => this.$emit('map-move'));
       map.on('movestart', () => this.$emit('cancel-point'));
       map.on('zoomstart', () => this.$emit('cancel-point'));
       const { Marker } = await loadMapbox();

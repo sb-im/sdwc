@@ -121,8 +121,8 @@ export default {
   },
   methods: {
     async initMap() {
-      const { Map, MapTypeId } = await loadGoogleMap();
-      this.map = new Map(this.$refs.map, {
+      const { event, Map, MapTypeId } = await loadGoogleMap();
+      const map = new Map(this.$refs.map, {
         maxZoom: 20,
         zoom: __GMAP_ZOOM__ || 20,
         center: __GMAP_CENTER__ || { lat: 30, lng: 120 },
@@ -134,21 +134,25 @@ export default {
         draggableCursor: 'grab',
         draggingCursor: 'grabbing'
       });
+      map.addListener('dragstart', () => this.$emit('map-move'));
+      event.addDomListener(this.$refs.map , 'mousewheel', () => this.$emit('map-move'));
+      this.map = map;
       if (this.selectable) {
         this.bindMapEvents();
       }
     },
     async bindMapEvents() {
+      /** @type {google.maps.Map} */
+      const map = this.map;
       const { Marker, event } = await loadGoogleMap();
-      this.map.addListener('dragstart', () => this.$emit('map-move'));
       /** @type { (position: google.maps.LatLng) => void } */
       const placeMarker = position => {
         if (this.selectedMarker) {
-          this.selectedMarker.setMap(this.map);
+          this.selectedMarker.setMap(map);
           this.selectedMarker.setPosition(position);
         } else {
           this.selectedMarker = new Marker({
-            map: this.map,
+            map,
             position,
             title: 'SelectedMarker',
             icon: createMarkerPointIcon('#409eff')
@@ -159,14 +163,14 @@ export default {
           this.$emit('select-point', point, el);
         });
       };
-      this.map.addListener('rightclick', (/** @type {google.maps.MouseEvent} */ e) => placeMarker(e.latLng));
-      this.map.addListener('mousedown', (/** @type {google.maps.MouseEvent} */ e) => {
+      map.addListener('rightclick', (/** @type {google.maps.MouseEvent} */ e) => placeMarker(e.latLng));
+      map.addListener('mousedown', (/** @type {google.maps.MouseEvent} */ e) => {
         let touchContinue = true;
-        event.addListenerOnce(this.map, 'mouseup', () => touchContinue = false);
-        event.addListenerOnce(this.map, 'dragstart', () => touchContinue = false);
+        event.addListenerOnce(map, 'mouseup', () => touchContinue = false);
+        event.addListenerOnce(map, 'dragstart', () => touchContinue = false);
         setTimeout(() => touchContinue && placeMarker(e.latLng), 500);
       });
-      this.map.addListener('bounds_changed', () => {
+      map.addListener('bounds_changed', () => {
         this.$emit('cancel-point');
         this.removeSeletedMarker();
       });
@@ -461,6 +465,8 @@ export default {
   created() {
     /** @type {google.maps.Map} */
     this.map = null;
+    /** @type {google.maps.MapsEventListener[]} */
+    this.listeners = [];
     /** @type {google.maps.Polyline} */
     this.poly = null;
     /** @type {google.maps.Polyline} */
@@ -495,6 +501,9 @@ export default {
     });
   },
   beforeDestroy() {
+    for (const l of this.listeners) {
+      l.remove();
+    }
     const objects = [
       'poly',
       'polyB',
