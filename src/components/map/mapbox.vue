@@ -12,7 +12,7 @@ import { waitSelector, randColor } from './common';
 
 /**
  * @typedef {{ lng: number, lat: number }} LngLatLiteral
- * @typedef {{ data: GeoJSON.Feature<GeoJSON.Geometry>, source: string, layers: string[] }} PathDescriptor
+ * @typedef {{ data: GeoJSON.LineString, source: string, layers: string[] }} PathDescriptor
  */
 
 /** @type {number} */
@@ -61,6 +61,11 @@ const PlacePathStyle = {
   },
 };
 
+const Heatmap = {
+  Layer: 'HeatmapLayer',
+  Source: 'HeatmapSource'
+};
+
 function createMarkerElement(label = '', color = '#ea4335') {
   return h('div', { style: 'width:29px;height:37px' }, [
     hs('svg', { width: 29, height: 37 }, [
@@ -105,6 +110,11 @@ export default {
       default: () => []
     },
     places: {
+      type: Array,
+      default: () => []
+    },
+    /** @type {Vue.PropOptions<SDWC.GPSHeatPoint[]>} */
+    heatmap: {
       type: Array,
       default: () => []
     },
@@ -196,11 +206,8 @@ export default {
       const coordinates = this.path.map(p => [p.lng, p.lat]);
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      /** @type {GeoJSON.Feature<GeoJSON.Geometry>} */
-      const pathData = {
-        type: 'Feature',
-        geometry: { type: 'LineString', coordinates }
-      };
+      /** @type {GeoJSON.LineString} */
+      const pathData = { type: 'LineString', coordinates };
       if (this.pathData) {
         map.getSource(Path.Source).setData(pathData);
       } else {
@@ -234,11 +241,8 @@ export default {
      */
     drawAnimatedPath(name, points, style) {
       const coordinates = points.map(p => [p.lng, p.lat]);
-      /** @type {GeoJSON.Feature<GeoJSON.Geometry>} */
-      const data = {
-        type: 'Feature',
-        geometry: { type: 'LineString', coordinates }
-      };
+      /** @type {GeoJSON.Feature<GeoJSON.LineString>} */
+      const data = { type: 'LineString', coordinates };
       /** @type {mapboxgl.Map} */
       const map = this.map;
       /** @type {PathDescriptor} */
@@ -342,6 +346,46 @@ export default {
         map.fitBounds(bounds, { padding: 40, linear: true });
       }
     },
+    async drawHeatmap() {
+      const maxWeight = Math.max.apply(null, this.heatmap.map(p => p.weight));
+      /** @type {GeoJSON.Feature<GeoJSON.Point>[]} */
+      const features = [];
+      for (const p of this.heatmap) {
+        features.push({
+          type: 'Feature',
+          properties: { weight: p.weight / maxWeight },
+          geometry: { type: 'Point', coordinates: [p.lng, p.lat, 0] }
+        });
+      }
+      /** @type {GeoJSON.FeatureCollection<GeoJSON.Point>} */
+      const data = { type: 'FeatureCollection', features };
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
+      if (this.heatmapData) {
+        map.getSource(Heatmap.Source).setData(data);
+      } else {
+        this.heatmapData = data;
+        map.addSource(Heatmap.Source, { type: 'geojson', data });
+        map.addLayer({
+          id: Heatmap.Layer,
+          type: 'heatmap',
+          source: Heatmap.Source,
+          paint: {
+            'heatmap-opacity': 0.65,
+            // control heatmap weight by property weight
+            'heatmap-weight': ['get', 'weight'],
+            // increase heatmap weight by zoom level, or it would hardly be recognized when zoomed in
+            'heatmap-intensity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              0, 1,
+              20, 4
+            ],
+          }
+        });
+      }
+    },
     async fitPath() {
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
@@ -367,6 +411,9 @@ export default {
       this.drawPlacePaths();
       this.drawNamedMarkers();
     },
+    heatmap() {
+      this.drawHeatmap();
+    },
     fit(val) {
       if (!val) return;
       if (this.path.length > 0) {
@@ -389,7 +436,7 @@ export default {
   created() {
     /** @type {mapboxgl.Map} */
     this.map = null;
-    /** @type {GeoJSON.Feature<GeoJSON.Geometry>} */
+    /** @type {GeoJSON.Feature<GeoJSON.LineString>} */
     this.pathData = null;
     /** @type {{ [key: string]: PathDescriptor }} */
     this.placePaths = {};
@@ -400,12 +447,15 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
-      if (this.path.length !== 0) {
+      if (this.path.length > 0) {
         this.drawPath();
       }
-      if (this.markers.length !== 0) {
+      if (this.markers.length > 0) {
         this.drawPlacePaths();
         this.drawNamedMarkers();
+      }
+      if (this.heatmap.length > 0) {
+        this.drawHeatmap();
       }
     });
   },
@@ -413,6 +463,7 @@ export default {
     const objects = [
       'pathData',
       'selectedMarker',
+      'heatmapData',
       ...Object.keys(this.placePaths),
       ...Object.keys(this.namedMarkers)
     ];
