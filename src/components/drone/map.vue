@@ -2,8 +2,9 @@
   <sd-map
     icon="map-marker"
     title="map.satellite"
-    :markers="markers"
     :path="msg.position"
+    :markers="markers"
+    :heatmap="msg.heatmap"
     :places="places"
     :follow="follow"
     selectable

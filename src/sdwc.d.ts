@@ -128,20 +128,31 @@ declare namespace SDWC {
     yaw: number;
     pitch: number;
   }
-  interface GPSCoordinate {
+  export interface GPSCoordinate {
     /** Latitude */
-    lat: string;
+    lat: number;
     /** Longitude */
-    lng: string;
+    lng: number;
     /** Altitude */
-    alt: string;
+    alt: number;
+  }
+  export interface GPSHeatPoint {
+    /** Latitude */
+    lat: number;
+    /** Longitude */
+    lng: number;
+    /** Point weight on heatmap */
+    weight: number;
   }
   export interface NodePosition extends GPSCoordinate {
     /** Heading 0°~360° */
     heading: number;
     place: {
       [key: string]: GPSCoordinate | GPSCoordinate[];
-    }
+    };
+    heatmap: {
+      [key: string]: GPSHeatPoint;
+    };
   }
   export interface NodeNotification {
     time: string;
