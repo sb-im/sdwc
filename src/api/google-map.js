@@ -7,7 +7,7 @@ const GoogleMapApiURL = {
 };
 
 let gmapProm;
-let wr = wretchJSONP.url(GoogleMapApiURL.sbim);
+let wr = wretchJSONP.url(GoogleMapApiURL.sbim).query({ libraries: 'visualization' });
 
 /**
  * @param {keyof GoogleMapApiURL} url
@@ -24,7 +24,7 @@ export function setBaseURL(url) {
  * @param {string} key Google Map Api Key
  */
 export function setApiKey(key) {
-  wr = wr.query({ key }, true);
+  wr = wr.query({ key });
 }
 
 /**

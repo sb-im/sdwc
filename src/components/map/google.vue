@@ -89,6 +89,11 @@ export default {
       type: Array,
       default: () => []
     },
+    /** @type {Vue.PropOptions<SDWC.GPSHeatPoint[]>} */
+    heatmap: {
+      type: Array,
+      default: () => []
+    },
     fit: {
       type: Boolean,
       default: false
@@ -337,6 +342,15 @@ export default {
         }
       }
     },
+    async drawHeatMap() {
+      const { LatLng, visualization: { HeatmapLayer } } = await loadGoogleMap();
+      const data = this.heatmap.map(p => ({ location: new LatLng(p.lat, p.lng), weight: p.weight }));
+      if (this.heatmapLayer) {
+        this.heatmapLayer.setData(data);
+      } else {
+        this.heatmapLayer = new HeatmapLayer({ map: this.map, data, opacity: 0.65 });
+      }
+    },
     /**
      * 自动缩放地图以适应路径
      */
@@ -426,6 +440,9 @@ export default {
         this.fitMarkers();
       }
     },
+    heatmap() {
+      this.drawHeatMap();
+    },
     fit(val) {
       if (!val) return;
       this.autoFit();
@@ -454,6 +471,8 @@ export default {
     this.namedMarkers = {};
     /** @type {google.maps.Marker} */
     this.selectedMarker = null;
+    /** @type {google.maps.visualization.HeatmapLayer} */
+    this.heatmapLayer = null;
   },
   mounted() {
     this.initMap().then(() => {
@@ -470,6 +489,9 @@ export default {
         this.drawPlacePaths();
         this.drawNamedMarkers();
       }
+      if (this.heatmap.length > 0) {
+        this.drawHeatMap();
+      }
     });
   },
   beforeDestroy() {
@@ -477,6 +499,7 @@ export default {
       'poly',
       'polyB',
       'selectedMarker',
+      'heatmapLayer',
       ...Object.keys(this.placePaths),
       ...Object.keys(this.namedMarkers)
     ];
