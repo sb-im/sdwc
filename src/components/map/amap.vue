@@ -52,6 +52,11 @@ export default {
       type: Array,
       default: () => []
     },
+    /** @type {Vue.PropOptions<SDWC.GPSHeatPoint[]>} */
+    heatmap: {
+      type: Array,
+      default: () => []
+    },
     fit: {
       type: Boolean,
       default: false
@@ -274,6 +279,21 @@ export default {
         }
       });
     },
+    async drawHeatmap() {
+      const data = this.heatmap.map(p => ({ lng: p.lng, lat: p.lat, count: p.weight }));
+      /** @type {AMap.Map} */
+      const map = this.map;
+      if (!this.heatmapLayer) {
+        const AMap = await loadAMap();
+        map.plugin(['AMap.Heatmap'], () => {
+          const hm = new AMap.Heatmap(map, { opacity: 0.65, zooms: [3, 20] });
+          hm.setDataSet({ data });
+          this.heatmapLayer = hm;
+        });
+      } else {
+        this.heatmapLayer.setDataSet({ data });
+      }
+    },
     /**
      * 自动缩放地图以适应路径及标记点
      */
@@ -287,6 +307,9 @@ export default {
     },
     markers() {
       this.drawNamedMarkers();
+    },
+    heatmap() {
+      this.drawHeatmap();
     },
     fit(val) {
       if (val === true) {
@@ -315,14 +338,19 @@ export default {
     this.namedMarkers = {};
     /** @type {AMap.Marker} */
     this.selectedMarker = null;
+    /** AMap.Heatmap */
+    this.heatmapLayer = null;
   },
   mounted() {
     this.initMap().then(() => {
-      if (this.path.length !== 0) {
+      if (this.path.length > 0) {
         this.drawPath();
       }
-      if (this.markers.length !== 0) {
+      if (this.markers.length > 0) {
         this.drawNamedMarkers();
+      }
+      if (this.heatmap.length > 0) {
+        this.drawHeatmap();
       }
     });
   },
@@ -330,6 +358,7 @@ export default {
     const objects = [
       'poly',
       'selectedMarker',
+      'heatmapLayer',
       ...Object.keys(this.namedMarkers)
     ];
     for (const prop of objects) {
