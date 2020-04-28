@@ -16,7 +16,6 @@ import {
   Submenu,
   MenuItem,
   Input,
-  InputNumber,
   Radio,
   RadioGroup,
   RadioButton,
@@ -33,12 +32,7 @@ import {
   Tag,
   Slider,
   Icon,
-  Row,
-  Col,
-  Container,
   Upload,
-  Collapse,
-  CollapseItem,
   Header,
   Loading,
   MessageBox,
@@ -65,7 +59,6 @@ Vue.use(Menu);
 Vue.use(Submenu);
 Vue.use(MenuItem);
 Vue.use(Input);
-Vue.use(InputNumber);
 Vue.use(Radio);
 Vue.use(RadioButton);
 Vue.use(RadioGroup);
@@ -82,12 +75,7 @@ Vue.use(FormItem);
 Vue.use(Tag);
 Vue.use(Slider);
 Vue.use(Icon);
-Vue.use(Row);
-Vue.use(Col);
-Vue.use(Container);
 Vue.use(Upload);
-Vue.use(Collapse);
-Vue.use(CollapseItem);
 Vue.use(Header);
 
 Vue.use(Loading.directive);
