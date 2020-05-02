@@ -1,0 +1,30 @@
+{
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "stylelint.config": {
+    "rules": {
+      "indentation": 2,
+      "string-quotes": "single"
+    }
+  },
+  "stylefmt.useStylelintConfigOverrides": true,
+  "vetur.format.options.tabSize": 2,
+  "vetur.format.defaultFormatter.html": "prettyhtml",
+  "vetur.format.defaultFormatterOptions": {
+    "prettyhtml": {
+      "printWidth": 100,
+      "singleQuote": false,
+      "wrapAttributes": false,
+      "sortAttributes": false
+    }
+  },
+  "i18n-ally.enabledParsers": [
+    "js"
+  ],
+  "i18n-ally.localesPaths": [
+    "src/i18n/locale"
+  ],
+  "i18n-ally.pathMatcher": "{locale}.js",
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.sourceLanguage": "zh"
+}
