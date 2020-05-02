@@ -7,7 +7,7 @@
     </div>
     <el-popover
       class="status__buttons"
-      popper-class="status__noti-history"
+      popper-class="status__notify-popover"
       trigger="manual"
       placement="bottom-end"
       :value="historyShown"
@@ -31,11 +31,11 @@
         <el-dropdown-item v-if="notification.length === 0" disabled>
           <span v-t="'status.no_log'"></span>
         </el-dropdown-item>
-        <template v-else>
+        <div class="status__notify-history" v-else>
           <el-dropdown-item v-for="(n, i) of notification" :key="notification.length - i">
             <sd-notification :notification="n"></sd-notification>
           </el-dropdown-item>
-        </template>
+        </div>
       </template>
     </el-popover>
   </div>
@@ -97,7 +97,6 @@ export default {
 </script>
 
 <style>
-/* notification */
 .status__noti {
   margin: 0 10px;
   padding: 10px 0;
@@ -119,12 +118,16 @@ export default {
 .status__buttons {
   flex-shrink: 0;
 }
-.status__noti-history {
+.status__notify-popover {
   padding: 10px 0;
-  min-width: 200px;
-  max-width: 75%;
 }
-.status__noti-history .el-dropdown-menu__item {
+.status__notify-history {
+  min-width: 200px;
+  max-width: 75vh;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.status__notify-history .el-dropdown-menu__item {
   line-height: initial;
   padding: 8px 20px;
 }
