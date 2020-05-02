@@ -2,7 +2,7 @@ import elMsg from 'element-ui/lib/locale/lang/en';
 
 export const name = 'English';
 
-export const locale = {
+export default {
   ...elMsg,
   common: {
     air: 'Drone',

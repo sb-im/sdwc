@@ -10,8 +10,8 @@ Vue.use(I18n);
 const i18n = new I18n({
   locale: navigator.language.split('-')[0],
   messages: {
-    'en': en.locale,
-    'zh': zh.locale
+    'en': en.default,
+    'zh': zh.default
   },
   dateTimeFormats: {
     'en': format,

@@ -2,7 +2,7 @@ import elMsg from 'element-ui/lib/locale/lang/zh-CN';
 
 export const name = '简体中文';
 
-export const locale = {
+export default {
   ...elMsg,
   common: {
     air: '无人机',
