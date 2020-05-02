@@ -5,6 +5,7 @@
       <sd-overview-counter icon="depot" caption="common.depot" :value="depots.length" background-color="#f0f9eb"></sd-overview-counter>
       <sd-overview-counter icon="tasks" caption="common.plan" :value="plan.info.length" background-color="#fef0f0"></sd-overview-counter>
     </div>
+    <sd-overview-notify></sd-overview-notify>
     <sd-overview-map v-if="configLoaded"></sd-overview-map>
   </div>
 </template>
@@ -15,6 +16,7 @@ import { mapState, mapGetters } from 'vuex';
 import { config } from '@/api/sdwc';
 import Card from '@/components/card.vue';
 import OverviewMap from './overview-map.vue';
+import OverviewNotify from './overview-notify.vue';
 import OverviewCounter from './overview-counter.vue';
 
 export default {
@@ -39,6 +41,7 @@ export default {
   components: {
     [Card.name]: Card,
     [OverviewMap.name]: OverviewMap,
+    [OverviewNotify.name]: OverviewNotify,
     [OverviewCounter.name]: OverviewCounter
   }
 };

@@ -14,6 +14,7 @@
     >
       <el-button-group slot="reference">
         <el-button
+          v-if="canPopup"
           :icon="`el-icon-${popup ? 'bell' : 'close-notification'}`"
           :type="popup ? 'primary' : 'default'"
           size="small"
@@ -50,11 +51,15 @@ export default {
   props: {
     nodeId: {
       type: Number,
-      required: true
+      default: -1
     },
     notification: {
       type: Array,
       required: true
+    },
+    canPopup: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -65,12 +70,14 @@ export default {
   computed: {
     ...mapState(['preference']),
     popup() {
+      if (!this.canPopup) return false;
       return this.preference.notifyPopup.includes(this.nodeId);
     }
   },
   methods: {
     ...mapActions(['setPreference']),
     handlePopup() {
+      if (!this.canPopup) return;
       const arr = Array.from(this.preference.notifyPopup);
       if (this.popup) {
         arr.splice(arr.indexOf(this.nodeId), 1);

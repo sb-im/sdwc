@@ -152,7 +152,7 @@ export default {
   margin: 0;
 }
 .overview-map .el-card__body {
-  height: calc(100vh - 315px);
+  height: calc(100vh - 379px);
 }
 .overview-map .map__el {
   height: 100%;
