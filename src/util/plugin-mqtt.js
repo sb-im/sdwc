@@ -112,15 +112,15 @@ function registerNotificationListener() {
     if (!node || !store.state.preference.notifyPopup.includes(node.id)) return;
     const notify = Notification({
       message: 'REPLACED_BY_VNODE',
-      customClass: 'sd-notification--popup'
+      customClass: 'status-notify--popup'
     });
     const h = notify.$createElement;
     notify.$slots.default = [
       h('div', null, [
-        h('span', { class: 'sd-notification__title' }, [node.name]),
+        h('span', { class: 'status-notify__title' }, [node.name]),
         h('span', null, [' · ', i18n.d(n.time * 1000, 'seconds')]),
       ]),
-      h('span', { class: ['sd-notification__level', `lv${n.level}`] }, [` [${NotificationLevels[n.level]}] `]),
+      h('span', { class: ['status-notify__level', `lv${n.level}`] }, [` [${NotificationLevels[n.level]}] `]),
       h('span', null, [n.msg])
     ];
   });

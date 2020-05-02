@@ -1,8 +1,8 @@
 <template>
-  <div class="status__line status__noti">
+  <div class="status__line status__notify">
     <div class="status__label" v-t="'status.log'"></div>
     <div class="status__body">
-      <sd-notification v-if="notification.length > 0" :notification="notification[0]"></sd-notification>
+      <sd-status-notify-item v-if="notification.length > 0" :notification="notification[0]"></sd-status-notify-item>
       <span v-else v-t="'status.no_log'"></span>
     </div>
     <el-popover
@@ -33,7 +33,7 @@
         </el-dropdown-item>
         <div class="status__notify-history" v-else>
           <el-dropdown-item v-for="(n, i) of notification" :key="notification.length - i">
-            <sd-notification :notification="n"></sd-notification>
+            <sd-status-notify-item :notification="n"></sd-status-notify-item>
           </el-dropdown-item>
         </div>
       </template>
@@ -44,7 +44,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 
-import NotificationItem from './notification.vue';
+import NotifyItem from './status-notify-item.vue';
 
 export default {
   name: 'sd-status-notify',
@@ -91,13 +91,13 @@ export default {
     }
   },
   components: {
-    [NotificationItem.name]: NotificationItem
+    [NotifyItem.name]: NotifyItem
   }
 };
 </script>
 
 <style>
-.status__noti {
+.status__notify {
   margin: 0 10px;
   padding: 10px 0;
   align-items: center;
@@ -112,7 +112,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
 }
-.status__body .sd-notification {
+.status__body .status-notify-item {
   display: inline-block;
 }
 .status__buttons {
