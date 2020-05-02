@@ -20,7 +20,7 @@ const cfg = {
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: '[name].[hash].js',
-    chunkFilename: '[name].[hash].js',
+    chunkFilename: '[name].[contenthash].js',
   },
   module: {
     rules: [
@@ -115,7 +115,10 @@ module.exports = function (env, argv) {
       { loader: 'css-loader' }
     ];
     cfg.plugins.push(
-      new MiniCSSExtractPlugin({ filename: 'style.[contenthash].css' }),
+      new MiniCSSExtractPlugin({
+        filename: 'style.[contenthash].css',
+        chunkFilename: '[name].[contenthash].css'
+      }),
       new OptimizeCssAssetsPlugin()
     );
   }

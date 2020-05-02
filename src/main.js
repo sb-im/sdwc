@@ -53,7 +53,7 @@ store.subscribe((mutation) => {
 });
 
 if (__SDWC_DEV__) {
-  import('./styles/development.css');
+  import(/* webpackChunkName: 'development' */ './styles/development.css');
   const el = document.createElement('div');
   el.classList.add('development-ribbon');
   document.body.append(el);
