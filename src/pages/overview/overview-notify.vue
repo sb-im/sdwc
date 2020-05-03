@@ -1,6 +1,6 @@
 <template>
   <div class="el-card sd-card">
-    <sd-status-notify :nodeId="-1" :notification="notification" :canPopup="false"></sd-status-notify>
+    <sd-status-notify :notification="notification" :canPopup="false"></sd-status-notify>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
         }
       }
       result.sort((a, b) => b.time - a.time);
-      return result;
+      return result.slice(0, 15);
     }
   },
   components: {
