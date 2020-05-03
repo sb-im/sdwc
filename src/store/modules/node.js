@@ -117,7 +117,9 @@ const mutations = {
       }
     }
     if (msg.notification) {
-      node.msg.notification.unshift(msg.notification);
+      if (node.msg.notification.findIndex(n => n.time === msg.notification.time) < 0) {
+        node.msg.notification.unshift(msg.notification);
+      }
     }
   },
   [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {
