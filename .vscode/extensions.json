@@ -5,7 +5,7 @@
   "recommendations": [
     "EditorConfig.EditorConfig",
     "dbaeumer.vscode-eslint",
-    "shinnn.stylelint",
+    "stylelint.vscode-stylelint",
     "mrmlnc.vscode-stylefmt",
     "octref.vetur",
     "antfu.i18n-ally"
