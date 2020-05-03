@@ -73,7 +73,7 @@ export function transformMessage(str) {
     }
   } else {
     msg.notification = {
-      time: Math.trunc(Date.now() / 1000),
+      time: Date.now() / 1000,
       msg: str,
       level: 6 // Info
     };
