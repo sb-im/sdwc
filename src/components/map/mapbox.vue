@@ -67,7 +67,7 @@ const Heatmap = {
 };
 
 function createMarkerElement(label = '', color = '#ea4335') {
-  return h('div', { style: 'width:29px;height:37px' }, [
+  return h('div', { class: 'mapbox-marker', style: 'width:29px;height:37px' }, [
     hs('svg', { width: 29, height: 37 }, [
       hs('path', {
         fill: color,
@@ -80,7 +80,7 @@ function createMarkerElement(label = '', color = '#ea4335') {
 }
 
 function createDroneElement(label = '', color = '#ea4335') {
-  return h('div', { style: 'width:34px;height:34px' }, [
+  return h('div', { class: 'mapbox-marker', style: 'width:34px;height:34px' }, [
     hs('svg', { width: 34, height: 34 }, [
       hs('path', {
         fill: color,
@@ -338,6 +338,12 @@ export default {
           } else {
             continue;
           }
+          if (marker.type === 'depot' || marker.type === 'drone') {
+            const elm = mapMarker.getElement();
+            elm.onclick = () => {
+              this.$emit('marker-click', marker.id, elm);
+            };
+          }
           this.namedMarkers[marker.id] = mapMarker;
         }
         bounds.extend(lnglat);
@@ -461,18 +467,24 @@ export default {
     });
   },
   beforeDestroy() {
-    const objects = [
+    const data = [
       'pathData',
-      'selectedMarker',
       'heatmapData',
+    ];
+    for (const d of data) {
+      this[d] = null;
+    }
+    const objects = [
+      'selectedMarker',
       ...Object.keys(this.placePaths),
       ...Object.keys(this.namedMarkers)
     ];
     for (const prop of objects) {
       if (this[prop]) {
-        if (typeof this[prop].remove === 'function') {
-          this[prop].remove();
+        if (typeof this[prop].getElement === 'function') {
+          this[prop].getElement().onclick = null;
         }
+        this[prop].remove();
         this[prop] = null;
       }
     }
@@ -487,6 +499,9 @@ export default {
 </script>
 
 <style>
+.mapbox-marker {
+  cursor: pointer;
+}
 .mapbox-marker__label {
   position: absolute;
   top: 24px;

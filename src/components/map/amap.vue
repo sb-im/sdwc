@@ -229,6 +229,9 @@ export default {
                 iconStyle: 'red',
                 iconLabel: '🚉',
                 position,
+                extData: {
+                  id: marker.id,
+                },
                 label: {
                   content: marker.name,
                   offset: { x: 25, y: 30 }
@@ -244,6 +247,7 @@ export default {
                 offset: { x: -20, y: -20 },
                 position,
                 extData: {
+                  id: marker.id,
                   img,
                   heading: marker.heading
                 },
@@ -270,6 +274,11 @@ export default {
               });
             } else {
               continue;
+            }
+            if (marker.type === 'depot' || marker.type === 'drone') {
+              mapMarker.on('click', () => {
+                this.$emit('marker-click', mapMarker.getExtData().id, mapMarker.getContent());
+              });
             }
             this.namedMarkers[marker.id] = mapMarker;
             this.map.add(mapMarker);

@@ -135,7 +135,7 @@ export default {
         draggingCursor: 'grabbing'
       });
       map.addListener('dragstart', () => this.$emit('map-move'));
-      event.addDomListener(this.$refs.map , 'mousewheel', () => this.$emit('map-move'));
+      event.addDomListener(this.$refs.map, 'mousewheel', () => this.$emit('map-move'));
       this.map = map;
       if (this.selectable) {
         this.bindMapEvents();
@@ -300,6 +300,7 @@ export default {
               position: marker.position,
               icon: createMarkerPointIcon(),
               label: '🚉',
+              title: marker.name,
               labelContent: marker.name,
               labelAnchor: { x: -6, y: 12 },
               labelClass: 'gmap-label'
@@ -309,6 +310,7 @@ export default {
               map: this.map,
               position: marker.position,
               icon: createMarkerDroneIcon(marker.heading),
+              title: marker.name,
               labelInBackground: true,
               labelContent: marker.name,
               labelAnchor: { x: 0, y: -10 },
@@ -341,6 +343,21 @@ export default {
             });
           } else {
             continue;
+          }
+          if (marker.type === 'depot' || marker.type === 'drone') {
+            mapMarker.set('sd-node-id', marker.id);
+            mapMarker.addListener('click', () => {
+              const id = mapMarker.get('sd-node-id');
+              const el = Array.from(this.$el.querySelectorAll(`div[title=${marker.name}]`));
+              if (el.length > 0) {
+                for (const e of el) {
+                  if (!e.classList.contains('gmap-label')) {
+                    this.$emit('marker-click', id, e);
+                    return;
+                  }
+                }
+              }
+            });
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
