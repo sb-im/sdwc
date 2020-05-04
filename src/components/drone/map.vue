@@ -11,8 +11,8 @@
     path-color="#909399"
     :popover-shown="popover.show"
     :marker-styling="styling"
-    @map-change="handleCancel"
     @map-move="handleMove"
+    @map-change="handleCancel"
     @select-point="handleSelect"
     @cancel-point="handleCancel"
   >
