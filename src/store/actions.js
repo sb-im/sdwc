@@ -174,8 +174,8 @@ export async function updateDepotStatus({ commit }, id) {
 }
 
 const NodePointTopic = {
-  depot_status: ['depot_status', 'notification', 'charger'],
-  drone_status: ['drone_status', 'notification'],
+  depot_status: ['depot_status', 'notification', 'overview', 'charger'],
+  drone_status: ['drone_status', 'notification', 'overview'],
   battery: 'battery',
   weather: 'weather',
   gimbal: 'gimbal',

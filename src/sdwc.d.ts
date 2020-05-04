@@ -173,6 +173,7 @@ declare namespace SDWC {
       gimbal: NodeGimbal;
       position: NodePosition[];
       notification: NodeNotification[];
+      overview: any;
     };
   }
   export type RawNodeMessage = Partial<{
@@ -184,6 +185,7 @@ declare namespace SDWC {
     gimbal: NodeGimbal;
     position: NodePosition;
     notification: NodeNotification;
+    overview: any;
   }>
   /**
    * interface won't work here

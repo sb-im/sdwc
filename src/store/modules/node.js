@@ -80,7 +80,8 @@ const mutations = {
           pitch: 0
         },
         position: [],
-        notification: []
+        notification: [],
+        overview: {}
       }
     });
   },
@@ -120,6 +121,9 @@ const mutations = {
       if (node.msg.notification.findIndex(n => n.time === msg.notification.time) < 0) {
         node.msg.notification.unshift(msg.notification);
       }
+    }
+    if (msg.overview) {
+      node.msg.overview = msg.overview;
     }
   },
   [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {
