@@ -8,6 +8,8 @@
     :fit="fit"
     :marker-styling="styling"
     @map-move="handleMove"
+    @map-change="handleClose"
+    @marker-click="handleMarkerClick"
   >
     <template #action>
       <el-button
@@ -18,6 +20,14 @@
       >
         <span v-t="'map.fit'"></span>
       </el-button>
+      <el-popover ref="popover" trigger="manual" popper-class="map__popover" v-model="popover.show">
+        <sd-overview-popover
+          v-if="selectedNode"
+          :node="selectedNode"
+          @close="handleClose"
+          @update="handleUpdate"
+        ></sd-overview-popover>
+      </el-popover>
     </template>
   </sd-map>
 </template>
@@ -27,16 +37,23 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 
 import SdMap from '@/components/map/map.vue';
 
+import OverviewPopover from './overview-popover.vue';
+
 export default {
   name: 'sd-overview-map',
   data() {
     return {
       type: '',
-      fit: true
+      fit: true,
+      popover: {
+        show: false,
+        node: -1
+      }
     };
   },
   computed: {
     ...mapState([
+      'node',
       'preference'
     ]),
     ...mapGetters([
@@ -113,6 +130,10 @@ export default {
         }
       }
       return paths;
+    },
+    selectedNode() {
+      if (this.popover.node < 0) return null;
+      return this.node.find(n => n.info.id === this.popover.node);
     }
   },
   methods: {
@@ -123,13 +144,46 @@ export default {
       if (this.fit) {
         this.fit = false;
       }
+      if (this.popover.show) {
+        this.popover.show = false;
+      }
     },
     handleFit() {
       this.fit = !this.fit;
       this.setPreference({ overviewFit: this.fit });
+      this.popover.show = false;
     },
     handleMapChange(mapType) {
       this.setPreference({ mapType });
+    },
+    /**
+     * @param {number | string} id
+     * @param {HTMLDivElement} el
+     */
+    handleMarkerClick(id, el) {
+      this.popover.node = id;
+      if (!this.$refs.popover.popperJS) {
+        this.$refs.popover.referenceElm = el;
+        this.popover.show = true;
+      } else if (this.popover.show) {
+        this.$refs.popover.popperJS._reference = el;
+        this.$nextTick(() => this.$refs.popover.updatePopper());
+      } else {
+        this.popover.show = true;
+      }
+    },
+    handleClose() {
+      this.popover.show = false;
+      setTimeout(() => this.popover.node = -1, 200);
+    },
+    handleUpdate() {
+      this.$nextTick(() => this.$refs.popover.updatePopper());
+    }
+  },
+  watch: {
+    droneMarkers() {
+      if (!this.popover.show) return;
+      this.$nextTick(() => this.$refs.popover.updatePopper());
     }
   },
   created() {
@@ -142,7 +196,8 @@ export default {
     };
   },
   components: {
-    [SdMap.name]: SdMap
+    [SdMap.name]: SdMap,
+    [OverviewPopover.name]: OverviewPopover
   }
 };
 </script>

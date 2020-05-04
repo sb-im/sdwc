@@ -15,6 +15,9 @@ import 'chartist-plugin-tooltips';
 import 'chartist/dist/chartist.min.css';
 import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
 import './styles/chartist.css';
+import JSONTreeView from 'vue-json-tree-view/src/index';
+
+Vue.use(JSONTreeView);
 
 const configurePromise = store.dispatch('configure');
 /**
