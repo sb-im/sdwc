@@ -1,4 +1,4 @@
-import wretchJSONP from './wretch-jsonp';
+import { loadScript } from './load-script';
 
 const GoogleMapApiURL = {
   com: 'https://maps.googleapis.com/maps/api/js',
@@ -6,25 +6,27 @@ const GoogleMapApiURL = {
   sbim: 'https://sb.im/maps/api/js'
 };
 
-let gmapProm;
-let wr = wretchJSONP.url(GoogleMapApiURL.sbim).query({ libraries: 'visualization' });
+const conf = {
+  url: GoogleMapApiURL.sbim,
+  query: {
+    libraries: ['visualization']
+  }
+};
+
+let promise;
 
 /**
  * @param {keyof GoogleMapApiURL} url
  */
 export function setBaseURL(url) {
-  if (GoogleMapApiURL[url]) {
-    wr = wr.url(GoogleMapApiURL[url], true);
-  } else {
-    wr = wr.url(url, true);
-  }
+  conf.url = GoogleMapApiURL[url] || url;
 }
 
 /**
  * @param {string} key Google Map Api Key
  */
 export function setApiKey(key) {
-  wr = wr.query({ key });
+  conf.query.key = key;
 }
 
 /**
@@ -32,34 +34,16 @@ export function setApiKey(key) {
  * @returns {Promise<typeof google.maps>}
  */
 export async function loadGoogleMap() {
-  if (window.google) {
-    return window.google.maps;
-  }
-  if (!gmapProm) {
-    gmapProm = wr.get().res();
-  }
-  try {
-    await gmapProm;
-    if (window.google) {
-      return window.google.maps;
-    }
-  } catch (e) {
-    gmapProm = null;
-    throw Error('Google Map load failed.');
-  }
+  const src = `${conf.url}?${new URLSearchParams(conf.query).toString()}`;
+  promise = loadScript(src, 'google');
+  const google = await promise;
+  return google.maps;
 }
 
 export async function loadGoogleMapMarker() {
   /* global require:readonly */
+  if (promise) await promise;
   if (window.google) {
     return require('@google/markerwithlabel');
-  }
-  try {
-    await gmapProm;
-    if (window.google) {
-      return require('@google/markerwithlabel');
-    }
-  } catch (e) {
-    throw Error('Google Map Marker load failed.');
   }
 }
