@@ -1,6 +1,6 @@
 <template>
-  <div class="plan" v-loading="!this.plan">
-    <router-view v-if="this.plan" v-bind="componentProps" :key="key"></router-view>
+  <div class="plan" v-loading="!plan">
+    <router-view v-if="plan" v-bind="componentProps" :key="key"></router-view>
   </div>
 </template>
 
@@ -54,13 +54,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.plan.el-loading-parent--relative {
-  height: 100%;
-}
-
-.sd--safari .plan.el-loading-parent--relative {
-  height: calc(100vh - 120px);
-}
-</style>

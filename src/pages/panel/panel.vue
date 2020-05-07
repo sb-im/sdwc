@@ -3,9 +3,7 @@
     <sd-aside class="sd-panel__side"></sd-aside>
     <div class="sd-panel__main">
       <sd-header></sd-header>
-      <div class="sd-panel__view">
-        <router-view></router-view>
-      </div>
+      <router-view class="sd-panel__view"></router-view>
       <div class="sd-panel__footer">
         <span>SDWC v{{version}}</span>
         <span class="sd-panel__cpy">Copyright © 2017-2020 StrawBerry Tech.</span>
@@ -75,6 +73,12 @@ export default {
 .sd-panel__view {
   padding: 10px;
   flex-grow: 1;
+}
+.sd-panel__view.el-loading-parent--relative {
+  height: 100%;
+}
+.sd--safari .sd-panel__view.el-loading-parent--relative {
+  height: calc(100vh - 120px);
 }
 .sd-panel__footer {
   margin-top: auto;
