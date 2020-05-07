@@ -163,11 +163,18 @@ export default {
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
-.el-menu--collapse .el-submenu.is-active,
-.el-menu .el-menu-item.is-active {
+/* active menu item indicator on left side */
+.el-menu--collapse .el-submenu.is-active,  /* collpased active submenu */
+.el-submenu.is-active:not(.is-opened),     /* active but not opened submenu */
+.el-menu-item.is-active {                  /* active menu item */
   box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 #434a50;
 }
-.el-menu--collapse .el-submenu.is-active .el-submenu__title {
+.el-submenu.is-active .el-submenu__title {
   background: none !important;
+}
+/* popup menu max height */
+.el-menu--vertical .el-menu--popup-right-start {
+  max-height: 426px;
+  overflow-y: auto;
 }
 </style>
