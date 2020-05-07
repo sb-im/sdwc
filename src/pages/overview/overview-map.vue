@@ -98,15 +98,16 @@ export default {
       const markers = [];
       for (const d of this.drones) {
         const position = d.msg.position[0];
-        if (!position || !position.place) continue;
-        for (const [name, pos] of Object.entries(position.place)) {
+        if (d.status.code !== 0 || !position || !position.place) continue;
+        const droneId = d.info.id;
+        for (const [placeName, pos] of Object.entries(position.place)) {
           const arr = Array.isArray(pos) ? pos : [pos];
-          for (let i = 0; i < arr.length; i++) {
+          for (const p of arr) {
             markers.push({
               type: 'place',
-              id: `${name}_${i}`,
+              id: `${droneId}_${placeName}`,
               name,
-              position: arr[i]
+              position: p
             });
           }
         }
@@ -120,7 +121,7 @@ export default {
       const paths = [];
       for (const d of this.drones) {
         const position = d.msg.position[0];
-        if (!position || !position.place) continue;
+        if (d.status.code !== 0 || !position || !position.place) continue;
         const p = [position];
         for (const [name, pos] of Object.entries(position.place)) {
           paths.push({
