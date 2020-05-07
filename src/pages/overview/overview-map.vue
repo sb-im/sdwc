@@ -35,6 +35,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 
+import { MarkerStyling } from '@/constants/marker-styling';
 import SdMap from '@/components/map/map.vue';
 
 import OverviewPopover from './overview-popover.vue';
@@ -190,11 +191,7 @@ export default {
   created() {
     this.type = this.preference.mapType;
     this.fit = this.preference.overviewFit;
-    this.styling = {
-      target: { stroke: 'dotted', color: '#409eff' },
-      roi: { point: 'glow', color: '#f69730' },
-      home: { color: '#67c23a' }
-    };
+    this.styling = MarkerStyling;
   },
   components: {
     [SdMap.name]: SdMap,

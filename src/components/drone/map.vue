@@ -48,6 +48,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 
+import { MarkerStyling } from '@/constants/marker-styling';
 import NodeMap from '@/components/map/map.vue';
 
 /** @type {SDWC.DroneMapControl[]} */
@@ -79,13 +80,6 @@ const DefaultCommands = [
     }
   }
 ];
-
-/** @type {SDWC.DroneMapStyling[]} */
-const DefaultStyling = {
-  target: { stroke: 'dotted', color: '#409eff' },
-  roi: { point: 'glow', color: '#f69730' },
-  home: { color: '#67c23a' }
-};
 
 export default {
   name: 'sd-drone-map',
@@ -128,7 +122,7 @@ export default {
       return this.point.params.common.move;
     },
     styling() {
-      if (!this.point.params) return DefaultStyling;
+      if (!this.point.params) return MarkerStyling;
       return this.point.params.common.place;
     },
     droneMarkers() {
