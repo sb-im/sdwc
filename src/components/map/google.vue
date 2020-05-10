@@ -449,7 +449,7 @@ export default {
       }
       const op = patchable ? this.patchPath(newPath) : this.drawPath();
       op.then(() => {
-        if (this.follow && !this.popoverShown && newPath > 0) {
+        if (this.follow && !this.popoverShown && newPath.length > 0) {
           this.map.setCenter(newPath[0]);
         }
       });
