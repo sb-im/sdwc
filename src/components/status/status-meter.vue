@@ -1,5 +1,5 @@
 <template>
-  <div class="status__line">
+  <div class="status__line" :style="lineStyle">
     <div
       v-for="item of items"
       :key="item.name"
@@ -45,6 +45,12 @@ export default {
       type: ''
     }
   }),
+  computed: {
+    lineStyle() {
+      const l = this.items.length;
+      return l === 8 ? '' : `--status-count:${l}`;
+    }
+  },
   methods: {
     closePopover() {
       this.popover.show = false;
