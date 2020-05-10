@@ -79,6 +79,11 @@ export default {
           unit: 'm'
         },
         {
+          icon: 'signal',
+          name: 'air.signal',
+          value: s.signal
+        },
+        {
           icon: 'satellite',
           value: this.$t('air.gps.satellites', s.gps)
         }

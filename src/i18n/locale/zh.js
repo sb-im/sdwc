@@ -104,6 +104,7 @@ export default {
     ctime: '创建时间'
   },
   air: {
+    signal: '信号强度',
     status: {
       standby: '待机',
       flying: '飞行中',

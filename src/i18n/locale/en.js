@@ -104,6 +104,7 @@ export default {
     ctime: 'Creation time'
   },
   air: {
+    signal: 'Signal Strength',
     status: {
       standby: 'Standby',
       flying: 'Flying',
