@@ -174,7 +174,10 @@ export default {
 }
 /* popup menu max height */
 .el-menu--vertical .el-menu--popup-right-start {
-  max-height: 426px;
+  max-height: 454px;
   overflow-y: auto;
+}
+.sd--safari .el-menu--vertical .el-menu--popup-right-start {
+  -webkit-overflow-scrolling: touch;
 }
 </style>
