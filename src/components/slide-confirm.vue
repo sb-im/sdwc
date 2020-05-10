@@ -76,12 +76,12 @@ export default {
     }
   },
   methods: {
-    /** @param {MouseEvent} ev */
+    /** @param {MouseEvent | TouchEvent} ev */
     activate(ev) {
       if (this.$attrs.disabled) return;
       ev.preventDefault();
       this.dragable = true;
-      this.initialX = ev.pageX;
+      this.initialX = ev.screenX || ev.changedTouches[0].screenX;
       this.buttonWidth = this.$refs.button.$el.getBoundingClientRect().width;
     },
     deactivate() {
@@ -101,12 +101,14 @@ export default {
       if (this.completed) return;
       this.deactivate();
     },
-    /** @param {MouseEvent} ev */
+    /** @param {MouseEvent | TouchEvent} ev */
     handleMouseMove(ev) {
       if (!this.dragable) {
         return;
       }
-      const pos = ev.pageX - this.initialX;
+      ev.preventDefault();
+      let pos = ev.screenX || ev.changedTouches[0].screenX;
+      pos -= this.initialX;
       if (pos <= 0) {
         this.position = 0;
       } else if (pos > this.completedPosition) {
