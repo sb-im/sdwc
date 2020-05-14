@@ -107,7 +107,7 @@ export default {
             markers.push({
               type: 'place',
               id: `${droneId}_${placeName}`,
-              name,
+              name: placeName,
               position: p
             });
           }
