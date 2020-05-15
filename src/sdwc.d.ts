@@ -151,7 +151,7 @@ declare namespace SDWC {
       [key: string]: GPSCoordinate | GPSCoordinate[];
     };
     heatmap: {
-      [key: string]: GPSHeatPoint;
+      [key: string]: GPSHeatPoint[];
     };
   }
   export interface NodeNotification {
