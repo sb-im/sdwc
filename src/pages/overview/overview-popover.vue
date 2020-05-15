@@ -42,8 +42,8 @@ export default {
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.treeViewOpts.rootObjectKey = 'overview';
       if (Object.keys(val).length <= 0) {
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      this.treeViewOpts.rootObjectKey = 'msg';
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.treeViewOpts.rootObjectKey = 'msg';
         val = {};
         for (const point of this.node.info.points) {
           const topic = PointTopic[point.point_type_name];
@@ -81,6 +81,7 @@ export default {
 <style>
 .overview-popover {
   margin: 0 12px;
+  min-width: 210px;
 }
 .overview-popover__title {
   display: flex;
@@ -112,6 +113,10 @@ export default {
 }
 .tree-view-item-key {
   color: rgb(136, 19, 145);
+}
+.tree-view-item-hint::before,
+.tree-view-item-value::before {
+  content: ' ';
 }
 .tree-view-item-value-string {
   color: rgb(196, 26, 22);
