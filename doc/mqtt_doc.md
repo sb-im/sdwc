@@ -268,7 +268,11 @@ Or
     "home":{"lat":22.6876423001,"lng":114.2248673001,"alt":41.85},
     "roi":{"lat":22.6876423001,"lng":114.2248673001,"alt":0.07},
     "target":{"lat":22.6876423001,"lng":114.2248673001,"alt":41.85}
-  }
+  },
+  "heatmap":[
+    {"lat":22.6876423001,"lng":114.2248673001,"weight":1},
+    {"lat":22.6876426001,"lng":114.2248676001,"weight":3}
+  ]
 }
 ```
 
@@ -284,6 +288,10 @@ place.[name] | string | Can have multiple
 place.[name].lat  | float | Latitude
 place.[name].lng  | float | Longitude
 place.[name].alt  | float | Altitude
+heatmap | array | Opt: (May not exist)
+heatmap.lat | float | Latitude
+heatmap.lng | float | Longitude
+heatmap.weight | float | Weighted Location
 
 ### RPC: move
 #### Request:
