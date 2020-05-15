@@ -169,7 +169,7 @@ export default {
         this.popover.show = true;
       } else if (this.popover.show) {
         this.$refs.popover.popperJS._reference = el;
-        this.$nextTick(() => this.$refs.popover.updatePopper());
+        this.handleUpdate();
       } else {
         this.popover.show = true;
       }
@@ -185,7 +185,7 @@ export default {
   watch: {
     droneMarkers() {
       if (!this.popover.show) return;
-      this.$nextTick(() => this.$refs.popover.updatePopper());
+      this.handleUpdate();
     }
   },
   created() {
