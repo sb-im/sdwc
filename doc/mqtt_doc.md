@@ -277,6 +277,7 @@ Name | Type   | Description
 lat  | float | Latitude
 lng  | float | Longitude
 alt  | float | Altitude
+height | float| Relative height
 heading| uint | Heading 0°~360°
 place  | object | Opt: (May not exist)
 place.[name] | string | Can have multiple
