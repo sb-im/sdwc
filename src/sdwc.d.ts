@@ -239,6 +239,11 @@ declare namespace SDWC {
     notifyPopup: number[];
   }
 
+  // store/modules/ui.js
+  export interface UI {
+    mqttConnected: boolean;
+  }
+
   // store/modules/user.js
   export interface User {
     id: number;

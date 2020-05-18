@@ -62,6 +62,7 @@ class MqttClient extends EventEmitter {
       });
       this.queue = [];
     });
+    this.mqtt.on('close', () => this.emit('close'));
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
       const id = MqttClient.parseNodeId(topic);

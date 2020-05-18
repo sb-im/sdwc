@@ -4,3 +4,4 @@ export { default as config } from './config';
 export { default as user } from './user';
 export { default as node } from './node';
 export { default as plan } from './plan';
+export { default as ui } from './ui';

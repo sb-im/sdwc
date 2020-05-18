@@ -38,7 +38,7 @@
     <!-- node status dropdown -->
     <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
-        <sd-icon value="connected" />
+        <sd-icon :value="`${ui.mqttConnected ? '' : 'dis'}connected`" />
         <span class="header-dropdown-text" v-t="'header.status.title'"></span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
@@ -104,6 +104,7 @@ export default {
   },
   computed: {
     ...mapState([
+      'ui',
       'node',
       'preference',
       'notification'

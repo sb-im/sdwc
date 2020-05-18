@@ -7,6 +7,8 @@ import store from './store';
 import { MutationTypes as USER } from './store/modules/user';
 import router from './router';
 import './util/browser-hacks';
+import MqttClient from './api/mqtt';
+import { MutationTypes as UI } from './store/modules/ui';
 
 import App from './App.vue';
 import './styles/global.css';
@@ -54,6 +56,9 @@ store.subscribe((mutation) => {
     });
   }
 });
+
+MqttClient.on('close', () => store.commit(UI.SET_UI, { mqttConnected: false }));
+MqttClient.on('connect', () => store.commit(UI.SET_UI, { mqttConnected: true }));
 
 if (__SDWC_DEV__) {
   import(/* webpackChunkName: 'development' */ './styles/development.css');
