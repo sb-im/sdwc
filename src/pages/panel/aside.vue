@@ -9,7 +9,7 @@
     router
   >
     <div class="aside__header">
-      <img class="aside__logo" src="/assets/images/logo-100.png" />
+      <img class="aside__logo" src="/assets/images/logo-100.png">
     </div>
     <el-menu-item index="overview" :route="{ name: 'overview' }">
       <sd-icon value="info-circle"></sd-icon>
