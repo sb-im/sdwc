@@ -157,7 +157,11 @@ export default {
       setTarget: '飞往此处',
       mode_brake: '停止',
       prompt: '请输入参数',
-      invalid_input: '参数值无效'
+      invalid_input: '参数值无效',
+      lat: '纬度 Latitude',
+      lng: '经度 Longitude',
+      height: '目标高度',
+      speed: '飞行速度'
     }
   },
   status: {

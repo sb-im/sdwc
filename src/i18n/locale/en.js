@@ -156,8 +156,12 @@ export default {
       setROInone: 'Cancel Turn',
       setTarget: 'Fly Here',
       mode_brake: 'Stop',
-      prompt: 'Please enter parameter',
-      invalid_input: 'Invaild parameter input'
+      prompt: 'Please enter parameters',
+      invalid_input: 'Parameter value invalid',
+      lat: 'Latitude',
+      lng: 'Longitude',
+      height: 'Target height',
+      speed: 'Flight speed'
     }
   },
   status: {

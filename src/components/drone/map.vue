@@ -34,21 +34,22 @@
           :key="c.method"
           class="el-dropdown-menu__item"
           @click="handleCommand(c)"
-          v-t="$te(`air.map.${c.method}`) ? `air.map.${c.method}` : c.method"
+          v-t="tt(c.method)"
         ></div>
-        <div
-          class="el-dropdown-menu__item el-dropdown-menu__item--divided"
-          @click="handlePopoverCancel"
-        >
+        <div class="el-dropdown-menu__item el-dropdown-menu__item--divided" @click="handlePopoverCancel">
           <i class="el-icon-close"></i>
           <span v-t="'common.cancel'"></span>
         </div>
       </el-popover>
       <el-dialog :visible.sync="prompt.show">
-        <span slot="title" v-t="$te(`air.map.${prompt.method}`) ? `air.map.${prompt.method}` : prompt.method"></span>
-        <el-form size="small" label-width="100px" :model="prompt.values" :rules="prompt.fields" ref="form">
-          <el-form-item v-for="(val, key) of prompt.fields" :key="key" :label="key" :prop="key">
-            <el-input v-if="val.type === 'number'" v-model.number="prompt.values[key]">
+        <span slot="title" v-t="tt(prompt.method)"></span>
+        <el-form size="small" label-width="140px" :model="prompt.values" :rules="prompt.fields" ref="form">
+          <el-form-item v-for="(val, key) of prompt.fields" :key="key" :prop="key">
+            <span slot="label" v-t="tt(key)"></span>
+            <template #error>
+              <div class="el-form-item__error" v-t="'air.map.invalid_input'"></div>
+            </template>
+            <el-input v-if="val.type === 'number'" v-model.number="prompt.values[key]" type="number" step="any">
               <template v-if="val.unit" #append>{{ val.unit }}</template>
             </el-input>
             <el-input v-else v-model="prompt.values[key]">
@@ -58,12 +59,7 @@
         </el-form>
         <div slot="footer">
           <el-button size="medium" @click="handlePromptCancel" v-t="'common.cancel'"></el-button>
-          <el-button
-            size="medium"
-            type="primary"
-            @click="handlePromptConfirm"
-            v-t="'common.confirm'"
-          ></el-button>
+          <el-button size="medium" type="primary" @click="handlePromptConfirm" v-t="'common.confirm'"></el-button>
         </div>
       </el-dialog>
     </template>
@@ -95,7 +91,7 @@ const DefaultCommands = [
       lng: { type: 'number', required: true },
       lat: { type: 'number', required: true },
       height: { type: 'number', required: true, unit: 'm' },
-      speed: { type: 'number', required: true , default: 5, unit: 'm/s' }
+      speed: { type: 'number', required: true, default: 5, unit: 'm/s' }
     }
   },
   {
@@ -223,6 +219,9 @@ export default {
     ...mapActions([
       'clearDronePath'
     ]),
+    tt(k) {
+      return this.$te(`air.map.${k}`) ? `air.map.${k}` : k;
+    },
     handleFollow() {
       this.follow = !this.follow;
     },
