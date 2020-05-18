@@ -80,7 +80,7 @@ function createMarkerElement(label = '', color = '#ea4335') {
 }
 
 function createDroneElement(label = '', color = '#ea4335') {
-  return h('div', { class: 'mapbox-marker', style: 'width:34px;height:34px' }, [
+  return h('div', { class: 'mapbox-marker mapbox-marker--drone', style: 'width:34px;height:34px' }, [
     hs('svg', { width: 34, height: 34 }, [
       hs('path', {
         fill: color,
@@ -502,6 +502,9 @@ export default {
 .mapbox-marker {
   cursor: pointer;
 }
+.mapbox-marker--drone {
+  z-index: 1;
+}
 .mapbox-marker__label {
   position: absolute;
   top: 24px;
@@ -515,6 +518,7 @@ export default {
   color: white;
   font-weight: bold;
   white-space: nowrap;
+  z-index: -1;
 }
 .mapbox-marker--action {
   cursor: pointer;

@@ -299,7 +299,6 @@ export default {
               map: this.map,
               position: marker.position,
               icon: createMarkerPointIcon(),
-              label: '🚉',
               title: marker.name,
               labelContent: marker.name,
               labelAnchor: { x: -6, y: 12 },

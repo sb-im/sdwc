@@ -227,7 +227,6 @@ export default {
             if (marker.type === 'depot') {
               mapMarker = new SimpleMarker({
                 iconStyle: 'red',
-                iconLabel: '🚉',
                 position,
                 extData: {
                   id: marker.id,
@@ -397,6 +396,7 @@ export default {
   border: 1px solid #a83121;
   border-radius: 10px 0 0 0;
   background: #d33d29;
+  z-index: -1;
 }
 .amap-marker--action {
   box-sizing: border-box;
