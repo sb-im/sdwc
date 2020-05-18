@@ -9,6 +9,7 @@ export default {
     depot: '机场',
     plan: '任务',
     overview: '概况',
+    confirm: '确定',
     cancel: '取消',
     view: '查看',
     download: '下载',
@@ -151,10 +152,10 @@ export default {
       plan_ready: '任务准备就绪，是否立即执行？'
     },
     map: {
-      setTarget: '飞往此处',
       setROI: '朝向此处',
       setROInone: '取消朝向',
-      setTargetHeight: '调整高度飞往此处',
+      setTarget: '飞往此处',
+      mode_brake: '停止',
       prompt: '请输入参数',
       invalid_input: '参数值无效'
     }

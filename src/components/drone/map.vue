@@ -12,9 +12,9 @@
     :popover-shown="popover.show"
     :marker-styling="styling"
     @map-move="handleMove"
-    @map-change="handleCancel"
-    @select-point="handleSelect"
-    @cancel-point="handleCancel"
+    @map-change="handlePopoverCancel"
+    @select-point="handlePointSelect"
+    @cancel-point="handlePopoverCancel"
   >
     <template #action>
       <el-button
@@ -34,13 +34,38 @@
           :key="c.method"
           class="el-dropdown-menu__item"
           @click="handleCommand(c)"
-          v-t="$te(`air.map.${c.method}`) ?`air.map.${c.method}`: c.method "
+          v-t="$te(`air.map.${c.method}`) ? `air.map.${c.method}` : c.method"
         ></div>
-        <div class="el-dropdown-menu__item el-dropdown-menu__item--divided" @click="handleCancel">
+        <div
+          class="el-dropdown-menu__item el-dropdown-menu__item--divided"
+          @click="handlePopoverCancel"
+        >
           <i class="el-icon-close"></i>
           <span v-t="'common.cancel'"></span>
         </div>
       </el-popover>
+      <el-dialog :visible.sync="prompt.show">
+        <span slot="title" v-t="$te(`air.map.${prompt.method}`) ? `air.map.${prompt.method}` : prompt.method"></span>
+        <el-form size="small" label-width="100px" :model="prompt.values" :rules="prompt.fields" ref="form">
+          <el-form-item v-for="(val, key) of prompt.fields" :key="key" :label="key" :prop="key">
+            <el-input v-if="val.type === 'number'" v-model.number="prompt.values[key]">
+              <template v-if="val.unit" #append>{{ val.unit }}</template>
+            </el-input>
+            <el-input v-else v-model="prompt.values[key]">
+              <template v-if="val.unit" #append>{{ val.unit }}</template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer">
+          <el-button size="medium" @click="handlePromptCancel" v-t="'common.cancel'"></el-button>
+          <el-button
+            size="medium"
+            type="primary"
+            @click="handlePromptConfirm"
+            v-t="'common.confirm'"
+          ></el-button>
+        </div>
+      </el-dialog>
     </template>
   </sd-map>
 </template>
@@ -54,30 +79,27 @@ import NodeMap from '@/components/map/map.vue';
 /** @type {SDWC.DroneMapControl[]} */
 const DefaultCommands = [
   {
-    method: 'setTarget',
-    params: {
-      lng: { type: 'number', required: true },
-      lat: { type: 'number', required: true }
-    }
-  },
-  {
     method: 'setROI',
     params: {
       lng: { type: 'number', required: true },
       lat: { type: 'number', required: true },
-      height: { type: 'number', required: false }
+      height: { type: 'number', required: true, unit: 'm' }
     }
   },
   {
     method: 'setROInone'
   },
   {
-    method: 'setTargetHeight',
+    method: 'setTarget',
     params: {
       lng: { type: 'number', required: true },
       lat: { type: 'number', required: true },
-      height: { type: 'number', required: false }
+      height: { type: 'number', required: true, unit: 'm' },
+      speed: { type: 'number', required: true , default: 5, unit: 'm/s' }
     }
+  },
+  {
+    method: 'mode_brake'
   }
 ];
 
@@ -107,6 +129,12 @@ export default {
       popover: {
         show: false,
         coordinate: null
+      },
+      prompt: {
+        show: false,
+        method: 'prompt',
+        fields: {},
+        values: {}
       }
     };
   },
@@ -206,7 +234,7 @@ export default {
     handlePathClear() {
       this.clearDronePath(this.info.id);
     },
-    handleSelect(latlng, el) {
+    handlePointSelect(latlng, el) {
       if (this.status.code !== 0 || this.commands.length <= 0) return;
       this.popover.coordinate = {
         lat: Math.floor(latlng.lat * 1e8) / 1e8,
@@ -221,67 +249,54 @@ export default {
         this.popover.show = true;
       }
     },
-    handleCancel() {
+    handlePopoverCancel() {
       this.popover.coordinate = null;
       this.popover.show = false;
     },
     /**
-     * @param {string} k
-     * @param {SDWC.DroneMapControlParamDescriptor} v
-     */
-    async promptParamInput(k, v) {
-      return this.$prompt(`${k}: ${v.type}`, {
-        title: this.$t('air.map.prompt'),
-        inputValue: (v.default || '').toString(),
-        inputValidator: str => {
-          if (str.length === 0) {
-            return !v.required;
-          }
-          if (v.type === 'number') {
-            const num = Number.parseFloat(str);
-            return !Number.isNaN(num) && Number.isFinite(num) && num.toString() === str;
-          }
-          return true;
-        },
-        inputErrorMessage: this.$t('air.map.invalid_input'),
-        closeOnClickModal: false,
-      }).then(({ value }) => {
-        if (value.length === 0 && !v.required) {
-          // `undefined` value won't be serialized to JSON
-          return undefined;
-        }
-        if (v.type === 'number') {
-          return Number.parseFloat(value);
-        }
-        return value;
-      });
-    },
-    /**
-     * @param {SDWC.DronMapControl} cmd
+     * @param {SDWC.DroneMapControl} cmd
      */
     async handleCommand(cmd) {
       this.$refs.popover.doClose();
-      const cord = this.popover.coordinate;
-      let arg;
-      for (const [k, v] of Object.entries(cmd.params || {})) {
-        if (!arg) arg = {};
-        if (Object.prototype.hasOwnProperty.call(cord, k) && typeof cord[k] === v.type) {
-          arg[k] = cord[k];
-        } else {
-          let input;
-          try {
-            input = await this.promptParamInput(k, v);
-          } catch (e) {
-            // prompt canceled
-            return;
-          }
-          arg[k] = input;
+      const fields = { ...cmd.params };
+      if (Object.getOwnPropertyNames(fields).length === 0) {
+        return this.sendCommand(cmd.method);
+      }
+      const values = {};
+      const knownValues = {
+        ... this.popover.coordinate,
+        height: this.msg.drone_status.height
+      };
+      for (const [k, v] of Object.entries(fields)) {
+        if (typeof v.default === v.type) {
+          values[k] = v.default;
+        }
+        if (Object.prototype.hasOwnProperty.call(knownValues, k) && typeof knownValues[k] === v.type) {
+          values[k] = knownValues[k];
         }
       }
-      this.$mqtt(this.info.id, {
-        mission: cmd.method,
-        arg
-      }).catch(() => { /* noop */ });
+      this.prompt = {
+        show: true,
+        method: cmd.method,
+        fields,
+        values
+      };
+    },
+    sendCommand(mission, arg) {
+      this.$mqtt(this.info.id, { mission, arg }).catch(() => { /* noop */ });
+    },
+    handlePromptCancel() {
+      this.prompt.show = false;
+    },
+    handlePromptConfirm() {
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          this.prompt.show = false;
+          this.sendCommand(this.prompt.method, this.prompt.values);
+        } else {
+          // noop
+        }
+      });
     }
   },
   components: {

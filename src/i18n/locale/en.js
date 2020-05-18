@@ -9,6 +9,7 @@ export default {
     depot: 'Depot',
     plan: 'Plan',
     overview: 'Overview',
+    confirm: 'Confirm',
     cancel: 'Cancel',
     view: 'View',
     download: 'Download',
@@ -151,10 +152,10 @@ export default {
       plan_ready: 'Plan is ready, start right now?'
     },
     map: {
-      setTarget: 'Fly Here',
       setROI: 'Turn Towards Here',
       setROInone: 'Cancel Turn',
-      setTargetHeight: 'Change Height and Fly Here',
+      setTarget: 'Fly Here',
+      mode_brake: 'Stop',
       prompt: 'Please enter parameter',
       invalid_input: 'Invaild parameter input'
     }
