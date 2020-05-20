@@ -9,51 +9,34 @@
   >
     <span slot="title" class="el-dialog__title" v-t="'preflight.title'"></span>
     <template v-if="!activated">
-      <sd-preflight-item
-        icon="drone"
-        title="common.air"
-        :loading="loading[0]"
-        :status="drone.status.code"
-        :node="drone"
-      ></sd-preflight-item>
-      <sd-preflight-item
-        icon="depot"
-        title="common.depot"
-        :loading="loading[1]"
-        :status="depot.status.code"
-        :node="depot"
-      ></sd-preflight-item>
-      <sd-preflight-item
-        icon="barometer"
-        title="preflight.realtime"
-        :loading="loading[2]"
-        :level="preflightData.forecast.level"
-      >
-        <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }"></div>
-        <div v-t="{ path: 'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
-        <div v-t="preflightData.forecast.precipitation_distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: preflightData.forecast.precipitation_distance } }"></div>
+      <sd-preflight-item icon="drone" title="common.air" :loading="loading[0]" :status="droneStatus" :node="drone"></sd-preflight-item>
+      <sd-preflight-item icon="depot" title="common.depot" :loading="loading[1]" :status="depotStatus" :node="depot"></sd-preflight-item>
+      <sd-preflight-item icon="barometer" title="preflight.realtime" :loading="loading[2]" :level="weather.level">
+        <div v-t="{ path: 'preflight.wind', args: { n: weather.wind.speed.toFixed(1) } }"></div>
+        <div v-t="{ path: 'preflight.intensity', args: { n: weather.rain.intensity } }"></div>
+        <div v-t="weather.rain.distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: weather.rain.distance } }"></div>
       </sd-preflight-item>
     </template>
     <template v-else>
       <div class="sd-preflight__plan">
-        <div :class="PlanStatusClass[runStatus]" class="sd-preflight__plan-status"></div>
-        <div class="sd-preflight__plan-text">{{ planStatusText }}</div>
+        <div :class="PlanStatusClass[run.status]" class="sd-preflight__plan-status"></div>
+        <div class="sd-preflight__plan-text">
+          <div v-if="run.status === 0" v-t="'preflight.started'"></div>
+          <div v-else-if="run.status === 1" v-t="{ path: 'preflight.failed', args: { code: run.code } }"></div>
+          <div v-else-if="run.status === 2" v-t="'preflight.starting'"></div>
+        </div>
       </div>
     </template>
     <template slot="footer">
       <el-button size="medium" icon="el-icon-circle-close" @click="toggle" v-t="'common.cancel'"></el-button>
       <template v-if="!activated">
-        <sd-slide-confirm
-          size="medium"
-          ref="slide"
-          :disabled="slideDisabled"
-          @confirm="emitRun"
-          text="preflight.slide2confirm"
-        ></sd-slide-confirm>
+        <sd-slide-confirm size="medium" ref="slide" :disabled="slideDisabled" @confirm="handleConfirm" text="preflight.slide2confirm"></sd-slide-confirm>
       </template>
       <template v-else>
-        <el-button size="medium" @click="toDrone" v-t="'preflight.drone'"></el-button>
-        <sd-countdown-button size="medium" mode="timeout" ref="btnToDepot" @click="toDepot" text="preflight.depot"></sd-countdown-button>
+        <el-button-group>
+          <el-button size="medium" @click="toDrone" v-t="'preflight.drone'"></el-button>
+          <sd-countdown-button size="medium" mode="timeout" ref="btnToDepot" @click="toDepot" text="preflight.depot"></sd-countdown-button>
+        </el-button-group>
       </template>
     </template>
   </el-dialog>
@@ -78,12 +61,14 @@ const PlanStatusClass = {
   2: 'el-icon-loading color--grey'
 };
 
-const DefaultPreflightData = {
-  forecast: {
-    precipitation_intensity: 0,
-    precipitation_distance: 0,
-    wind_speed: 0,
-    level: 'error'
+const DefaultWeatherResult = {
+  level: 'error',
+  wind: {
+    speed: 0
+  },
+  rain: {
+    distance: 0,
+    intensity: 0
   }
 };
 
@@ -98,12 +83,18 @@ export default {
   data() {
     return {
       show: false,
-      checkTime: 0,
-      loading: [],
-      preflightData: DefaultPreflightData,
       activated: false,
-      runStatus: -1,
-      returnCode: -1
+      checkTime: 0,
+      loading: [false, false, false],
+      precheck: {
+        drone: null,
+        depot: null
+      },
+      weather: DefaultWeatherResult,
+      run: {
+        status: -1,
+        code: -1
+      },
     };
   },
   computed: {
@@ -113,23 +104,26 @@ export default {
     ]),
     drone() {
       return this.drones.find(d => d.info.id === this.plan.node_id)
-        || { info: { name: this.$t('preflight.no_drone') }, status: { code: 3 } };
+        || { info: { name: this.$t('preflight.no_drone'), points: [] }, status: { code: -2 } };
     },
     depot() {
       return this.depots.find(d => d.status.status.link_id === this.plan.node_id)
-        || { info: { name: this.$t('preflight.no_depot'), points: [] }, status: { code: 3 }, };
+        || { info: { name: this.$t('preflight.no_depot'), points: [] }, status: { code: -2 }, };
     },
-    weatherPoint() {
-      return this.depot.info.points.find(p => p.point_type_name === 'weather');
+    droneStatus() {
+      return this.precheck.drone === null ? this.drone.status.code : this.precheck.drone;
+    },
+    depotStatus() {
+      return this.precheck.depot === null ? this.depot.status.code : this.precheck.depot;
     },
     checkPassed() {
       return (
         // drone status ok / poweroff
-        (this.drone.status.code === 0 || this.drone.status.code === 1)
+        this.droneStatus === 0
         // depot status ok
-        && this.depot.status.code === 0
+        && this.depotStatus === 0
         // caiyun weather forecast ok
-        && this.preflightData.forecast.level !== 'error'
+        && this.weather.level !== 'error'
       );
     },
     slideDisabled() {
@@ -138,19 +132,8 @@ export default {
         this.loading.some(value => value === true)
         // check failed
         || !this.checkPassed
-        // drone poweroff
-        || this.drone.status.code === 1
       );
     },
-    planStatusText() {
-      if (!this.activated) return '';
-      switch (this.runStatus) {
-        case 0: return this.$t('plan.view.start_run');
-        case 1: return this.$t('plan.view.start_fail', { code: this.returnCode });
-        case 2: return this.$t('plan.view.pending');
-        default: return '';
-      }
-    }
   },
   methods: {
     ...mapActions([
@@ -159,56 +142,45 @@ export default {
     toggle() {
       this.show = !this.show;
     },
-    wait() {
-      const timeout = Math.random() * 1000;
-      return new Promise(resolve => setTimeout(resolve, timeout));
-    },
     sendBoth(mission) {
       const p = [];
-      if (this.drone.status.code !== 3) {
+      if (this.drone.status.code === 0) {
         p.push(this.$mqtt(this.drone.info.id, { mission }));
       }
-      if (this.depot.status.code !== 3) {
+      if (this.depot.status.code === 0) {
         p.push(this.$mqtt(this.depot.info.id, { mission }));
       }
-      return Promise.all(p);
+      return Promise.all(p).catch(() => { /* avoid unhandled promise rejevtion */ });
     },
     async checkDrone() {
-      if (this.depot.status.code !== 0) return;
-      const { info: { id }, status: { code } } = this.drone;
-      if (code === 0) {
-        return this.$mqtt(id, { mission: 'precheck' });
-      } else if (code !== 3) {
-        return new Promise((resolve, reject) => {
-          const unwatch = this.$store.watch(state => state.node.find(n => n.info.id === id).status.code, (val, oldVal) => {
-            if (val === 0 && oldVal !== 0) {
-              unwatch();
-              delete this._unwatch;
-              this.$mqtt(id, { mission: 'precheck' }).then(resolve).catch(reject);
-            }
-          });
-          this._unwatch = unwatch;
-        });
+      const { info: { id } } = this.drone;
+      try {
+        await this.$mqtt(id, { mission: 'precheck' });
+      } catch (e) {
+        this.precheck.drone = -3;
       }
     },
     async checkDepot() {
-      const { info: { id }, status: { code, legacy } } = this.depot;
-      if (code !== 0) return;
+      const { info: { id }, status: { legacy } } = this.depot;
       if (id && legacy) {
         await this.updateDepotStatus(id);
       }
-      return this.$mqtt(id, { mission: 'precheck' });
+      try {
+        await this.$mqtt(id, { mission: 'precheck' });
+      } catch (e) {
+        this.precheck.depot = -3;
+      }
     },
     async checkWeather(timestamp) {
-      this.preflightData.forecast = DefaultPreflightData.forecast;
-      const { status } = this.depot.status;
+      this.weather = DefaultWeatherResult;
+      const { info: { id }, status: { status } } = this.depot;
       if (!status) return;
       let averageWindSpeed;
-      if (this.weatherPoint) {
+      if (this.depot.info.points.findIndex(p => p.point_type_name === 'weather') >= 0) {
         // calculate average wind speed from history data
         try {
           /** @type {Record<string, SDWC.NodeWeather>} */
-          const history = await this.$mqtt(this.depot.info.id, {
+          const history = await this.$mqtt(id, {
             mission: 'history',
             arg: { topic: 'msg/weather', time: '1m' }
           });
@@ -232,33 +204,46 @@ export default {
       }
       const result = await forecastLevel(r);
       if (timestamp === this.checkTime) {
-        this.preflightData.forecast = result;
+        this.weather = result;
       }
     },
-    async check() {
+    check() {
       const t = Date.now();
-      const wrap = async (prom, index) => {
-        await Promise.all([this.wait(), prom]);
-        if (this.checkTime === t) {
-          this.$set(this.loading, index, false);
-        }
-      };
       this.checkTime = t;
-      this.loading = Array(3).fill(true);
-      await Promise.all([
-        wrap(this.checkDrone(), 0),
-        wrap(this.checkDepot(), 1),
-        wrap(this.checkWeather(t), 2)
-      ]);
+      const queue = [];
+      const wrap = (p, i) => {
+        this.$set(this.loading, i, true);
+        queue.push(p.then(() => this.checkTime === t && this.$set(this.loading, i, false)));
+      };
+      wrap(this.checkWeather(t), 2);
+      if (this.depot.status.code !== 0) return;
+      wrap(this.checkDepot(), 1);
+      if (this.drone.status.code === 0) {
+        wrap(this.checkDrone(), 0);
+      } else if (this.drone.status.code !== -2) {
+        const p = new Promise(resolve => {
+          const unwatch = this.$store.watch(
+            state => state.node.find(n => n.info.id === this.drone.info.id).status.code,
+            (val, oldVal) => {
+              if (val === 0 && oldVal !== 0) {
+                unwatch();
+                delete this._unwatch;
+                resolve(this.checkDrone());
+              }
+            }
+          );
+          this._unwatch = unwatch;
+        });
+        wrap(p, 0);
+      }
     },
-    emitRun() {
+    handleConfirm() {
       this.activated = true;
-      this.runStatus = 2;
+      this.run.status = 2;
       this.$emit('run');
     },
     setPlanRunStatus(status, code = 0) {
-      this.runStatus = status;
-      this.returnCode = code;
+      this.run = { status, code };
       if (status === 0) {
         this.$refs.btnToDepot.countDown();
         this.sendBoth('postcheck_execute');
@@ -275,16 +260,18 @@ export default {
     reset() {
       if (this.activated) {
         this.activated = false;
-        this.runStatus = -1;
+        this.run = { status: -1, code: -1 };
       } else {
         this.$refs.slide.deactivate();
-        if (this.runStatus === -1) {
+        if (this.run.status === -1) {
           this.sendBoth('postcheck_cancel');
         }
       }
-      this.preflightData = DefaultPreflightData;
+      this.precheck = { drone: null, depot: null };
+      this.weather = DefaultWeatherResult;
       if (typeof this._unwatch === 'function') {
         this._unwatch();
+        delete this._unwatch;
       }
     }
   },
@@ -308,6 +295,10 @@ export default {
   padding: 10px 20px;
   height: 260px;
   box-sizing: content-box;
+}
+.sd-preflight .el-dialog__footer {
+  display: flex;
+  justify-content: space-between;
 }
 .sd-preflight__plan {
   height: 100%;

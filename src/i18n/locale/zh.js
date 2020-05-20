@@ -19,6 +19,8 @@ export default {
     clear: '清空',
     none: '暂无',
     status: {
+      '-3': 'precheck 失败',
+      '-2': '',
       '-1': '未连接',
       0: '正常',
       1: '已关闭',
@@ -61,10 +63,8 @@ export default {
       auto_run: '自动处理结果',
       logs: '飞行日志',
       sever_logs: '服务器日志',
-      pending: '任务发送中 ...',
-      start_run: '当前任务开始执行',
-      start_fail: '任务执行失败：{code}',
-      stop_run: '当前任务已经终止',
+      pending: '任务正在终止 ...',
+      stop_run: '任务已经终止',
       stop_fail: '任务终止失败：{code}'
     },
     edit: {
@@ -332,8 +332,10 @@ export default {
     intensity: '雷达降水强度 {n}',
     distance: '最近降水带 {n}km',
     no_precipitation: '附近没有降水带',
-    confirm: '确认执行',
-    slide2confirm: '滑动确认执行任务'
+    slide2confirm: '滑动确认执行任务',
+    started: '任务已开始执行',
+    failed: '任务开始失败： {code}',
+    starting: '任务发送中 ...'
   },
   debug: {
     title: '调试',

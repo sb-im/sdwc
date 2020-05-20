@@ -1,6 +1,3 @@
-import { realtime } from './caiyun';
-import { get as get3s } from './weather3s';
-
 const Level = {
   Success: 'success',
   Primary: 'primary',
@@ -8,32 +5,6 @@ const Level = {
   Danger: 'danger',
   Error: 'error'
 };
-
-/**
- * @param {ApiTypes.Weather3sResult} data
- */
-function realtimeLevel(data) {
-  let { wind_speed, rainfall_count } = data[0];  // unit: 0.1 m/s
-  wind_speed = Number.parseInt(wind_speed) / 10; // unit: m/s
-  rainfall_count = Number.parseInt(rainfall_count);
-  let level;
-  if (wind_speed >= 10 || rainfall_count >= 15) {
-    level = Level.Error;
-  } else if (wind_speed >= 6 || rainfall_count >= 10) {
-    level = Level.Danger;
-  } else if (wind_speed >= 4 || rainfall_count >= 5) {
-    level = Level.Warning;
-  } else if (wind_speed >= 2 || rainfall_count > 0) {
-    level = Level.Primary;
-  } else {
-    level = Level.Success;
-  }
-  return {
-    level,
-    wind_speed,
-    rainfall_count
-  };
-}
 
 /**
  * @param {ApiTypes.CaiYunRealtime} data
@@ -60,22 +31,12 @@ export function forecastLevel(data) {
   }
   return {
     level,
-    wind_speed,
-    precipitation_distance,
-    precipitation_intensity
+    wind: {
+      speed: wind_speed
+    },
+    rain: {
+      distance: precipitation_distance,
+      intensity: precipitation_intensity
+    }
   };
-}
-
-/**
- * @param {{lng: number; lat: number}} _
- */
-export function checkForecast({ lng, lat }) {
-  return realtime(lng, lat).then(forecastLevel);
-}
-
-/**
- * @param {string} id
- */
-export function checkRealtime(id) {
-  return get3s(id).then(realtimeLevel);
 }

@@ -19,6 +19,8 @@ export default {
     clear: 'Clear',
     none: 'None',
     status: {
+      '-3': 'precheck Failed',
+      '-2': '',
       '-1': 'Not Connected',
       0: 'Normal',
       1: 'Powered Off',
@@ -61,9 +63,7 @@ export default {
       auto_run: 'Automatic processing',
       logs: 'Fly logs',
       sever_logs: 'Sever logs',
-      pending: 'Sending plan ...',
-      start_run: 'Plan started',
-      start_fail: 'Failed to start plan: {code}',
+      pending: 'Terminating plan ...',
       stop_run: 'Plan terminated',
       stop_fail: 'Failed to terminate plan: {code}'
     },
@@ -332,8 +332,10 @@ export default {
     intensity: 'Radar precipitation intensity {n}',
     distance: 'Nearest precipitation zone {n}km',
     no_precipitation: 'No precipitation nearby',
-    confirm: 'Confirm Run',
-    slide2confirm: 'Slide to Run Plan'
+    slide2confirm: 'Slide to Run Plan',
+    started: 'Plan started',
+    failed: 'Failed to start plan: {code}',
+    starting: 'Sending plan ...'
   },
   debug: {
     title: 'Debug',

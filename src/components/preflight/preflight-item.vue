@@ -4,7 +4,7 @@
     <div class="sd-preflight__detail">
       <div class="sd-preflight__title" v-t="title"></div>
       <slot></slot>
-      <div v-if="node">{{ node.info.name }} {{ $t(`common.status.${node.status.code}`) }}</div>
+      <div v-if="node">{{ node.info.name }} {{ $t(`common.status.${status}`) }}</div>
     </div>
     <i class="sd-preflight__icon" :class="iconClass"></i>
   </div>
