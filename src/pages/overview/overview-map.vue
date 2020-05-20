@@ -20,7 +20,13 @@
       >
         <span v-t="'map.fit'"></span>
       </el-button>
-      <el-popover ref="popover" trigger="manual" popper-class="map__popover" v-model="popover.show">
+      <el-popover
+        ref="popover"
+        trigger="manual"
+        popper-class="map__popover"
+        v-model="popover.show"
+        @after-leave="handleAfterLeave"
+      >
         <sd-overview-popover
           v-if="selectedNode"
           :node="selectedNode"
@@ -176,7 +182,9 @@ export default {
     },
     handleClose() {
       this.popover.show = false;
-      setTimeout(() => this.popover.node = -1, 200);
+    },
+    handleAfterLeave() {
+      this.popover.node = -1;
     },
     handleUpdate() {
       this.$nextTick(() => this.$refs.popover.updatePopper());
