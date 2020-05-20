@@ -112,7 +112,7 @@ import { getPlanMissionQueue, runPlan, stopPlan, planLogs } from '@/api/super-do
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
-import Preflight from '@/components/preflight.vue';
+import Preflight from '@/components/preflight/preflight.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 
 export default {

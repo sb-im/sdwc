@@ -9,26 +9,30 @@
   >
     <span slot="title" class="el-dialog__title" v-t="'preflight.title'"></span>
     <template v-if="!activated">
-      <div class="sd-preflight__item" v-loading="loading[0]">
-        <sd-icon value="drone" :size="30"></sd-icon>
-        <div class="sd-preflight__detail sd-preflight__title">{{ drone.info.name }}</div>
-        <i class="sd-preflight__icon" :class="StatusClass[drone.status.code]"></i>
-      </div>
-      <div class="sd-preflight__item" v-loading="loading[1]">
-        <sd-icon value="depot" :size="30"></sd-icon>
-        <div class="sd-preflight__detail sd-preflight__title">{{ depot.info.name }}</div>
-        <i class="sd-preflight__icon" :class="StatusClass[depot.status.code]"></i>
-      </div>
-      <div class="sd-preflight__item" v-loading="loading[2]">
-        <sd-icon value="barometer" :size="30"></sd-icon>
-        <div class="sd-preflight__detail">
-          <div class="sd-preflight__title" v-t="'preflight.realtime'"></div>
-          <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }"></div>
-          <div v-t="{ path: 'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
-          <div v-t="preflightData.forecast.precipitation_distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: preflightData.forecast.precipitation_distance } }"></div>
-        </div>
-        <i class="sd-preflight__icon" :class="LevelClass[preflightData.forecast.level]"></i>
-      </div>
+      <sd-preflight-item
+        icon="drone"
+        title="common.air"
+        :loading="loading[0]"
+        :status="drone.status.code"
+        :node="drone"
+      ></sd-preflight-item>
+      <sd-preflight-item
+        icon="depot"
+        title="common.depot"
+        :loading="loading[1]"
+        :status="depot.status.code"
+        :node="depot"
+      ></sd-preflight-item>
+      <sd-preflight-item
+        icon="barometer"
+        title="preflight.realtime"
+        :loading="loading[2]"
+        :level="preflightData.forecast.level"
+      >
+        <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }"></div>
+        <div v-t="{ path: 'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
+        <div v-t="preflightData.forecast.precipitation_distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: preflightData.forecast.precipitation_distance } }"></div>
+      </sd-preflight-item>
     </template>
     <template v-else>
       <div class="sd-preflight__plan">
@@ -65,22 +69,7 @@ import Icon from '@/components/sd-icon.vue';
 import SlideConfirm from '@/components/slide-confirm.vue';
 import CountdownButton from '@/components/countdown-button.vue';
 
-// drone/depot status
-const StatusClass = {
-  0: 'el-icon-success color--green',
-  1: 'el-icon-info color--grey',
-  2: 'el-icon-error color--red',
-  3: 'el-icon-error color--grey'
-};
-
-// realtime/forecast weather level
-const LevelClass = {
-  success: 'el-icon-success color--green',
-  primary: 'el-icon-circle-plus color--blue',
-  warning: 'el-icon-warning color--orange',
-  danger: 'el-icon-remove color--red',
-  error: 'el-icon-error color--grey'
-};
+import PreflightItem from './preflight-item.vue';
 
 // plan run status
 const PlanStatusClass = {
@@ -110,7 +99,7 @@ export default {
     return {
       show: false,
       checkTime: 0,
-      loading: Array(4).fill(false),
+      loading: [],
       preflightData: DefaultPreflightData,
       activated: false,
       runStatus: -1,
@@ -185,6 +174,7 @@ export default {
       return Promise.all(p);
     },
     async checkDrone() {
+      if (this.depot.status.code !== 0) return;
       const { info: { id }, status: { code } } = this.drone;
       if (code === 0) {
         return this.$mqtt(id, { mission: 'precheck' });
@@ -202,7 +192,8 @@ export default {
       }
     },
     async checkDepot() {
-      const { info: { id }, status: { legacy } } = this.depot;
+      const { info: { id }, status: { code, legacy } } = this.depot;
+      if (code !== 0) return;
       if (id && legacy) {
         await this.updateDepotStatus(id);
       }
@@ -298,14 +289,13 @@ export default {
     }
   },
   created() {
-    this.StatusClass = StatusClass;
-    this.LevelClass = LevelClass;
     this.PlanStatusClass = PlanStatusClass;
   },
   components: {
     [Icon.name]: Icon,
     [SlideConfirm.name]: SlideConfirm,
-    [CountdownButton.name]: CountdownButton
+    [CountdownButton.name]: CountdownButton,
+    [PreflightItem.name]: PreflightItem
   }
 };
 </script>
@@ -318,23 +308,6 @@ export default {
   padding: 10px 20px;
   height: 260px;
   box-sizing: content-box;
-}
-.sd-preflight__item {
-  margin: 10px 0;
-  display: flex;
-}
-.sd-preflight__detail {
-  flex-grow: 1;
-  padding: 0 8px;
-}
-.sd-preflight__title {
-  font-size: 18px;
-  line-height: 30px;
-  font-weight: bold;
-}
-.sd-preflight__icon {
-  line-height: 30px;
-  font-size: 24px;
 }
 .sd-preflight__plan {
   height: 100%;
