@@ -17,7 +17,13 @@ export default {
     re_upload: '重新上传',
     retry: '重试',
     clear: '清空',
-    none: '暂无'
+    none: '暂无',
+    status: {
+      '-1': '未连接',
+      0: '正常',
+      1: '已关闭',
+      2: '网络错误'
+    }
   },
   login: {
     username: '账号',
@@ -36,11 +42,7 @@ export default {
       none: '暂无通知记录'
     },
     status: {
-      title: '通讯状态',
-      0: '正常',
-      1: '已关闭',
-      2: '网络错误',
-      '-1': '未连接'
+      title: '通讯状态'
     },
     logout: '退出'
   },

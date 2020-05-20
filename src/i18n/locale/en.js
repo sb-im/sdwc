@@ -18,6 +18,12 @@ export default {
     retry: 'Retry',
     clear: 'Clear',
     none: 'None',
+    status: {
+      '-1': 'Not Connected',
+      0: 'Normal',
+      1: 'Powered Off',
+      2: 'Network Error'
+    }
   },
   login: {
     username: 'Username',
@@ -36,11 +42,7 @@ export default {
       none: 'No history notification',
     },
     status: {
-      title: 'Communication',
-      0: 'Normal',
-      1: 'Powered Off',
-      2: 'Network Error',
-      '-1': 'Not Connected'
+      title: 'Communication'
     },
     logout: 'Logout'
   },

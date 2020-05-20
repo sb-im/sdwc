@@ -78,6 +78,7 @@ import { mapActions, mapState } from 'vuex';
 
 import { locales } from '@/i18n';
 import Icon from '@/components/sd-icon.vue';
+import { getNodeStatusClass } from '@/constants/node-status-class';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 
 const NotificationClass = {
@@ -85,13 +86,6 @@ const NotificationClass = {
   1: 'el-icon-question color--grey',
   2: 'el-icon-error color--red',
   3: 'el-icon-info color--blue',
-  default: 'el-icon-warning color--orange'
-};
-
-const NodeStatusClass = {
-  0: 'el-icon-success color--green',
-  1: 'el-icon-info color--gery',
-  2: 'el-icon-error color--red',
   default: 'el-icon-warning color--orange'
 };
 
@@ -142,9 +136,9 @@ export default {
      * @returns {{id: number, icon: string, color: string, text: string}}
      */
     statusToObject({ id, name, type_name }, status) {
-      const icon = NodeStatusClass[status] || NodeStatusClass.default;
+      const icon = getNodeStatusClass(status);
       const type = this.$t(`common.${type_name}`);
-      const st = this.$t(`header.status.${status}`);
+      const st = this.$t(`common.status.${status}`);
       const text = `${type} ${name} ${st}`;
       return { id, icon, text };
     },
