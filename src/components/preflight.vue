@@ -112,8 +112,8 @@ export default {
       loading: Array(4).fill(false),
       preflightData: DefaultPreflightData,
       activated: false,
-      runStatus: 2,
-      returnCode: 0
+      runStatus: -1,
+      returnCode: -1
     };
   },
   computed: {
@@ -173,20 +173,39 @@ export default {
       const timeout = (1.5 + Math.random()) * 1000;
       return new Promise(resolve => setTimeout(resolve, timeout));
     },
-    preCheck() {
-      if (this.depot.status.code === 3) {
-        // no depot; skip pre-check
-        return;
+    sendBoth(mission) {
+      const p = [];
+      if (this.drone.status.code !== 3) {
+        p.push(this.$mqtt(this.drone.info.id, { mission }));
       }
-      return this.$mqtt(this.depot.info.id, { mission: 'power_chargedrone_on' });
+      if (this.depot.status.code !== 3) {
+        p.push(this.$mqtt(this.depot.info.id, { mission }));
+      }
+      return Promise.all(p);
     },
     async checkDrone() {
-      // nothing to check though
+      const { info: { id }, status: { code } } = this.drone;
+      if (code === 0) {
+        return this.$mqtt(id, { mission: 'precheck' });
+      } else if (code !== 3) {
+        return new Promise((resolve, reject) => {
+          const unwatch = this.$store.watch(state => state.node.find(n => n.info.id === id).status.code, (val, oldVal) => {
+            if (val === 0 && oldVal !== 0) {
+              unwatch();
+              delete this._unwatch;
+              this.$mqtt(id, { mission: 'precheck' }).then(resolve).catch(reject);
+            }
+          });
+          this._unwatch = unwatch;
+        });
+      }
     },
     async checkDepot() {
       const { info: { id }, status: { legacy } } = this.depot;
-      if (!id || !legacy) return;
-      await this.updateDepotStatus(id);
+      if (id && legacy) {
+        await this.updateDepotStatus(id);
+      }
+      return this.$mqtt(id, { mission: 'precheck' });
     },
     async checkWeather(timestamp) {
       this.preflightData.forecast = DefaultPreflightData.forecast;
@@ -234,7 +253,6 @@ export default {
       };
       this.checkTime = t;
       this.loading = Array(3).fill(true);
-      await this.preCheck();
       await Promise.all([
         wrap(this.checkDrone(), 0),
         wrap(this.checkDepot(), 1),
@@ -243,6 +261,7 @@ export default {
     },
     emitRun() {
       this.activated = true;
+      this.runStatus = 2;
       this.$emit('run');
     },
     setPlanRunStatus(status, code = 0) {
@@ -250,6 +269,9 @@ export default {
       this.returnCode = code;
       if (status === 0) {
         this.$refs.btnToDepot.countDown();
+        this.sendBoth('postcheck_execute');
+      } else {
+        this.sendBoth('postcheck_cancel');
       }
     },
     toDrone() {
@@ -264,8 +286,14 @@ export default {
         this.runStatus = -1;
       } else {
         this.$refs.slide.deactivate();
+        if (this.runStatus === -1) {
+          this.sendBoth('postcheck_cancel');
+        }
       }
       this.preflightData = DefaultPreflightData;
+      if (typeof this._unwatch === 'function') {
+        this._unwatch();
+      }
     }
   },
   created() {
