@@ -45,7 +45,9 @@
         <span slot="title" v-t="tt(prompt.method)"></span>
         <el-form size="small" label-width="140px" :model="prompt.values" :rules="prompt.fields" ref="form">
           <el-form-item v-for="(val, key) of prompt.fields" :key="key" :prop="key">
-            <span slot="label" v-t="tt(key)"></span>
+            <template #label>
+              <span v-t="tt(key)"></span>
+            </template>
             <template #error>
               <div class="el-form-item__error" v-t="'air.map.invalid_input'"></div>
             </template>
