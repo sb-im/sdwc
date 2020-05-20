@@ -23,7 +23,7 @@
         <sd-icon value="barometer" :size="30"></sd-icon>
         <div class="sd-preflight__detail">
           <div class="sd-preflight__title" v-t="'preflight.realtime'"></div>
-          <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }" ></div>
+          <div v-t="{ path: 'preflight.wind', args: { n: preflightData.forecast.wind_speed.toFixed(1) } }"></div>
           <div v-t="{ path: 'preflight.intensity', args: { n: preflightData.forecast.precipitation_intensity } }"></div>
           <div v-t="preflightData.forecast.precipitation_distance >= 10000 ? 'preflight.no_precipitation' : { path: 'preflight.distance', args: { n: preflightData.forecast.precipitation_distance } }"></div>
         </div>
@@ -49,13 +49,7 @@
       </template>
       <template v-else>
         <el-button size="medium" @click="toDrone" v-t="'preflight.drone'"></el-button>
-        <sd-countdown-button
-          size="medium"
-          mode="timeout"
-          ref="btnToDepot"
-          @click="toDepot"
-          text="preflight.depot"
-        ></sd-countdown-button>
+        <sd-countdown-button size="medium" mode="timeout" ref="btnToDepot" @click="toDepot" text="preflight.depot"></sd-countdown-button>
       </template>
     </template>
   </el-dialog>
@@ -208,16 +202,18 @@ export default {
             mission: 'history',
             arg: { topic: 'msg/weather', time: '1m' }
           });
-          let sum = 0;
-          let duration = 0;
-          let time = Math.trunc(timestamp / 1000);
-          for (let [t, data] of Object.entries(history).sort((a, b) => b[0] - a[0])) {
-            let span = time - Number.parseInt(t);
-            sum += span * data.WS;
-            duration += span;
-            time = t;
+          if (typeof history === 'object' && Object.getOwnPropertyNames(history).every(n => n.match(/^\d+$/))) {
+            let sum = 0;
+            let duration = 0;
+            let time = Math.trunc(timestamp / 1000);
+            for (let [t, data] of Object.entries(history).sort((a, b) => b[0] - a[0])) {
+              let span = time - Number.parseInt(t);
+              sum += span * data.WS;
+              duration += span;
+              time = t;
+            }
+            averageWindSpeed = sum / duration;
           }
-          averageWindSpeed = sum / duration;
         } catch (e) { /* noop */ }
       }
       const r = await realtime(status.lng, status.lat);
