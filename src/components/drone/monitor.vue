@@ -1,10 +1,21 @@
 <template>
   <sd-node-monitor :point="point" :status="status">
     <template #action>
+      <el-button
+        icon="el-icon-place"
+        size="small"
+        :type="joystick.show ? 'primary' : 'default'"
+        :disabled="joystickDisabled"
+        :loading="joystick.pending"
+        @click="toggleJoystick"
+      >
+        <span>虚拟摇杆</span>
+      </el-button>
       <el-radio-group
         v-model="gimbal.mode"
         :disabled="gimbalModeDisabled"
         @change="handleGimbalMode"
+        class="monitor-drone__switch"
         size="small"
       >
         <el-radio-button v-for="m in range.mode" :key="m" :label="m">
@@ -49,12 +60,20 @@
           />
         </div>
       </div>
+      <div class="monitor-drone-joystick" ref="joysticks">
+        <div class="monitor-drone-joystick__zone"></div>
+        <div class="monitor-drone-joystick__zone"></div>
+      </div>
     </template>
   </sd-node-monitor>
 </template>
 
 <script>
 import throttle from 'lodash/throttle';
+import nipplejs from 'nipplejs';
+
+import { h } from '@/util/create-element';
+import { waitSelector } from '@/util/wait-selector';
 
 import Monitor from '@/components/monitor/monitor.vue';
 
@@ -93,10 +112,21 @@ export default {
           x: 0,
           y: 0
         }
+      },
+      joystick: {
+        show: false,
+        pending: false,
+        created: false,
+        moving: [false, false],
+        data: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
+        interval: -1
       }
     };
   },
   computed: {
+    joystickDisabled() {
+      return this.status.code !== 0 || this.joystick.pending;
+    },
     gimbalModeDisabled() {
       return this.status.code !== 0;
     },
@@ -229,6 +259,111 @@ export default {
       el.addEventListener('mouseleave', ev => {
         this.handleGestureEnd(ev.x, ev.y);
       });
+    },
+    /**
+     * @param {number} index
+     */
+    createSingleJoystick(index) {
+      const instance = nipplejs.create({
+        zone: this.$refs.joysticks.children[index],
+        mode: 'static',
+        position: { top: '50%', left: '50%' },
+        restOpacity: 0.6,
+        fadeTime: 200
+      });
+      instance.on('start', () => this.$set(this.joystick.moving, index, true));
+      instance.on('end', () => this.$set(this.joystick.moving, index, false));
+      instance.on('move', (e, data) => this.$set(this.joystick.data, index, data.vector));
+      return instance;
+    },
+    createJoystick() {
+      const joysticks = [];
+      for (let i = 0; i < 2; i++) {
+        joysticks.push(this.createSingleJoystick(i));
+      }
+      waitSelector(this.$refs.joysticks.children[0], '.back').then(el => {
+        el.append(
+          h('i', { class: 'el-icon-top', style: 'top:0;left:42px' }),
+          h('i', { class: 'el-icon-refresh-right', style: 'top:42px;right:0' }),
+          h('i', { class: 'el-icon-bottom', style: 'bottom:0;left:42px' }),
+          h('i', { class: 'el-icon-refresh-left', style: 'top:42px;left:0' })
+        );
+      });
+      waitSelector(this.$refs.joysticks.children[1], '.back').then(el => {
+        el.append(
+          h('i', { class: 'el-icon-arrow-up', style: 'top:0;left:42px' }),
+          h('i', { class: 'el-icon-arrow-right', style: 'top:42px;right:0' }),
+          h('i', { class: 'el-icon-arrow-down', style: 'bottom:0;left:42px' }),
+          h('i', { class: 'el-icon-arrow-left', style: 'top:42px;left:0' })
+        );
+      });
+      this._joysticks = joysticks;
+      this.joystick.created = true;
+    },
+    async toggleJoystick() {
+      const initialShow = this.joystick.show;
+      try {
+        this.joystick.pending = true;
+        await this.$mqtt(this.point.node_id, {
+          mission: 'stick_mode',
+          arg: [initialShow ? 'rc' : 'virtual']
+        });
+        this.joystick.show = !initialShow;
+        if (this.joystick.show && !this.joystick.created) {
+          this.createJoystick();
+        }
+        this.$refs.joysticks.style.display = this.joystick.show ? '' : 'none';
+      } catch (e) { /* noop */ }
+      this.joystick.pending = false;
+    },
+    destroyJoystick() {
+      if (Array.isArray(this._joysticks)) {
+        for (const instance of this._joysticks) {
+          instance.destroy();
+        }
+        delete this._joysticks;
+      }
+      this.joystick.created = false;
+    },
+    sendStickCtl() {
+      const [m0, m1] = this.joystick.data;
+      const r = num => Math.floor(num * 100);
+      this.$mqtt(this.point.node_id, {
+        mission: 'stick_ctl',
+        arg: {
+          x: r(m1.x),
+          y: r(m1.y),
+          z: r(m0.y),
+          r: r(m0.x)
+        }
+      }, { notification: true });
+    }
+  },
+  watch: {
+    ['status.code'](val) {
+      if (val !== 0) {
+        if (this.joystick.created) {
+          this.destroyJoystick();
+        }
+      } else {
+        if (this.joystick.show) {
+          this.$nextTick(() => this.createJoystick());
+        }
+      }
+    },
+    ['joystick.moving'](val) {
+      if (val.every(v => v === false)) {
+        if (this.joystick.interval >= 0) {
+          clearInterval(this.joystick.interval);
+          this.joystick.interval = -1;
+        }
+      } else {
+        if (this.joystick.interval < 0) {
+          this.joystick.interval = setInterval(() => {
+            this.sendStickCtl();
+          }, 1000 / 25);
+        }
+      }
     }
   },
   created() {
@@ -241,6 +376,9 @@ export default {
     this.handleGestureMoveThrottled = throttle(this.handleGestureMove, 55);
     this.$nextTick(() => this.bindGestures());
   },
+  beforeDestroy() {
+    this.destroyJoystick();
+  },
   components: {
     [Monitor.name]: Monitor
   }
@@ -248,6 +386,9 @@ export default {
 </script>
 
 <style>
+.monitor-drone__switch {
+  margin-left: 10px;
+}
 .monitor-drone-control {
   position: absolute;
   top: 0;
@@ -269,6 +410,29 @@ export default {
 }
 .monitor-drone-control__restore {
   margin: 0 5px;
+}
+.monitor-drone-joystick {
+  position: absolute;
+  bottom: 10px;
+  right: 0;
+  left: 0;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+}
+.monitor-drone-joystick__zone {
+  position: relative;
+  height: 120px;
+  width: 120px;
+  margin: 0 10px;
+}
+.monitor-drone-joystick__zone i {
+  position: absolute;
+}
+.monitor-drone-joystick__zone .front {
+  width: 30px !important;
+  height: 30px !important;
+  margin: -15px 0 0 -15px !important;
 }
 .sd--safari .monitor--full .monitor-drone-control {
   top: 18px;
