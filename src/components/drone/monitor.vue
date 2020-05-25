@@ -268,6 +268,7 @@ export default {
         zone: this.$refs.joysticks.children[index],
         mode: 'static',
         position: { top: '50%', left: '50%' },
+        dynamicPage: true,
         restOpacity: 0.6,
         fadeTime: 200
       });
