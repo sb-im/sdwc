@@ -272,7 +272,10 @@ export default {
         fadeTime: 200
       });
       instance.on('start', () => this.$set(this.joystick.moving, index, true));
-      instance.on('end', () => this.$set(this.joystick.moving, index, false));
+      instance.on('end', () => {
+        this.$set(this.joystick.moving, index, false);
+        this.$set(this.joystick.data, index, { x: 0, y: 0 });
+      });
       instance.on('move', (e, data) => this.$set(this.joystick.data, index, data.vector));
       return instance;
     },
