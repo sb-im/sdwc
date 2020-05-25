@@ -4,11 +4,11 @@
 
 <script>
 import { loadMapbox } from '@/api/mapbox';
-
-import { h, hs } from '@/util/create-element';
 import { MapActionEmoji } from '@/constants/map-actions';
+import { h, hs } from '@/util/create-element';
+import { waitSelector } from '@/util/wait-selector';
 
-import { waitSelector, randColor } from './common';
+import { randColor } from './common';
 
 /**
  * @typedef {{ lng: number, lat: number }} LngLatLiteral
@@ -184,7 +184,7 @@ export default {
             .setLngLat(position)
             .addTo(map);
         }
-        waitSelector(this.$refs.map, 'div.mapbox-marker--selected', true).then(el => {
+        waitSelector(this.$refs.map, 'div.mapbox-marker--selected').then(el => {
           const { lng, lat } = position;
           this.$emit('select-point', { lng, lat }, el);
         });

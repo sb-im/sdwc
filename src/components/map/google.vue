@@ -5,8 +5,9 @@
 <script>
 import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
 import { MapActionEmoji } from '@/constants/map-actions';
+import { waitSelector } from '@/util/wait-selector';
 
-import { waitSelector, randColor } from './common';
+import { randColor } from './common';
 
 /**
  * @type {google.maps.LatLng}
@@ -158,7 +159,7 @@ export default {
             icon: createMarkerPointIcon('#409eff')
           });
         }
-        waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(el => {
+        waitSelector(this.$refs.map, 'div[title=SelectedMarker]').then(el => {
           const point = { lat: position.lat(), lng: position.lng() };
           this.$emit('select-point', point, el);
         });

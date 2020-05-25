@@ -5,11 +5,10 @@
 <script>
 import CoordTransform from 'coordtransform';
 
-import { h } from '@/util/create-element';
 import { loadAMap, loadAMapUI } from '@/api/amap';
 import { MapActionEmoji } from '@/constants/map-actions';
-
-import { waitSelector } from './common';
+import { h } from '@/util/create-element';
+import { waitSelector } from '@/util/wait-selector';
 
 /**
  * @typedef {{lng: number, lat: number}} LngLatLiteral
@@ -140,7 +139,7 @@ export default {
             marker.setMap(map);
             this.selectedMarker = marker;
           }
-          waitSelector(this.$refs.map, 'div[title=SelectedMarker]', true).then(() => {
+          waitSelector(this.$refs.map, 'div[title=SelectedMarker]').then(() => {
             const [lng, lat] = CoordTransform.gcj02towgs84(position.getLng(), position.getLat());
             this.$emit('select-point', { lng, lat }, this.selectedMarker.domNodes.container);
           });
