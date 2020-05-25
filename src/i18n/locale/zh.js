@@ -143,6 +143,7 @@ export default {
       rc: '遥控器',
       center: '回中'
     },
+    joystick: '虚拟摇杆',
     ctl: {
       hover: '悬停',
       return: '返航',

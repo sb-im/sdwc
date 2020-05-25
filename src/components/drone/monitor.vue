@@ -9,7 +9,7 @@
         :loading="joystick.pending"
         @click="toggleJoystick"
       >
-        <span>虚拟摇杆</span>
+        <span v-t="'air.joystick'"></span>
       </el-button>
       <el-radio-group
         v-model="gimbal.mode"

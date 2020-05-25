@@ -143,6 +143,7 @@ export default {
       rc: 'Remote-Control',
       center: 'Center'
     },
+    joystick: 'Virtual Joystick',
     ctl: {
       hover: 'Hover',
       return: 'Return',
