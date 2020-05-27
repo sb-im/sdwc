@@ -89,11 +89,11 @@ function registerRpcListener() {
 }
 
 function registerStatusListener() {
-  MqttClient.on('status', ({ id, code }) => {
+  MqttClient.on('status', (id, { code }) => {
     const node = store.state.node.find(node => node.info.id === id);
-    if (!node || node.status === code) return;
+    if (!node || node.status.code === code) return;
     const now = Date.now();
-    const st = i18n.t(`header.status_${code}`);
+    const st = i18n.t(`common.status.${code}`);
     emitNotification({
       id: `nodes/${id}/status/${now}`,
       time: now,
