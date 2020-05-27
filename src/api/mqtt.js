@@ -220,7 +220,6 @@ class MqttClient extends EventEmitter {
    */
   disconnect() {
     if (!this.mqtt) return;
-    this.removeAllListeners();
     return new Promise(resolve => {
       this.mqtt.end(false, resolve);
     });

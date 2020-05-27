@@ -185,7 +185,7 @@ const NodePointTopic = {
 /**
  * @param {Context} context
  */
-export function subscribeNodes({ state, commit, dispatch }) {
+export function subscribeNodes({ state }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     MqttClient.subscribeNode(node.info.id);
@@ -200,22 +200,6 @@ export function subscribeNodes({ state, commit, dispatch }) {
         MqttClient.mqtt.subscribe(`nodes/${point.node_id}/msg/${topic}`);
       }
     }
-  });
-  MqttClient.on('status', async (id, payload) => {
-    if (!payload.legacy) {
-      commit(NODE.SET_NODE_STATUS, { id, payload });
-      return;
-    }
-    if (payload.code === 0) {
-      const node = state.node.find(n => n.info.id === id);
-      if (node.info.type_name === 'depot') {
-        await dispatch('updateDepotStatus', id);
-      }
-      commit(NODE.SET_NODE_STATUS, { id, payload });
-    }
-  });
-  MqttClient.on('message', (id, msg) => {
-    commit(NODE.ADD_NODE_MSG, { id, msg });
   });
 }
 

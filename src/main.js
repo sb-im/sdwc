@@ -9,6 +9,7 @@ import router from './router';
 import './util/browser-hacks';
 import MqttClient from './api/mqtt';
 import { MutationTypes as UI } from './store/modules/ui';
+import { MutationTypes as NODE } from './store/modules/node';
 
 import App from './App.vue';
 import './styles/global.css';
@@ -59,6 +60,22 @@ store.subscribe((mutation) => {
 
 MqttClient.on('close', () => store.commit(UI.SET_UI, { mqttConnected: false }));
 MqttClient.on('connect', () => store.commit(UI.SET_UI, { mqttConnected: true }));
+MqttClient.on('status', async (id, payload) => {
+  if (!payload.legacy) {
+    store.commit(NODE.SET_NODE_STATUS, { id, payload });
+    return;
+  }
+  if (payload.code === 0) {
+    const node = store.state.node.find(n => n.info.id === id);
+    if (node.info.type_name === 'depot') {
+      await store.dispatch('updateDepotStatus', id);
+    }
+    store.commit(NODE.SET_NODE_STATUS, { id, payload });
+  }
+});
+MqttClient.on('message', (id, msg) => {
+  store.commit(NODE.ADD_NODE_MSG, { id, msg });
+});
 
 if (__SDWC_DEV__) {
   import(/* webpackChunkName: 'development' */ './styles/development.css');
