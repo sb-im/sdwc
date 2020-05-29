@@ -4,10 +4,6 @@
     <div class="sd-panel__main">
       <sd-header></sd-header>
       <router-view class="sd-panel__view"></router-view>
-      <div class="sd-panel__footer">
-        <span>SDWC v{{version}}</span>
-        <span class="sd-panel__cpy">Copyright © 2017-2020 StrawBerry Tech.</span>
-      </div>
     </div>
   </div>
 </template>
@@ -27,11 +23,6 @@ export default {
       'subscribeNodes',
       'getPlans'
     ])
-  },
-  computed: {
-    version() {
-      return __SDWC__VERSION__; // would be replaced on compile
-    }
   },
   inject: ['configurePromise'],
   created() {
@@ -79,17 +70,5 @@ export default {
 }
 .sd--safari .sd-panel__view.el-loading-parent--relative {
   height: calc(100vh - 120px);
-}
-.sd-panel__footer {
-  margin-top: auto;
-  height: 60px;
-  color: #333;
-  background-color: #b3c0d1;
-  line-height: 60px;
-  font-size: 14px;
-  padding: 0 10px;
-}
-.sd-panel__cpy {
-  float: right;
 }
 </style>
