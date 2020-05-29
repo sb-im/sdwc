@@ -1,12 +1,26 @@
+'use strict';
+
 /* eslint-disable */
 
 const path = require('path');
+const cp = require('child_process');
+
 const webpack = require('webpack');
-const packageJson = require('../package.json');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
+const packageJson = require('../package.json');
+
+function resolveVersion(hash) {
+  let v = packageJson.version;
+  try {
+    v = cp.execSync(`git describe --long`, { encoding: 'utf8' }).trim();
+    if (!hash) v = v.replace(/-g[0-9a-f]+$/, '');
+  } catch (e) { /* noop */ }
+  return v;
+}
 
 /**
  * @type {import('webpack').Configuration}
@@ -81,7 +95,7 @@ const cfg = {
       filename: 'index.html',
       title: 'S Dashboard Web Console'
     }),
-    new webpack.DefinePlugin({ '__SDWC__VERSION__': `"${packageJson.version}"` })
+    new webpack.DefinePlugin({ '__SDWC__VERSION__': `"${resolveVersion(true)}"` })
   ],
   devServer: {
     hot: true,
