@@ -165,7 +165,6 @@ export default {
       this.$refs.preflight.toggle();
     },
     handleRunComfirm() {
-      this.$refs.preflight.setPlanRunStatus(2);
       runPlan(this.plan.id).then(() => {
         this.$refs.preflight.setPlanRunStatus(0);
       }).catch(e => {
