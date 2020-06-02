@@ -3,8 +3,8 @@
     <sd-icon :value="icon" :size="30"></sd-icon>
     <div class="sd-preflight__detail">
       <div class="sd-preflight__title" v-t="title"></div>
-      <slot></slot>
       <div v-if="node">{{ node.info.name }} {{ $t(`common.status.${status}`) }}</div>
+      <slot></slot>
     </div>
     <i class="sd-preflight__icon" :class="iconClass"></i>
   </div>

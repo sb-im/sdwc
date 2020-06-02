@@ -9,7 +9,9 @@
   >
     <span slot="title" class="el-dialog__title" v-t="'preflight.title'"></span>
     <template v-if="!activated">
-      <sd-preflight-item icon="drone" title="common.air" :loading="loading[0]" :status="droneStatus" :node="drone"></sd-preflight-item>
+      <sd-preflight-item icon="drone" title="common.air" :loading="loading[0]" :status="droneStatus" :node="drone">
+        <div v-if="drone.msg && drone.msg.battery.cap" v-t="{ path: 'preflight.battery', args: drone.msg.battery }"></div>
+      </sd-preflight-item>
       <sd-preflight-item icon="depot" title="common.depot" :loading="loading[1]" :status="depotStatus" :node="depot"></sd-preflight-item>
       <sd-preflight-item icon="barometer" title="preflight.realtime" :loading="loading[2]" :level="weather.level">
         <div v-t="{ path: 'preflight.wind', args: { n: weather.wind.speed.toFixed(1) } }"></div>

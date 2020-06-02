@@ -321,9 +321,10 @@ export default {
   },
   preflight: {
     title: 'Preflight Check',
-    drone: 'UAV',
-    depot: 'Depot',
+    drone: 'Drone',
     no_drone: 'Drone Not Found',
+    battery: 'Battery remain {remain}% ，temperature {temp}℃',
+    depot: 'Depot',
     no_depot: 'Depot Not Found',
     realtime: 'Realtime Weather',
     wind: 'Wind speed {n}m/s',
