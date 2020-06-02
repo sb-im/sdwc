@@ -186,7 +186,8 @@ export default {
             mission: 'history',
             arg: { topic: 'msg/weather', time: '1m' }
           });
-          if (typeof history === 'object' && Object.getOwnPropertyNames(history).every(n => n.match(/^\d+$/))) {
+          const keys = Object.getOwnPropertyNames(history);
+          if (typeof history === 'object' && keys.length >0 && keys.every(n => n.match(/^\d+$/))) {
             let sum = 0;
             let duration = 0;
             let time = Math.trunc(timestamp / 1000);
