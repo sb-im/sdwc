@@ -50,6 +50,7 @@ class MqttClient extends EventEmitter {
    */
   connect(addr) {
     this.mqtt = mqtt.connect(addr, {
+      keepalive: 15,
       clientId: `sdwc.${this.rpcIdPrefix}-${Date.now()}`
     });
     this.mqtt.on('connect', () => {
