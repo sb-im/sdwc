@@ -12,7 +12,7 @@
   "vetur.format.defaultFormatter.html": "prettyhtml",
   "vetur.format.defaultFormatterOptions": {
     "prettyhtml": {
-      "printWidth": 120,
+      "printWidth": 100,
       "singleQuote": false,
       "wrapAttributes": false,
       "sortAttributes": false
