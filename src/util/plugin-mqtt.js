@@ -106,10 +106,11 @@ function registerStatusListener() {
 
 function registerNotificationListener() {
   MqttClient.on('message', (id, msg) => {
-    if (!msg.notification) return;
+    /** @type {SDWC.NodeNotification} */
     const n = msg.notification;
-    const node = store.state.node.find(node => node.info.id === id).info;
-    if (!node || !store.state.preference.notifyPopup.includes(node.id)) return;
+    if (!n) return;
+    const node = store.state.node.find(node => node.info.id === id);
+    if (!node || !store.state.preference.notifyPopup.includes(node.info.id)) return;
     const notify = Notification({
       message: 'REPLACED_BY_VNODE',
       customClass: 'status-notify--popup'
@@ -117,7 +118,7 @@ function registerNotificationListener() {
     const h = notify.$createElement;
     notify.$slots.default = [
       h('div', null, [
-        h('span', { class: 'status-notify__title' }, [node.name]),
+        h('span', { class: 'status-notify__title' }, [node.info.name]),
         h('span', null, [' · ', i18n.d(n.time * 1000, 'seconds')]),
       ]),
       h('span', { class: ['status-notify__level', `lv${n.level}`] }, [` [${NotificationLevels[n.level]}] `]),
