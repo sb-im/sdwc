@@ -32,7 +32,7 @@
     <template slot="footer">
       <el-button size="medium" icon="el-icon-circle-close" @click="toggle" v-t="'common.cancel'"></el-button>
       <template v-if="!activated">
-        <sd-slide-confirm size="medium" ref="slide" :disabled="slideDisabled" @confirm="handleConfirm" text="preflight.slide2confirm"></sd-slide-confirm>
+        <sd-slide-confirm size="medium" ref="slide" :type="droneBattery.level" :disabled="slideDisabled" @confirm="handleConfirm" text="preflight.slide2confirm"></sd-slide-confirm>
       </template>
       <template v-else>
         <el-button-group>
@@ -123,6 +123,7 @@ export default {
       if (!msg || points.findIndex(p => p.point_type_name === 'battery') < 0) return { show: false };
       const level = msg.battery.remain <= 50 ? 'danger' : msg.battery.remain <= 70 ? 'warning' : '';
       return {
+        level,
         show: true,
         class: `sd-preflight__subitem--${level}`
       };
