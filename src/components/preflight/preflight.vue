@@ -10,7 +10,7 @@
     <span slot="title" class="el-dialog__title" v-t="'preflight.title'"></span>
     <template v-if="!activated">
       <sd-preflight-item icon="drone" title="common.air" :loading="loading[0]" :status="droneStatus" :node="drone">
-        <div v-if="drone.msg && drone.msg.battery.cap" v-t="{ path: 'preflight.battery', args: drone.msg.battery }"></div>
+        <div v-if="droneBattery.show" :class="droneBattery.class" v-t="{ path: 'preflight.battery', args: drone.msg.battery }"></div>
       </sd-preflight-item>
       <sd-preflight-item icon="depot" title="common.depot" :loading="loading[1]" :status="depotStatus" :node="depot"></sd-preflight-item>
       <sd-preflight-item icon="barometer" title="preflight.realtime" :loading="loading[2]" :level="weather.level">
@@ -117,6 +117,15 @@ export default {
     },
     depotStatus() {
       return this.precheck.depot === null ? this.depot.status.code : this.precheck.depot;
+    },
+    droneBattery() {
+      const { info: { points }, msg } = this.drone;
+      if (!msg || points.findIndex(p => p.point_type_name === 'battery') < 0) return { show: false };
+      const level = msg.battery.remain <= 50 ? 'danger' : msg.battery.remain <= 70 ? 'warning' : '';
+      return {
+        show: true,
+        class: `sd-preflight__subitem--${level}`
+      };
     },
     checkPassed() {
       return (

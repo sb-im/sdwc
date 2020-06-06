@@ -80,6 +80,22 @@ export default {
   line-height: 30px;
   font-weight: bold;
 }
+.sd-preflight__subitem--warning,
+.sd-preflight__subitem--danger {
+  margin: -1px 0;
+  border-style: solid;
+  border-width: 1px 0;
+}
+.sd-preflight__subitem--warning {
+  color: #e6a23c;
+  border-color: #faecd8;
+  background-color: #fdf6ec;
+}
+.sd-preflight__subitem--danger {
+  color: #f56c6c;
+  border-color: #fde2e2;
+  background-color: #fef0f0;
+}
 .sd-preflight__icon {
   line-height: 30px;
   font-size: 24px;
