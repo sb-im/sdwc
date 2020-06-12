@@ -342,5 +342,8 @@ export default {
   debug: {
     title: 'Debug',
     send: 'Send'
+  },
+  custom: {
+    title: 'Custom Data'
   }
 };

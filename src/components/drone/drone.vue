@@ -20,12 +20,14 @@ import Monitor from './monitor.vue';
 import Debug from '@/components/debug.vue';
 import Battery from '@/components/battery.vue';
 import DroneMap from './map.vue';
+import Custom from '@/components/custom/custom.vue';
 
 const CompoName = {
   'drone_status': Status.name,
   'map': DroneMap.name,
   'debug': Debug.name,
   'battery': Battery.name,
+  'custom': Custom.name,
   'console': Control.name,
   'iframe': Monitor.name,
   'livestream_img': Monitor.name,
@@ -41,6 +43,7 @@ const CompoOrder = {
   [Monitor.name]: 2,
   [DroneMap.name]: 3,
   [Battery.name]: 5,
+  [Custom.name]: 6,
   [Control.name]: 9,
   [Debug.name]: 99,
 };
@@ -65,6 +68,7 @@ export default {
     [Debug.name]: Debug,
     [Status.name]: Status,
     [Battery.name]: Battery,
+    [Custom.name]: Custom,
     [Control.name]: Control,
     [DroneMap.name]: DroneMap,
     [Monitor.name]: Monitor

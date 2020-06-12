@@ -342,5 +342,8 @@ export default {
   debug: {
     title: '调试',
     send: '发送'
+  },
+  custom: {
+    title: '自定义数据'
   }
 };

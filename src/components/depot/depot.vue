@@ -12,11 +12,13 @@ import Control from './control.vue';
 import Debug from '@/components/debug.vue';
 import Monitor from '@/components/monitor/monitor.vue';
 import Weather from '@/components/weather/weather.vue';
+import Custom from '@/components/custom/custom.vue';
 
 const CompoName = {
   'depot_status': Status.name,
   'debug': Debug.name,
   'weather': Weather.name,
+  'custom': Custom.name,
   'console': Control.name,
   'iframe': Monitor.name,
   'livestream_img': Monitor.name,
@@ -31,6 +33,7 @@ const CompoOrder = {
   [Status.name]: 0,
   [Monitor.name]: 3,
   [Weather.name]: 5,
+  [Custom.name]: 6,
   [Control.name]: 9,
   [Debug.name]: 99,
 };
@@ -55,6 +58,7 @@ export default {
   components: {
     [Status.name]: Status,
     [Debug.name]: Debug,
+    [Custom.name]: Custom,
     [Control.name]: Control,
     [Monitor.name]: Monitor,
     [Weather.name]: Weather
