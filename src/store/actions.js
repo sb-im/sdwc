@@ -185,19 +185,27 @@ const NodePointTopic = {
 /**
  * @param {Context} context
  */
-export function subscribeNodes({ state }) {
+export function subscribeNodes({ state, commit }) {
   MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
-    MqttClient.subscribeNode(node.info.id);
-    if (node.info.points.some(p => p.point_type_name.startsWith('livestream_'))) {
-      MqttClient.mqtt.subscribe(`nodes/${node.info.id}/msg/${NodePointTopic.gimbal}`);
+    const { id, points } = node.info;
+    MqttClient.subscribeNode(id);
+    if (points.some(p => p.point_type_name.startsWith('livestream_'))) {
+      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.gimbal}`);
     }
-    for (const point of node.info.points) {
+    for (const point of points) {
+      if (point.point_type_name === 'custom') {
+        if (!point.params || typeof point.params !== 'object') continue;
+        const { topic = 'custom' } = point.params;
+        commit(NODE.ADD_NODE_TOPIC, { id, topic });
+        MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
+        continue;
+      }
       const t = NodePointTopic[point.point_type_name];
       if (!t) continue;
       const topics = Array.isArray(t) ? t : [t];
       for (const topic of topics) {
-        MqttClient.mqtt.subscribe(`nodes/${point.node_id}/msg/${topic}`);
+        MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
       }
     }
   });

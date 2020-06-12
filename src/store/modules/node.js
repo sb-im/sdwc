@@ -7,7 +7,7 @@ export const MutationTypes = {
   ADD_NODE: 'ADD_NODE',
   SET_NODE_STATUS: 'SET_NODE_STATUS',
   ADD_NODE_MSG: 'ADD_NODE_MSG',
-  ADD_NODE_LOG: 'ADD_NODE_LOG',
+  ADD_NODE_TOPIC: 'ADD_NODE_TOPIC',
   CLEAR_NODE_PATH: 'CLEAR_NODE_PATH',
   CLEAR_NODES: 'CLEAR_NODES'
 };
@@ -93,38 +93,31 @@ const mutations = {
   [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
-    if (msg.weather) {
-      node.msg.weather = msg.weather;
-    }
-    if (msg.battery) {
-      node.msg.battery = msg.battery;
-    }
-    if (msg.charger) {
-      node.msg.charger = msg.charger;
-    }
-    if (msg.depot_status) {
-      node.msg.depot_status = msg.depot_status;
-    }
-    if (msg.drone_status) {
-      node.msg.drone_status = msg.drone_status;
-    }
-    if (msg.gimbal) {
-      node.msg.gimbal = msg.gimbal;
-    }
-    if (msg.position) {
-      node.msg.position.unshift(msg.position);
-      if (node.msg.position.length > 1024) {
-        node.msg.position.splice(1024);
+    for (const [category, value] of Object.entries(msg)) {
+      switch (category) {
+        case 'position':
+          node.msg.position.unshift(msg.position);
+          if (node.msg.position.length > 1024) {
+            node.msg.position.splice(1024);
+          }
+          break;
+        case 'notification':
+          if (node.msg.notification.findIndex(n => n.time === msg.notification.time) < 0) {
+            node.msg.notification.unshift(msg.notification);
+          }
+          break;
+        default:
+          node.msg[category] = value;
+          break;
       }
     }
-    if (msg.notification) {
-      if (node.msg.notification.findIndex(n => n.time === msg.notification.time) < 0) {
-        node.msg.notification.unshift(msg.notification);
-      }
-    }
-    if (msg.overview) {
-      node.msg.overview = msg.overview;
-    }
+  },
+  [MutationTypes.ADD_NODE_TOPIC](state, /** @type {{ id: number, topic: string }} */ { id, topic }) {
+    const node = state.find(node => node.info.id === id);
+    if (!node) return;
+    // @ts-ignore
+    // replace msg object, make new property reactive
+    node.msg = { ...node.msg, [topic]: {} };
   },
   [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {
     const node = state.find(node => node.info.id === id);
