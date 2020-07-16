@@ -42,12 +42,20 @@ import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'sd-login',
+  props: {
+    username: {
+      default: '',
+      type: String
+    },
+    password: {
+      default: '',
+      type: String
+    }
+  },
   data() {
     return {
       showVideo: false,
-      username: '',
       errorUsername: '',
-      password: '',
       errorPassword: '',
       pending: false
     };
@@ -90,6 +98,13 @@ export default {
     }
   },
   mounted() {
+    // Note: this delay in order to await config.json load base api
+    setTimeout(() => {
+        if (this.username !== '' && this.password !== '') {
+          this.handleLogin();
+        }
+      }, 500);
+
     /** @type {HTMLInputElement} */
     const inputPwd = this.$refs.inputPwd.$el.getElementsByTagName('input')[0];
     if (inputPwd) {
