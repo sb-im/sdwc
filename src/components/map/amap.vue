@@ -6,7 +6,6 @@
 import CoordTransform from 'coordtransform';
 
 import { loadAMap, loadAMapUI } from '@/api/amap';
-import { MapActionEmoji } from '@/constants/map-actions';
 import { h } from '@/util/create-element';
 import { waitSelector } from '@/util/wait-selector';
 
@@ -257,7 +256,7 @@ export default {
               });
             } else if (marker.type === 'action') {
               mapMarker = new AMap.Marker({
-                content: h('div', { class: 'amap-marker--action' }, marker.action.map(a => MapActionEmoji[a])),
+                content: h('div', { class: 'amap-marker--action' }, marker.action),
                 position,
                 offset: new AMap.Pixel(-11, -11)
               });

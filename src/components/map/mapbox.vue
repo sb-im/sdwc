@@ -4,7 +4,6 @@
 
 <script>
 import { loadMapbox } from '@/api/mapbox';
-import { MapActionEmoji } from '@/constants/map-actions';
 import { h, hs } from '@/util/create-element';
 import { waitSelector } from '@/util/wait-selector';
 
@@ -325,7 +324,7 @@ export default {
               .setLngLat(lnglat)
               .addTo(map);
           } else if (marker.type === 'action') {
-            const label = marker.action.map(a => MapActionEmoji[a]).join('');
+            const label = marker.action.join('');
             mapMarker = new Marker({ element: createPointElement(label) })
               .setLngLat(lnglat)
               .addTo(map);

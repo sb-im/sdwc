@@ -4,7 +4,6 @@
 
 <script>
 import { loadGoogleMap, loadGoogleMapMarker } from '@/api/google-map';
-import { MapActionEmoji } from '@/constants/map-actions';
 import { waitSelector } from '@/util/wait-selector';
 
 import { randColor } from './common';
@@ -325,7 +324,7 @@ export default {
                 anchor: { x: 0, y: 0 },
                 path: ''
               },
-              labelContent: marker.action.map(a => MapActionEmoji[a]).join(''),
+              labelContent: marker.action.join(''),
               labelAnchor: { x: 10, y: 10 },
               labelClass: 'gmap-action'
             });
