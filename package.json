@@ -22,7 +22,7 @@
     "flv.js": "^1.4.0",
     "hls.js": "^0.13.2",
     "jsonrpc-lite": "^2.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mqtt": "^4.1.0",
     "nipplejs": "^0.8.5",
     "papaparse": "^5.2.0",
