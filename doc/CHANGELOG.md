@@ -1,5 +1,36 @@
 # SDWC - Changelog
 
+## 2020-07-24 v3.5.0
+
+### Add
+- Overview
+  - show place markers on map
+  - notify popup and history
+
+- Map
+  - Add mapbox
+  - Heatmap support
+
+- Monitor
+  - joystick toggle
+
+- Add custom
+- router login api
+
+### Change
+- API preflight
+
+### Fix
+- node loading spinner not centered on ipad
+- Map
+  - map follow, dragged
+  - google, mapbox
+
+- Preflight
+  - background on safari
+  - touch screen support
+- mqtt keepalive
+
 ## 2020-04-07 v3.4.0
 
 ### 新增

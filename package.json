@@ -1,7 +1,7 @@
 {
   "name": "SDWC",
   "description": "Multiple drones and ground station Web consoles",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "author": "metal A-wing <shiyongxin@aliyun.com>",
   "license": "MPL-2.0",
   "private": true,
