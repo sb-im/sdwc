@@ -40,10 +40,6 @@ const routes = [
     path: '/login/:username/:password',
     name: 'login-api',
     component: Login,
-    props: route => ({
-      username: route.params.username,
-      password: route.params.password,
-    }),
     beforeEnter(to, from, next) {
       next(checkUser() ? '/panel' : undefined);
     }

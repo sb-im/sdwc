@@ -42,20 +42,13 @@ import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'sd-login',
-  props: {
-    username: {
-      default: '',
-      type: String
-    },
-    password: {
-      default: '',
-      type: String
-    }
-  },
+  inject: ['configurePromise'],
   data() {
     return {
       showVideo: false,
+      username: '',
       errorUsername: '',
+      password: '',
       errorPassword: '',
       pending: false
     };
@@ -98,13 +91,19 @@ export default {
     }
   },
   mounted() {
-    // Note: this delay in order to await config.json load base api
-    setTimeout(() => {
-        if (this.username !== '' && this.password !== '') {
-          this.handleLogin();
-        }
-      }, 500);
-
+    /**
+     * `configurePromise`, provided by root Vue instance, in src/main.js ,
+     * is the Promise returned by dispatching action `configure`.
+     * Once it became fullfilled, `config.json` has been loaded.
+     */
+    this.configurePromise.then(() => {
+      const { username, password } = this.$route.params;
+      if (username !== '' && password !== '') {
+        this.username = username;
+        this.password = password;
+        this.handleLogin();
+      }
+    });
     /** @type {HTMLInputElement} */
     const inputPwd = this.$refs.inputPwd.$el.getElementsByTagName('input')[0];
     if (inputPwd) {
