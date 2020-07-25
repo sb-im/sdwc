@@ -69,6 +69,7 @@ export default {
     },
     edit: {
       add: '新建任务',
+      create_failed: '创建任务失败',
       alter: '修改任务',
       save: '保存任务',
       back: '取消并返回',

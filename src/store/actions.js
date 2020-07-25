@@ -227,8 +227,12 @@ export async function getPlans({ commit }) {
  */
 export async function createPlan({ commit }, plan) {
   const data = await SuperDock.createPlan(plan);
-  commit(PLAN.ADD_PLAN, data);
-  return data;
+  if (data && typeof data.id === 'number') {
+    commit(PLAN.ADD_PLAN, data);
+    return data;
+  } else {
+    throw data;
+  }
 }
 
 /**

@@ -29,7 +29,8 @@ export default {
     handleCreate() {
       const plan = this.$refs.edit.getPlan();
       this.createPlan(plan)
-        .then(p => this.$router.push({ name: 'plan/view', params: { id: p.id } }));
+        .then(p => this.$router.push({ name: 'plan/view', params: { id: p.id } }))
+        .catch(() => this.$message.error(this.$t('plan.edit.create_failed')));
     }
   },
   components: {

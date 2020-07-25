@@ -69,6 +69,7 @@ export default {
     },
     edit: {
       add: 'Create',
+      create_failed: 'Failed to create Plan',
       alter: 'Modify',
       save: 'Save',
       back: 'Cancel & back',
