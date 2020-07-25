@@ -79,9 +79,9 @@ export default {
   methods: {
     async initMap() {
       const AMap = await loadAMap();
-      const center = __AMAP_CENTER__ || { lat: 30, lng: 120 };
+      const center = __AMAP_CENTER__ || { lat: 38, lng: 110 };
       const map = new AMap.Map(this.$refs.map, {
-        zoom: __AMAP_ZOOM__ || 20,
+        zoom: __AMAP_ZOOM__ || 3,
         zooms: [3, 20],
         expandZoomRange: true,
         jogEnable: false,

@@ -124,8 +124,8 @@ export default {
       const { event, Map, MapTypeId } = await loadGoogleMap();
       const map = new Map(this.$refs.map, {
         maxZoom: 20,
-        zoom: __GMAP_ZOOM__ || 20,
-        center: __GMAP_CENTER__ || { lat: 30, lng: 120 },
+        zoom: __GMAP_ZOOM__ || 1.5,
+        center: __GMAP_CENTER__ || { lat: 27, lng: 162 },
         mapTypeId: MapTypeId.SATELLITE,
         mapTypeControl: false,
         scaleControl: true,
