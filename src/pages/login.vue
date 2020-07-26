@@ -97,8 +97,8 @@ export default {
      * Once it became fullfilled, `config.json` has been loaded.
      */
     this.configurePromise.then(() => {
-      const { username, password } = this.$route.params;
-      if (username !== '' && password !== '') {
+      const { username = '', password = '' } = this.$route.params;
+      if (username && password) {
         this.username = username;
         this.password = password;
         this.handleLogin();
