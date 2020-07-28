@@ -1,24 +1,30 @@
 import Vue from 'vue';
 
+// side-effect
 import './util/element';
-import i18n from './i18n';
 import './util/plugin-mqtt';
-import store from './store';
-import { MutationTypes as USER } from './store/modules/user';
-import router from './router';
 import './util/browser-hacks';
+
+// styles
+import 'chartist/dist/chartist.min.css';
+import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
+import './styles/global.css';
+import './styles/chartist.css';
+
+// App part
+import App from './App.vue';
+import i18n from './i18n';
+import store from './store';
+import router from './router';
 import MqttClient from './api/mqtt';
 import { MutationTypes as UI } from './store/modules/ui';
+import { MutationTypes as USER } from './store/modules/user';
 import { MutationTypes as NODE } from './store/modules/node';
 import { MutationTypes as PLAN } from './store/modules/plan';
 
-import App from './App.vue';
-import './styles/global.css';
+// 3rd-party
 import 'chartist';
 import 'chartist-plugin-tooltips';
-import 'chartist/dist/chartist.min.css';
-import 'chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css';
-import './styles/chartist.css';
 import JSONTreeView from 'vue-json-tree-view/src/index';
 
 Vue.use(JSONTreeView);
