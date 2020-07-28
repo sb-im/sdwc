@@ -22,11 +22,11 @@ class MqttClient extends EventEmitter {
 
   /**
    * @param {string} topic
+   * @returns {{ type: 'nodes'|'plans', id: number }}
    */
-  static parseNodeId(topic) {
+  static parseTopic(topic) {
     const parts = topic.split('/');
-    if (parts[0] !== 'nodes') throw new TypeError(`No id in topic: ${topic}`);
-    return Number.parseInt(parts[1], 10);
+    return { type: parts[0], id: Number.parseInt(parts[1], 10) };
   }
 
   /**
@@ -39,7 +39,7 @@ class MqttClient extends EventEmitter {
   }
 
   /**
-   * @param {string} prefix
+   * @param {number|string} prefix
    */
   setRpcPrefix(prefix) {
     this.rpcIdPrefix = prefix;
@@ -66,19 +66,15 @@ class MqttClient extends EventEmitter {
     this.mqtt.on('close', () => this.emit('close'));
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
-      const id = MqttClient.parseNodeId(topic);
+      const { type, id } = MqttClient.parseTopic(topic);
       MqttClient.log('msg:', topic, str);
-      if (topic.endsWith('/rpc/send')) {
-        this.onRpcSend(id, str);
-      } else if (topic.endsWith('/rpc/recv')) {
-        this.onRpcRecv(id, str);
-      } else if (topic.includes('/msg/')) {
-        const category = MqttClient.parseMsgCategory(topic);
-        this.onMessage(id, str, category);
-      } else if (topic.endsWith('/status')) {
-        this.onStatus(id, str);
-      } else {
-        this.onMessageLegacy(id, str);
+      switch (type) {
+        case 'nodes':
+          this.onNodeMsg(topic, id, str);
+          break;
+        case 'plans':
+          this.onPlanMsg(topic, id, str);
+          break;
       }
     });
   }
@@ -100,6 +96,34 @@ class MqttClient extends EventEmitter {
     ].forEach(topic => {
       this.mqtt.subscribe(topic);
     });
+  }
+
+  /**
+   * subscirbe `/plans/:id/term`
+   * @param {number|string} id plan id
+   */
+  subscribePlanTerm(id) {
+    this.mqtt.subscribe(`plans/${id}/term`);
+  }
+
+  /**
+   * subscirbe `/plans/:id/dialog` with callback
+   * @param {number|string} id plan id
+   * @param {(dialog: any) => void} callback
+   */
+  subscribePlanDialog(id, callback) {
+    this.on('plan:dialog', callback);
+    this.mqtt.subscribe(`plans/${id}/dialog`);
+  }
+
+  /**
+   * **un**subscirbe `/plans/:id/dialog` with callback
+   * @param {number|string} id plan id
+   * @param {(dialog: any) => void} callback
+   */
+  unsubscribePlanDialog(id, callback) {
+    this.off('plan:dialog', callback);
+    this.mqtt.unsubscribe(`plans/${id}/dialog`);
   }
 
   /**
@@ -149,16 +173,36 @@ class MqttClient extends EventEmitter {
   }
 
   /**
+   * @param {string} topic
+   * @param {number} id
+   * @param {string} str
+   */
+  onNodeMsg(topic, id, str) {
+    if (topic.endsWith('/rpc/send')) {
+      this.onRpcSend(id, str);
+    } else if (topic.endsWith('/rpc/recv')) {
+      this.onRpcRecv(id, str);
+    } else if (topic.includes('/msg/')) {
+      const category = MqttClient.parseMsgCategory(topic);
+      this.onMessage(id, str, category);
+    } else if (topic.endsWith('/status')) {
+      this.onStatus(id, str);
+    } else {
+      this.onMessageLegacy(id, str);
+    }
+  }
+
+  /**
    * @param {number} id
    * @param {string} str
    */
   onRpcSend(id, str) {
-    /** @type {import('jsonrpc-lite').IParsedObjectRequest} */
     const request = jsonrpc.parse(str);
-    if (request.type === 'request') {
-      this.emit('rpc:request', { id, request });
-    } else if (request.type === 'notification') {
-      this.emit('rpc:notification', { id, request });
+    switch (request.type) {
+      case 'request':
+      case 'notification':
+        this.emit(`rpc:${request.type}`, { id, request });
+        break;
     }
   }
 
@@ -214,6 +258,20 @@ class MqttClient extends EventEmitter {
   onMessageLegacy(id, str) {
     const msg = transformMessage(str);
     this.emit('message', id, msg);
+  }
+
+
+  /**
+   * @param {string} topic
+   * @param {number} id
+   * @param {string} str
+   */
+  onPlanMsg(topic, id, str) {
+    if (topic.endsWith('/term')) {
+      this.emit('plan:term', id, str);
+    } else if (topic.endsWith('/dialog')) {
+      this.emit('plan:dialog', id, JSON.parse(str));
+    }
   }
 
   /**
