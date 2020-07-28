@@ -10,6 +10,7 @@ import './util/browser-hacks';
 import MqttClient from './api/mqtt';
 import { MutationTypes as UI } from './store/modules/ui';
 import { MutationTypes as NODE } from './store/modules/node';
+import { MutationTypes as PLAN } from './store/modules/plan';
 
 import App from './App.vue';
 import './styles/global.css';
@@ -75,6 +76,9 @@ MqttClient.on('status', async (id, payload) => {
 });
 MqttClient.on('message', (id, msg) => {
   store.commit(NODE.ADD_NODE_MSG, { id, msg });
+});
+MqttClient.on('plan:term', (id, output) => {
+  store.commit(PLAN.ADD_PLAN_OUTPUT, { id, output });
 });
 
 if (__SDWC_DEV__) {

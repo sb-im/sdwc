@@ -118,7 +118,6 @@ export async function getUserInfo({ commit, dispatch }) {
   const data = await SuperDock.user();
   commit(USER.SET_USER_INFO, data);
   dispatch('storeUser');
-  MqttClient.setRpcPrefix(data.id);
 }
 
 /**
@@ -143,6 +142,15 @@ export async function restoreSession({ commit }) {
   commit(USER.SET_USER_INFO, json);
   SuperDock.setAuth(json.token);
   setTimeout(() => commit(USER.INVALIDATE_TOKEN), json.due - Date.now());
+}
+
+/**
+ * initialize and establish mqtt connection
+ * @param {Context} context
+ */
+export function initializeMqtt({ state }) {
+  MqttClient.setRpcPrefix(state.user.id);
+  MqttClient.connect(state.config.mqtt_url);
 }
 
 /**
@@ -186,7 +194,6 @@ const NodePointTopic = {
  * @param {Context} context
  */
 export function subscribeNodes({ state, commit }) {
-  MqttClient.connect(state.config.mqtt_url);
   state.node.forEach(node => {
     const { id, points } = node.info;
     MqttClient.subscribeNode(id);
@@ -218,6 +225,15 @@ export async function getPlans({ commit }) {
   const data = await SuperDock.plans();
   data.forEach(plan => {
     commit(PLAN.ADD_PLAN, plan);
+  });
+}
+
+/**
+ * @param {Context} context
+ */
+export function subscribePlans({ state }) {
+  state.plan.info.forEach(plan => {
+    MqttClient.subscribePlanTerm(plan.id);
   });
 }
 

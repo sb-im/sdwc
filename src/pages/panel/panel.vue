@@ -19,9 +19,11 @@ export default {
   methods: {
     ...mapActions([
       'getUserInfo',
+      'initializeMqtt',
       'getNodes',
       'subscribeNodes',
-      'getPlans'
+      'getPlans',
+      'subscribePlans'
     ])
   },
   inject: ['configurePromise'],
@@ -30,8 +32,9 @@ export default {
     this.configurePromise
       .then(() => this.getUserInfo())
       .then(() => {
+        this.initializeMqtt();
         this.getNodes().then(() => this.subscribeNodes());
-        this.getPlans();
+        this.getPlans().then(() => this.subscribePlans());
       });
   },
   components: {
