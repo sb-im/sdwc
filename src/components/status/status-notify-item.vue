@@ -3,6 +3,7 @@
     <span class="status-notify__time" v-text="$d(notification.time * 1000, 'seconds')"></span>
     <span class="status-notify__node" v-if="notification.node" v-text="notification.node"></span>
     <span
+      v-if="hasLevel"
       class="status-notify__level"
       :class="`lv${notification.level}`"
       v-text="`[${Levels[notification.level]}]`"
@@ -20,6 +21,11 @@ export default {
     notification: {
       type: Object,
       required: true
+    }
+  },
+  computed: {
+    hasLevel() {
+      return typeof this.notification.level === 'number';
     }
   },
   created() {

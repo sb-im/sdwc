@@ -1,5 +1,8 @@
 <template>
   <div class="plan__view">
+    <div class="el-card sd-card">
+      <sd-status-notify :notification="termOutput" :canPopup="false"></sd-status-notify>
+    </div>
     <sd-card icon="doc" title="plan.view.title">
       <template #action>
         <el-button type="primary" size="medium" icon="el-icon-edit" @click="handleEdit">
@@ -232,7 +235,8 @@ export default {
     [Card.name]: Card,
     [PlanMap.name]: PlanMap,
     [Preflight.name]: Preflight,
-    [PlanReadonly.name]: PlanReadonly
+    [PlanReadonly.name]: PlanReadonly,
+    [StatusNotify.name]: StatusNotify
   }
 };
 </script>
