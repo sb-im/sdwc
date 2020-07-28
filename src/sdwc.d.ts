@@ -272,9 +272,10 @@ declare namespace SDWC {
     user: User;
   }
 
+  export type LevelEnum = 'primary' | 'success' | 'warning' | 'danger' | 'info';
+
   /// types in components
   // components/control.vue
-  type ButtonType = 'primary' | 'success' | 'warning' | 'danger' | 'info';
   export interface ControlItem {
     /** mission name */
     mission: string;
@@ -287,7 +288,7 @@ declare namespace SDWC {
     /** `vue-i18n` string values */
     values?: any;
     /** display button type. default: `warning` */
-    type?: ButtonType;
+    type?: LevelEnum;
   }
 
   // components/map.vue
@@ -330,6 +331,20 @@ declare namespace SDWC {
     stroke?: 'dotted' | 'dashed' | 'solid';
     color?: string;
     point?: 'glow';
+  }
+
+  // components/preflight
+  export interface PreflightDialogItem {
+    name: string;
+    message: string;
+    level: LevelEnum;
+  }
+  export interface PreflightDialog {
+    name?: string;
+    message?: string;
+    level?: LevelEnum;
+    items?: PreflightDialogItem[];
+    buttons?: PreflightDialogItem[];
   }
 
   export interface MqttControlOptions {

@@ -30,6 +30,7 @@ import {
   Form,
   FormItem,
   Tag,
+  Alert,
   Slider,
   Icon,
   Upload,
@@ -73,6 +74,7 @@ Vue.use(Option);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Tag);
+Vue.use(Alert);
 Vue.use(Slider);
 Vue.use(Icon);
 Vue.use(Upload);

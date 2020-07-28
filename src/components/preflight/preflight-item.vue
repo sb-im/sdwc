@@ -1,6 +1,6 @@
 <template>
   <div class="sd-preflight__item" v-loading="loading">
-    <sd-icon :value="icon" :size="30"></sd-icon>
+    <sd-icon v-if="icon" :value="icon" :size="30"></sd-icon>
     <div class="sd-preflight__detail">
       <div class="sd-preflight__title" v-t="title"></div>
       <div v-if="node">{{ node.info.name }} {{ $t(`common.status.${status}`) }}</div>
@@ -31,8 +31,7 @@ export default {
   name: 'sd-preflight-item',
   props: {
     icon: {
-      type: String,
-      required: true
+      type: String
     },
     title: {
       type: String,
@@ -40,7 +39,7 @@ export default {
     },
     loading: {
       type: Boolean,
-      required: true
+      default: false
     },
     status: {
       type: Number

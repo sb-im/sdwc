@@ -102,18 +102,19 @@
         :current-page.sync="pagination.current"
       ></el-pagination>
     </sd-card>
-    <sd-preflight ref="preflight" :plan="plan" @run="handleRunComfirm"></sd-preflight>
+    <sd-preflight ref="preflight" :planId="plan.id"></sd-preflight>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { getPlanMissionQueue, runPlan, stopPlan, planLogs } from '@/api/super-dock';
+import { mapActions, mapState } from 'vuex';
+import { getPlanMissionQueue, stopPlan, planLogs } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
-import Preflight from '@/components/preflight/preflight.vue';
+import Preflight from '@/components/preflight/preflight2.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
+import StatusNotify from '@/components/status/status-notify.vue';
 
 export default {
   name: 'sd-plan-view',
@@ -142,6 +143,13 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      term: state => state.plan.term
+    }),
+    termOutput() {
+      const t = this.term.find(t => t.id === this.plan.id) || { output: [] };
+      return t.output;
+    },
     logsToShow() {
       const { size, current } = this.pagination;
       const end = current * size;
@@ -163,13 +171,6 @@ export default {
     },
     handleRun() {
       this.$refs.preflight.toggle();
-    },
-    handleRunComfirm() {
-      runPlan(this.plan.id).then(() => {
-        this.$refs.preflight.setPlanRunStatus(0);
-      }).catch(e => {
-        this.$refs.preflight.setPlanRunStatus(1, e.status);
-      }).then(this.checkPlanRunning);
     },
     handleStop() {
       /**
