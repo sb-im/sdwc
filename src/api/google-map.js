@@ -9,6 +9,7 @@ const GoogleMapApiURL = {
 const conf = {
   url: GoogleMapApiURL.sbim,
   query: {
+    key: '',
     libraries: ['visualization']
   }
 };
