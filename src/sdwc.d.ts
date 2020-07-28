@@ -219,6 +219,14 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  export interface PlanTerm {
+    id: number;
+    output: PlanTermOutput[];
+  }
+  export interface PlanTermOutput {
+    time: number;
+    msg: string;
+  }
   export interface PlanLog {
     id: number;
     plan_id: number;
