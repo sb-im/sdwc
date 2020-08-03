@@ -25,6 +25,13 @@
     </template>
     <template>
       <div class="monitor-drone-control" :class="wrapperClass">
+        <transition name="el-fade-in">
+          <div
+            v-show="overlay.show"
+            class="monitor-drone-control__focus"
+            :style="`left:${overlay.left}px;top:${overlay.top}px`"
+          ></div>
+        </transition>
         <div class="monitor-drone-control--horizontal">
           <!-- pitch angle right -->
           <el-slider
@@ -60,7 +67,7 @@
           />
         </div>
       </div>
-      <div class="monitor-drone-joystick" ref="joysticks">
+      <div class="monitor-drone-joystick" ref="joysticks" v-show="joystick.show">
         <div class="monitor-drone-joystick__zone"></div>
         <div class="monitor-drone-joystick__zone"></div>
       </div>
@@ -112,6 +119,11 @@ export default {
           x: 0,
           y: 0
         }
+      },
+      overlay: {
+        show: false,
+        left: 0,
+        top: 0
       },
       joystick: {
         show: false,
@@ -166,6 +178,14 @@ export default {
         notification: true
       });
     },
+    handleGimbalTarget(x, y) {
+      this.$mqtt(this.point.node_id, {
+        mission: 'gimbal_target',
+        arg: { x: Math.trunc(x * 1000) / 1000, y: Math.trunc(y * 1000) / 1000 }
+      }, {
+        notification: true
+      });
+    },
     handleRestore() {
       this.handleGimbalCtl({ yaw: 0, pitch: 0 });
       this.gimbal.yaw = 0;
@@ -214,6 +234,23 @@ export default {
       this.handleGimbalCtl({ yaw, pitch });
       this.gesture.lastTime = now;
     },
+    /**
+     * @param {DOMRect} rect
+     * @param {MouseEvent} ev
+     */
+    handleDblClick(rect, ev) {
+      const left = ev.clientX - rect.left;
+      const top = ev.clientY - rect.top;
+      const x = left / rect.width;
+      const y = top / rect.height;
+      this.handleGimbalTarget(x, y);
+      this.overlay = { left, top, show: true };
+      setTimeout(() => {
+        if (top === this.overlay.top && left === this.overlay.left) {
+          this.overlay.show = false;
+        }
+      }, 500);
+    },
     bindGestures() {
       /** @type {HTMLDivElement} */
       const el = this.$el.getElementsByClassName('monitor-drone-control')[0];
@@ -258,6 +295,12 @@ export default {
       // Gesture Cancel
       el.addEventListener('mouseleave', ev => {
         this.handleGestureEnd(ev.x, ev.y);
+      });
+      // Double Click
+      el.addEventListener('dblclick', ev => {
+        if (!['mavlink', 'manual'].includes(this.gimbal.mode)) return;
+        const rect = el.getBoundingClientRect();
+        this.handleDblClick(rect, ev);
       });
     },
     /**
@@ -399,6 +442,16 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
+}
+.monitor-drone-control__focus {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  margin: -20px 0 0 -20px;
+  background-color: #409effb2;
+  transition-property: opacity;
 }
 .monitor-drone-control--horizontal {
   display: flex;
