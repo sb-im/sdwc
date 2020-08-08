@@ -83,12 +83,22 @@ export default {
       const mission = this.mission.trim();
       if (!mission) return;
       let arg = [];
-      try {
-        arg = JSON.parse(this.arg);
-      } catch(e) {
-        arg = this.arg.split(' ');
+      if (this.arg.length > 0) {
+        try {
+          arg = JSON.parse(this.arg);
+        } catch (e) {
+          arg = this.arg.split(' ');
+        }
       }
       this.handleCmd(mission, arg);
+    },
+    /**
+     * @param {KeyboardEvent} e
+     */
+    onKeyPress(e) {
+      if (e.keyCode === 13 || e.key === 'Enter') {
+        this.handleSend();
+      }
     }
   },
   created() {
@@ -98,13 +108,11 @@ export default {
   },
   mounted() {
     const inputs = this.$el.querySelectorAll('input.el-input__inner');
-    inputs.forEach(i => {
-      i.addEventListener('keypress', (ev) => {
-        if (ev.keyCode === 13 || ev.key === 'Enter') {
-          this.handleSend();
-        }
-      });
-    });
+    inputs.forEach(i => i.addEventListener('keypress', this.onKeyPress));
+  },
+  beforeDestroy() {
+    const inputs = this.$el.querySelectorAll('input.el-input__inner');
+    inputs.forEach(i => i.removeEventListener('keypress', this.onKeyPress));
   },
   components: {
     [Card.name]: Card,
@@ -129,14 +137,14 @@ export default {
 .debug .el-form-item:last-child {
   margin-right: 0;
 }
+.debug__form .el-form-item__content {
+  width: 100%;
+}
 .debug__mission {
-  width: 175px;
+  width: 50%;
 }
 .debug__arg {
   flex-grow: 1;
-}
-.debug__arg .el-form-item__content {
-  width: 100%;
 }
 .debug__input .el-input__inner {
   font-family: monospace;
