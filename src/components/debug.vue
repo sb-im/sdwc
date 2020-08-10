@@ -6,30 +6,31 @@
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="disabledText"
     >
-      <!-- button controls -->
-      <div class="debug__control control__buttons">
-        <el-button
-          v-for="c in commands"
-          :key="c"
-          size="medium"
-          type="warning"
-          :disabled="pending[c]"
-          v-loading="pending[c]"
-          @click="handleCmd(c)"
-        >{{ c }}</el-button>
-      </div>
-      <!-- command input -->
       <el-form class="debug__form" inline>
-        <el-form-item class="debug__mission">
-          <el-input class="debug__input" size="medium" placeholder="mission" v-model="mission"></el-input>
+        <el-form-item class="debug__method">
+          <el-autocomplete
+            class="debug__input"
+            size="medium"
+            placeholder="method"
+            v-model="method"
+            :fetch-suggestions="filterMethods"
+          ></el-autocomplete>
         </el-form-item>
-        <el-form-item class="debug__arg">
-          <el-input class="debug__input" size="medium" placeholder="arg (JSON)" v-model="arg"></el-input>
+        <el-form-item class="debug__params">
+          <el-input class="debug__input" size="medium" placeholder="params" v-model="params"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button size="medium" type="primary" @click="handleSend" v-t="'debug.send'"></el-button>
+        <el-form-item class="control__buttons">
+          <el-button size="medium" type="warning" v-loading="pending" @click="handleSend">
+            <span v-t="'debug.send'"></span>
+          </el-button>
         </el-form-item>
       </el-form>
+      <div class="debug__recent">
+        <div v-if="recent.length === 0" class="debug__empty">
+          <el-button type="text" disabled v-t="'debug.no_recent'"></el-button>
+        </div>
+        <el-button v-for="r in recent" :key="r" size="medium" @click="handleRecent(r)">{{ r }}</el-button>
+      </div>
     </div>
   </sd-card>
 </template>
@@ -52,9 +53,10 @@ export default {
   },
   data() {
     return {
-      pending: {},
-      mission: '',
-      arg: ''
+      pending: false,
+      method: '',
+      params: '',
+      recent: []
     };
   },
   computed: {
@@ -65,32 +67,51 @@ export default {
       return this.$t('control.abnormal');
     },
     commands() {
-      return this.point.name.trim().split(' ').filter(c => c !== '');
+      return this.point.name.trim().split(' ').filter(c => c !== '').map(value => ({ value }));
     }
   },
   methods: {
     /**
-     * @param {string} mission
-     * @param {any} arg
+     * @param {string} query
+     * @param {(data: {value: string}[]) => void} callback
      */
-    handleCmd(mission, arg) {
-      this.$set(this.pending, mission, true);
-      this.$mqtt(this.point.node_id, { mission, arg })
-        .catch(() => { /* noop */ })
-        .then(() => this.$set(this.pending, mission, false));
+    filterMethods(query, callback) {
+      if (query.length === 0) {
+        callback(this.commands);
+      } else {
+        const filtered = this.commands.filter(c => c.value.includes(query));
+        callback(filtered.length > 0 ? filtered : this.commands);
+      }
+    },
+    addRecent(method) {
+      const i = this.recent.findIndex(v => v === method);
+      if (i >= 0) {
+        this.recent.splice(i, 1);
+      }
+      this.recent.unshift(method);
+      if (this.recent.length > 5) {
+        this.recent.splice(5, this.recent.length - 5);
+      }
     },
     handleSend() {
-      const mission = this.mission.trim();
-      if (!mission) return;
-      let arg = [];
-      if (this.arg.length > 0) {
+      const method = this.method.trim();
+      if (!method) return;
+      let params = [];
+      if (this.params.length > 0) {
         try {
-          arg = JSON.parse(this.arg);
+          params = JSON.parse(this.params);
         } catch (e) {
-          arg = this.arg.split(' ');
+          params = this.params.split(' ');
         }
       }
-      this.handleCmd(mission, arg);
+      this.addRecent(method);
+      this.pending = true;
+      this.$mqtt(this.point.node_id, { mission: method, arg: params })
+        .catch(() => { /* noop */ })
+        .then(() => this.pending = false);
+    },
+    handleRecent(c) {
+      this.method = c;
     },
     /**
      * @param {KeyboardEvent} e
@@ -99,11 +120,6 @@ export default {
       if (e.keyCode === 13 || e.key === 'Enter') {
         this.handleSend();
       }
-    }
-  },
-  created() {
-    for (const it of this.commands) {
-      this.$set(this.pending, it, false);
     }
   },
   mounted() {
@@ -122,31 +138,36 @@ export default {
 </script>
 
 <style>
-.debug__control {
-  margin-right: 10px;
-}
-.debug__control .el-button {
-  margin: 0 6px 6px 0;
-}
 .debug__form {
   display: flex;
 }
 .debug .el-form-item {
-  margin: 0 6px 6px 0;
+  margin-bottom: 10px;
 }
 .debug .el-form-item:last-child {
   margin-right: 0;
 }
-.debug__form .el-form-item__content {
+.debug__form .el-form-item__content,
+.debug__input {
   width: 100%;
-}
-.debug__mission {
-  width: 50%;
-}
-.debug__arg {
-  flex-grow: 1;
 }
 .debug__input .el-input__inner {
   font-family: monospace;
+}
+.debug__method {
+  width: 50%;
+}
+.debug__params {
+  flex-grow: 1;
+}
+.debug__empty {
+  height: 36px;
+  line-height: 36px;
+  font-size: 14px;
+}
+.debug__recent {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 </style>

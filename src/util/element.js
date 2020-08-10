@@ -7,7 +7,7 @@ import Vue from 'vue';
 import {
   Pagination,
   Dialog,
-  // Autocomplete,
+  Autocomplete,
   Dropdown,
   DropdownMenu,
   DropdownItem,
@@ -94,7 +94,7 @@ ElementLocale.i18n((key, value) => i18n.t(key, value));
 
 Vue.use(Pagination);
 Vue.use(Dialog);
-// Vue.use(Autocomplete);
+Vue.use(Autocomplete);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);

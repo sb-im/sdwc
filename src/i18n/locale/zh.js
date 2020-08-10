@@ -342,7 +342,8 @@ export default {
   },
   debug: {
     title: '调试',
-    send: '发送'
+    send: '发送',
+    no_recent: '暂无最近使用项。'
   },
   custom: {
     title: '自定义数据'

@@ -342,7 +342,8 @@ export default {
   },
   debug: {
     title: 'Debug',
-    send: 'Send'
+    send: 'Send',
+    no_recent: 'No recently used items.'
   },
   custom: {
     title: 'Custom Data'
