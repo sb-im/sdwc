@@ -1,5 +1,10 @@
 <template>
-  <sd-status :items="items" :node-id="point.node_id" :notification="msg.notification"></sd-status>
+  <sd-status
+    :items="items"
+    :nodeId="point.node_id"
+    :statusCode="status.code"
+    :notification="msg.notification"
+  ></sd-status>
 </template>
 
 <script>
@@ -9,6 +14,10 @@ export default {
   name: 'sd-drone-status',
   props: {
     point: {
+      type: Object,
+      required: true
+    },
+    status: {
       type: Object,
       required: true
     },

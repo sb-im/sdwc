@@ -169,6 +169,7 @@ export default {
     }
   },
   status: {
+    disconnected: '当前节点未连接',
     log: '日志',
     no_log: '暂无日志',
     popup: '弹出',

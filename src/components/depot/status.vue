@@ -1,7 +1,8 @@
 <template>
   <sd-status
     :items="items"
-    :node-id="point.node_id"
+    :nodeId="point.node_id"
+    :statusCode="status.code"
     :notification="msg.notification"
     @popover="handlePopover"
   >
@@ -35,6 +36,10 @@ export default {
   name: 'sd-depot-status',
   props: {
     point: {
+      type: Object,
+      required: true
+    },
+    status: {
       type: Object,
       required: true
     },

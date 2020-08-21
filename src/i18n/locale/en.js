@@ -169,6 +169,7 @@ export default {
     }
   },
   status: {
+    disconnected: 'Node Disconnected',
     log: 'Log',
     no_log: 'No log',
     popup: 'Popup',
