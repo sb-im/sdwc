@@ -1,5 +1,6 @@
 {
   "beian": "",
+  "aside_logo": "https://sb.im/img/sb-logo.png",
   "super_dock_api_server": "https://<host>",
   "oauth_client_id": "",
   "oauth_client_secret": "",

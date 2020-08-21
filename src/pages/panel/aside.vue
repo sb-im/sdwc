@@ -9,7 +9,7 @@
     router
   >
     <div class="aside__header">
-      <img class="aside__logo" src="/assets/images/logo-100.png">
+      <img v-if="config.aside_logo" class="aside__logo" :src="config.aside_logo" />
     </div>
     <el-menu-item index="overview" :route="{ name: 'overview' }">
       <sd-icon value="info-circle"></sd-icon>
@@ -83,6 +83,7 @@ export default {
   },
   computed: {
     ...mapState({
+      config: state => state.config,
       plans: state => state.plan.info
     }),
     ...mapGetters([
@@ -141,7 +142,7 @@ export default {
   width: 200px;
 }
 .aside__header {
-  min-height: 100px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,6 +150,7 @@ export default {
 .aside__logo {
   width: 50px;
   height: 50px;
+  margin: 25px;
 }
 .aside__subtitle {
   padding: 7px 0 7px 20px;
@@ -169,12 +171,10 @@ export default {
   font-size: 12px;
   white-space: nowrap;
 }
-.el-menu--collapse .aside__header {
-  min-height: 60px;
-}
 .el-menu--collapse .aside__logo {
   width: 32px;
   height: 32px;
+  margin: 14px;
 }
 .sd--safari .aside__menu {
   overflow-y: scroll;
@@ -183,7 +183,7 @@ export default {
 /* active menu item indicator on left side */
 .el-menu--collapse .el-submenu.is-active,  /* collpased active submenu */
 .el-submenu.is-active:not(.is-opened),     /* active but not opened submenu */
-.el-menu-item.is-active {                  /* active menu item */
+.el-menu-item.is-active                    /* active menu item */ {
   box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 #434a50;
 }
 .el-submenu.is-active .el-submenu__title {
