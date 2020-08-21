@@ -109,7 +109,7 @@ class MqttClient extends EventEmitter {
   /**
    * subscirbe `/plans/:id/dialog` with callback
    * @param {number|string} id plan id
-   * @param {(dialog: any) => void} callback
+   * @param {(id: number, dialog: any) => void} callback
    */
   subscribePlanDialog(id, callback) {
     this.on('plan:dialog', callback);
@@ -119,7 +119,7 @@ class MqttClient extends EventEmitter {
   /**
    * **un**subscirbe `/plans/:id/dialog` with callback
    * @param {number|string} id plan id
-   * @param {(dialog: any) => void} callback
+   * @param {(id: number, dialog: any) => void} callback
    */
   unsubscribePlanDialog(id, callback) {
     this.off('plan:dialog', callback);

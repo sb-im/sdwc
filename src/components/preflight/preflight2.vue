@@ -67,7 +67,11 @@ export default {
     form: {}
   }),
   methods: {
-    onMsgDialog(dialog) {
+    /**
+     * @param {number} id
+     * @param {any} dialog
+     */
+    onMsgDialog(id, dialog) {
       if (Object.getOwnPropertyNames(dialog).length === 0) {
         this.visible = false;
         return;
