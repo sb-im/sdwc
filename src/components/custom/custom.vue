@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { get } from 'lodash';
+
 import Card from '@/components/card.vue';
 
 import CustomItem from './custom-item.vue';
@@ -23,9 +25,6 @@ export default {
       required: true
     }
   },
-  data: () => ({
-
-  }),
   computed: {
     icon() {
       return this.point.params.icon || 'views';
@@ -38,7 +37,7 @@ export default {
       const pool = this.msg[topic] || {};
       return items.map(descriptor => ({
         ...descriptor,
-        value: pool[descriptor.field]
+        value: get(pool, descriptor.field)
       }));
     }
   },
