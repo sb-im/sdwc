@@ -6,7 +6,8 @@ const state = {
   mapType: 'sd-map-amap',
   mapFollow: true,
   overviewFit: true,
-  notifyPopup: []
+  notifyPopup: [],
+  planDialogPopup: false
 };
 
 export const MutationTypes = {

@@ -20,7 +20,7 @@
         <el-dropdown-menu class="notify__menu">
           <el-dropdown-item class="notify__toggle" :command="{ dialog: 'popup' }">
             <span v-t="'header.action.popup'"></span>
-            <el-switch v-model="planDialog.popup"></el-switch>
+            <el-switch :value="preference.planDialogPopup" @change="handlePopupChange"></el-switch>
           </el-dropdown-item>
           <el-dropdown-item v-if="dialog.length === 0" disabled divided>
             <span v-t="'common.none'"></span>
@@ -91,7 +91,7 @@
     <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
         <sd-icon value="user" />
-        <span>{{ $store.state.user.email }}</span>
+        <span>{{ user.email }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
@@ -136,19 +136,19 @@ export default {
   data() {
     return {
       planDialog: {
-        id: -1,
-        popup: false
+        id: -1
       },
       notifyAlert: false
     };
   },
   computed: {
     ...mapState([
-      'ui',
       'node',
+      'notification',
       'plan',
       'preference',
-      'notification'
+      'ui',
+      'user'
     ]),
     dialog() {
       return this.plan.dialog.map(this.planDialogToObject);
@@ -168,6 +168,9 @@ export default {
       'logout',
       'setPreference'
     ]),
+    handlePopupChange() {
+      this.setPreference({ planDialogPopup: !this.preference.planDialogPopup });
+    },
     handleNotifyVisible(visible) {
       if (visible === true) {
         this.notifyAlert = false;
@@ -226,7 +229,7 @@ export default {
       } else if (typeof cmd.dialog === 'string') {
         switch (cmd.dialog) {
           case 'popup':
-            this.planDialog.popup = !this.planDialog.popup;
+            this.handlePopupChange();
             break;
         }
       }
@@ -245,7 +248,7 @@ export default {
         typeof payload.dialog === 'object' &&
         Object.getOwnPropertyNames(payload.dialog).length > 0
       ) {
-        if (this.planDialog.popup && !this.$refs.planDialog.visible) {
+        if (this.preference.planDialogPopup && !this.$refs.planDialog.visible) {
           this.planDialog.id = payload.id;
           this.$nextTick(() => this.$refs.planDialog.toggle());
         }

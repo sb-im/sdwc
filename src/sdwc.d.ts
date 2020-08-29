@@ -267,6 +267,7 @@ declare namespace SDWC {
     mapFollow: boolean;
     overviewFit: boolean;
     notifyPopup: number[];
+    planDialogPopup: boolean;
   }
 
   // store/modules/ui.js
