@@ -74,6 +74,13 @@ export default {
       this.visible = !this.visible;
     }
   },
+  watch: {
+    form(value) {
+      if (this.visible && Object.getOwnPropertyNames(value).length === 0) {
+        this.visible = false;
+      }
+    }
+  },
   components: {
     [PreflightItem.name]: PreflightItem
   }
