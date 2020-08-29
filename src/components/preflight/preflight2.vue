@@ -4,8 +4,6 @@
     append-to-body
     custom-class="sd-preflight"
     :visible.sync="visible"
-    :close-on-click-modal="false"
-    @closed="handleClosed"
   >
     <template #title>
       <span class="el-dialog__title">{{ form.name || $t('preflight.title') }}</span>
@@ -60,9 +58,6 @@ export default {
     }
   },
   methods: {
-    handleClosed() {
-      this.$emit('closed');
-    },
     /**
      * @param {{ name: string, message: string, level: string }} button
      */
