@@ -105,17 +105,15 @@
         :current-page.sync="pagination.current"
       ></el-pagination>
     </sd-card>
-    <sd-preflight ref="preflight" :planId="plan.id"></sd-preflight>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { getPlanMissionQueue, stopPlan, planLogs } from '@/api/super-dock';
+import { getPlanMissionQueue, runPlan, stopPlan, planLogs } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
-import Preflight from '@/components/preflight/preflight2.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 import StatusNotify from '@/components/status/status-notify.vue';
 
@@ -173,7 +171,10 @@ export default {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
     handleRun() {
-      this.$refs.preflight.toggle();
+      // TODO: slide-to-confirm before run plan?
+      runPlan(this.plan.id).catch((/*e*/) => {
+        // TODO: error handling
+      });
     },
     handleStop() {
       /**
@@ -234,7 +235,6 @@ export default {
   components: {
     [Card.name]: Card,
     [PlanMap.name]: PlanMap,
-    [Preflight.name]: Preflight,
     [PlanReadonly.name]: PlanReadonly,
     [StatusNotify.name]: StatusNotify
   }

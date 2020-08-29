@@ -38,10 +38,11 @@ export default {
   },
   header: {
     title: 'Superdock 无人机自动机场',
+    action: {
+      title: '操作中心'
+    },
     notify: {
-      title: '通知记录',
-      clear: '清空',
-      none: '暂无通知记录'
+      title: '通知记录'
     },
     status: {
       title: '通讯状态'

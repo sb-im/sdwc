@@ -38,10 +38,11 @@ export default {
   },
   header: {
     title: 'Superdock Drone Automatic Airport',
+    action: {
+      title: 'Action'
+    },
     notify: {
-      title: 'Notification',
-      clear: 'Clear',
-      none: 'No history notification',
+      title: 'Notification'
     },
     status: {
       title: 'Communication'

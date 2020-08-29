@@ -5,18 +5,12 @@
     custom-class="sd-preflight"
     :visible.sync="visible"
     :close-on-click-modal="false"
-    @open="handleOpen"
     @closed="handleClosed"
   >
     <template #title>
       <span class="el-dialog__title">{{ form.name || $t('preflight.title') }}</span>
     </template>
-    <div v-if="error.retry" class="sd-preflight__error">
-      <div class="sd-preflight__error-icon el-icon-error color--red"></div>
-      <div v-t="{ path: 'preflight.failed', args: { code: error.code } }"></div>
-      <el-button size="medium" @click="handleRetry" v-t="'common.retry'"></el-button>
-    </div>
-    <div v-else v-loading="loading">
+    <div v-loading="loading">
       <el-alert
         v-if="form.level"
         :title="form.message"
@@ -44,7 +38,6 @@
 
 <script>
 import MqttClient from '@/api/mqtt';
-import { runPlan } from '@/api/super-dock';
 
 import PreflightItem from './preflight-item.vue';
 
@@ -58,55 +51,17 @@ export default {
   },
   data: () => ({
     visible: false,
-    error: {
-      code: 0,
-      retry: false
-    },
-    loading: false,
-    /** @type {SDWC.PreflightDialog} */
-    form: {}
+    loading: false
   }),
+  computed: {
+    form() {
+      const d = this.$store.state.plan.dialog.find(d => d.id === this.planId) || {};
+      return d.dialog || {};
+    }
+  },
   methods: {
-    /**
-     * @param {number} id
-     * @param {any} dialog
-     */
-    onMsgDialog(id, dialog) {
-      if (Object.getOwnPropertyNames(dialog).length === 0) {
-        this.visible = false;
-        return;
-      }
-      this.loading = false;
-      this.form = dialog;
-    },
-    isPlanRunning() {
-      // TODO: API
-      return false;
-    },
-    runPlan() {
-      if (!this.isPlanRunning()) {
-        runPlan(this.planId).catch(e => {
-          this.error.code = e.status;
-          this.error.retry = true;
-        });
-      }
-    },
-    handleOpen() {
-      this.runPlan();
-      this.loading = true;
-    },
-    handleRetry() {
-      this.error.retry = false;
-      this.runPlan();
-      this.loading = true;
-    },
     handleClosed() {
-      if (this.error.retry) {
-        this.error = {
-          code: 0,
-          retry: false
-        };
-      }
+      this.$emit('closed');
     },
     /**
      * @param {{ name: string, message: string, level: string }} button
@@ -118,12 +73,6 @@ export default {
     toggle() {
       this.visible = !this.visible;
     }
-  },
-  created() {
-    MqttClient.subscribePlanDialog(this.planId, this.onMsgDialog);
-  },
-  beforeDestroy() {
-    MqttClient.unsubscribePlanDialog(this.planId, this.onMsgDialog);
   },
   components: {
     [PreflightItem.name]: PreflightItem
