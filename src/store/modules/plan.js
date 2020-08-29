@@ -40,13 +40,14 @@ const mutations = {
         dialog: payload.dialog
       };
       const exist = state.dialog.findIndex(d => d.id === payload.id);
+      const empty = Object.getOwnPropertyNames(payload.dialog).length === 0;
       if (exist >= 0) {
-        if (Object.getOwnPropertyNames(payload.dialog).length === 0) {
+        if (empty) {
           state.dialog.splice(exist, 1);
         } else {
           state.dialog.splice(exist, 1, d);
         }
-      } else {
+      } else if (!empty) {
         state.dialog.unshift(d);
       }
     }
