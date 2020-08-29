@@ -233,25 +233,58 @@ export default {
             break;
         }
       }
+    },
+    openPlanDialog(id) {
+      this.planDialog.id = id;
+      if (this.$refs.planDialog.visible) return;
+      this.$nextTick(() => this.$refs.planDialog.toggle());
+    },
+    /**
+     * @param {number} id
+     * @param {SDWC.PlanDialogContent} dialog
+     */
+    triggerPlanDialogNotification(id, dialog) {
+      const plan = this.plan.info.find(p => p.id === id);
+      const n = this.$notify({
+        offset: 50,
+        message: 'REPLACED_BY_VNODE',
+        customClass: 'status-notify--popup',
+        onClick: () => this.openPlanDialog(id)
+      });
+      const h = this.$createElement;
+      n.$slots.default = [
+        h('div', null, [
+          h('span', { class: 'status-notify__title' }, [plan.name]),
+          h('span', null, [' · ', this.$d(Date.now(), 'seconds')]),
+        ]),
+        h('i', { class: getLevelIconClass(dialog.level) }),
+        h('span', null, [' ', dialog.name])
+      ];
     }
   },
   created() {
     this.$store.subscribe(({ type, payload }, state) => {
-      if (
-        type === NOTI.MOD_NOTI &&
-        payload.status === 2 &&
-        state.notification.findIndex(n => n.id === payload.id) >= 0
-      ) {
-        this.notifyAlert = true;
-      } else if (
-        type === PLAN.ADD_PLAN_MSG &&
-        typeof payload.dialog === 'object' &&
-        Object.getOwnPropertyNames(payload.dialog).length > 0
-      ) {
-        if (this.preference.planDialogPopup && !this.$refs.planDialog.visible) {
-          this.planDialog.id = payload.id;
-          this.$nextTick(() => this.$refs.planDialog.toggle());
-        }
+      switch (type) {
+        case NOTI.MOD_NOTI:
+          if (
+            payload.status === 2 &&
+            state.notification.findIndex(n => n.id === payload.id) >= 0
+          ) {
+            this.notifyAlert = true;
+          }
+          break;
+        case PLAN.ADD_PLAN_MSG:
+          if (Object.getOwnPropertyNames(payload.dialog).length > 0) {
+            // dialog not empty
+            this.triggerPlanDialogNotification(payload.id, payload.dialog);
+            if (this.preference.planDialogPopup && !this.$refs.planDialog.visible) {
+              this.openPlanDialog(payload.id);
+            }
+          } else if (this.planDialog.id === payload.id && this.$refs.planDialog.visible) {
+            // opening dialog became empty
+            this.$refs.planDialog.toggle();
+          }
+          break;
       }
     });
   },
