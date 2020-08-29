@@ -99,31 +99,16 @@ class MqttClient extends EventEmitter {
   }
 
   /**
-   * subscirbe `/plans/:id/term`
+   * subscirbe `/plans/:id/{term,dialog}`
    * @param {number|string} id plan id
    */
-  subscribePlanTerm(id) {
-    this.mqtt.subscribe(`plans/${id}/term`);
-  }
-
-  /**
-   * subscirbe `/plans/:id/dialog` with callback
-   * @param {number|string} id plan id
-   * @param {(id: number, dialog: any) => void} callback
-   */
-  subscribePlanDialog(id, callback) {
-    this.on('plan:dialog', callback);
-    this.mqtt.subscribe(`plans/${id}/dialog`);
-  }
-
-  /**
-   * **un**subscirbe `/plans/:id/dialog` with callback
-   * @param {number|string} id plan id
-   * @param {(id: number, dialog: any) => void} callback
-   */
-  unsubscribePlanDialog(id, callback) {
-    this.off('plan:dialog', callback);
-    this.mqtt.unsubscribe(`plans/${id}/dialog`);
+  subscribePlan(id) {
+    [
+      `plans/${id}/term`,
+      `plans/${id}/dialog`
+    ].forEach(topic => {
+      this.mqtt.subscribe(topic);
+    });
   }
 
   /**
@@ -268,9 +253,9 @@ class MqttClient extends EventEmitter {
    */
   onPlanMsg(topic, id, str) {
     if (topic.endsWith('/term')) {
-      this.emit('plan:term', id, str);
+      this.emit('plan', id, str, undefined);
     } else if (topic.endsWith('/dialog')) {
-      this.emit('plan:dialog', id, JSON.parse(str));
+      this.emit('plan', id, null, JSON.parse(str));
     }
   }
 

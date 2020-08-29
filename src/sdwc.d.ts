@@ -209,6 +209,7 @@ declare namespace SDWC {
   }
 
   // store/modules/plan.js
+  // PlanInfo
   export interface PlanInfo {
     id: number;
     name: string;
@@ -220,6 +221,7 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  // PlanTerm
   export interface PlanTerm {
     id: number;
     output: PlanTermOutput[];
@@ -228,6 +230,25 @@ declare namespace SDWC {
     time: number;
     msg: string;
   }
+  // PlanDialog
+  export interface PlanDialogItem {
+    name: string;
+    message: string;
+    level: LevelEnum;
+  }
+  export interface PlanDialogContent {
+    name?: string;
+    message?: string;
+    level?: LevelEnum;
+    items?: PlanDialogItem[];
+    buttons?: PlanDialogItem[];
+  }
+  export interface PlanDialog {
+    id: number;
+    time: number;
+    dialog: PlanDialogContent;
+  }
+  // PlanLog
   export interface PlanLog {
     id: number;
     plan_id: number;
@@ -267,9 +288,11 @@ declare namespace SDWC {
     notification: NotificationItem[];
     plan: {
       info: PlanInfo[];
-      log: PlanLog[];
+      term: PlanTerm[];
+      dialog: PlanDialog[];
     }
     preference: Preference;
+    ui: UI;
     user: User;
   }
 
@@ -332,20 +355,6 @@ declare namespace SDWC {
     stroke?: 'dotted' | 'dashed' | 'solid';
     color?: string;
     point?: 'glow';
-  }
-
-  // components/preflight
-  export interface PreflightDialogItem {
-    name: string;
-    message: string;
-    level: LevelEnum;
-  }
-  export interface PreflightDialog {
-    name?: string;
-    message?: string;
-    level?: LevelEnum;
-    items?: PreflightDialogItem[];
-    buttons?: PreflightDialogItem[];
   }
 
   export interface MqttControlOptions {
