@@ -13,19 +13,7 @@
 <script>
 import Icon from '@/components/sd-icon.vue';
 import { getNodeStatusClass } from '@/constants/node-status-class';
-
-// realtime/forecast weather level
-const LevelClass = {
-  success: 'el-icon-success color--green',
-  primary: 'el-icon-circle-plus color--blue',
-  warning: 'el-icon-warning color--orange',
-  danger: 'el-icon-remove color--red',
-  error: 'el-icon-error color--grey'
-};
-
-function getWeatherLevelClass(level) {
-  return LevelClass[level];
-}
+import { getLevelIconClass } from '@/constants/level-icon-class';
 
 export default {
   name: 'sd-preflight-item',
@@ -54,7 +42,7 @@ export default {
   computed: {
     iconClass() {
       if (typeof this.status === 'number') return getNodeStatusClass(this.status);
-      if (typeof this.level === 'string') return getWeatherLevelClass(this.level);
+      if (typeof this.level === 'string') return getLevelIconClass(this.level);
       return '';
     }
   },
