@@ -7,6 +7,7 @@ import store from '@/store';
 import MqttClient from '@/api/mqtt';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 import { Levels as NotificationLevels } from '@/constants/notification-levels';
+import { getLevelIconClass } from '@/constants/level-icon-class';
 
 /**
  * @this {Vue}
@@ -112,6 +113,7 @@ function registerNotificationListener() {
     const node = store.state.node.find(node => node.info.id === id);
     if (!node || !store.state.preference.notifyPopup.includes(node.info.id)) return;
     const notify = Notification({
+      offset: 50,
       message: 'REPLACED_BY_VNODE',
       customClass: 'status-notify--popup'
     });
@@ -127,11 +129,34 @@ function registerNotificationListener() {
   });
 }
 
+function registerPlanDialogListener() {
+  MqttClient.on('plan', (id, output, dialog) => {
+    if (typeof dialog === 'object' && Object.getOwnPropertyNames(dialog).length > 0) {
+      const plan = store.state.plan.info.find(p => p.id === id);
+      const notify = Notification({
+        offset: 50,
+        message: 'REPLACED_BY_VNODE',
+        customClass: 'status-notify--popup'
+      });
+      const h = notify.$createElement;
+      notify.$slots.default = [
+        h('div', null, [
+          h('span', { class: 'status-notify__title' }, [plan.name]),
+          h('span', null, [' · ', i18n.d(Date.now(), 'seconds')]),
+        ]),
+        h('i', { class: getLevelIconClass(dialog.level) }),
+        h('span', null, [' ', dialog.name])
+      ];
+    }
+  });
+}
+
 Vue.use({
   install(Vue) {
     Vue.prototype.$mqtt = mqtt;
     registerRpcListener();
     registerStatusListener();
     registerNotificationListener();
+    registerPlanDialogListener();
   }
 });
