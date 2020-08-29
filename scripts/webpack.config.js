@@ -78,7 +78,8 @@ const cfg = {
         test: /\.(png|jpe?g|gif|svg)$/,
         loader: 'file-loader',
         options: {
-          name: 'images/[name].[ext]'
+          name: 'images/[name].[ext]',
+          esModule: false
         }
       }
     ]
