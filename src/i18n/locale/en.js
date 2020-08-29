@@ -39,7 +39,8 @@ export default {
   header: {
     title: 'Superdock Drone Automatic Airport',
     action: {
-      title: 'Action'
+      title: 'Action',
+      popup: 'Auto popup'
     },
     notify: {
       title: 'Notification'

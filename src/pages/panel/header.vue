@@ -18,10 +18,14 @@
       </span>
       <template #dropdown>
         <el-dropdown-menu class="notify__menu">
-          <el-dropdown-item v-if="dialog.length === 0" disabled>
+          <el-dropdown-item class="notify__toggle" :command="{ dialog: 'popup' }">
+            <span v-t="'header.action.popup'"></span>
+            <el-switch v-model="planDialog.popup"></el-switch>
+          </el-dropdown-item>
+          <el-dropdown-item v-if="dialog.length === 0" disabled divided>
             <span v-t="'common.none'"></span>
           </el-dropdown-item>
-          <div v-else>
+          <div v-else class="notify__list">
             <el-dropdown-item v-for="d of dialog" :key="d.id" :command="{ dialog: d.id }">
               <div class="notify__prefix">{{ d.prefix }} · {{ $d(d.time, 'time') }}</div>
               <div>
@@ -109,10 +113,14 @@
 import { mapActions, mapState } from 'vuex';
 
 import { locales } from '@/i18n';
+
 import Icon from '@/components/sd-icon.vue';
 import PlanDialog from '@/components/preflight/preflight2.vue';
-import { getNodeStatusClass } from '@/constants/node-status-class';
+
 import { getLevelIconClass } from '@/constants/level-icon-class';
+import { getNodeStatusClass } from '@/constants/node-status-class';
+
+import { MutationTypes as PLAN } from '@/store/modules/plan';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 
 const NotificationClass = {
@@ -128,7 +136,8 @@ export default {
   data() {
     return {
       planDialog: {
-        id: -1
+        id: -1,
+        popup: false
       },
       notifyAlert: false
     };
@@ -214,6 +223,12 @@ export default {
       } else if (typeof cmd.dialog === 'number') {
         this.planDialog.id = cmd.dialog;
         this.$refs.planDialog.toggle();
+      } else if (typeof cmd.dialog === 'string') {
+        switch (cmd.dialog) {
+          case 'popup':
+            this.planDialog.popup = !this.planDialog.popup;
+            break;
+        }
       }
     }
   },
@@ -225,6 +240,15 @@ export default {
         state.notification.findIndex(n => n.id === payload.id) >= 0
       ) {
         this.notifyAlert = true;
+      } else if (
+        type === PLAN.ADD_PLAN_MSG &&
+        typeof payload.dialog === 'object' &&
+        Object.getOwnPropertyNames(payload.dialog).length > 0
+      ) {
+        if (this.planDialog.popup && !this.$refs.planDialog.visible) {
+          this.planDialog.id = payload.id;
+          this.$nextTick(() => this.$refs.planDialog.toggle());
+        }
       }
     });
   },
@@ -277,6 +301,12 @@ export default {
   min-width: 240px;
 }
 
+.notify__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .notify__list {
   max-height: 500px;
   overflow: auto;
@@ -285,7 +315,7 @@ export default {
   padding-bottom: 0;
 }
 
-.notify__menu .el-dropdown-menu__item {
+.notify__list .el-dropdown-menu__item {
   line-height: 2;
   margin: 4px 0;
 }

@@ -39,7 +39,8 @@ export default {
   header: {
     title: 'Superdock 无人机自动机场',
     action: {
-      title: '操作中心'
+      title: '操作中心',
+      popup: '自动弹出'
     },
     notify: {
       title: '通知记录'
