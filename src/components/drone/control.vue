@@ -45,7 +45,7 @@ export default {
   extends: Control,
   name: 'sd-node-drone-control',
   computed: {
-    controls() {
+    staticControls() {
       return Controls;
     }
   },

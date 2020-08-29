@@ -43,7 +43,7 @@ export default {
   extends: Control,
   name: 'sd-node-depot-control',
   computed: {
-    controls() {
+    staticControls() {
       return Controls;
     }
   }

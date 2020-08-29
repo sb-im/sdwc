@@ -8,7 +8,7 @@
       :element-loading-text="disabledText"
     >
       <div class="control__group control__buttons" v-for="group in controls" :key="group.icon">
-        <sd-icon :value="group.icon" :size="36"></sd-icon>
+        <sd-icon v-if="group.icon" :value="group.icon" :size="36"></sd-icon>
         <div v-for="ctl in group.item" :key="ctl.name">
           <el-button
             size="medium"
@@ -36,8 +36,8 @@ const Controls = [
   {
     icon: 'reset',
     item: [
-      { name: 'depot.emergency_stop', mission: 'stop', type: 'danger' },
-      { name: 'depot.air_reset', mission: 'reset' }
+      { name: 'depot.ctl.stop', mission: 'stop', type: 'danger' },
+      { name: 'depot.ctl.reset', mission: 'reset' }
     ]
   }
 ];
@@ -66,8 +66,11 @@ export default {
     disabledText() {
       return this.$t('control.abnormal');
     },
-    controls() {
+    staticControls() {
       return Controls;
+    },
+    controls() {
+      return this.point.params || this.staticControls;
     }
   },
   methods: {
