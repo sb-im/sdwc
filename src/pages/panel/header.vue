@@ -10,7 +10,9 @@
       @visible-change="handleNotifyVisible"
     >
       <span class="header-dropdown-content">
-        <sd-icon value="control-panel" />
+        <el-badge :value="dialog.length" :hidden="dialog.length === 0">
+          <sd-icon value="control-panel" />
+        </el-badge>
         <span class="header-dropdown-text" v-t="'header.action.title'"></span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
@@ -110,6 +112,7 @@ import { locales } from '@/i18n';
 import Icon from '@/components/sd-icon.vue';
 import PlanDialog from '@/components/preflight/preflight2.vue';
 import { getNodeStatusClass } from '@/constants/node-status-class';
+import { getLevelIconClass } from '@/constants/level-icon-class';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 
 const NotificationClass = {
@@ -167,7 +170,7 @@ export default {
     planDialogToObject({ id, time, dialog }) {
       const plan = this.plan.info.find(p => p.id === id) || {};
       const prefix = plan.name || id;
-      const icon = `el-icon-${dialog.level}`;
+      const icon = getLevelIconClass(dialog.level);
       return { id, time, icon, prefix, text: dialog.name };
     },
     /**
