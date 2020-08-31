@@ -138,6 +138,7 @@ export default {
       planDialog: {
         id: -1
       },
+      planNotify: {},
       notifyAlert: false
     };
   },
@@ -235,22 +236,31 @@ export default {
       }
     },
     openPlanDialog(id) {
+      if (this.plan.dialog.findIndex(d => d.id === id) < 0) return;
       this.planDialog.id = id;
       if (this.$refs.planDialog.visible) return;
       this.$nextTick(() => this.$refs.planDialog.toggle());
     },
+    closePlanNotify(id) {
+      const notifyInstance = this.planNotify[id];
+      if (!notifyInstance) return;
+      notifyInstance.close();
+      delete this.planNotify[id];
+    },
     /**
-     * @param {number} id
-     * @param {SDWC.PlanDialogContent} dialog
+     * @param {number} id plan id
+     * @param {SDWC.PlanDialogContent} dialog dialog content
      */
-    triggerPlanDialogNotification(id, dialog) {
-      const plan = this.plan.info.find(p => p.id === id);
+    triggerPlanNotify(id, dialog) {
+      const plan = this.plan.info.find(p => p.id === id) || { name: `Plan#${id}` };
       const n = this.$notify({
         offset: 50,
         message: 'REPLACED_BY_VNODE',
         customClass: 'status-notify--popup',
-        onClick: () => this.openPlanDialog(id)
+        onClick: () => this.openPlanDialog(id) && this.closePlanNotify(id),
+        onClose: () => delete this.planNotify[id]
       });
+      this.planNotify[id] = n;
       const h = this.$createElement;
       n.$slots.default = [
         h('div', null, [
@@ -263,7 +273,7 @@ export default {
     }
   },
   created() {
-    this.$store.subscribe(({ type, payload }, state) => {
+    this._unsub = this.$store.subscribe(({ type, payload }, state) => {
       switch (type) {
         case NOTI.MOD_NOTI:
           if (
@@ -274,19 +284,29 @@ export default {
           }
           break;
         case PLAN.ADD_PLAN_MSG:
+          if (typeof payload.dialog !== 'object') return;
           if (Object.getOwnPropertyNames(payload.dialog).length > 0) {
             // dialog not empty
-            this.triggerPlanDialogNotification(payload.id, payload.dialog);
+            this.triggerPlanNotify(payload.id, payload.dialog);
             if (this.preference.planDialogPopup && !this.$refs.planDialog.visible) {
               this.openPlanDialog(payload.id);
             }
-          } else if (this.planDialog.id === payload.id && this.$refs.planDialog.visible) {
-            // opening dialog became empty
-            this.$refs.planDialog.toggle();
+          } else {
+            // dialog is empty
+            if (this.planDialog.id === payload.id && this.$refs.planDialog.visible) {
+              // opening dialog became empty
+              this.$refs.planDialog.toggle();
+            }
+            this.closePlanNotify(payload.id);
           }
           break;
       }
     });
+  },
+  beforeDestroy() {
+    if (typeof this._unsub === 'function') {
+      this._unsub();
+    }
   },
   components: {
     [Icon.name]: Icon,
