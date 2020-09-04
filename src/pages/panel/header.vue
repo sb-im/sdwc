@@ -245,7 +245,6 @@ export default {
       const notifyInstance = this.planNotify[id];
       if (!notifyInstance) return;
       notifyInstance.close();
-      delete this.planNotify[id];
     },
     /**
      * @param {number} id plan id
@@ -253,12 +252,20 @@ export default {
      */
     triggerPlanNotify(id, dialog) {
       const plan = this.plan.info.find(p => p.id === id) || { name: `Plan#${id}` };
+      if (this.planNotify[id]) {
+        this.closePlanNotify(id);
+      }
       const n = this.$notify({
         offset: 50,
         message: 'REPLACED_BY_VNODE',
         customClass: 'status-notify--popup',
-        onClick: () => this.openPlanDialog(id) && this.closePlanNotify(id),
-        onClose: () => delete this.planNotify[id]
+        onClick: () => {
+          this.openPlanDialog(id);
+          this.closePlanNotify(id);
+        },
+        onClose: () => {
+          delete this.planNotify[id];
+        }
       });
       this.planNotify[id] = n;
       const h = this.$createElement;
