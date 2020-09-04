@@ -20,7 +20,7 @@
         <el-dropdown-menu class="notify__menu">
           <el-dropdown-item class="notify__toggle" :command="{ dialog: 'popup' }">
             <span v-t="'header.action.popup'"></span>
-            <el-switch :value="preference.planDialogPopup" @change="handlePopupChange"></el-switch>
+            <el-switch :value="preference.planDialogPopup"></el-switch>
           </el-dropdown-item>
           <el-dropdown-item v-if="dialog.length === 0" disabled divided>
             <span v-t="'common.none'"></span>
