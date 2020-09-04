@@ -1,5 +1,5 @@
 <template>
-  <div class="plan__edit">
+  <div class="plan">
     <sd-card icon="doc-edit" title="plan.edit.alter">
       <template #action>
         <el-button type="success" size="medium" icon="el-icon-document" @click="handleUpdate">

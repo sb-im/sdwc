@@ -1,5 +1,5 @@
 <template>
-  <div class="plan__view">
+  <div class="plan">
     <div class="el-card sd-card term">
       <sd-status-notify :notification="termOutput" :canPopup="false"></sd-status-notify>
     </div>

@@ -22,8 +22,7 @@ body {
 
 @media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
   /* container */
-  .plan__view,
-  .plan__edit,
+  .plan,
   .drone,
   .depot {
     display: flex;

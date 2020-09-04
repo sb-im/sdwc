@@ -1,5 +1,5 @@
 <template>
-  <div class="plan" v-loading="!plan">
+  <div v-loading="!plan">
     <router-view v-if="plan" v-bind="componentProps" :key="key"></router-view>
   </div>
 </template>

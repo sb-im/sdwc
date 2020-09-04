@@ -1,14 +1,16 @@
 <template>
   <div>
-    <sd-card icon="doc-add" title="plan.edit.add">
-      <template #action>
-        <el-button type="success" size="medium" icon="el-icon-document" @click="handleCreate">
-          <span v-t="'plan.edit.save'"></span>
-        </el-button>
-      </template>
-      <sd-plan-editable ref="edit" :initial="initial" @waypoint-change="handleWaypointChange"></sd-plan-editable>
-    </sd-card>
-    <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
+    <div class="plan">
+      <sd-card icon="doc-add" title="plan.edit.add">
+        <template #action>
+          <el-button type="success" size="medium" icon="el-icon-document" @click="handleCreate">
+            <span v-t="'plan.edit.save'"></span>
+          </el-button>
+        </template>
+        <sd-plan-editable ref="edit" :initial="initial" @waypoint-change="handleWaypointChange"></sd-plan-editable>
+      </sd-card>
+      <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
+    </div>
   </div>
 </template>
 
