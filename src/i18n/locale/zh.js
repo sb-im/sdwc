@@ -323,26 +323,6 @@ export default {
     fit: '适应',
     manual: '手动'
   },
-  preflight: {
-    title: '起飞前检测',
-    drone: '无人机状态',
-    no_drone: '找不到无人机',
-    battery: '电池剩余 {remain}% ，温度 {temp}℃',
-    depot: '机场状态',
-    no_depot: '找不到机场',
-    realtime: '实时天气',
-    wind: '风速 {n}m/s',
-    wind_absent: '没有风速数据',
-    rain: '降水 {n}',
-    forecast: '天气预报',
-    intensity: '雷达降水强度 {n}',
-    distance: '最近降水带 {n}km',
-    no_precipitation: '附近没有降水带',
-    slide2confirm: '滑动确认执行任务',
-    started: '任务已开始执行',
-    failed: '任务开始失败： {code}',
-    starting: '任务发送中 ...'
-  },
   debug: {
     title: '调试',
     send: '发送',

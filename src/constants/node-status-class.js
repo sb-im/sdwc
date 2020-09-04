@@ -1,8 +1,4 @@
 export const NodeStatusClass = {
-  // front-end only: preflight precheck failed
-  '-3': 'el-icon-error color--red',
-  // front-end only: dummy status in preflight, node doesn't exist
-  '-2': 'el-icon-question color--gery',
   // front-end only: initial value in store, haven't connected
   '-1': 'el-icon-warning color--orange',
   // normal

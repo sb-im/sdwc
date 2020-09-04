@@ -323,26 +323,6 @@ export default {
     fit: 'Fit',
     manual: 'Manual'
   },
-  preflight: {
-    title: 'Preflight Check',
-    drone: 'Drone',
-    no_drone: 'Drone Not Found',
-    battery: 'Battery remain {remain}% ，temperature {temp}℃',
-    depot: 'Depot',
-    no_depot: 'Depot Not Found',
-    realtime: 'Realtime Weather',
-    wind: 'Wind speed {n}m/s',
-    wind_absent: 'Wind speed data absent',
-    rain: 'Rainfall {n}',
-    forecast: 'Weather Forecast',
-    intensity: 'Radar precipitation intensity {n}',
-    distance: 'Nearest precipitation zone {n}km',
-    no_precipitation: 'No precipitation nearby',
-    slide2confirm: 'Slide to Run Plan',
-    started: 'Plan started',
-    failed: 'Failed to start plan: {code}',
-    starting: 'Sending plan ...'
-  },
   debug: {
     title: 'Debug',
     send: 'Send',

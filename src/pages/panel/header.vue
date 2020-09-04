@@ -37,7 +37,7 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    <sd-preflight ref="planDialog" :planId="planDialog.id"></sd-preflight>
+    <sd-plan-dialog ref="planDialog" :planId="planDialog.id"></sd-plan-dialog>
     <!-- notification dropdown -->
     <el-dropdown
       class="header-dropdown"
@@ -115,7 +115,7 @@ import { mapActions, mapState } from 'vuex';
 import { locales } from '@/i18n';
 
 import Icon from '@/components/sd-icon.vue';
-import PlanDialog from '@/components/preflight/preflight2.vue';
+import PlanDialog from '@/components/plan-dialog/plan-dialog.vue';
 
 import { getLevelIconClass } from '@/constants/level-icon-class';
 import { getNodeStatusClass } from '@/constants/node-status-class';
