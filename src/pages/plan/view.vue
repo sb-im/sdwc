@@ -1,5 +1,5 @@
 <template>
-  <div class="plan__view">
+  <div class="plan">
     <sd-card icon="doc" title="plan.view.title">
       <template #action>
         <el-button type="primary" size="medium" icon="el-icon-edit" @click="handleEdit">
