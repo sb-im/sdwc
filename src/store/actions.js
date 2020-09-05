@@ -245,6 +245,7 @@ export async function createPlan({ commit }, plan) {
   const data = await SuperDock.createPlan(plan);
   if (data && typeof data.id === 'number') {
     commit(PLAN.ADD_PLAN, data);
+    MqttClient.subscribePlan(data.id);
     return data;
   } else {
     throw data;
