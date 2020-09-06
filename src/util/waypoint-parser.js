@@ -10,9 +10,9 @@ function isSamePosition(p1, p2) {
 }
 
 const CSVActions = {
-  '2000': '📷',
-  '203': '📷',
-  '20': '↩️'
+  '2000': 'camera_alt',
+  '203': 'camera_alt',
+  '20': 'replay'
 };
 
 /**
@@ -51,10 +51,10 @@ export function parseCSV(text) {
 }
 
 const KMLActions = {
-  'ShootPhoto': '📷'
+  'ShootPhoto': 'camera_alt'
 };
 
-const HomeMark = '🏠';
+const HomeMark = 'home';
 
 /**
  * parse KML file to path object

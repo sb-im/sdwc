@@ -256,7 +256,7 @@ export default {
               });
             } else if (marker.type === 'action') {
               mapMarker = new AMap.Marker({
-                content: h('div', { class: 'amap-marker--action' }, marker.action),
+                content: h('div', { class: 'amap-marker--action material-icons' }, marker.action),
                 position,
                 offset: new AMap.Pixel(-11, -11)
               });
@@ -404,7 +404,7 @@ export default {
   border: 1px solid #a83121;
   border-radius: 11px;
   color: white;
-  font-size: 12px;
+  font-size: 16px;
   white-space: nowrap;
   background: #d33d2980;
   opacity: 0.8;

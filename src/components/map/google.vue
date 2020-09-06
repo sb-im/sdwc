@@ -326,7 +326,7 @@ export default {
               },
               labelContent: marker.action.join(''),
               labelAnchor: { x: 10, y: 10 },
-              labelClass: 'gmap-action'
+              labelClass: 'material-icons gmap-action'
             });
           } else if (marker.type === 'place') {
             const style = this.markerStyling[marker.name] || {};
@@ -558,11 +558,11 @@ export default {
   box-sizing: border-box;
   height: 22px;
   min-width: 22px;
-  padding: 3px;
+  padding: 2px;
   border-radius: 11px;
   border: 1px solid white;
-  font-size: 12px;
-  line-height: 14px;
+  color: white;
+  font-size: 16px;
   background: #ea433599;
   opacity: 0.8;
 }

@@ -92,7 +92,9 @@ function createDroneElement(label = '', color = '#ea4335') {
 }
 
 function createPointElement(action = '') {
-  return h('div', { class: 'mapbox-marker--action' }, action);
+  return h('div', { class: 'mapbox-marker--action' }, [
+    h('i', { class: 'material-icons' }, action)
+  ]);
 }
 
 export default {
@@ -524,11 +526,11 @@ export default {
   box-sizing: border-box;
   height: 22px;
   min-width: 22px;
-  padding: 3px;
+  padding: 2px;
   border-radius: 11px;
   border: 1px solid white;
-  font-size: 12px;
-  line-height: 14px;
+  color: white;
+  font-size: 16px;
   background: #ea433599;
   opacity: 0.8;
   transition: background-color 0.3s;

@@ -20,6 +20,30 @@ body {
   color: #606266;
 }
 
+/* Material Icons */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('material-design-icons-iconfont/dist/fonts/MaterialIcons-Regular.woff2') format('woff2'),
+    url('material-design-icons-iconfont/dist/fonts/MaterialIcons-Regular.woff') format('woff');
+}
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
 @media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
   /* container */
   .plan,

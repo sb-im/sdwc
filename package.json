@@ -23,6 +23,7 @@
     "hls.js": "^0.14.9",
     "jsonrpc-lite": "^2.1.1",
     "lodash": "^4.17.20",
+    "material-design-icons-iconfont": "^6.1.0",
     "mqtt": "^4.2.1",
     "nipplejs": "^0.8.5",
     "papaparse": "^5.3.0",
