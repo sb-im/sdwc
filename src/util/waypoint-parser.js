@@ -51,7 +51,9 @@ export function parseCSV(text) {
 }
 
 const KMLActions = {
-  'ShootPhoto': 'camera_alt'
+  'ShootPhoto': 'camera_alt',
+  'StartRecording': 'videocam',
+  'StopRecording': 'videocam_off'
 };
 
 const HomeMark = 'home';
