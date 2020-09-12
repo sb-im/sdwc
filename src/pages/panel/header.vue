@@ -207,7 +207,7 @@ export default {
     },
     handleCommand(cmd) {
       if (typeof cmd.user === 'string') {
-        switch (cmd) {
+        switch (cmd.user) {
           case 'logout':
             this.logout().then(() => {
               this.$router.replace({ name: 'login' });
