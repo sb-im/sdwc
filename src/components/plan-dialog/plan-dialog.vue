@@ -7,10 +7,10 @@
     :visible.sync="visible"
   >
     <el-alert
-      v-if="form.level"
+      v-if="form.message"
       show-icon
       :title="form.message"
-      :type="form.level"
+      :type="form.level || 'info'"
       :closable="false"
     ></el-alert>
     <template v-for="item of form.items">
@@ -18,7 +18,7 @@
         <div>{{ item.message }}</div>
       </sd-plan-dialog-item>
     </template>
-    <template #footer>
+    <div slot="footer">
       <el-button
         v-for="button of form.buttons"
         :key="button.name"
@@ -26,7 +26,7 @@
         :type="button.level"
         @click="handleButtonClick(button)"
       >{{ button.name }}</el-button>
-    </template>
+    </div>
   </el-dialog>
 </template>
 
