@@ -4,9 +4,10 @@ export const LevelIconClass = {
   info: 'el-icon-info color-gery',
   warning: 'el-icon-warning color--orange',
   danger: 'el-icon-remove color--red',
-  error: 'el-icon-error color--grey'
+  error: 'el-icon-error color--grey',
+  unknown: 'el-icon-question color--grey'
 };
 
 export function getLevelIconClass(level) {
-  return LevelIconClass[level];
+  return LevelIconClass[level] || LevelIconClass.unknown;
 }
