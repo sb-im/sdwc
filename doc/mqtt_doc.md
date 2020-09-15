@@ -333,6 +333,45 @@ msg  | string | message body
 ]
 ```
 
+## custom
+
+For example:
+
+Topic: `nodes/:id/msg/battery`
+
+```json
+{
+  "temp": 27,
+  "cap": 8634,
+  "cur": "2561",
+  "remain": 71,
+  "cycle": 0,
+  "vol_cell": "3941/3948/3944/3945/3943/3942",
+  "status": ["Switch OFF Discharging", "Switch OFF Charging"],
+  "bal": 0,
+  "id": "591906111641001"
+}
+```
+
+### Params
+```json
+{
+  "topic": "battery",
+  "icon": "gear",
+  "title": "test-custom",
+  "items": [
+    { "label": "First State", "field": "status[0]" },
+    { "label": "Serial", "field": "id" },
+    { "label": "Current", "field": "cur", "unit": "mA" },
+    { "label": "Voltage", "field": "vol_cell", "unit": "mV" }
+  ]
+}
+```
+
+topic: `xxx` map `/msg/xxx`
+
+**`items.[].field` is [lodash#get](https://lodash.com/docs/4.17.15#get)**
+
 
 ### ~~Sub: `nodes/:id/message`~~ *Discard*
 ```json
