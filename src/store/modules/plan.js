@@ -6,19 +6,22 @@ const state = {
   /** @type {SDWC.PlanTerm[]} */
   term: [],
   /** @type {SDWC.PlanDialog[]} */
-  dialog: []
+  dialog: [],
+  /** @type {SDWC.PlanStatus[]} */
+  status: []
 };
 
 export const MutationTypes = {
   ADD_PLAN: 'ADD_PLAN',
   ADD_PLAN_MSG: 'ADD_PLAN_MSG',
+  SET_PLAN_STATUS: 'SET_PLAN_STATUS',
   UPDATE_PLAN: 'UPDATE_PLAN',
   DELETE_PLAN: 'DELETE_PLAN',
   CLEAR_PLANS: 'CLEAR_PLANS'
 };
 
 /**
- * @typedef {{ info: SDWC.PlanInfo[], term: SDWC.PlanTerm[], dialog: SDWC.PlanDialog[] }} State
+ * @typedef {typeof state} State
  * @type {{ [x: string]: (state: State, payload: any) => void }}
  */
 const mutations = {
@@ -26,6 +29,7 @@ const mutations = {
     if (state.info.findIndex(plan => plan.id === payload.id) >= 0) return;
     state.info.push(payload);
     state.term.push({ id: payload.id, output: [] });
+    state.status.push({ id: payload.id, status: 'error' });
   },
   [MutationTypes.ADD_PLAN_MSG](state, /** @type {{ id: number, output?: string, dialog?: SDWC.PlanDialogContent }} */ payload) {
     if (typeof payload.output === 'string') {
@@ -52,6 +56,11 @@ const mutations = {
       }
     }
   },
+  [MutationTypes.SET_PLAN_STATUS](state, /** @type {SDWC.PlanStatus} */ payload) {
+    const index = state.info.findIndex(plan => plan.id === payload.id);
+    if (index < 0) return;
+    state.status.splice(index, 1, payload);
+  },
   [MutationTypes.UPDATE_PLAN](state, /** @type {SDWC.PlanInfo} */ payload) {
     const index = state.info.findIndex(plan => plan.id === payload.id);
     if (index < 0) return;
@@ -67,6 +76,7 @@ const mutations = {
     state.info = [];
     state.term = [];
     state.dialog = [];
+    state.status = [];
   }
 };
 

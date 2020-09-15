@@ -248,6 +248,12 @@ declare namespace SDWC {
     time: number;
     dialog: PlanDialogContent;
   }
+  // PlanStatus
+  export type PlanStatusEnum = 'ready' | 'error' | 'protect' | 'running';
+  export interface PlanStatus {
+    id: number;
+    status: PlanStatusEnum;
+  }
   // PlanLog
   export interface PlanLog {
     id: number;

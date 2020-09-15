@@ -9,23 +9,22 @@
           <span v-t="'plan.edit.alter'"></span>
         </el-button>
         <el-button
-          v-if="running"
+          v-if="isReady"
+          type="danger"
+          size="medium"
+          icon="el-icon-refresh"
+          @click="handleRun"
+        >
+          <span v-t="'plan.view.run'"></span>
+        </el-button>
+        <el-button
+          v-else
           type="warning"
           size="medium"
           icon="el-icon-remove-outline"
           @click="handleStop"
         >
           <span v-t="'plan.view.stop'"></span>
-        </el-button>
-        <el-button
-          v-else
-          type="danger"
-          size="medium"
-          icon="el-icon-refresh"
-          :loading="running === null"
-          @click="handleRun"
-        >
-          <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
@@ -110,7 +109,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { getPlanMissionQueue, runPlan, stopPlan, planLogs } from '@/api/super-dock';
+import { runPlan, stopPlan, planLogs } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -127,7 +126,6 @@ export default {
   },
   data() {
     return {
-      running: null,
       map: {
         path: [],
         markers: []
@@ -145,12 +143,15 @@ export default {
   },
   computed: {
     ...mapState({
-      term: state => state.plan.term
+      termOutput(state) {
+        const t = state.plan.term.find(t => t.id === this.plan.id) || { output: [] };
+        return t.output;
+      },
+      isReady(state) {
+        const s = state.plan.status.find(s => s.id === this.plan.id) || { status: null };
+        return s.status === 'ready';
+      }
     }),
-    termOutput() {
-      const t = this.term.find(t => t.id === this.plan.id) || { output: [] };
-      return t.output;
-    },
     logsToShow() {
       const { size, current } = this.pagination;
       const end = current * size;
@@ -163,18 +164,11 @@ export default {
       'downloadFile',
       'getMapPath'
     ]),
-    checkPlanRunning() {
-      getPlanMissionQueue(this.plan.id)
-        .then(queue => this.running = queue.length !== 0);
-    },
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
     handleRun() {
-      // TODO: slide-to-confirm before run plan?
-      runPlan(this.plan.id).catch((/*e*/) => {
-        // TODO: error handling
-      });
+      runPlan(this.plan.id).catch(() => { /* noop */ });
     },
     handleStop() {
       /**
@@ -196,7 +190,7 @@ export default {
       }).catch(e => {
         n.$data.type = 'error';
         n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
-      }).then(this.checkPlanRunning);
+      });
     },
     sortPlanLogs(order = 'descending') {
       const modifier = order === 'descending' ? -1 : 1;
@@ -230,7 +224,6 @@ export default {
         this.map.markers = r.actions;
       });
     this.getPlanLogs();
-    this.checkPlanRunning();
   },
   components: {
     [Card.name]: Card,
