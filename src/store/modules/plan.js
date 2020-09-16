@@ -29,7 +29,7 @@ const mutations = {
     if (state.info.findIndex(plan => plan.id === payload.id) >= 0) return;
     state.info.push(payload);
     state.term.push({ id: payload.id, output: [] });
-    state.status.push({ id: payload.id, status: 'error' });
+    state.status.push({ id: payload.id, status: 'ready' });
   },
   [MutationTypes.ADD_PLAN_MSG](state, /** @type {{ id: number, output?: string, dialog?: SDWC.PlanDialogContent }} */ payload) {
     if (typeof payload.output === 'string') {
