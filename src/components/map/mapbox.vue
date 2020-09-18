@@ -205,9 +205,10 @@ export default {
       this.selectedMarker.remove();
     },
     async drawPath() {
-      const coordinates = this.path.map(p => [p.lng, p.lat]);
       /** @type {mapboxgl.Map} */
       const map = this.map;
+      if (!map) return;
+      const coordinates = this.path.map(p => [p.lng, p.lat]);
       /** @type {GeoJSON.LineString} */
       const pathData = { type: 'LineString', coordinates };
       if (this.pathData) {
