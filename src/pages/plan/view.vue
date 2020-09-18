@@ -9,22 +9,23 @@
           <span v-t="'plan.edit.alter'"></span>
         </el-button>
         <el-button
-          v-if="isReady"
-          type="danger"
-          size="medium"
-          icon="el-icon-refresh"
-          @click="handleRun"
-        >
-          <span v-t="'plan.view.run'"></span>
-        </el-button>
-        <el-button
-          v-else
+          v-if="isRunning"
           type="warning"
           size="medium"
           icon="el-icon-remove-outline"
           @click="handleStop"
         >
           <span v-t="'plan.view.stop'"></span>
+        </el-button>
+        <el-button
+          v-else
+          type="danger"
+          size="medium"
+          icon="el-icon-refresh"
+          :disabled="!isReady"
+          @click="handleRun"
+        >
+          <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
@@ -147,11 +148,17 @@ export default {
         const t = state.plan.term.find(t => t.id === this.plan.id) || { output: [] };
         return t.output;
       },
-      isReady(state) {
-        const s = state.plan.status.find(s => s.id === this.plan.id) || { status: null };
-        return s.status === 'ready';
+      planStatus(state) {
+        const s = state.plan.status.find(s => s.id === this.plan.id);
+        return s ? s.data : {};
       }
     }),
+    isReady() {
+      return this.planStatus.status === 'ready';
+    },
+    isRunning() {
+      return this.planStatus.status === 'running';
+    },
     logsToShow() {
       const { size, current } = this.pagination;
       const end = current * size;

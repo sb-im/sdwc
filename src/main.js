@@ -86,8 +86,8 @@ MqttClient.on('message', (id, msg) => {
 MqttClient.on('plan', (id, output, dialog) => {
   store.commit(PLAN.ADD_PLAN_MSG, { id, output, dialog });
 });
-MqttClient.on('plan_status', (id, status) => {
-  store.commit(PLAN.SET_PLAN_STATUS, { id, status });
+MqttClient.on('plan_status', (id, data) => {
+  store.commit(PLAN.SET_PLAN_STATUS, { id, data });
 });
 
 if (__SDWC_DEV__) {

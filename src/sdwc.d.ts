@@ -249,10 +249,12 @@ declare namespace SDWC {
     dialog: PlanDialogContent;
   }
   // PlanStatus
-  export type PlanStatusEnum = 'ready' | 'error' | 'protect' | 'running';
+  export interface PlanStatusData {
+    status: 'ready' | 'error' | 'protect' | 'running';
+  }
   export interface PlanStatus {
     id: number;
-    status: PlanStatusEnum;
+    data: PlanStatusData;
   }
   // PlanLog
   export interface PlanLog {

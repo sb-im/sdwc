@@ -257,7 +257,7 @@ class MqttClient extends EventEmitter {
     } else if (topic.endsWith('/dialog')) {
       this.emit('plan', id, null, JSON.parse(str));
     } else if (topic.endsWith('/status')) {
-      this.emit('plan_status', id, str);
+      this.emit('plan_status', id, JSON.parse(str));
     }
   }
 
