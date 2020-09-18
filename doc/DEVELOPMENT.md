@@ -88,7 +88,7 @@ yarn build --env.dev
 yarn build
 ```
 
-构建产物位于项目根目录中的 `dist` 目录。将 `assets` 目录复制到 `dist` 目录中，即可作为 wwwroot 部署。
+构建产物位于项目根目录中的 `dist` 目录。
 
 更详细的步骤可以参考 [CI 构建脚本](/scripts/build-tar.sh)。
 
