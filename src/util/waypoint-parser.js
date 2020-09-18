@@ -115,6 +115,28 @@ export function parseKML(text) {
 }
 
 /**
+ * parse DroneDeploy json file
+ * @param {string} text JSON text
+ * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
+ */
+export function parseJSON(text) {
+  const json = JSON.parse(text);
+  /** @type {SDWC.LatLng[]} */
+  const path = json.waypoints.map(point => ({ lat: point.lat, lng: point.lng }));
+  /** @type {SDWC.MarkerAction[]} */
+  const actions = [
+    {
+      type: 'action',
+      id: 'a0',
+      name: '',
+      position: path[0],
+      action: [HomeMark]
+    }
+  ];
+  return { path, actions };
+}
+
+/**
  * parse waypoint file to path object
  * @param {string} text
  * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
@@ -123,6 +145,8 @@ export function parseWaypoints(text) {
   const t = text.trim();
   if (/^<\?xml/i.test(t) && /<kml/i.test(t)) {
     return parseKML(text);
+  } else if (t.startsWith('{')) {
+    return parseJSON(text);
   }
   return parseCSV(text);
 }
