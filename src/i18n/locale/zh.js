@@ -330,5 +330,8 @@ export default {
   },
   custom: {
     title: '自定义数据'
+  },
+  settings: {
+    title: '节点设置'
   }
 };

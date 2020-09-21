@@ -330,5 +330,8 @@ export default {
   },
   custom: {
     title: 'Custom Data'
+  },
+  settings: {
+    title: 'Settings'
   }
 };
