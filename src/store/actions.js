@@ -207,6 +207,13 @@ export function subscribeNodes({ state, commit }) {
         commit(NODE.ADD_NODE_TOPIC, { id, topic });
         MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
         continue;
+      } else if (point.point_type_name === 'settings') {
+        if (!point.params || typeof point.params !== 'object') continue;
+        point.params.forEach(group => {
+          const topic = group.topic;
+          commit(NODE.ADD_NODE_TOPIC, { id, topic: group.topic });
+          MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
+        });
       }
       const t = NodePointTopic[point.point_type_name];
       if (!t) continue;
