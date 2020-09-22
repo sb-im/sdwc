@@ -12,6 +12,7 @@
           <el-form-item v-for="item in group.item" :key="item.field" :label="$t(item.label)">
             <component
               :is="ComponentName[item.type]"
+              :disabled="pending[group.name][item.label]"
               :value="item.value"
               v-bind="item"
               @change="handleChange(group, item, $event)"
@@ -84,10 +85,13 @@ export default {
   },
   methods: {
     handleChange(group, item, value) {
+      this.$set(this.pending[group.name], item.label, true);
       this.$mqtt(this.point.node_id, {
         mission: group.method || 'setparam',
         arg: { [item.label]: value }
-      }).catch(() => { /* noop */ });
+      }).catch(() => { /* noop */ }).then(() => {
+        this.$set(this.pending[group.name], item.label, false);
+      });
     }
   },
   created() {
@@ -95,8 +99,9 @@ export default {
   },
   mounted() {
     for (const group of this.groups) {
+      this.$set(this.pending, group.name, {});
       for (const item of group.item) {
-        this.$set(this.pending, item.field, false);
+        this.$set(this.pending[group.name], item.label, false);
       }
     }
   },

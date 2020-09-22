@@ -3,6 +3,7 @@
     class="settings__input"
     size="mini"
     v-model="model"
+    :disabled="disabled"
     @change="handleChange"
   ></el-input>
 </template>
@@ -14,6 +15,10 @@ export default {
     label: {
       type: String,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     },
     value: {
       type: String,

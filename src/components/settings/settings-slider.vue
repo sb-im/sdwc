@@ -1,6 +1,7 @@
 <template>
   <el-slider
     class="settings__slider"
+    :disabled="disabled"
     :min="range[0]"
     :max="range[1]"
     :step="step"
@@ -11,12 +12,15 @@
 
 <script>
 export default {
-  inheritAttrs: false,
   name: 'sd-settings-slider',
   props: {
     label: {
       type: String,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     },
     range: {
       type: Array,

@@ -1,5 +1,5 @@
 <template>
-  <el-switch :value="value" @change="handleChange"></el-switch>
+  <el-switch :value="value" :disabled="disabled" @change="handleChange"></el-switch>
 </template>
 
 <script>
@@ -9,6 +9,10 @@ export default {
     label: {
       type: String,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     },
     value: {
       type: Boolean,
