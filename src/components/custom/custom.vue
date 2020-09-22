@@ -15,6 +15,7 @@ import CustomItem from './custom-item.vue';
 
 export default {
   name: 'sd-node-custom',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

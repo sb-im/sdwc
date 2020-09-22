@@ -86,6 +86,7 @@ import Monitor from '@/components/monitor/monitor.vue';
 
 export default {
   name: 'sd-drone-mointor',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

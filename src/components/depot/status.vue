@@ -34,6 +34,7 @@ import Status from '@/components/status/status.vue';
 
 export default {
   name: 'sd-depot-status',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

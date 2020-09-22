@@ -44,6 +44,7 @@ const Controls = [
 
 export default {
   name: 'sd-node-control',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

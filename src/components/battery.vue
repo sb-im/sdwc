@@ -60,6 +60,7 @@ import Card from '@/components/card.vue';
 
 export default {
   name: 'sd-node-battery',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

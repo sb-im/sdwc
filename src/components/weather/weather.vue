@@ -68,6 +68,7 @@ const Skycon = {
 
 export default {
   name: 'sd-node-weather',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

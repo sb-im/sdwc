@@ -12,6 +12,7 @@ import Status from '@/components/status/status.vue';
 
 export default {
   name: 'sd-drone-status',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

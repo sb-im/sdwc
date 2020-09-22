@@ -41,6 +41,7 @@ import Icon from '@/components/sd-icon.vue';
 
 export default {
   name: 'sd-node-debug',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,

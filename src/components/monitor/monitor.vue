@@ -49,6 +49,7 @@ const CompoName = {
 
 export default {
   name: 'sd-node-monitor',
+  inheritAttrs: false,
   props: {
     point: {
       type: Object,
