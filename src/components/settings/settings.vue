@@ -96,8 +96,6 @@ export default {
   },
   created() {
     this.ComponentName = ComponentName;
-  },
-  mounted() {
     for (const group of this.groups) {
       this.$set(this.pending, group.name, {});
       for (const item of group.item) {
