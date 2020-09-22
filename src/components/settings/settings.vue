@@ -14,7 +14,7 @@
               :is="ComponentName[item.type]"
               :value="item.value"
               v-bind="item"
-              @change="handleChange(item, $event)"
+              @change="handleChange(group, item, $event)"
             ></component>
           </el-form-item>
         </div>
@@ -58,7 +58,6 @@ export default {
   },
   data() {
     return {
-      radio: 'B',
       pending: {}
     };
   },
@@ -74,6 +73,7 @@ export default {
         const pool = this.msg[group.topic] || {};
         return {
           name: group.name,
+          method: group.method,
           item: group.item.map(item => ({
             ...item,
             value: get(pool, item.field)
@@ -83,12 +83,9 @@ export default {
     }
   },
   methods: {
-    getFieldValue(field) {
-      return get(this.pool, field);
-    },
-    handleChange(item, value) {
+    handleChange(group, item, value) {
       this.$mqtt(this.point.node_id, {
-        mission: 'setparam',
+        mission: group.method || 'setparam',
         arg: { [item.label]: value }
       }).catch(() => { /* noop */ });
     }
