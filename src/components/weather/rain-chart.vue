@@ -1,50 +1,46 @@
 <template>
   <div class="weather__column">
     <div class="weather__caption" v-t="'weather.rain.caption'"></div>
-    <div class="weather__chart" ref="chart" v-loading="loading"></div>
+    <div class="weather__chart" ref="chart"></div>
   </div>
 </template>
 
 <script>
 import Chartist from 'chartist';
 
+import { h, hs } from '@/util/create-element';
+
 export default {
   name: 'sd-weather-rain',
   props: {
-    caiyun: {
-      type: Object,
+    minutely: {
+      type: Array,
       required: true
-    },
-    loading: {
-      type: Boolean
     }
   },
   methods: {
-    /** @param {number} minute */
-    shortTime(minute) {
-      const dt = new Date(this.caiyun.server_time * 1000 + minute * 60 * 1000);
-      return dt.toLocaleString('zh', { hour: '2-digit', minute: '2-digit', hour12: false, });
+    /**
+     * @param {number} offset in minute
+     */
+    shortTime(offset) {
+      const updateTime = new Date(this.minutely[0].fxTime).getTime();
+      const dt = new Date(updateTime + offset * 5 * 60 * 1000);
+      return this.$d(dt, 'time');
     },
     draw() {
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [this.caiyun.minutely.precipitation.map((y, x) => ({ x, y }))]
+        series: [this.minutely.map((item, index) => ({ x: index, y: item.precip }))]
       };
       if (this.chart === null) {
         /** @type {Chartist.ILineChartOptions} */
         const options = {
           axisX: {
             type: Chartist.FixedScaleAxis,
-            ticks: [0, 15, 30, 45],
-            high: 59,
+            ticks: [0, 6, 12, 18],
+            high: 23,
             low: 0,
             labelInterpolationFnc: value => this.shortTime(value)
-          },
-          axisY: {
-            type: Chartist.FixedScaleAxis,
-            ticks: [0.03, 0.25, 0.35, 0.48],
-            high: 1,
-            low: 0
           },
           showArea: true,
           plugins: [
@@ -59,6 +55,14 @@ export default {
           ]
         };
         this.chart = new Chartist.Line(this.$refs.chart, data, options);
+        // append unit on x axis after chart created
+        this.chart.eventEmitter.addEventHandler('created', () => {
+          this.chart.svg._node.getElementsByClassName('ct-labels')[0].append(
+            hs('foreignObject', { x: 10, y: 130, height: 20, width: 30 }, [
+              h('span', { class: 'ct-label ct-horizontal ct-end' }, ['(mm)'])
+            ])
+          );
+        });
       } else {
         this.chart.update(data);
       }

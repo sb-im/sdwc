@@ -1,59 +1,63 @@
 <template>
   <div class="sd-weather-alert">
     <el-tag
-      v-for="(val, index) of alerts"
+      v-for="(alert, index) of alerts"
       :key="index"
-      :type="val.level"
-      @click="showAlert(val)"
+      :type="alert.level"
+      @click="showAlert(alert)"
       size="medium"
     >
-      <span v-t="`weather.alert.${val.type}`"></span>
+      <span>{{ alert.type }}</span>
     </el-tag>
   </div>
 </template>
 
 <script>
 const AlertLevel = {
-  '01': 'blue',
-  '02': 'yellow',
-  '03': 'orange',
-  '04': 'red',
+  '蓝色': 'blue',
+  '黄色': 'yellow',
+  '橙色': 'orange',
+  '红色': 'red',
+  'Blue': 'blue',
+  'Yellow': 'yellow',
+  'Orange': 'orange',
+  'Red': 'red',
 };
-
-function alertToObject(alert) {
-  const { code, title, description } = alert;
-  const type = code.substr(0, 2);
-  const level = code.substr(2, 2);
-  return {
-    type,
-    level: AlertLevel[level],
-    title,
-    description
-  };
-}
 
 export default {
   name: 'sd-weather-alert',
   props: {
     alert: {
-      type: Object
+      type: Array
     }
   },
   computed: {
     alerts() {
-      if (!this.alert || this.alert.status !== 'ok') return [];
-      return Array.from(this.alert.content).map(a => alertToObject(a));
+      const alerts = {};
+      for (const a of this.alert) {
+        const { title, type, typeName, level, text } = a;
+        alerts[type] = {
+          level: AlertLevel[level],
+          type: typeName,
+          title,
+          text
+        };
+      }
+      return Object.values(alerts);
     }
   },
   methods: {
     showAlert(alert) {
-      this.$alert(alert.description, alert.title);
+      this.$alert(alert.text, alert.title);
     }
   }
 };
 </script>
 
 <style>
+.sd-weather-alert {
+  max-width: 160px;
+}
 .sd-weather-alert .el-tag {
   cursor: pointer;
   user-select: none;

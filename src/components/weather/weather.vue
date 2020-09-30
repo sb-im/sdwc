@@ -1,6 +1,6 @@
 <template>
   <sd-card class="weather" icon="barometer" title="weather.title">
-    <sd-weather-rain :caiyun="caiyun" :loading="caiyunLoading" ref="rain"></sd-weather-rain>
+    <sd-weather-rain :minutely="minutely" ref="rain"></sd-weather-rain>
     <sd-weather-wind :point="point" :status="status" :weather="msg.weather"></sd-weather-wind>
     <div class="weather__column weather__column--multi">
       <div class="weather__coord">
@@ -20,23 +20,23 @@
           </el-input>
         </el-form-item>
         <el-form-item label>
-          <sd-weather-alert :alert="caiyun.alert"></sd-weather-alert>
+          <sd-weather-alert :alert="alert"></sd-weather-alert>
         </el-form-item>
       </el-form>
       <el-form label-width="70px" size="mini">
         <el-form-item>
           <span slot="label" v-t="'weather.feel'"></span>
-          <el-input readonly :value="caiyunText.weather"></el-input>
+          <el-input readonly :value="weather.text"></el-input>
         </el-form-item>
         <el-form-item>
           <span slot="label" v-t="'weather.temp'"></span>
-          <el-input readonly :value="caiyunText.temperature">
+          <el-input readonly :value="weather.temp">
             <template #append>℃</template>
           </el-input>
         </el-form-item>
         <el-form-item>
           <span slot="label" v-t="'weather.hum'"></span>
-          <el-input readonly :value="caiyunText.humidity">
+          <el-input readonly :value="weather.humidity">
             <template #append>%</template>
           </el-input>
         </el-form-item>
@@ -46,25 +46,13 @@
 </template>
 
 <script>
-import { weather } from '@/api/caiyun';
+import { weather, minutely, warning } from '@/api/heweather';
 
 import Card from '@/components/card.vue';
 import WindIcon from './wind-icon.vue';
 import RainChart from './rain-chart.vue';
 import WindChart from './wind-chart.vue';
 import AlertBadge from './alert-badge.vue';
-
-const Skycon = {
-  CLEAR_DAY: 'weather.clear_day',
-  CLEAR_NIGHT: 'weather.clear_night',
-  PARTLY_CLOUDY_DAY: 'weather.partly_cloudy',
-  PARTLY_CLOUDY_NIGHT: 'weather.partly_cloudy',
-  CLOUDY: 'weather.cloudy',
-  RAIN: 'weather.rainy',
-  SNOW: 'weather.snowy',
-  WIND: 'weather.windy',
-  HAZE: 'weather.haze',
-};
 
 export default {
   name: 'sd-node-weather',
@@ -85,48 +73,24 @@ export default {
   },
   data() {
     return {
-      caiyun: {
-        realtime: null,
-        minutely: null,
-        alert: null,
-        server_time: 0
-      },
-      caiyunLoading: false,
+      weather: {},
+      minutely: [],
+      alert: [],
       interval: null
     };
-  },
-  computed: {
-    caiyunText() {
-      if (!this.caiyun.realtime || this.caiyun.realtime.status !== 'ok') {
-        return {
-          weather: '...',
-          temperature: '...',
-          humidity: '...'
-        };
-      }
-      const r = this.caiyun.realtime;
-      return {
-        weather: this.$t(Skycon[r.skycon]),
-        temperature: (r.temperature - 273.15).toFixed(1),
-        humidity: (r.humidity * 100).toFixed(0)
-      };
-    }
   },
   methods: {
     getWeather() {
       const { lng, lat } = this.status.status;
-      return weather(lng, lat).then(res => {
-        this.caiyun.minutely = res.result.minutely;
-        this.caiyun.realtime = res.result.realtime;
-        this.caiyun.alert = res.result.alert;
-        this.caiyun.server_time = res.server_time;
-      });
+      return Promise.all([
+        minutely(lng, lat).then(data => this.minutely = data.minutely),
+        weather(lng, lat).then(data => this.weather = data.now),
+        warning(lng, lat).then(data => this.alert = data.warning)
+      ]);
     },
     refreshWeather() {
       if (this.status.code !== 0) return;
-      this.caiyunLoading = true;
       this.getWeather().then(() => {
-        this.caiyunLoading = false;
         this.$refs.rain.draw();
       });
     }
@@ -134,11 +98,16 @@ export default {
   watch: {
     ['status.code']() {
       this.refreshWeather();
+    },
+    ['$i18n.locale']() {
+      this.refreshWeather();
+      window.clearInterval(this.interval);
+      this.interval = window.setInterval(() => this.refreshWeather(), 5 * 60 * 1000);
     }
   },
   mounted() {
     this.refreshWeather();
-    this.interval = window.setInterval(() => this.refreshWeather(), 120 * 1000);
+    this.interval = window.setInterval(() => this.refreshWeather(), 5 * 60 * 1000);
   },
   beforeDestroy() {
     if (this.interval !== null) {

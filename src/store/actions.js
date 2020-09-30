@@ -6,8 +6,8 @@ import { setLocale, locales } from '@/i18n';
 import * as S from '@/api/sdwc';
 import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
-import * as CaiYun from '@/api/caiyun';
 import * as Mapbox from '@/api/mapbox';
+import * as HeWeather from '@/api/heweather';
 import * as SuperDock from '@/api/super-dock';
 import * as GoogleMap from '@/api/google-map';
 import { parseWaypoints } from '@/util/waypoint-parser';
@@ -34,6 +34,7 @@ export function setPreference({ commit }, payload) {
   if (typeof payload.lang === 'string') {
     if (Object.prototype.hasOwnProperty.call(locales, payload.lang)) {
       setLocale(payload.lang);
+      HeWeather.setLanguage(payload.lang);
     } else {
       throw new Error(`Invalid language key ${payload.lang}`);
     }
@@ -70,7 +71,7 @@ export async function configure({ state, commit }) {
   const config = state.config;
   SuperDock.setBaseURL(config.super_dock_api_server);
   GoogleMap.setApiKey(config.gmap_key);
-  CaiYun.setApiKey(config.caiyun_key);
+  HeWeather.setApiKey(config.heweather_key);
   Mapbox.setAccessToken(config.mapbox_key);
   AMap.setApiKey(config.amap_key);
   setLocale(state.preference.lang);
