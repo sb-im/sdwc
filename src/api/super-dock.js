@@ -118,6 +118,24 @@ export function retrievePlanLog(planId, logId) {
     .json();
 }
 
+export function runPlanJob(id) {
+  return wr.url(`/api/v2/plans/${id}/jobs/`)
+    .post()
+    .text();
+}
+
+export function getPlanJobs(id) {
+  return wr.url(`/api/v2/plans/${id}/jobs/`)
+  .get()
+  .json();
+}
+
+export function cancelPlanJob(planId, jobId) {
+  return wr.url(`/api/v2/plans/${planId}/jobs/${jobId}/cancel`)
+  .post()
+  .text();
+}
+
 export function getFile(url) {
   return wr.url(url)
     .get()
