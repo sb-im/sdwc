@@ -45,12 +45,12 @@
         <el-table-column>
           <span slot="header" v-t="'plan.view.raw_data'"></span>
           <template v-slot="{ row }">
-            <template v-for="(url, name) of row.files">
+            <template v-for="(blobId, name) of row.files">
               <el-button
                 :key="name"
                 size="mini"
                 icon="el-icon-download"
-                @click="handleDownload(url, name, job)"
+                @click="handleDownload(blobId, name, job)"
               >{{ name }}</el-button>
             </template>
           </template>
@@ -172,12 +172,15 @@ export default {
       this.sortJobs(order);
     },
     /**
-     * @param {string} url
+     * @param {string} blobId
      * @param {string} name
      * @param {SDWC.PlanJob} job
      */
-    handleDownload(url, name, job) {
-      this.downloadFile({ url, name: `plan_${job.plan_id}-job_${job.job_id}-${name}` });
+    handleDownload(blobId, name, job) {
+      this.downloadFile({
+        url: `/api/v1/blobs/${blobId}`,
+        name: `plan_${job.plan_id}-job_${job.job_id}-${name}`
+      });
     },
     dateFormatter(row, column, cellValue /*, index */) {
       return this.$d(cellValue, 'long');
