@@ -17,14 +17,7 @@
         >
           <span v-t="'plan.view.stop'"></span>
         </el-button>
-        <el-button
-          v-else
-          type="danger"
-          size="medium"
-          icon="el-icon-refresh"
-          :disabled="!isReady"
-          @click="handleRun"
-        >
+        <el-button v-else type="danger" size="medium" icon="el-icon-refresh" @click="handleRun">
           <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
@@ -34,74 +27,38 @@
     <sd-card class="plan__history" icon="paper-busy" title="plan.view.history" dense>
       <el-table
         stripe
-        v-loading="log.loading"
-        :data="logsToShow"
+        v-loading="job.loading"
+        :data="jobsToShow"
         :default-sort="{ prop: 'created_at', order: 'descending' }"
         @sort-change="handleSortChange"
       >
         <el-table-column
           align="center"
+          width="200"
           prop="created_at"
           sortable="custom"
           :sort-orders="['ascending', 'descending']"
           :formatter="dateFormatter"
         >
-          <span slot="header" class="cell" v-t="'plan.view.run_time'"></span>
+          <span slot="header" v-t="'plan.view.run_time'"></span>
         </el-table-column>
-        <el-table-column align="center">
-          <span slot="header" class="cell" v-t="'plan.view.raw_data'"></span>
-          <template v-slot="{row}">
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="!row.raw_data"
-              @click="handleDownload(row.raw_data, `${row.id}_raw_data.bin`)"
-              v-t="'common.view'"
-            ></el-button>
-          </template>
-        </el-table-column>
-        <el-table-column align="center">
-          <span slot="header" class="cell" v-t="'plan.view.auto_run'"></span>
-          <template v-slot="{row}">
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="!row.orthomosaic_path"
-              @click="handleDownload(row.orthomosaic_path, `${row.id}_orthomosaic.tif`)"
-              v-t="'common.view'"
-            ></el-button>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" border>
-          <span slot="header" class="cell" v-t="'plan.view.logs'"></span>
-          <template v-slot="{row}">
-            <el-button
-              icon="el-icon-download"
-              size="mini"
-              :disabled="!row.air_log_path"
-              @click="handleDownload(row.air_log_path, `${row.id}_air_log.bin`)"
-            >
-              <span v-t="'common.download'"></span>
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column align="center">
-          <span slot="header" class="cell" v-t="'plan.view.sever_logs'"></span>
-          <template v-slot="{row}">
-            <el-button
-              icon="el-icon-download"
-              size="mini"
-              :disabled="!row.sever_log_path"
-              @click="handleDownload(row.sever_log_path, `${row.id}_sever_log.bin`)"
-            >
-              <span v-t="'common.download'"></span>
-            </el-button>
+        <el-table-column>
+          <span slot="header" v-t="'plan.view.raw_data'"></span>
+          <template v-slot="{ row }">
+            <template v-for="(url, name) of row.files">
+              <el-button
+                :key="name"
+                size="mini"
+                icon="el-icon-download"
+                @click="handleDownload(url, name, job)"
+              >{{ name }}</el-button>
+            </template>
           </template>
         </el-table-column>
       </el-table>
       <el-pagination
         layout="total, prev, pager, next"
-        :total="logs.length"
+        :total="jobs.length"
         :current-page.sync="pagination.current"
       ></el-pagination>
     </sd-card>
@@ -110,7 +67,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { runPlan, stopPlan, planLogs } from '@/api/super-dock';
+import { runPlanJob, getPlanJobs, cancelPlanJob } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -131,8 +88,8 @@ export default {
         path: [],
         markers: []
       },
-      logs: [],
-      log: {
+      jobs: [],
+      job: {
         loading: false,
         order: 'descending'
       },
@@ -148,21 +105,18 @@ export default {
         const t = state.plan.term.find(t => t.id === this.plan.id) || { output: [] };
         return t.output;
       },
-      planStatus(state) {
-        const s = state.plan.status.find(s => s.id === this.plan.id);
-        return s ? s.data : {};
+      runningJob(state) {
+        const s = state.plan.running.find(s => s.id === this.plan.id);
+        return s ? s.job : null;
       }
     }),
-    isReady() {
-      return this.planStatus.status === 'ready';
-    },
     isRunning() {
-      return this.planStatus.status === 'running';
+      return Boolean(this.runningJob);
     },
-    logsToShow() {
+    jobsToShow() {
       const { size, current } = this.pagination;
       const end = current * size;
-      return this.logs.slice(end - size, end);
+      return this.jobs.slice(end - size, end);
     }
   },
   methods: {
@@ -175,9 +129,10 @@ export default {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
     handleRun() {
-      runPlan(this.plan.id).catch(() => { /* noop */ });
+      runPlanJob(this.plan.id).catch(() => { /* noop */ });
     },
     handleStop() {
+      if (!this.isRunning) return;
       /**
        * mutate element-ui's Notification object
        * @see https://github.com/ElemeFE/element/blob/v2.8.2/packages/notification/src/main.vue
@@ -189,7 +144,7 @@ export default {
         title: this.plan.name,
         message: this.$t('plan.view.pending'),
       });
-      stopPlan(this.plan.id).then(() => {
+      cancelPlanJob(this.plan.id, this.runningJob.id).then(() => {
         n.$data.message = this.$t('plan.view.stop_run');
         n.$data.type = 'warning';
         n.$data.duration = 2000;
@@ -199,25 +154,30 @@ export default {
         n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
       });
     },
-    sortPlanLogs(order = 'descending') {
+    sortJobs(order = 'descending') {
       const modifier = order === 'descending' ? -1 : 1;
-      this.logs.sort((a, b) => (a.created_at - b.created_at) * modifier);
+      this.jobs.sort((a, b) => (a.created_at - b.created_at) * modifier);
     },
-    async getPlanLogs() {
-      this.log.loading = true;
-      const raw = await planLogs(this.plan.id);
-      raw.forEach(l => l.created_at = new Date(l.created_at));
-      this.logs = raw;
-      this.sortPlanLogs();
-      this.log.loading = false;
+    async getPlanJobs() {
+      this.job.loading = true;
+      const res = await getPlanJobs(this.plan.id);
+      res.forEach(l => l.created_at = new Date(l.created_at));
+      this.jobs = res;
+      this.sortJobs();
+      this.job.loading = false;
     },
     handleSortChange({ order }) {
-      this.log.order = order;
+      this.job.order = order;
       this.pagination.current = 1;
-      this.sortPlanLogs(order);
+      this.sortJobs(order);
     },
-    handleDownload(url, name) {
-      this.downloadFile({ url, name: `plan_${this.plan.id}_${name}` });
+    /**
+     * @param {string} url
+     * @param {string} name
+     * @param {SDWC.PlanJob} job
+     */
+    handleDownload(url, name, job) {
+      this.downloadFile({ url, name: `plan_${job.plan_id}-job_${job.job_id}-${name}` });
     },
     dateFormatter(row, column, cellValue /*, index */) {
       return this.$d(cellValue, 'long');
@@ -230,7 +190,7 @@ export default {
         this.map.path = r.path;
         this.map.markers = r.actions;
       });
-    this.getPlanLogs();
+    this.getPlanJobs();
   },
   components: {
     [Card.name]: Card,
