@@ -42,7 +42,7 @@ export default {
       const result = await this.$mqtt(this.point.node_id, {
         mission: 'history',
         arg: { topic: 'msg/weather', time: '1m' }
-      });
+      }).catch(() => { return {}; });
       const entries = Object.entries(result)
         .map(e => [Number.parseInt(e[0]), e[1]])
         .sort((a, b) => b[0] - a[0]);
