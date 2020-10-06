@@ -7,14 +7,14 @@ const state = {
   term: [],
   /** @type {SDWC.PlanDialog[]} */
   dialog: [],
-  /** @type {SDWC.PlanStatus[]} */
-  status: []
+  /** @type {SDWC.PlanRunning[]} */
+  running: []
 };
 
 export const MutationTypes = {
   ADD_PLAN: 'ADD_PLAN',
   ADD_PLAN_MSG: 'ADD_PLAN_MSG',
-  SET_PLAN_STATUS: 'SET_PLAN_STATUS',
+  SET_PLAN_RUNNING: 'SET_PLAN_RUNNING',
   UPDATE_PLAN: 'UPDATE_PLAN',
   DELETE_PLAN: 'DELETE_PLAN',
   CLEAR_PLANS: 'CLEAR_PLANS'
@@ -29,7 +29,6 @@ const mutations = {
     if (state.info.findIndex(plan => plan.id === payload.id) >= 0) return;
     state.info.push(payload);
     state.term.push({ id: payload.id, output: [] });
-    state.status.push({ id: payload.id, data: { status: 'error' } });
   },
   [MutationTypes.ADD_PLAN_MSG](state, /** @type {{ id: number, output?: string, dialog?: SDWC.PlanDialogContent }} */ payload) {
     if (typeof payload.output === 'string') {
@@ -56,10 +55,20 @@ const mutations = {
       }
     }
   },
-  [MutationTypes.SET_PLAN_STATUS](state, /** @type {SDWC.PlanStatus} */ payload) {
+  [MutationTypes.SET_PLAN_RUNNING](state, /** @type {SDWC.PlanRunning} */ payload) {
     const index = state.info.findIndex(plan => plan.id === payload.id);
     if (index < 0) return;
-    state.status.splice(index, 1, payload);
+    const exist = state.running.findIndex(d => d.id === payload.id);
+    const empty = Object.getOwnPropertyNames(payload.job).length === 0;
+    if (exist >= 0) {
+      if (empty) {
+        state.running.splice(exist, 1);
+      } else {
+        state.running.splice(exist, 1, payload);
+      }
+    } else if (!empty) {
+      state.running.unshift(payload);
+    }
   },
   [MutationTypes.UPDATE_PLAN](state, /** @type {SDWC.PlanInfo} */ payload) {
     const index = state.info.findIndex(plan => plan.id === payload.id);
@@ -76,7 +85,7 @@ const mutations = {
     state.info = [];
     state.term = [];
     state.dialog = [];
-    state.status = [];
+    state.running = [];
   }
 };
 

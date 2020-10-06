@@ -106,7 +106,7 @@ class MqttClient extends EventEmitter {
     [
       `plans/${id}/term`,
       `plans/${id}/dialog`,
-      `plans/${id}/status`
+      `plans/${id}/running`
     ].forEach(topic => {
       this.mqtt.subscribe(topic);
     });
@@ -256,8 +256,8 @@ class MqttClient extends EventEmitter {
       this.emit('plan', id, str, undefined);
     } else if (topic.endsWith('/dialog')) {
       this.emit('plan', id, null, JSON.parse(str));
-    } else if (topic.endsWith('/status')) {
-      this.emit('plan_status', id, JSON.parse(str));
+    } else if (topic.endsWith('/running')) {
+      this.emit('plan_running', id, JSON.parse(str));
     }
   }
 

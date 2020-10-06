@@ -252,9 +252,19 @@ declare namespace SDWC {
   export interface PlanStatusData {
     status: 'ready' | 'error' | 'protect' | 'running';
   }
-  export interface PlanStatus {
+  // PlanJob
+  export interface PlanJob {
     id: number;
-    data: PlanStatusData;
+    job_id: number;
+    plan_id: number;
+    files: any;
+    extra: any;
+    created_at: string;
+    updated_at: string;
+  }
+  export interface PlanRunning {
+    id: number;
+    job: PlanJob;
   }
   // PlanLog
   export interface PlanLog {
