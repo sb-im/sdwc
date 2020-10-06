@@ -33,6 +33,7 @@ export default {
     password: '密码',
     error_password: '请输入密码',
     button: '登录',
+    error: '登录失败：错误代码 {code}',
     failed: '登录失败：用户名或密码错误',
     expired: '会话已过期，请重新登录'
   },

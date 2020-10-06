@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login__bg">
-      <img class="login__i" src="/assets/images/login-backgound.jpg" v-show="!showVideo">
+      <img class="login__i" src="/assets/images/login-backgound.jpg" v-show="!showVideo" />
       <video
         class="login__i"
         :src="video"
@@ -85,7 +85,14 @@ export default {
         await this.login({ username: this.username, password: this.password });
         this.$router.push({ name: 'panel' });
       } catch (e) {
-        this.$message.error(this.$t('login.failed'));
+        switch (e.status) {
+          case 401:
+            this.$message.error(this.$t('login.failed'));
+            break;
+          default:
+            this.$message.error(this.$t('login.error', { code: e.status }));
+            break;
+        }
       }
       this.pending = false;
     }

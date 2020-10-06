@@ -82,18 +82,13 @@ export async function configure({ state, commit }) {
  * @param {{username: string; password: string}} payload
  */
 export async function login({ state, commit }, { username, password }) {
-  try {
-    const data = await SuperDock.token(username, password, state.config.oauth_client_id, state.config.oauth_client_secret);
-    const token = `${data.token_type} ${data.access_token}`;
-    const due = (data.created_at + data.expires_in) * 1000;
-    commit(USER.SET_USER_TOKEN, { token, due });
-    SuperDock.setAuth(token);
-    setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
-    return token;
-  }
-  catch (/** @type {SDWC.LoginResponseErr} */ e) {
-    throw { msg: e.invalid_grant };
-  }
+  const data = await SuperDock.token(username, password, state.config.oauth_client_id, state.config.oauth_client_secret);
+  const token = `${data.token_type} ${data.access_token}`;
+  const due = (data.created_at + data.expires_in) * 1000;
+  commit(USER.SET_USER_TOKEN, { token, due });
+  SuperDock.setAuth(token);
+  setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
+  return token;
 }
 
 /**
