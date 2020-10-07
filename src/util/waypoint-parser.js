@@ -41,8 +41,7 @@ function prependHomeMark(path, actions) {
   }
 }
 
-
-const CSVActions = {
+const MAVLinkActions = {
   '2000': 'camera_alt',
   '203': 'camera_alt',
   '20': 'replay'
@@ -53,7 +52,7 @@ const CSVActions = {
  * @param {string} text
  * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
  */
-export function parseCSV(text) {
+export function parseMAVLinkWaypoints(text) {
   /** @type {SDWC.LatLng[]} */
   const path = [];
   /** @type {SDWC.MarkerAction[]} */
@@ -64,19 +63,14 @@ export function parseCSV(text) {
         lat: Number.parseFloat(dt[8]),
         lng: Number.parseFloat(dt[9])
       });
-    } else if (Object.prototype.hasOwnProperty.call(CSVActions, dt[3])) {
+    } else if (Object.prototype.hasOwnProperty.call(MAVLinkActions, dt[3])) {
       const position = path[path.length - 1];
       const lastAction = actions[actions.length - 1];
+      const a = MAVLinkActions[dt[3]];
       if (actions.length > 0 && isSamePosition(lastAction.position, position)) {
-        lastAction.action.push(CSVActions[dt[3]]);
+        lastAction.action.push(a);
       } else {
-        actions.push({
-          type: 'action',
-          id: `a${actions.length}`,
-          name: '',
-          position: position,
-          action: [CSVActions[dt[3]]]
-        });
+        actions.push(makeAction(`a${actions.length}`, position, a));
       }
     }
   });
@@ -107,14 +101,7 @@ export function parseKML(text) {
     const position = { lng, lat };
     path.push(position);
     const extData = pm.querySelector('ExtendedData');
-    /** @type {SDWC.MarkerAction} */
-    const action = {
-      type: 'action',
-      id: `a${actions.length}`,
-      name: '',
-      position,
-      action: []
-    };
+    const action = makeAction(`a${actions.length}`, position);
     for (const mis of Array.from(extData.children)) {
       switch (mis.tagName) {
         case 'mis:actions':
@@ -131,17 +118,7 @@ export function parseKML(text) {
       actions.push(action);
     }
   }
-  if (actions.length > 0 && isSamePosition(actions[0].position, path[0])) {
-    actions[0].action.unshift(HomeMark);
-  } else {
-    actions.unshift({
-      type: 'action',
-      id: `a${actions.length}`,
-      name: '',
-      position: path[0],
-      action: [HomeMark]
-    });
-  }
+  prependHomeMark(path, actions);
   return { path, actions };
 }
 
@@ -150,23 +127,15 @@ export function parseKML(text) {
  * @param {string} text JSON text
  * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
  */
-export function parseJSON(text) {
+export function parseDroneDeployJSON(text) {
   const json = JSON.parse(text);
   /** @type {SDWC.LatLng[]} */
   const path = json.waypoints.map(point => ({ lat: point.lat, lng: point.lng }));
   /** @type {SDWC.MarkerAction[]} */
-  const actions = [
-    {
-      type: 'action',
-      id: 'a0',
-      name: '',
-      position: path[0],
-      action: [HomeMark]
-    }
-  ];
+  const actions = [];
+  prependHomeMark(path, actions);
   return { path, actions };
 }
-
 
 const LitchiActions = {
   // '0': 'stay for',
@@ -214,9 +183,9 @@ export function parseWaypoints(text) {
   if (/^<\?xml/i.test(t) && /<kml/i.test(t)) {
     return parseKML(text);
   } else if (t.startsWith('{')) {
-    return parseJSON(text);
+    return parseDroneDeployJSON(text);
   } else if (t.startsWith('lat')) {
     return parseLitchiCSV(text);
   }
-  return parseCSV(text);
+  return parseMAVLinkWaypoints(text);
 }
