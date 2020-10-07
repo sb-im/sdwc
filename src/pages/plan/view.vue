@@ -24,6 +24,7 @@
       <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </sd-card>
     <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
+    <sd-job-file ref="jobFile"></sd-job-file>
     <sd-card class="plan__history" icon="paper-busy" title="plan.view.history" dense>
       <el-table
         stripe
@@ -49,8 +50,7 @@
               <el-button
                 :key="name"
                 size="mini"
-                icon="el-icon-download"
-                @click="handleDownload(blobId, name, job)"
+                @click="handleOpenFile(blobId)"
               >{{ name }}</el-button>
             </template>
           </template>
@@ -73,6 +73,7 @@ import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
 import PlanReadonly from '@/components/plan/readonly.vue';
 import StatusNotify from '@/components/status/status-notify.vue';
+import JobFile from '@/components/job-file/job-file.vue';
 
 export default {
   name: 'sd-plan-view',
@@ -122,7 +123,6 @@ export default {
   methods: {
     ...mapActions([
       'retrievePlan',
-      'downloadFile',
       'getMapPath'
     ]),
     handleEdit() {
@@ -171,16 +171,8 @@ export default {
       this.pagination.current = 1;
       this.sortJobs(order);
     },
-    /**
-     * @param {string} blobId
-     * @param {string} name
-     * @param {SDWC.PlanJob} job
-     */
-    handleDownload(blobId, name, job) {
-      this.downloadFile({
-        url: `/api/v1/blobs/${blobId}`,
-        name: `plan_${job.plan_id}-job_${job.job_id}-${name}`
-      });
+    handleOpenFile(blobId) {
+      this.$refs.jobFile.open(blobId);
     },
     dateFormatter(row, column, cellValue /*, index */) {
       return this.$d(cellValue, 'long');
@@ -199,7 +191,8 @@ export default {
     [Card.name]: Card,
     [PlanMap.name]: PlanMap,
     [PlanReadonly.name]: PlanReadonly,
-    [StatusNotify.name]: StatusNotify
+    [StatusNotify.name]: StatusNotify,
+    [JobFile.name]: JobFile
   }
 };
 </script>

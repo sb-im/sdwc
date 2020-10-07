@@ -27,6 +27,7 @@
     "mqtt": "^4.2.1",
     "nipplejs": "^0.8.5",
     "papaparse": "^5.3.0",
+    "photo-sphere-viewer": "^4.0.7",
     "vue": "^2.6.12",
     "vue-i18n": "^8.21.0",
     "vue-json-tree-view": "^2.1.6",

@@ -316,3 +316,15 @@ export async function getMapPath(_, url) {
   const text = await SuperDock.getFile(url).then(r => r.text());
   return parseWaypoints(text);
 }
+
+/**
+ * @param {Context} _
+ * @param {string} id blob id
+ */
+export async function downloadBlob(_, id) {
+  const res = await SuperDock.downloadBlob(id);
+  const cd = res.headers.get('content-disposition');
+  const { filename } = ContentDisposition.parse(cd).parameters;
+  const blob = await res.blob();
+  return { filename, blob };
+}
