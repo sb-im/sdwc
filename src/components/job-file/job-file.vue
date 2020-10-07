@@ -39,8 +39,9 @@ export default {
   computed: {
     compo() {
       if (typeof this.file.filename !== 'string') return null;
+      const filename = this.file.filename.toLowerCase();
       for (const type in FileTypes) {
-        if (this.file.filename.endsWith(type)) {
+        if (filename.endsWith(type)) {
           return FileTypes[type];
         }
       }
