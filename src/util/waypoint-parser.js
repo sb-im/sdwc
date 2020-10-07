@@ -9,6 +9,39 @@ function isSamePosition(p1, p2) {
   return p1.lat === p2.lat && p1.lng === p2.lng;
 }
 
+/**
+ * create action object
+ * @param {string} id
+ * @param {SDWC.LatLng} position
+ * @param  {...string} action
+ * @returns {SDWC.MarkerAction}
+ */
+function makeAction(id, position, ...action) {
+  return {
+    type: 'action',
+    id,
+    name: '',
+    position,
+    action
+  };
+}
+
+const HomeMark = 'home';
+
+/**
+ * prepend action 'home' to first point in path
+ * @param {SDWC.LatLng[]} path
+ * @param {SDWC.MarkerAction[]} actions
+ */
+function prependHomeMark(path, actions) {
+  if (actions.length > 0 && isSamePosition(actions[0].position, path[0])) {
+    actions[0].action.unshift(HomeMark);
+  } else {
+    actions.unshift(makeAction('home', path[0], HomeMark));
+  }
+}
+
+
 const CSVActions = {
   '2000': 'camera_alt',
   '203': 'camera_alt',
@@ -55,8 +88,6 @@ const KMLActions = {
   'StartRecording': 'videocam',
   'StopRecording': 'videocam_off'
 };
-
-const HomeMark = 'home';
 
 /**
  * parse KML file to path object
@@ -136,6 +167,43 @@ export function parseJSON(text) {
   return { path, actions };
 }
 
+
+const LitchiActions = {
+  // '0': 'stay for',
+  '1': 'camera_alt',
+  '2': 'videocam',
+  '3': 'videocam_off',
+  // '4': 'rotate aircraft',
+  // '5': 'tlit camera'
+};
+
+export function parseLitchiCSV(text) {
+  /** @type {SDWC.LatLng[]} */
+  const path = [];
+  /** @type {SDWC.MarkerAction[]} */
+  const actions = [];
+  const results = Papaparse.parse(text, { dynamicTyping: true, header: true });
+  for (const point of results.data) {
+    if (typeof point.longitude !== 'number' || typeof point.latitude !== 'number') continue;
+    const position = { lng: point.longitude, lat: point.latitude };
+    path.push(position);
+    const action = makeAction(`a${actions.length}`, position);
+    for (let i = 1; i <= 15; i++) {
+      const kType = `actiontype${i}`;
+      // const kParam = `actionparam${i}`;
+      const a = LitchiActions[point[kType]];
+      if (a && !action.action.includes(a)) {
+        action.action.push(a);
+      }
+    }
+    if (action.action.length > 0) {
+      actions.push(action);
+    }
+  }
+  prependHomeMark(path, actions);
+  return { path, actions };
+}
+
 /**
  * parse waypoint file to path object
  * @param {string} text
@@ -147,6 +215,8 @@ export function parseWaypoints(text) {
     return parseKML(text);
   } else if (t.startsWith('{')) {
     return parseJSON(text);
+  } else if (t.startsWith('lat')) {
+    return parseLitchiCSV(text);
   }
   return parseCSV(text);
 }
