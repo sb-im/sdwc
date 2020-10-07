@@ -35,7 +35,7 @@
       >
         <el-table-column
           align="center"
-          width="200"
+          width="180"
           prop="created_at"
           sortable="custom"
           :sort-orders="['ascending', 'descending']"
@@ -198,16 +198,17 @@ export default {
 </script>
 
 <style>
-.plan__view .el-table__body-wrapper {
-  min-height: 390px;
+.plan__history .el-table__body-wrapper {
+  min-height: 400px;
 }
-.plan__view .el-table td {
-  padding: 6px 0;
+.plan__history .el-table td {
+  padding: 0;
+  height: 40px;
 }
-.plan__view .el-table .el-button--mini {
+.plan__history .el-table .el-button--mini {
   padding: 6px 10px;
 }
-.plan__view .el-pagination {
+.plan__history .el-pagination {
   padding: 8px 25px;
 }
 </style>
