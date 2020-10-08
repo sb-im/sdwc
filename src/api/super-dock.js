@@ -141,3 +141,9 @@ export function getFile(url) {
     .get()
     .res();
 }
+
+export function downloadBlob(id) {
+  return wr.url(`/api/v1/blobs/${id}`)
+    .get()
+    .res();
+}
