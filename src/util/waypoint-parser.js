@@ -96,7 +96,11 @@ export function parseKML(text) {
   const parser = new DOMParser();
   const xml = parser.parseFromString(text, 'text/xml');
   const placemarks = xml.querySelectorAll('Document>Folder>Placemark');
-  for (const pm of Array.from(placemarks)) {
+  const placemarkArray = Array.from(placemarks).sort((a, b) => {
+    const [ia, ib] = [a, b].map(e => Number.parseInt(e.querySelector('name').textContent.replace(/\w/g, ''), 10));
+    return ia - ib;
+  });
+  for (const pm of placemarkArray) {
     const [lng, lat /*, alt */] = pm.querySelector('Point>coordinates').textContent.split(',').map(Number.parseFloat);
     const position = { lng, lat };
     path.push(position);
