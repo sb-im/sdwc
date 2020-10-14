@@ -15,15 +15,19 @@
 <script>
 import { mapActions } from 'vuex';
 
+import Url from './url.vue';
 import Text from './text.vue';
 import Image from './image.vue';
+import IFrame from './iframe.vue';
 import PhotoSphere from './photosphere.vue';
 import Unknown from './unknown.vue';
 
 const FileTypes = {
   'pano.jpg': PhotoSphere.name,
+  'iframe': IFrame.name,
   'jpg': Image.name,
-  'txt': Text.name
+  'txt': Text.name,
+  'url': Url.name
 };
 
 export default {
@@ -67,8 +71,10 @@ export default {
     }
   },
   components: {
+    [Url.name]: Url,
     [Text.name]: Text,
     [Image.name]: Image,
+    [IFrame.name]: IFrame,
     [PhotoSphere.name]: PhotoSphere,
     [Unknown.name]: Unknown
   }
