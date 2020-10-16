@@ -83,9 +83,9 @@ export default {
     getWeather() {
       const { lng, lat } = this.status.status;
       return Promise.all([
-        minutely(lng, lat).then(data => this.minutely = data.minutely),
-        weather(lng, lat).then(data => this.weather = data.now),
-        warning(lng, lat).then(data => this.alert = data.warning)
+        minutely(lng, lat).then(data => this.minutely = data.minutely || []),
+        weather(lng, lat).then(data => this.weather = data.now || {}),
+        warning(lng, lat).then(data => this.alert = data.warning || [])
       ]);
     },
     refreshWeather() {
