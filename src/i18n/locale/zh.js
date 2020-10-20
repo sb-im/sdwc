@@ -70,6 +70,9 @@ export default {
       stop_run: '任务已经终止',
       stop_fail: '任务终止失败：{code}'
     },
+    job: {
+      file: '查看文件'
+    },
     edit: {
       add: '新建任务',
       create_failed: '创建任务失败',

@@ -4,7 +4,7 @@
     append-to-body
     custom-class="sd-job-file"
     :visible.sync="visible"
-    title="查看文件"
+    :title="$t('plan.job.file')"
     @closed="handleClosed"
   >
     <div v-if="!compo" v-loading="true" class="sd-job-file-loading"></div>

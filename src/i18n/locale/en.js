@@ -70,6 +70,9 @@ export default {
       stop_run: 'Plan terminated',
       stop_fail: 'Failed to terminate plan: {code}'
     },
+    job: {
+      file: 'View File'
+    },
     edit: {
       add: 'Create',
       create_failed: 'Failed to create Plan',
