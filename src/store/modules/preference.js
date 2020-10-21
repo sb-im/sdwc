@@ -7,7 +7,7 @@ const state = {
   mapFollow: true,
   overviewFit: true,
   notifyPopup: [],
-  planDialogPopup: false
+  planDialogPopup: true
 };
 
 export const MutationTypes = {
