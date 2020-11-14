@@ -42,6 +42,8 @@ body {
   direction: ltr;
   text-rendering: optimizeLegibility;
   font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }
 
 @media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
