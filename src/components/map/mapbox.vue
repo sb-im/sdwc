@@ -33,6 +33,13 @@ const GoogleRasterStyle = {
   layers: [{ id: 'GoogleRasterLayer', type: 'raster', source: 'google' }]
 };
 
+const Boundary = {
+  Source: 'BoundarySource',
+  Layer: 'BoundaryLayer',
+  /** @type {mapboxgl.FillPaint} */
+  Paint: { 'fill-color': '#03a9f4', 'fill-opacity': 0.3 }
+};
+
 const Path = {
   Source: 'PathSource',
   Layer: 'PathLayer',
@@ -100,6 +107,11 @@ function createPointElement(action = '') {
 export default {
   name: 'sd-map-mapbox',
   props: {
+    /** @type {Vue.PropOptions<LngLatLiteral[]>} */
+    boundary: {
+      type: Array,
+      default: () => []
+    },
     /** @type {Vue.PropOptions<LngLatLiteral[]>} */
     path: {
       type: Array,
@@ -204,6 +216,29 @@ export default {
       if (!this.selectedMarker) return;
       this.selectedMarker.remove();
     },
+    async drawBoundary() {
+      if (this.boundary.length <= 0) return;
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
+      if (!map) return;
+      const lnglats = this.boundary.map(p => [p.lng, p.lat]);
+      /** @type {GeoJSON.Polygon} */
+      const boundaryData = { type: 'Polygon', coordinates: [lnglats] };
+      if (this.boundaryData) {
+        map.getSource(Boundary.Source).setData(boundaryData);
+      } else {
+        map.addSource(Boundary.Source, { type: 'geojson', data: boundaryData });
+        // if `Path.OutlineLayer` already exists, `Boundary.Layer` must beneath it
+        const hasOutlineLayer = typeof map.getLayer(Path.OutlineLayer) === 'object';
+        map.addLayer({
+          id: Boundary.Layer,
+          type: 'fill',
+          source: Boundary.Source,
+          paint: Boundary.Paint
+        }, hasOutlineLayer ? Path.OutlineLayer : undefined);
+      }
+      this.boundaryData = boundaryData;
+    },
     async drawPath() {
       /** @type {mapboxgl.Map} */
       const map = this.map;
@@ -244,7 +279,7 @@ export default {
      */
     drawAnimatedPath(name, points, style) {
       const coordinates = points.map(p => [p.lng, p.lat]);
-      /** @type {GeoJSON.Feature<GeoJSON.LineString>} */
+      /** @type {GeoJSON.LineString} */
       const data = { type: 'LineString', coordinates };
       /** @type {mapboxgl.Map} */
       const map = this.map;
@@ -413,6 +448,9 @@ export default {
     }
   },
   watch: {
+    boundary() {
+      this.drawBoundary();
+    },
     path() {
       this.drawPath();
     },
@@ -445,8 +483,12 @@ export default {
   created() {
     /** @type {mapboxgl.Map} */
     this.map = null;
-    /** @type {GeoJSON.Feature<GeoJSON.LineString>} */
+    /** @type {GeoJSON.Polygon} */
+    this.boundaryData = null;
+    /** @type {GeoJSON.LineString} */
     this.pathData = null;
+    /** @type {GeoJSON.FeatureCollection<GeoJSON.Point>} */
+    this.heatmapData = null;
     /** @type {{ [key: string]: PathDescriptor }} */
     this.placePaths = {};
     /** @type {{ [key: string]: mapboxgl.Marker }} */
@@ -456,6 +498,9 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
+      if (this.boundary.length > 0) {
+        this.drawBoundary();
+      }
       if (this.path.length > 0) {
         this.drawPath();
       }
@@ -471,6 +516,7 @@ export default {
   beforeDestroy() {
     const data = [
       'pathData',
+      'boundaryData',
       'heatmapData',
     ];
     for (const d of data) {
