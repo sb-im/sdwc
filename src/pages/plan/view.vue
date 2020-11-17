@@ -86,6 +86,7 @@ export default {
   data() {
     return {
       map: {
+        boundary: [],
         path: [],
         markers: []
       },
@@ -160,7 +161,7 @@ export default {
     },
     async getPlanJobs() {
       this.job.loading = true;
-      const res = await getPlanJobs(this.plan.id);
+      const res = (await getPlanJobs(this.plan.id)) || [];
       res.forEach(l => l.created_at = new Date(l.created_at));
       this.jobs = res;
       this.sortJobs();
@@ -182,6 +183,7 @@ export default {
     this.retrievePlan(this.plan.id)
       .then(plan => this.getMapPath(plan.map_path))
       .then(r => {
+        this.map.boundary = r.boundary || [];
         this.map.path = r.path;
         this.map.markers = r.actions;
       });

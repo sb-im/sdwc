@@ -97,8 +97,8 @@ export default {
       if (!this.plan.file) return;
       const reader = new FileReader();
       reader.onload = e => {
-        const result = parseWaypoints(e.target.result);
-        this.$emit('waypoint-change', { path: result.path, markers: result.actions });
+        const { path, actions: markers, boundary } = parseWaypoints(e.target.result);
+        this.$emit('waypoint-change', { path, markers, boundary });
       };
       reader.readAsText(this.plan.file);
     },

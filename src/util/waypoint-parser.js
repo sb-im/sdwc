@@ -129,16 +129,18 @@ export function parseKML(text) {
 /**
  * parse DroneDeploy json file
  * @param {string} text JSON text
- * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
+ * @returns {{ boundary: SDWC.LatLng[], path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
  */
 export function parseDroneDeployJSON(text) {
   const json = JSON.parse(text);
+  /** @type {SDWC.LatLng[]} */
+  const boundary = json.geometry.map(point => ({ lat: point.lat, lng: point.lng }));
   /** @type {SDWC.LatLng[]} */
   const path = json.waypoints.map(point => ({ lat: point.lat, lng: point.lng }));
   /** @type {SDWC.MarkerAction[]} */
   const actions = [];
   prependHomeMark(path, actions);
-  return { path, actions };
+  return { boundary, path, actions };
 }
 
 const LitchiActions = {
@@ -180,7 +182,7 @@ export function parseLitchiCSV(text) {
 /**
  * parse waypoint file to path object
  * @param {string} text
- * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
+ * @returns {{ boundary?: SDWC.LatLng[], path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
  */
 export function parseWaypoints(text) {
   const t = text.trim();

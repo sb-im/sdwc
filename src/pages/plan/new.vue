@@ -27,6 +27,7 @@ export default {
     return {
       initial: {},
       map: {
+        boundary: [],
         path: [],
         markers: []
       }

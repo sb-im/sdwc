@@ -37,6 +37,7 @@ export default {
     return {
       plan: Object.assign({}, this.initial),
       map: {
+        boundary: [],
         path: [],
         markers: []
       }
@@ -71,6 +72,7 @@ export default {
   created() {
     this.getMapPath(this.plan.map_path)
       .then(r => {
+        this.map.boundary = r.boundary || [];
         this.map.path = r.path;
         this.map.markers = r.actions;
       });
