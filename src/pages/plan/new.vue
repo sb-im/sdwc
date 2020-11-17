@@ -4,7 +4,7 @@
       <sd-card icon="doc-add" title="plan.edit.add">
         <template #action>
           <el-button type="success" size="medium" icon="el-icon-document" @click="handleCreate">
-            <span v-t="'plan.edit.save'"></span>
+            <span v-t="'common.save'"></span>
           </el-button>
         </template>
         <sd-plan-editable ref="edit" :initial="initial" @waypoint-change="handleWaypointChange"></sd-plan-editable>
@@ -41,7 +41,7 @@ export default {
       const plan = this.$refs.edit.getPlan();
       this.createPlan(plan)
         .then(p => this.$router.push({ name: 'plan/view', params: { id: p.id } }))
-        .catch(() => this.$message.error(this.$t('plan.edit.create_failed')));
+        .catch(e => this.$message.error(this.$t('plan.edit.create_failed', { code: e.status })));
     },
     handleWaypointChange(map) {
       this.map = map;

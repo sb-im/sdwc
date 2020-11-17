@@ -1,15 +1,15 @@
 <template>
   <div class="plan">
-    <sd-card icon="doc-edit" title="plan.edit.alter">
+    <sd-card icon="doc-edit" title="plan.edit.edit">
       <template #action>
         <el-button type="success" size="medium" icon="el-icon-document" @click="handleUpdate">
-          <span v-t="'plan.edit.save'"></span>
+          <span v-t="'common.save'"></span>
         </el-button>
         <el-button type="danger" size="medium" icon="el-icon-delete" @click="handleDelete">
-          <span v-t="'plan.edit.delete'"></span>
+          <span v-t="'common.delete'"></span>
         </el-button>
         <el-button type="info" size="medium" icon="el-icon-close" @click="handleCancel">
-          <span v-t="'plan.edit.back'"></span>
+          <span v-t="'common.cancel'"></span>
         </el-button>
       </template>
       <sd-plan-editable ref="edit" :initial="plan" @waypoint-change="handleWaypointChange"></sd-plan-editable>
@@ -52,7 +52,8 @@ export default {
     handleUpdate() {
       const plan = this.$refs.edit.getPlan();
       this.updatePlan(plan)
-        .then(() => this.$router.push({ name: 'plan/view', params: { id: this.plan.id } }));
+        .then(() => this.$router.push({ name: 'plan/view', params: { id: this.plan.id } }))
+        .catch(e => this.$message.error(this.$t('plan.edit.update_failed', { code: e.status })));
     },
     handleDelete() {
       this.$confirm(this.$t('plan.edit.delete_tips'), {

@@ -6,7 +6,7 @@
     <sd-card icon="doc" title="plan.view.title">
       <template #action>
         <el-button type="primary" size="medium" icon="el-icon-edit" @click="handleEdit">
-          <span v-t="'plan.edit.alter'"></span>
+          <span v-t="'common.edit'"></span>
         </el-button>
         <el-button
           v-if="isRunning"
