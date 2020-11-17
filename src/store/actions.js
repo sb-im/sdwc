@@ -286,30 +286,6 @@ export async function deletePlan({ commit }, id) {
 
 /**
  * @param {Context} _
- * @param {{url: string, name: string}} payload
- */
-export async function downloadFile(_, { url, name }) {
-  const res = await SuperDock.getFile(url);
-  const cd = res.headers.get('content-disposition');
-  const blob = await res.blob();
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  if (typeof cd === 'string') {
-    a.download = ContentDisposition.parse(cd).parameters.filename;
-  } else {
-    a.download = name;
-  }
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  Promise.resolve().then(() => {
-    URL.revokeObjectURL(a.href);
-    document.body.removeChild(a);
-  });
-}
-
-/**
- * @param {Context} _
  * @param {string} url
  */
 export async function getMapPath(_, url) {
@@ -327,4 +303,22 @@ export async function downloadBlob(_, id) {
   const { filename } = ContentDisposition.parse(cd).parameters;
   const blob = await res.blob();
   return { filename, blob };
+}
+
+/**
+ * @param {Context} _
+ * @param {{ filename: string; blob: Blob  }} payload
+ */
+export async function saveBlobAsFile(_, { filename, blob }) {
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  Promise.resolve().then(() => {
+    URL.revokeObjectURL(a.href);
+    document.body.removeChild(a);
+    a = null;
+  });
 }

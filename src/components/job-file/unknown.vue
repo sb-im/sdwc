@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'sd-job-file-unknown',
   props: {
@@ -42,18 +44,11 @@ export default {
     this.size = `${size.toFixed(1)} ${units[i]}`;
   },
   methods: {
+    ...mapActions([
+      'saveBlobAsFile'
+    ]),
     handleDownload() {
-      let a = document.createElement('a');
-      a.href = URL.createObjectURL(this.blob);
-      a.download = this.filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      Promise.resolve().then(() => {
-        URL.revokeObjectURL(a.href);
-        document.body.removeChild(a);
-        a = null;
-      });
+      this.saveBlobAsFile({ filename: this.filename, blob: this.blob });
     }
   }
 };
