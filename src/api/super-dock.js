@@ -136,14 +136,12 @@ export function cancelPlanJob(planId, jobId) {
   .text();
 }
 
-export function getFile(url) {
+export function downloadFile(url) {
   return wr.url(url)
     .get()
     .res();
 }
 
 export function downloadBlob(id) {
-  return wr.url(`/api/v1/blobs/${id}`)
-    .get()
-    .res();
+  return downloadFile(`/api/v1/blobs/${id}`);
 }

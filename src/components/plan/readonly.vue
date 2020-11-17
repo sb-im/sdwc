@@ -77,10 +77,11 @@ export default {
   },
   methods: {
     ...mapActions([
-      'downloadFile'
+      'downloadFile',
+      'saveBlobAsFile'
     ]),
     handleMapDownload() {
-      this.downloadFile({ url: this.plan.map_path, name: `plan_${this.plan.id}.waypoints` });
+      this.downloadFile(this.plan.map_path).then(this.saveBlobAsFile);
     }
   },
   components: {

@@ -289,20 +289,28 @@ export async function deletePlan({ commit }, id) {
  * @param {string} url
  */
 export async function getMapPath(_, url) {
-  const text = await SuperDock.getFile(url).then(r => r.text());
+  const text = await SuperDock.downloadFile(url).then(r => r.text());
   return parseWaypoints(text);
+}
+
+/**
+ * @param {Context} _
+ * @param {string} path file path
+ */
+export async function downloadFile(_, path) {
+  const res = await SuperDock.downloadFile(path);
+  const cd = res.headers.get('content-disposition');
+  const { filename } = ContentDisposition.parse(cd).parameters;
+  const blob = await res.blob();
+  return { filename, blob };
 }
 
 /**
  * @param {Context} _
  * @param {string} id blob id
  */
-export async function downloadBlob(_, id) {
-  const res = await SuperDock.downloadBlob(id);
-  const cd = res.headers.get('content-disposition');
-  const { filename } = ContentDisposition.parse(cd).parameters;
-  const blob = await res.blob();
-  return { filename, blob };
+export async function downloadBlob({ dispatch }, id) {
+  return dispatch('downloadFile', `/api/v1/blobs/${id}`);
 }
 
 /**
