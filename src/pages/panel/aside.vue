@@ -194,7 +194,7 @@ export default {
 .el-submenu.is-active:not(.is-opened),     /* active but not opened submenu */
 .el-menu-item.is-active                    /* active menu item */ {
   box-shadow: inset 4px 0 0 #28b3e4;
-  background-color: #434a50;
+  background-color: #434a50 !important;
 }
 .el-menu-item.is-running {
   background-image: repeating-linear-gradient(45deg, #ffffff25, #ffffff25 10px, transparent 10px, transparent 20px);
