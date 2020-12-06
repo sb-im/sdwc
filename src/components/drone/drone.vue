@@ -1,9 +1,9 @@
 <template>
   <div class="drone">
-    <template v-for="{ point, compo } of points">
+    <template v-for="{ point, compo, key } of points">
       <component
         :is="compo"
-        :key="point.id"
+        :key="key"
         :info="node.info"
         :point="point"
         :status="node.status"
@@ -61,9 +61,11 @@ export default {
   },
   computed: {
     points() {
+      let i = 0;
       return this.node.info.points.map(point => {
         const compo = CompoName[point.point_type_name] || '';
-        return { point, compo };
+        const key = `${point.point_type_name}-${i++}`;
+        return { point, compo, key };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
     }
   },

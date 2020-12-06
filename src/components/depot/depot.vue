@@ -1,7 +1,7 @@
 <template>
   <div class="depot">
-    <template v-for="{ point, compo } of points">
-      <component :is="compo" :key="point.id" :point="point" :status="node.status" :msg="node.msg"></component>
+    <template v-for="{ point, compo, key } of points">
+      <component :is="compo" :key="key" :point="point" :status="node.status" :msg="node.msg"></component>
     </template>
   </div>
 </template>
@@ -52,9 +52,11 @@ export default {
   },
   computed: {
     points() {
+      let i = 0;
       return this.node.info.points.map(point => {
         const compo = CompoName[point.point_type_name] || '';
-        return { point, compo };
+        const key = `${point.point_type_name}-${i++}`;
+        return { point, compo, key };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
     }
   },
