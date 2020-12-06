@@ -30,6 +30,7 @@
         :key="plan.id"
         :index="`plan-${plan.id}`"
         :route="{ name: 'plan', params: { id: plan.id } }"
+        :class="{ 'is-running': planRunning[plan.id] }"
       >{{ plan.name }}</el-menu-item>
     </el-submenu>
     <el-submenu index="drone">
@@ -84,7 +85,8 @@ export default {
   computed: {
     ...mapState({
       config: state => state.config,
-      plans: state => state.plan.info
+      plans: state => state.plan.info,
+      jobs: state => state.plan.running
     }),
     ...mapGetters([
       'drones',
@@ -104,6 +106,13 @@ export default {
           return 'plan-new';
       }
       return '';
+    },
+    planRunning() {
+      const result = {};
+      for (const job of this.jobs) {
+        result[job.job.plan_id] = true;
+      }
+      return result;
     },
     version() {
       return __SDWC__VERSION__; // would be replaced on compile
@@ -184,7 +193,11 @@ export default {
 .el-menu--collapse .el-submenu.is-active,  /* collpased active submenu */
 .el-submenu.is-active:not(.is-opened),     /* active but not opened submenu */
 .el-menu-item.is-active                    /* active menu item */ {
-  box-shadow: inset 4px 0 0 #28b3e4, inset 200px 0 0 #434a50;
+  box-shadow: inset 4px 0 0 #28b3e4;
+  background-color: #434a50;
+}
+.el-menu-item.is-running {
+  background-image: repeating-linear-gradient(45deg, #ffffff25, #ffffff25 10px, transparent 10px, transparent 20px);
 }
 .el-submenu.is-active .el-submenu__title {
   background: none !important;
