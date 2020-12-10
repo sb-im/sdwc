@@ -52,6 +52,10 @@
       </span>
       <template #dropdown>
         <el-dropdown-menu class="notify__menu">
+          <el-dropdown-item class="notify__toggle" :command="{ notify: 'popup' }">
+            <span v-t="'header.action.popup'"></span>
+            <el-switch :value="preference.rpcMsgPopup"></el-switch>
+          </el-dropdown-item>
           <el-dropdown-item :command="{ notify: 'clear' }">
             <i class="el-icon-delete"></i>
             <span v-t="'common.clear'"></span>
@@ -117,19 +121,12 @@ import { locales } from '@/i18n';
 import Icon from '@/components/sd-icon.vue';
 import PlanDialog from '@/components/plan-dialog/plan-dialog.vue';
 
+import { RpcStatusClass } from '@/constants/rpc-status-class';
 import { getLevelIconClass } from '@/constants/level-icon-class';
 import { getNodeStatusClass } from '@/constants/node-status-class';
 
 import { MutationTypes as PLAN } from '@/store/modules/plan';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
-
-const NotificationClass = {
-  0: 'el-icon-success color--green',
-  1: 'el-icon-question color--grey',
-  2: 'el-icon-error color--red',
-  3: 'el-icon-info color--blue',
-  default: 'el-icon-warning color--orange'
-};
 
 export default {
   name: 'sd-header',
@@ -169,8 +166,11 @@ export default {
       'logout',
       'setPreference'
     ]),
-    handlePopupChange() {
+    handlePlanDialogPopup() {
       this.setPreference({ planDialogPopup: !this.preference.planDialogPopup });
+    },
+    handleRpcMsgPopup() {
+      this.setPreference({ rpcMsgPopup: !this.preference.rpcMsgPopup });
     },
     handleNotifyVisible(visible) {
       if (visible === true) {
@@ -190,7 +190,7 @@ export default {
      * @param {SDWC.NotificationItem} notif
      */
     notificationToObject(notif) {
-      const icon = NotificationClass[notif.status] || NotificationClass.default;
+      const icon = RpcStatusClass[notif.status] || RpcStatusClass.default;
       return { icon, notif };
     },
     /**
@@ -206,6 +206,7 @@ export default {
       return { id, icon, text };
     },
     handleCommand(cmd) {
+      if (!cmd) return;
       if (typeof cmd.user === 'string') {
         switch (cmd.user) {
           case 'logout':
@@ -220,6 +221,9 @@ export default {
         this.$router.push({ name: 'node', params: { id: cmd.node } }).catch(() => { /* noop */ });
       } else if (typeof cmd.notify === 'string') {
         switch (cmd.notify) {
+          case 'popup':
+            this.handleRpcMsgPopup();
+            break;
           case 'clear':
             this.$store.commit(NOTI.CLEAR_NOTI);
             break;
@@ -230,7 +234,7 @@ export default {
       } else if (typeof cmd.dialog === 'string') {
         switch (cmd.dialog) {
           case 'popup':
-            this.handlePopupChange();
+            this.handlePlanDialogPopup();
             break;
         }
       }

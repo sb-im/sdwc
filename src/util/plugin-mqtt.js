@@ -5,8 +5,11 @@ import { Notification } from 'element-ui';
 import i18n from '@/i18n';
 import store from '@/store';
 import MqttClient from '@/api/mqtt';
+import { RpcStatusClass } from '@/constants/rpc-status-class';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 import { Levels as NotificationLevels } from '@/constants/notification-levels';
+
+const RpcNotifications = new Map();
 
 /**
  * @this {Vue}
@@ -54,6 +57,23 @@ function emitNotification(n, mod = false) {
     mod = true;
   }
   store.commit(mod ? NOTI.MOD_NOTI : NOTI.ADD_NOTI, n);
+  if (!store.state.preference.rpcMsgPopup || n.prefix === 'Status') return;
+  if (mod) {
+    const rn = RpcNotifications.get(n.id);
+    if (!rn) return;
+    rn.$data.iconClass = RpcStatusClass[n.status];
+  } else {
+    const [title, message] = n.title.split(' : ');
+    const rn = Notification({
+      offset: 50,
+      title,
+      message,
+      iconClass: RpcStatusClass[n.status],
+      customClass: 'rpc-msg--popup',
+      onClose: () => RpcNotifications.delete(n.id)
+    });
+    RpcNotifications.set(n.id, rn);
+  }
 }
 
 function registerRpcListener() {
