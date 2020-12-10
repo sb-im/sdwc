@@ -285,6 +285,7 @@ declare namespace SDWC {
     mapFollow: boolean;
     overviewFit: boolean;
     notifyPopup: number[];
+    rpcMsgPopup: boolean;
     planDialogPopup: boolean;
   }
 

@@ -7,6 +7,7 @@ const state = {
   mapFollow: true,
   overviewFit: true,
   notifyPopup: [],
+  rpcMsgPopup: true,
   planDialogPopup: true
 };
 
