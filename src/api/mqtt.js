@@ -8,6 +8,8 @@ import { transformMessage } from './mqtt-adapter';
 class MqttClient extends EventEmitter {
   constructor() {
     super();
+    this.lastPing = -1;
+    this.delay = -1;
     this.seq = 0;
     this.queue = [];
     this.rpcIdPrefix = null;
@@ -55,6 +57,7 @@ class MqttClient extends EventEmitter {
     });
     this.mqtt.on('connect', () => {
       MqttClient.log('connected to', addr);
+      this.ping();
       this.emit('connect');
       this.queue.forEach(task => {
         this._invoke.apply(this, task.arg)
@@ -64,6 +67,17 @@ class MqttClient extends EventEmitter {
       this.queue = [];
     });
     this.mqtt.on('close', () => this.emit('close'));
+    this.mqtt.on('packetsend', packet => {
+      if (packet.cmd === 'pingreq') {
+        this.lastPing = Date.now();
+      }
+    });
+    this.mqtt.on('packetreceive', packet => {
+      if (packet.cmd === 'pingresp' && this.lastPing > 0) {
+        this.delay = Date.now() - this.lastPing;
+        this.emit('ping', this.delay);
+      }
+    });
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
       const { type, id } = MqttClient.parseTopic(topic);
@@ -83,6 +97,10 @@ class MqttClient extends EventEmitter {
     return `sdwc.${this.rpcIdPrefix}-${Date.now()}-${this.seq++}`;
   }
 
+  ping() {
+    this.mqtt._sendPacket({ cmd: 'pingreq' });
+  }
+
   /**
    * subscirbe `/nodes/:id/{rpc/{send,recv},message,status}`
    * @param {number|string} id node id
@@ -92,6 +110,7 @@ class MqttClient extends EventEmitter {
       `nodes/${id}/rpc/send`,
       `nodes/${id}/rpc/recv`,
       `nodes/${id}/message`,
+      `nodes/${id}/network`,
       `nodes/${id}/status`
     ].forEach(topic => {
       this.mqtt.subscribe(topic);
@@ -171,6 +190,8 @@ class MqttClient extends EventEmitter {
     } else if (topic.includes('/msg/')) {
       const category = MqttClient.parseMsgCategory(topic);
       this.onMessage(id, str, category);
+    } else if (topic.endsWith('/network')) {
+      this.onNetwork(id, str);
     } else if (topic.endsWith('/status')) {
       this.onStatus(id, str);
     } else {
@@ -221,6 +242,15 @@ class MqttClient extends EventEmitter {
       [category]: JSON.parse(str)
     };
     this.emit('message', id, msg);
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} str
+   */
+  onNetwork(id, str) {
+    const payload = JSON.parse(str);
+    this.emit('network', id, payload);
   }
 
   /**

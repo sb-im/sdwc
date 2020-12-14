@@ -67,6 +67,7 @@ store.subscribe((mutation) => {
 
 MqttClient.on('close', () => store.commit(UI.SET_UI, { mqttConnected: false }));
 MqttClient.on('connect', () => store.commit(UI.SET_UI, { mqttConnected: true }));
+MqttClient.on('ping', delay => store.commit(UI.SET_UI, { mqttDelay: delay }));
 MqttClient.on('status', async (id, payload) => {
   if (!payload.legacy) {
     store.commit(NODE.SET_NODE_STATUS, { id, payload });
@@ -79,6 +80,9 @@ MqttClient.on('status', async (id, payload) => {
     }
     store.commit(NODE.SET_NODE_STATUS, { id, payload });
   }
+});
+MqttClient.on('network', (id, msg) => {
+  store.commit(NODE.SET_NODE_NETWORK, { id, msg });
 });
 MqttClient.on('message', (id, msg) => {
   store.commit(NODE.ADD_NODE_MSG, { id, msg });
