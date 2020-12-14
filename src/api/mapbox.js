@@ -2,7 +2,7 @@ import { h } from '@/util/create-element';
 
 import { loadScript } from './load-script';
 
-const MapboxURL = 'https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl';
+const MapboxURL = 'https://api.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl';
 
 // example token from mapbox doc website
 const conf = {
