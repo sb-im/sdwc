@@ -52,6 +52,10 @@ export default {
     status: {
       title: 'Communication'
     },
+    network: {
+      loss: '{loss}% Packet Loss',
+      time: 'Delay {time}ms'
+    },
     logout: 'Logout'
   },
   aside: {
@@ -107,6 +111,7 @@ export default {
     name: 'Name',
     desc: 'Description',
     desc_no: 'No description',
+    files: 'Files',
     air: 'Flying drone',
     depot: 'Depot',
     cycle: 'Cycle',

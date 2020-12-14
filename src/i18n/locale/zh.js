@@ -52,6 +52,10 @@ export default {
     status: {
       title: '通讯状态'
     },
+    network: {
+      loss: '丢包率 {loss}%',
+      time: '延迟 {time}ms'
+    },
     logout: '退出'
   },
   aside: {
@@ -107,6 +111,7 @@ export default {
     name: '任务名称',
     desc: '任务描述',
     desc_no: '暂无任务描述',
+    files: '文件列表',
     air: '执飞无人机',
     depot: '起降机场',
     cycle: '执行频次',

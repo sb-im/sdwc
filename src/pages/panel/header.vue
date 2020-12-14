@@ -83,11 +83,26 @@
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item v-for="st in status" :key="st.id" :command="{ node: st.id }">
-            <i :class="st.icon"></i>
-            <span>{{ st.text }}</span>
+        <el-dropdown-menu class="notify__menu">
+          <el-dropdown-item v-if="ui.mqttConnected">
+            <i class="el-icon-sort"></i>
+            <span v-t="{ path: 'header.network.time', args: { time: ui.mqttDelay } }"></span>
           </el-dropdown-item>
+          <el-dropdown-item v-else disalbed>
+            <span v-t="'common.status.-1'"></span>
+          </el-dropdown-item>
+          <el-dropdown-item v-if="status.length === 0" disabled divided>
+            <span v-t="'common.none'"></span>
+          </el-dropdown-item>
+          <div v-else class="notify__list">
+            <el-dropdown-item v-for="s in status" :key="s.id" :command="{ node: s.id }">
+              <div class="notify__prefix">{{ s.name }}</div>
+              <div>
+                <i class="notify__icon" :class="s.icon"></i>
+                <span class="notify__title">{{ s.text }}</span>
+              </div>
+            </el-dropdown-item>
+          </div>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -149,13 +164,39 @@ export default {
       'user'
     ]),
     dialog() {
-      return this.plan.dialog.map(this.planDialogToObject);
+      /** @type {SDWC.PlanDialog[]} */
+      const dialog = this.plan.dialog;
+      return dialog.map(({ id, time, dialog }) => {
+        const plan = this.plan.info.find(p => p.id === id) || {};
+        const prefix = plan.name || id;
+        const icon = getLevelIconClass(dialog.level);
+        return { id, time, icon, prefix, text: dialog.name };
+      });
     },
     notify() {
-      return this.notification.map(this.notificationToObject);
+      /** @type {SDWC.NotificationItem[]} */
+      const notification = this.notification;
+      return notification.map(notif => {
+        const icon = RpcStatusClass[notif.status] || RpcStatusClass.default;
+        return { icon, notif };
+      });
     },
     status() {
-      return this.node.map(node => this.statusToObject(node.info, node.status.code));
+      /** @type {SDWC.Node[]} */
+      const nodes = this.node;
+      return nodes.map(n => {
+        const icon = getNodeStatusClass(n.status.code);
+        const typeText = this.$t(`common.${n.info.type_name}`);
+        const name = `${typeText} ${n.info.name}`;
+        const statusText = this.$t(`common.status.${n.status.code}`);
+        const lossText = this.$t('header.network.loss', n.network);
+        const timeText = this.$t('header.network.time', n.network);
+        let text = statusText;
+        if (n.status.code === 0) {
+          text += ` | ${lossText} | ${timeText}`;
+        }
+        return { id: n.info.id, name, icon, text };
+      });
     },
     locales() {
       return locales;
@@ -176,34 +217,6 @@ export default {
       if (visible === true) {
         this.notifyAlert = false;
       }
-    },
-    /**
-     * @param {SDWC.PlanDialog} dialog
-     */
-    planDialogToObject({ id, time, dialog }) {
-      const plan = this.plan.info.find(p => p.id === id) || {};
-      const prefix = plan.name || id;
-      const icon = getLevelIconClass(dialog.level);
-      return { id, time, icon, prefix, text: dialog.name };
-    },
-    /**
-     * @param {SDWC.NotificationItem} notif
-     */
-    notificationToObject(notif) {
-      const icon = RpcStatusClass[notif.status] || RpcStatusClass.default;
-      return { icon, notif };
-    },
-    /**
-     * @param {SDWC.NodeInfo} info node info
-     * @param {number} status node status
-     * @returns {{id: number, icon: string, color: string, text: string}}
-     */
-    statusToObject({ id, name, type_name }, status) {
-      const icon = getNodeStatusClass(status);
-      const type = this.$t(`common.${type_name}`);
-      const st = this.$t(`common.status.${status}`);
-      const text = `${type} ${name} ${st}`;
-      return { id, icon, text };
     },
     handleCommand(cmd) {
       if (!cmd) return;
