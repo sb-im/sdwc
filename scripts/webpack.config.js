@@ -87,7 +87,9 @@ const cfg = {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '../src'),
-      'assets': path.resolve(__dirname, '../assets')
+      'assets': path.resolve(__dirname, '../assets'),
+      // use browser version mqtt.js
+      'mqtt': 'mqtt/dist/mqtt.js'
     }
   },
   plugins: [
