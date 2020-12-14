@@ -81,8 +81,8 @@ MqttClient.on('status', async (id, payload) => {
     store.commit(NODE.SET_NODE_STATUS, { id, payload });
   }
 });
-MqttClient.on('network', (id, msg) => {
-  store.commit(NODE.SET_NODE_NETWORK, { id, msg });
+MqttClient.on('network', (id, payload) => {
+  store.commit(NODE.SET_NODE_NETWORK, { id, payload });
 });
 MqttClient.on('message', (id, msg) => {
   store.commit(NODE.ADD_NODE_MSG, { id, msg });
