@@ -58,6 +58,10 @@ declare namespace SDWC {
       alt: string;
     };
   }
+  export interface NodeNetworkStatus {
+    loss: number;
+    time: number;
+  }
   export interface NodeWeather {
     /** wind speed */
     WS: number;
@@ -165,6 +169,7 @@ declare namespace SDWC {
     info: NodeInfo;
     /** connection status */
     status: NodeConnectionStatus;
+    network: NodeNetworkStatus;
     msg: {
       weather: NodeWeather;
       battery: NodeBattery;
@@ -292,6 +297,7 @@ declare namespace SDWC {
   // store/modules/ui.js
   export interface UI {
     mqttConnected: boolean;
+    mqttDelay: number;
   }
 
   // store/modules/user.js

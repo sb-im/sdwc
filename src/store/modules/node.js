@@ -6,6 +6,7 @@ const state = [];
 export const MutationTypes = {
   ADD_NODE: 'ADD_NODE',
   SET_NODE_STATUS: 'SET_NODE_STATUS',
+  SET_NODE_NETWORK: 'SET_NODE_NETWORK',
   ADD_NODE_MSG: 'ADD_NODE_MSG',
   ADD_NODE_TOPIC: 'ADD_NODE_TOPIC',
   CLEAR_NODE_PATH: 'CLEAR_NODE_PATH',
@@ -31,6 +32,10 @@ const mutations = {
           lng: '',
           alt: ''
         }
+      },
+      network: {
+        loss: -1,
+        time: -1
       },
       msg: {
         weather: {
@@ -89,6 +94,11 @@ const mutations = {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
     Object.assign(node.status, payload);
+  },
+  [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: number, payload: SDWC.NodeNetworkStatus }} */ { id, payload }) {
+    const node = state.find(node => node.info.id === id);
+    if (!node) return;
+    Object.assign(node.network, payload);
   },
   [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);

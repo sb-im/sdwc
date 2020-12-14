@@ -4,7 +4,8 @@
  * @type {SDWC.UI}
  */
 const state = {
-  mqttConnected: false
+  mqttConnected: false,
+  mqttDelay: -1
 };
 
 export const MutationTypes = {
