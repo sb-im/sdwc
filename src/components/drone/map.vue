@@ -145,11 +145,11 @@ export default {
     ]),
     commands() {
       if (!this.point.params) return DefaultCommands;
-      return this.point.params.common.move;
+      return this.point.params.common.move || DefaultCommands;
     },
     styling() {
       if (!this.point.params) return MarkerStyling;
-      return this.point.params.common.place;
+      return this.point.params.common.place || MarkerStyling;
     },
     droneMarkers() {
       const markers = [];
