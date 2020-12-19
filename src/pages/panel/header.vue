@@ -223,8 +223,27 @@ export default {
       if (typeof cmd.user === 'string') {
         switch (cmd.user) {
           case 'logout':
+            this.$message.closeAll();
+            // eslint-disable-next-line no-case-declarations
+            let msg = this.$message({
+              customClass: 'el-message--info',
+              iconClass: 'el-message__icon el-icon-loading',
+              message: this.$t('header.logout'),
+              offset: 6,
+              duration: 0,
+              onClose: () => msg = null
+            });
             this.logout().then(() => {
+              msg.close();
               this.$router.replace({ name: 'login' });
+            }).catch(e => {
+              Object.assign(msg.$data, {
+                type: 'error',
+                iconClass: '',
+                message: e.toString(),
+                duration: 4500,
+              });
+              msg.startTimer();
             });
             break;
         }
