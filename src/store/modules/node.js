@@ -35,7 +35,7 @@ const mutations = {
       },
       network: {
         loss: -1,
-        time: -1
+        delay: -1
       },
       msg: {
         weather: {

@@ -54,7 +54,7 @@ export default {
     },
     network: {
       loss: '{loss}% Packet Loss',
-      time: 'Delay {time}ms'
+      delay: 'Delay {delay}ms'
     },
     logout: 'Logout'
   },

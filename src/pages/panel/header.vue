@@ -86,7 +86,7 @@
         <el-dropdown-menu class="notify__menu">
           <el-dropdown-item v-if="ui.mqttConnected">
             <i class="el-icon-sort"></i>
-            <span v-t="{ path: 'header.network.time', args: { time: ui.mqttDelay } }"></span>
+            <span v-t="{ path: 'header.network.delay', args: { delay: ui.mqttDelay } }"></span>
           </el-dropdown-item>
           <el-dropdown-item v-else disalbed>
             <span v-t="'common.status.-1'"></span>
@@ -190,10 +190,10 @@ export default {
         const name = `${typeText} ${n.info.name}`;
         const statusText = this.$t(`common.status.${n.status.code}`);
         const lossText = this.$t('header.network.loss', n.network);
-        const timeText = this.$t('header.network.time', n.network);
+        const delayText = this.$t('header.network.delay', n.network);
         let text = statusText;
         if (n.status.code === 0) {
-          text += ` | ${lossText} | ${timeText}`;
+          text += ` | ${lossText} | ${delayText}`;
         }
         return { id: n.info.id, name, icon, text };
       });

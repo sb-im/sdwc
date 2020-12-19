@@ -59,8 +59,10 @@ declare namespace SDWC {
     };
   }
   export interface NodeNetworkStatus {
+    /** (0 ~ 100)% */
     loss: number;
-    time: number;
+    /** Delay [ms] */
+    delay: number;
   }
   export interface NodeWeather {
     /** wind speed */

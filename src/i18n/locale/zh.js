@@ -54,7 +54,7 @@ export default {
     },
     network: {
       loss: '丢包率 {loss}%',
-      time: '延迟 {time}ms'
+      delay: '延迟 {delay}ms'
     },
     logout: '退出'
   },
