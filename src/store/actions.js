@@ -319,12 +319,9 @@ export async function saveBlobAsFile(_, { filename, blob }) {
   let a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = filename;
-  a.style.display = 'none';
-  document.body.appendChild(a);
   a.click();
   Promise.resolve().then(() => {
     URL.revokeObjectURL(a.href);
-    document.body.removeChild(a);
     a = null;
   });
 }
