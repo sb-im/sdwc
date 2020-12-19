@@ -27,10 +27,10 @@
           </el-dropdown-item>
           <div v-else class="notify__list">
             <el-dropdown-item v-for="d of dialog" :key="d.id" :command="{ dialog: d.id }">
-              <div class="notify__prefix">{{ d.prefix }} · {{ $d(d.time, 'time') }}</div>
+              <div class="notify__prefix">{{ d.prefix }}</div>
               <div>
                 <i class="notify__icon" :class="d.icon"></i>
-                <span class="notify__title">{{ d.text }}</span>
+                <span class="notify__title">{{ d.title }}</span>
               </div>
             </el-dropdown-item>
           </div>
@@ -64,11 +64,11 @@
             <span v-t="'common.none'"></span>
           </el-dropdown-item>
           <div v-else class="notify__list">
-            <el-dropdown-item v-for="n of notify" :key="n.notif.id">
-              <div class="notify__prefix">{{ n.notif.prefix }} · {{ $d(n.notif.time, 'time') }}</div>
+            <el-dropdown-item v-for="n of notify" :key="n.id">
+              <div class="notify__prefix">{{ n.prefix }}</div>
               <div>
                 <i class="notify__icon" :class="n.icon"></i>
-                <span class="notify__title">{{ n.notif.title }}</span>
+                <span class="notify__title">{{ n.title }}</span>
               </div>
             </el-dropdown-item>
           </div>
@@ -95,11 +95,11 @@
             <span v-t="'common.none'"></span>
           </el-dropdown-item>
           <div v-else class="notify__list">
-            <el-dropdown-item v-for="s in status" :key="s.id" :command="{ node: s.id }">
-              <div class="notify__prefix">{{ s.name }}</div>
+            <el-dropdown-item v-for="s of status" :key="s.id" :command="{ node: s.id }">
+              <div class="notify__prefix">{{ s.prefix }}</div>
               <div>
                 <i class="notify__icon" :class="s.icon"></i>
-                <span class="notify__title">{{ s.text }}</span>
+                <span class="notify__title">{{ s.title }}</span>
               </div>
             </el-dropdown-item>
           </div>
@@ -166,19 +166,20 @@ export default {
     dialog() {
       /** @type {SDWC.PlanDialog[]} */
       const dialog = this.plan.dialog;
-      return dialog.map(({ id, time, dialog }) => {
-        const plan = this.plan.info.find(p => p.id === id) || {};
-        const prefix = plan.name || id;
+      return dialog.map(d => {
+        const plan = this.plan.info.find(p => p.id === d.id) || {};
+        const prefix = `${plan.name || d.id} · ${this.$d(d.time, 'time')}`;
         const icon = getLevelIconClass(dialog.level);
-        return { id, time, icon, prefix, text: dialog.name };
+        return { id: d.id, prefix, icon, title: d.dialog.name };
       });
     },
     notify() {
       /** @type {SDWC.NotificationItem[]} */
       const notification = this.notification;
-      return notification.map(notif => {
-        const icon = RpcStatusClass[notif.status] || RpcStatusClass.default;
-        return { icon, notif };
+      return notification.map(n => {
+        const prefix = `${n.prefix} · ${this.$d(n.time, 'time')}`;
+        const icon = RpcStatusClass[n.status] || RpcStatusClass.default;
+        return { id: n.id, prefix, icon, title: n.title };
       });
     },
     status() {
@@ -187,15 +188,14 @@ export default {
       return nodes.map(n => {
         const icon = getNodeStatusClass(n.status.code);
         const typeText = this.$t(`common.${n.info.type_name}`);
-        const name = `${typeText} ${n.info.name}`;
-        const statusText = this.$t(`common.status.${n.status.code}`);
-        const lossText = this.$t('header.network.loss', n.network);
-        const delayText = this.$t('header.network.delay', n.network);
-        let text = statusText;
+        const prefix = `${typeText} ${n.info.name}`;
+        let title = this.$t(`common.status.${n.status.code}`);
         if (n.status.code === 0) {
-          text += ` | ${lossText} | ${delayText}`;
+          const lossText = this.$t('header.network.loss', n.network);
+          const timeText = this.$t('header.network.delay', n.network);
+          title += ` | ${lossText} | ${timeText}`;
         }
-        return { id: n.info.id, name, icon, text };
+        return { id: n.info.id, prefix, icon, title };
       });
     },
     locales() {
