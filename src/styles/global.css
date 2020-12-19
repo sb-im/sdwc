@@ -8,7 +8,8 @@ body {
   color: #67c23a;
 }
 .color--blue {
-  color: #409eff;
+  /* override .el-notification .el-icon-info */
+  color: #409eff !important;
 }
 .color--orange {
   color: #e6a23c;
