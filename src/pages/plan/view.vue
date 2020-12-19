@@ -146,13 +146,17 @@ export default {
         message: this.$t('plan.view.pending'),
       });
       cancelPlanJob(this.plan.id, this.runningJob.id).then(() => {
-        n.$data.message = this.$t('plan.view.stop_run');
-        n.$data.type = 'warning';
-        n.$data.duration = 2000;
+        Object.assign(n.$data, {
+          message: this.$t('plan.view.stop_run'),
+          type: 'warning',
+          duration: 2000
+        });
         n.startTimer();
       }).catch(e => {
-        n.$data.type = 'error';
-        n.$data.message = this.$t('plan.view.stop_fail', { code: e.status });
+        Object.assign(n.$data, {
+          message: this.$t('plan.view.stop_fail', { code: e.status }),
+          type: 'error'
+        });
       });
     },
     sortJobs(order = 'descending') {
