@@ -64,7 +64,7 @@
     </div>
     <el-menu-item index="never" :route="{}" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
-      <span slot="title">{{ $t(`aside.${collapse ? 'un' : ''}fold`) }}</span>
+      <span slot="title" class="aside__collapse-text">{{ $t(`aside.${collapse ? 'un' : ''}fold`) }}</span>
     </el-menu-item>
   </el-menu>
 </template>
@@ -209,5 +209,9 @@ export default {
 }
 .sd--safari .el-menu--vertical .el-menu--popup-right-start {
   -webkit-overflow-scrolling: touch;
+}
+/* fix aside overflow on Firefox */
+.aside__collapse-text {
+  line-height: 0;
 }
 </style>
