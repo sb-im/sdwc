@@ -62,9 +62,11 @@ export default {
   computed: {
     points() {
       let i = 0;
+      const nodeId = this.node.info.id;
       return this.node.info.points.map(point => {
-        const compo = CompoName[point.point_type_name] || '';
-        const key = `${point.point_type_name}-${i++}`;
+        const { id, point_type_name } = point;
+        const compo = CompoName[point_type_name] || '';
+        const key = `${nodeId}-${id}-${point_type_name}-${i++}`;
         return { point, compo, key };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
     }
