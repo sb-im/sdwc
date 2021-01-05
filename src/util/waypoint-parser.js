@@ -42,9 +42,9 @@ function prependHomeMark(path, actions) {
 }
 
 const MAVLinkActions = {
-  '2000': 'camera_alt',
-  '203': 'camera_alt',
-  '20': 'replay'
+  '2000': '\uE3B0', // camera_alt
+  '203': '\uE3B0',  // camera_alt
+  '20': '\uE042'    // replay
 };
 
 /**
@@ -78,9 +78,9 @@ export function parseMAVLinkWaypoints(text) {
 }
 
 const KMLActions = {
-  'ShootPhoto': 'camera_alt',
-  'StartRecording': 'videocam',
-  'StopRecording': 'videocam_off'
+  'ShootPhoto': '\uE3B0',      // camera_alt
+  'StartRecording': '\uE04B',  // videocam
+  'StopRecording': '\uE04C'    // videocam_off
 };
 
 /**
@@ -145,9 +145,9 @@ export function parseDroneDeployJSON(text) {
 
 const LitchiActions = {
   // '0': 'stay for',
-  '1': 'camera_alt',
-  '2': 'videocam',
-  '3': 'videocam_off',
+  '1': '\uE3B0',   // camera_alt
+  '2': '\uE04B',   // videocam
+  '3': '\uE04C',   // videocam_off
   // '4': 'rotate aircraft',
   // '5': 'tlit camera'
 };
