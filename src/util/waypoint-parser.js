@@ -26,7 +26,12 @@ function makeAction(id, position, ...action) {
   };
 }
 
-const HomeMark = 'home';
+/**
+ * use unicode codepoint to display iconfont glyph, workaround Safari issues
+ * for complete list of codepoint <-> glyph
+ * @see https://github.com/jossef/material-design-icons-iconfont/blob/v6.1.0/src/_variables.scss
+ */
+const HomeMark = '\uE88A';   // home
 
 /**
  * prepend action 'home' to first point in path
