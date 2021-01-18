@@ -148,15 +148,6 @@ export default {
     gps: {
       satellites: '{satcount} 星 {type}'
     },
-    gimbal: {
-      mavlink: '手动',
-      neutral: '自动',
-      manual: '手动',
-      auto: '自动',
-      rc: '遥控器',
-      center: '回中'
-    },
-    joystick: '虚拟摇杆',
     ctl: {
       hover: '悬停',
       return: '返航',
@@ -200,6 +191,38 @@ export default {
     no_video: '未找到视频源',
     fullscreen: '全屏',
     exit_fullscreen: '退出全屏',
+    source: {
+      title: '视频源',
+      empty: '暂无可用视频源',
+      visual: '可见光',
+      thermal: '红外',
+      msx: '融合'
+    },
+    control: {
+      title: '控制',
+      empty: '暂无可用控制',
+      gimbal: '云台',
+      zoom: '变焦',
+      stick: '虚拟摇杆'
+    },
+    action: {
+      title: '动作',
+      empty: '暂无可用动作',
+      take_photo: '拍照',
+      start_record: '开始录像',
+      stop_record: '停止录像',
+      refocus: '重新对焦',
+      ffc_calibrate: '进行 FCC 校准',
+      enable_show_temp: '开始测温',
+      disable_show_temp: '停止测温',
+      set_msx: '设置 MSX 融合度'
+    },
+    gimbal: {
+      reset: '回中'
+    },
+    zoom: {
+      reset: '复位'
+    }
   },
   depot: {
     status: {

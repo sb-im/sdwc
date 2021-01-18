@@ -80,10 +80,12 @@ const mutations = {
           signal: 0
         },
         gimbal: {
-          mode: '',
           yaw: 0,
-          pitch: 0
+          pitch: 0,
+          zoom: 1,
+          source: ''
         },
+        control_enabled: [],
         overlay_screen: {
           width: 0,
           height: 0,

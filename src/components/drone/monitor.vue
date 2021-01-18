@@ -1,27 +1,74 @@
 <template>
   <sd-node-monitor :point="point" :status="status">
     <template #action>
-      <el-button
-        icon="el-icon-place"
-        size="small"
-        :type="joystick.show ? 'primary' : 'default'"
-        :disabled="joystickDisabled"
-        :loading="joystick.pending"
-        @click="toggleJoystick"
-      >
-        <span v-t="'air.joystick'"></span>
-      </el-button>
-      <el-radio-group
-        v-model="gimbal.mode"
-        :disabled="gimbalModeDisabled"
-        @change="handleGimbalMode"
-        class="monitor-drone__switch"
-        size="small"
-      >
-        <el-radio-button v-for="m in range.mode" :key="m" :label="m">
-          <span v-t="$te(`air.gimbal.${m}`) ? `air.gimbal.${m}` : m"></span>
-        </el-radio-button>
-      </el-radio-group>
+      <!-- video source dropdown -->
+      <el-dropdown trigger="click">
+        <el-button size="small" :disabled="allDisabled || source.pending">
+          <span v-t="'monitor.source.title'"></span>
+          <i :class="`el-icon--right el-icon-${source.pending ? 'loading' : 'arrow-down'}`"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-if="videoSources.length === 0" disabled>
+            <span v-t="'monitor.source.empty'"></span>
+          </el-dropdown-item>
+          <el-dropdown-item
+            v-for="s of videoSources"
+            :key="s.source"
+            @click.native="handleVideoSource(s.source, $event)"
+          >
+            <el-radio :value="gimbal.source === s.source">
+              <span v-t="s.label || s.source"></span>
+            </el-radio>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <!-- control dropdown -->
+      <el-dropdown trigger="click">
+        <el-button size="small" :disabled="allDisabled">
+          <span v-t="'monitor.control.title'"></span>
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-if="availableControls.length === 0 && !hasStickControl" disabled>
+            <span v-t="'monitor.control.empty'"></span>
+          </el-dropdown-item>
+          <el-dropdown-item
+            v-for="c of availableControls"
+            :key="c.type"
+            @click.native="handleControlType(c.type, $event)"
+          >
+            <el-radio :value="control.enabled" :label="c.type">
+              <span v-t="c.label || c.method"></span>
+            </el-radio>
+          </el-dropdown-item>
+          <!-- dedicated dropdown-item for virtual joystick control -->
+          <el-dropdown-item
+            v-if="hasStickControl"
+            :disabled="joystick.pending"
+            divided
+            @click.native="handleControlType('stick', $event)"
+          >
+            <el-checkbox :value="joystick.show" :disabled="joystick.pending">
+              <span v-t="point.params.control.stick.label || point.params.control.stick.method"></span>
+            </el-checkbox>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <!-- action dropdown -->
+      <el-dropdown trigger="click" @command="handleAction">
+        <el-button size="small" :disabled="allDisabled">
+          <span v-t="'monitor.action.title'"></span>
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-if="availableActions.length === 0" disabled>
+            <span v-t="'monitor.action.empty'"></span>
+          </el-dropdown-item>
+          <el-dropdown-item v-for="a of availableActions" :key="a.method" :command="a.method">
+            <span v-t="a.label || a.method"></span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </template>
     <template>
       <div class="monitor__overlay">
@@ -35,47 +82,70 @@
           />
         </svg>
       </div>
+      <!-- on-screen control container, also host click events -->
       <div class="monitor-drone-control" :class="wrapperClass">
+        <!-- double-click target point -->
         <transition name="el-fade-in">
           <div
-            v-show="overlay.show"
-            class="monitor-drone-control__focus"
-            :style="`left:${overlay.left}px;top:${overlay.top}px`"
+            v-show="target.show"
+            class="monitor-drone-control__target"
+            :style="`left:${target.left}px;top:${target.top}px`"
           ></div>
         </transition>
-        <div class="monitor-drone-control--horizontal">
+        <div
+          v-if="point.params.control.gimbal"
+          v-show="control.enabled === 'gimbal'"
+          class="monitor-drone-control--horizontal"
+        >
           <!-- pitch angle right -->
           <el-slider
             v-model="gimbal.yaw"
-            :min="range.yaw[0]"
-            :max="range.yaw[1]"
-            :disabled="gimbalDisabled"
+            :min="point.params.control.gimbal.yaw[0]"
+            :max="point.params.control.gimbal.yaw[1]"
             @change="handleGimbalCtl({ yaw: $event })"
             style="width:180px"
           />
           <!-- button 'center' -->
           <el-tooltip class="monitor-drone-control__restore" placement="top">
-            <span slot="content" v-t="'air.gimbal.center'"></span>
-            <el-button
-              circle
-              size="mini"
-              icon="el-icon-refresh"
-              :disabled="gimbalDisabled"
-              @click="handleRestore"
-            ></el-button>
+            <span slot="content" v-t="'monitor.gimbal.reset'"></span>
+            <el-button circle size="mini" icon="el-icon-refresh" @click="handleGimbalRestore"></el-button>
           </el-tooltip>
         </div>
-        <div class="monitor-drone-control--vertical">
+        <div
+          v-if="point.params.control.gimbal"
+          v-show="control.enabled === 'gimbal'"
+          class="monitor-drone-control--vertical"
+        >
           <!-- pitch angle left -->
           <el-slider
             vertical
             v-model="gimbal.pitch"
-            :min="range.pitch[0]"
-            :max="range.pitch[1]"
-            :disabled="gimbalDisabled"
+            :min="point.params.control.gimbal.pitch[0]"
+            :max="point.params.control.gimbal.pitch[1]"
             @change="handleGimbalCtl({ pitch: $event })"
             height="135px"
           />
+        </div>
+        <div
+          v-if="point.params.control.zoom"
+          v-show="control.enabled === 'zoom'"
+          class="monitor-drone-control--bottom"
+        >
+          <!-- zoom slider bottom -->
+          <el-slider
+            vertical
+            v-model="gimbal.zoom"
+            :min="point.params.control.zoom.zoom[0]"
+            :max="point.params.control.zoom.zoom[1]"
+            :step="0.1"
+            @change="handleGimbalZoom"
+            height="100px"
+          />
+          <!-- zoom reset -->
+          <el-tooltip class="monitor-drone-control__restore" placement="bottom">
+            <span slot="content" v-t="'monitor.zoom.reset'"></span>
+            <el-button circle size="mini" icon="el-icon-refresh" @click="handleZoomRestore"></el-button>
+          </el-tooltip>
         </div>
       </div>
       <div class="monitor-drone-joystick" ref="joysticks" v-show="joystick.show">
@@ -114,15 +184,16 @@ export default {
   },
   data() {
     return {
-      gimbal: {
-        mode: '',
-        yaw: 0,
-        pitch: 0
+      source: {
+        pending: false
       },
-      range: {
-        mode: ['mavlink', 'neutral', 'rc'],
-        yaw: [-90, 90],
-        pitch: [-90, 45]
+      control: {
+        enabled: ''
+      },
+      gimbal: {
+        yaw: 0,
+        pitch: 0,
+        zoom: 1
       },
       gesture: {
         valid: false,
@@ -132,7 +203,7 @@ export default {
           y: 0
         }
       },
-      overlay: {
+      target: {
         show: false,
         left: 0,
         top: 0
@@ -148,11 +219,30 @@ export default {
     };
   },
   computed: {
-    joystickDisabled() {
-      return this.status.code !== 0 || this.joystick.pending;
-    },
-    gimbalModeDisabled() {
+    allDisabled() {
       return this.status.code !== 0;
+    },
+    videoSources() {
+      const params = this.point.params || { source: [] };
+      return params.source;
+    },
+    availableControls() {
+      const params = this.point.params || { control: {} };
+      const controls = [];
+      for (const [k, v] of Object.entries(params.control)) {
+        if (k === 'stick') continue;
+        controls.push(Object.assign({ type: k }, v));
+      }
+      return controls;
+    },
+    hasStickControl() {
+      const params = this.point.params || { control: {} };
+      return Object.prototype.hasOwnProperty.call(params.control, 'stick');
+    },
+    availableActions() {
+      const params = this.point.params || { action: [] };
+      const enabled = this.msg.control_enabled;
+      return params.action.filter(a => enabled.includes(a.method));
     },
     overlaySVG() {
       const { width, height, shapes } = this.msg.overlay_screen;
@@ -174,7 +264,7 @@ export default {
       return { viewBox: `0 0 ${width} ${height}`, elements };
     },
     gimbalDisabled() {
-      return this.status.code !== 0 || this.gimbal.mode !== 'mavlink';
+      return this.allDisabled || this.control.enabled !== 'gimbal';
     },
     wrapperClass() {
       return {
@@ -184,27 +274,65 @@ export default {
   },
   methods: {
     /**
-     * @param {string} mode
+     * @param {'visual' | 'thermal' | 'msx'} source
+     * @param {MouseEvent} event
      */
-    handleGimbalMode(mode) {
-      this.gimbal.mode = '';
+    async handleVideoSource(source, event) {
+      /**
+       * in dom like `<label><input type="radio"><span>text<span></label>`,
+       * click on span causes label's click event triggers twice.
+       * 1st's target is span, 2nd's target is input.
+       */
+      if (event.target.tagName === 'INPUT') return;
+      this.source.pending = true;
+      try {
+        await this.$mqtt(this.point.node_id, {
+          mission: 'camera',
+          arg: { action: 'source', value: source }
+        });
+      } catch (e) { /* noop */ }
+      this.source.pending = false;
+    },
+    /**
+     * @param {'gimbal' | 'zoom' | 'stick'} type
+     * @param {MouseEvent} event
+     */
+    handleControlType(type, event) {
+      if (event.target.tagName === 'INPUT') return;
+      if (type === 'stick') {
+        this.toggleJoystick();
+      } else if (this.control.enabled === type) {
+        this.control.enabled = '';
+      } else {
+        this.control.enabled = type;
+      }
+    },
+    /**
+     * @param {string} method
+     */
+    handleAction(method) {
       this.$mqtt(this.point.node_id, {
-        mission: 'gimbal_mode',
-        arg: [mode]
-      }, {
-        notification: true
-      }).then(() => {
-        this.gimbal.mode = mode;
+        mission: method
       });
     },
     /**
      * @param {{ yaw?: number; pitch?: number }} param
      */
     handleGimbalCtl(param) {
-      const { yaw, pitch } = this.gimbal;
       this.$mqtt(this.point.node_id, {
-        mission: 'gimbal_ctl',
-        arg: Object.assign({ yaw, pitch }, param)
+        mission: 'gimbal',
+        arg: param
+      }, {
+        notification: true
+      });
+    },
+    /**
+     * @param {number} zoom
+     */
+    handleGimbalZoom(zoom) {
+      this.$mqtt(this.point.node_id, {
+        mission: 'camera',
+        arg: { action: 'zoom', zoom }
       }, {
         notification: true
       });
@@ -217,10 +345,14 @@ export default {
         notification: true
       });
     },
-    handleRestore() {
+    handleGimbalRestore() {
       this.handleGimbalCtl({ yaw: 0, pitch: 0 });
       this.gimbal.yaw = 0;
       this.gimbal.pitch = 0;
+    },
+    handleZoomRestore() {
+      this.handleGimbalZoom(1);
+      this.gimbal.zoom = 0;
     },
     handleGestureStart(x, y) {
       if (this.gimbalDisabled) return;
@@ -275,10 +407,10 @@ export default {
       const x = left / rect.width;
       const y = top / rect.height;
       this.handleGimbalTarget(x, y);
-      this.overlay = { left, top, show: true };
+      this.target = { left, top, show: true };
       setTimeout(() => {
-        if (top === this.overlay.top && left === this.overlay.left) {
-          this.overlay.show = false;
+        if (top === this.target.top && left === this.target.left) {
+          this.target.show = false;
         }
       }, 500);
     },
@@ -329,7 +461,6 @@ export default {
       });
       // Double Click
       el.addEventListener('dblclick', ev => {
-        if (!['mavlink', 'manual'].includes(this.gimbal.mode)) return;
         const rect = el.getBoundingClientRect();
         this.handleDblClick(rect, ev);
       });
@@ -445,10 +576,8 @@ export default {
     }
   },
   created() {
+    // TODO: sync values between msg.gimbal and $data.gimbal
     this.gimbal = { ...this.msg.gimbal };
-    if (this.point.params) {
-      this.range = this.point.params;
-    }
   },
   mounted() {
     this.handleGestureMoveThrottled = throttle(this.handleGestureMove, 55);
@@ -464,6 +593,9 @@ export default {
 </script>
 
 <style>
+.drone .sd-card__action .el-dropdown {
+  margin-left: 10px;
+}
 .monitor-drone__switch {
   margin-left: 10px;
 }
@@ -483,7 +615,7 @@ export default {
   stroke: none;
   font-size: 24px;
 }
-.monitor-drone-control__focus {
+.monitor-drone-control__target {
   position: absolute;
   width: 40px;
   height: 40px;
@@ -501,11 +633,19 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
+.monitor-drone-control--bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
 .monitor-drone-control--moving {
   cursor: move;
 }
 .monitor-drone-control__restore {
-  margin: 0 5px;
+  margin: 5px;
 }
 .monitor-drone-joystick {
   position: absolute;

@@ -131,10 +131,20 @@ declare namespace SDWC {
     signal: number;
   }
   export interface NodeGimbal {
-    mode: string;
     yaw: number;
     pitch: number;
+    zoom: number;
+    source: string;
   }
+  export interface NodeDroneScreenSection {
+    button: {
+      method: string;
+      name: string;
+      params?: any;
+    }[];
+    now: string;
+  }
+  export type NodeControlEnabled = string[];
   export interface NodeOverlayScreenShape {
     type: string;
     x: number;
@@ -198,6 +208,7 @@ declare namespace SDWC {
       depot_status: NodeDepotStatus;
       drone_status: NodeDroneStatus;
       gimbal: NodeGimbal;
+      control_enabled: NodeControlEnabled;
       overlay_screen: NodeOverlayScreen;
       position: NodePosition[];
       notification: NodeNotification[];

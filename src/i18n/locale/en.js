@@ -148,15 +148,6 @@ export default {
     gps: {
       satellites: '{satcount} Satellite(s) {type}'
     },
-    gimbal: {
-      mavlink: 'Manual',
-      neutral: 'Auto',
-      manual: 'Manual',
-      auto: 'Auto',
-      rc: 'Remote-Control',
-      center: 'Center'
-    },
-    joystick: 'Virtual Joystick',
     ctl: {
       hover: 'Hover',
       return: 'Return',
@@ -199,7 +190,39 @@ export default {
     disconnected: 'Disconnected',
     no_video: 'Video source not found',
     fullscreen: 'Enter fullscreen',
-    exit_fullscreen: 'Exit fullscreen'
+    exit_fullscreen: 'Exit fullscreen',
+    source: {
+      title: 'Video Source',
+      empty: 'No video sources available',
+      visual: 'Visible Light',
+      thermal: 'Infrared ray',
+      msx: 'Fusion'
+    },
+    control: {
+      title: 'Control',
+      empty: 'No controls available',
+      gimbal: 'Gimbal',
+      zoom: 'Zoom',
+      stick: 'Virtual Joystick'
+    },
+    action: {
+      title: 'Action',
+      empty: 'No actions available',
+      take_photo: 'Take photo',
+      start_record: 'Start record',
+      stop_record: 'Stop record',
+      refocus: 'Refocus',
+      ffc_calibrate: 'Perform FCC calibrate',
+      enable_show_temp: 'Start temp measurement',
+      disable_show_temp: 'Stop temp measurement',
+      set_msx: 'Set MSX fusion rate'
+    },
+    gimbal: {
+      reset: 'Back center'
+    },
+    zoom: {
+      reset: 'Reset'
+    }
   },
   depot: {
     status: {
