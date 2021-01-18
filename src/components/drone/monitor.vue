@@ -24,6 +24,17 @@
       </el-radio-group>
     </template>
     <template>
+      <div class="monitor__overlay">
+        <svg class="monitor__svg" :view-box.camel="overlaySVG.viewBox">
+          <component
+            v-for="(shape, index) of overlaySVG.elements"
+            :key="index"
+            :is="shape.type"
+            v-bind="shape"
+            v-text="shape.text"
+          />
+        </svg>
+      </div>
       <div class="monitor-drone-control" :class="wrapperClass">
         <transition name="el-fade-in">
           <div
@@ -142,6 +153,25 @@ export default {
     },
     gimbalModeDisabled() {
       return this.status.code !== 0;
+    },
+    overlaySVG() {
+      const { width, height, shapes } = this.msg.overlay_screen;
+      const elements = [];
+      for (const s of shapes) {
+        elements.push(s);
+        if (s.label) {
+          const offset = s['stroke-width'] || 1;
+          elements.push({
+            type: 'text',
+            text: s.label,
+            x: s.x + offset,
+            y: s.y + offset,
+            'alignment-baseline': 'hanging',
+            fill: s.stroke || s.fill
+          });
+        }
+      }
+      return { viewBox: `0 0 ${width} ${height}`, elements };
     },
     gimbalDisabled() {
       return this.status.code !== 0 || this.gimbal.mode !== 'mavlink';
@@ -437,13 +467,21 @@ export default {
 .monitor-drone__switch {
   margin-left: 10px;
 }
-.monitor-drone-control {
+.monitor-drone-control,
+.monitor__overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   overflow: hidden;
+}
+.monitor__svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: none;
+  font-size: 24px;
 }
 .monitor-drone-control__focus {
   position: absolute;

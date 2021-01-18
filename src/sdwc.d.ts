@@ -135,6 +135,25 @@ declare namespace SDWC {
     yaw: number;
     pitch: number;
   }
+  export interface NodeOverlayScreenShape {
+    type: string;
+    x: number;
+    y: number;
+    r?: number;
+    rx?: number;
+    ry?: number;
+    width?: number;
+    height?: number;
+    fill?: string;
+    stroke?: string;
+    'stroke-width'?: number;
+    label?: string;
+  }
+  export interface NodeOverlayScreen {
+    width: number;
+    height: number;
+    shapes: NodeOverlayScreenShape[];
+  }
   export interface GPSCoordinate {
     /** Latitude */
     lat: number;
@@ -179,6 +198,7 @@ declare namespace SDWC {
       depot_status: NodeDepotStatus;
       drone_status: NodeDroneStatus;
       gimbal: NodeGimbal;
+      overlay_screen: NodeOverlayScreen;
       position: NodePosition[];
       notification: NodeNotification[];
       overview: any;

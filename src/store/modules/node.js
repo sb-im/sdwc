@@ -84,6 +84,11 @@ const mutations = {
           yaw: 0,
           pitch: 0
         },
+        overlay_screen: {
+          width: 0,
+          height: 0,
+          shapes: []
+        },
         position: [],
         notification: [],
         overview: {}
