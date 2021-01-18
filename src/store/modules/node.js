@@ -85,7 +85,7 @@ const mutations = {
           zoom: 1,
           source: ''
         },
-        control_enabled: [],
+        action_enabled: [],
         overlay_screen: {
           width: 0,
           height: 0,

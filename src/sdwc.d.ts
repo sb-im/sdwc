@@ -144,7 +144,7 @@ declare namespace SDWC {
     }[];
     now: string;
   }
-  export type NodeControlEnabled = string[];
+  export type NodeActionEnabled = string[];
   export interface NodeOverlayScreenShape {
     type: string;
     x: number;
@@ -208,7 +208,7 @@ declare namespace SDWC {
       depot_status: NodeDepotStatus;
       drone_status: NodeDroneStatus;
       gimbal: NodeGimbal;
-      control_enabled: NodeControlEnabled;
+      action_enabled: NodeActionEnabled;
       overlay_screen: NodeOverlayScreen;
       position: NodePosition[];
       notification: NodeNotification[];

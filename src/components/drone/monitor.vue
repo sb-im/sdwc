@@ -241,7 +241,7 @@ export default {
     },
     availableActions() {
       const params = this.point.params || { action: [] };
-      const enabled = this.msg.control_enabled;
+      const enabled = this.msg.action_enabled;
       return params.action.filter(a => enabled.includes(a.method));
     },
     overlaySVG() {

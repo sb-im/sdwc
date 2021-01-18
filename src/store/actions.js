@@ -181,7 +181,7 @@ const NodePointTopic = {
   battery: 'battery',
   weather: 'weather',
   gimbal: 'gimbal',
-  control: 'control_enabled',
+  action: 'action_enabled',
   overlay: 'overlay_screen',
   map: 'position'
 };
@@ -195,7 +195,7 @@ export function subscribeNodes({ state, commit }) {
     MqttClient.subscribeNode(id);
     if (points.some(p => p.point_type_name.startsWith('livestream_'))) {
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.gimbal}`);
-      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.control}`);
+      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.action}`);
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.overlay}`);
     }
     for (const point of points) {
