@@ -338,9 +338,10 @@ export default {
       });
     },
     handleGimbalTarget(x, y) {
+      const t = x => Math.trunc(x * 1000) / 1000;
       this.$mqtt(this.point.node_id, {
         mission: 'gimbal_target',
-        arg: { x: Math.trunc(x * 1000) / 1000, y: Math.trunc(y * 1000) / 1000 }
+        arg: { x: t(x), y: t(y) }
       }, {
         notification: true
       });
@@ -369,7 +370,9 @@ export default {
     handleGestureEnd(x, y) {
       if (this.gimbalDisabled) return;
       if (!this.gesture.valid) return;
-      this.sendGestureCtl(x, y);
+      if (this.gesture.lastPos.x !== x || this.gesture.lastPos.y !== y) {
+        this.sendGestureCtl(x, y);
+      }
       this.gesture.valid = false;
     },
     sendGestureCtl(x, y) {
@@ -536,7 +539,7 @@ export default {
     },
     sendStickCtl() {
       const [m0, m1] = this.joystick.data;
-      const r = num => Math.floor(num * 100);
+      const r = num => Math.round(num * 100);
       this.$mqtt(this.point.node_id, {
         mission: 'stick_ctl',
         arg: {
