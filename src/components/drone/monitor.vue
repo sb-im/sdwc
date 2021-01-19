@@ -16,7 +16,7 @@
             :key="s.source"
             @click.native="handleVideoSource(s.source, $event)"
           >
-            <el-radio :value="gimbal.source === s.source">
+            <el-radio :value="msg.gimbal.source" :label="s.source">
               <span v-t="s.label || s.source"></span>
             </el-radio>
           </el-dropdown-item>
@@ -193,7 +193,8 @@ export default {
       gimbal: {
         yaw: 0,
         pitch: 0,
-        zoom: 1
+        zoom: 1,
+        source: ''
       },
       gesture: {
         valid: false,
