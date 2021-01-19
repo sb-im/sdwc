@@ -20,7 +20,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import { WebSocketSignalingChannel } from './webrtc-client';
+import { reloadVideo, WebSocketSignalingChannel } from './webrtc-client';
 
 export default {
   name: 'sd-node-monitor-webrtc',
@@ -43,19 +43,20 @@ export default {
   },
   methods: {
     createChannel() {
-      this.channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_server);
-      this.channel.on('event', ev => {
+      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_server);
+      channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;
           this.couldRetry = true;
         }
       });
       this.msg = this.$t('monitor.connecting');
-      this.channel.on('pc:connected', () => this.msg = '');
-      this.channel.once('ws:error', () => this.recreateChannel());
-      this.channel.once('pc:closed', () => this.recreateChannel());
-      this.channel.once('pc:failed', () => this.recreateChannel());
-      this.channel.once('pc:disconnected', () => this.recreateChannel());
+      channel.on('pc:connected', () => this.msg = '');
+      channel.once('ws:error', () => this.recreateChannel());
+      channel.once('pc:closed', () => this.recreateChannel());
+      channel.once('pc:failed', () => this.recreateChannel());
+      channel.once('pc:disconnected', () => this.recreateChannel());
+      this.channel = channel;
     },
     destroyChannel() {
       this.channel.removeAllListeners();
@@ -70,6 +71,9 @@ export default {
       this.msg = '';
       this.destroyChannel();
       this.createChannel();
+    },
+    reloadVideo() {
+      reloadVideo(this.channel.pc.peerConnection, this.$refs.video);
     }
   },
   mounted() {

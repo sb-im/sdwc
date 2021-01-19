@@ -20,6 +20,7 @@
 <script>
 import { mapState } from 'vuex';
 
+import { reloadVideo } from './webrtc-client';
 import { WebRTC2Client } from './webrtc2-client';
 
 export default {
@@ -81,6 +82,9 @@ export default {
       }
       this.couldRetry = false;
       this.client = this.createClient();
+    },
+    reloadVideo() {
+      reloadVideo(this.client.pc, this.$refs.video);
     }
   },
   mounted() {

@@ -35,7 +35,7 @@ export class WebRTC2Client extends EventEmitter {
   onIceCandidate(ev) {
     // Use `turn` need this
     trace('IceCandidate', ev.candidate);
-    if (event.candidate === null) {
+    if (ev.candidate === null) {
       this.emit('candidatecomplete');
     }
   }

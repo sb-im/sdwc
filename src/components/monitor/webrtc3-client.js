@@ -75,7 +75,7 @@ export class WebRTC3Client extends EventEmitter {
   onIceCandidate(ev) {
     // Use `turn` need this
     trace('onIceCandidate', ev.candidate);
-    if (event.candidate) {
+    if (ev.candidate) {
       this.cableSend({ ice: ev.candidate });
     }
   }
