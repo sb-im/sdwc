@@ -31,3 +31,11 @@ export default {
   }
 };
 </script>
+
+<style>
+/* fix overview page overflow if prefered font is too tall */
+.sd-overview .status__buttons .el-button--small {
+  height: 32px;
+  padding: 0 15px;
+}
+</style>
