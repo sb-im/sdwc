@@ -1,5 +1,5 @@
 <template>
-  <sd-node-monitor :point="point" :status="status">
+  <sd-node-monitor ref="monitor" :point="point" :status="status">
     <template #action>
       <!-- video source dropdown -->
       <el-dropdown trigger="click">
@@ -11,15 +11,25 @@
           <el-dropdown-item v-if="videoSources.length === 0" disabled>
             <span v-t="'monitor.source.empty'"></span>
           </el-dropdown-item>
-          <el-dropdown-item
-            v-for="s of videoSources"
-            :key="s.source"
-            @click.native="handleVideoSource(s.source, $event)"
-          >
-            <el-radio :value="msg.gimbal.source" :label="s.source">
-              <span v-t="s.label || s.source"></span>
-            </el-radio>
-          </el-dropdown-item>
+          <template v-else>
+            <el-dropdown-item
+              v-for="s of videoSources"
+              :key="s.source"
+              @click.native="handleVideoSource(s.source, $event)"
+            >
+              <el-radio :value="msg.gimbal.source" :label="s.source">
+                <span v-t="s.label || s.source"></span>
+              </el-radio>
+            </el-dropdown-item>
+            <el-dropdown-item divided @click.native="handleReloadVideo">
+              <i class="el-icon-video-play"></i>
+              <span v-t="'monitor.source.reload'"></span>
+            </el-dropdown-item>
+            <el-dropdown-item @click.native="handleReconnect">
+              <i class="el-icon-refresh-right"></i>
+              <span v-t="'monitor.source.reconnect'"></span>
+            </el-dropdown-item>
+          </template>
         </el-dropdown-menu>
       </el-dropdown>
       <!-- control dropdown -->
@@ -293,6 +303,12 @@ export default {
         });
       } catch (e) { /* noop */ }
       this.source.pending = false;
+    },
+    handleReloadVideo() {
+      this.$refs.monitor.$refs.content.reloadVideo();
+    },
+    handleReconnect() {
+      this.$refs.monitor.$refs.content.handleRetry();
     },
     /**
      * @param {'gimbal' | 'zoom' | 'stick'} type

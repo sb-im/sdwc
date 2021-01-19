@@ -196,7 +196,9 @@ export default {
       empty: '暂无可用视频源',
       visual: '可见光',
       thermal: '红外',
-      msx: '融合'
+      msx: '融合',
+      reload: '重载视频',
+      reconnect: '重新连接'
     },
     control: {
       title: '控制',
@@ -214,8 +216,7 @@ export default {
       refocus: '重新对焦',
       ffc_calibrate: '进行 FCC 校准',
       enable_show_temp: '开始测温',
-      disable_show_temp: '停止测温',
-      set_msx: '设置 MSX 融合度'
+      disable_show_temp: '停止测温'
     },
     gimbal: {
       reset: '回中'

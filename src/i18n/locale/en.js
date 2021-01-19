@@ -196,7 +196,9 @@ export default {
       empty: 'No video sources available',
       visual: 'Visible Light',
       thermal: 'Infrared ray',
-      msx: 'Fusion'
+      msx: 'Fusion',
+      reload: 'Reload Video',
+      reconnect: 'Reconnect'
     },
     control: {
       title: 'Control',
@@ -214,8 +216,7 @@ export default {
       refocus: 'Refocus',
       ffc_calibrate: 'Perform FCC calibrate',
       enable_show_temp: 'Start temp measurement',
-      disable_show_temp: 'Stop temp measurement',
-      set_msx: 'Set MSX fusion rate'
+      disable_show_temp: 'Stop temp measurement'
     },
     gimbal: {
       reset: 'Back center'
