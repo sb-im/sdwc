@@ -21,7 +21,7 @@
                 <span v-t="s.label || s.source"></span>
               </el-radio>
             </el-dropdown-item>
-            <el-dropdown-item divided @click.native="handleReloadVideo">
+            <el-dropdown-item divided @click.native="handleRestratStream">
               <i class="el-icon-video-play"></i>
               <span v-t="'monitor.source.reload'"></span>
             </el-dropdown-item>
@@ -304,8 +304,14 @@ export default {
       } catch (e) { /* noop */ }
       this.source.pending = false;
     },
-    handleReloadVideo() {
-      this.$refs.monitor.$refs.content.reloadVideo();
+    async handleRestratStream() {
+      this.source.pending = true;
+      try {
+        await this.$mqtt(this.point.node_id, {
+          mission: 'restart_stream'
+        });
+      } catch (e) { /* noop */ }
+      this.source.pending = false;
     },
     handleReconnect() {
       this.$refs.monitor.$refs.content.handleRetry();
