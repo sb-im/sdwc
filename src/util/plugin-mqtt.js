@@ -7,7 +7,7 @@ import store from '@/store';
 import MqttClient from '@/api/mqtt';
 import { RpcStatusClass } from '@/constants/rpc-status-class';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
-import { Levels as NotificationLevels } from '@/constants/notification-levels';
+import { NodeNotificationLevels } from '@/constants/node-notification-levels';
 
 const RpcNotifications = new Map();
 
@@ -137,12 +137,13 @@ function registerNotificationListener() {
       customClass: 'status-notify--popup'
     });
     const h = notify.$createElement;
+    const level = NodeNotificationLevels[n.level] || {};
     notify.$slots.default = [
       h('div', null, [
         h('span', { class: 'status-notify__title' }, [node.info.name]),
         h('span', null, [' · ', i18n.d(n.time * 1000, 'seconds')]),
       ]),
-      h('span', { class: ['status-notify__level', `lv${n.level}`] }, [` [${NotificationLevels[n.level]}] `]),
+      h('span', { class: ['status-notify__level', level.class] }),
       h('span', null, [n.msg])
     ];
   });

@@ -2,22 +2,13 @@
   <div class="status-notify-item">
     <span class="status-notify__time" v-text="$d(notification.time * 1000, 'seconds')"></span>
     <span class="status-notify__node" v-if="notification.node" v-text="notification.node"></span>
-    <span v-if="hasLevel" class="status-notify__level" :class="LevelIconClass[notification.level]"></span>
+    <span v-if="hasLevel" class="status-notify__level" :class="level.class" :title="level.name"></span>
     <span v-text="notification.msg"></span>
   </div>
 </template>
 
 <script>
-const LevelIconClass = [
-  'lv0 el-icon-message-solid',
-  'lv1 el-icon-warning',
-  'lv2 el-icon-error',
-  'lv3 el-icon-remove',
-  'lv4 el-icon-warning',
-  'lv5 el-icon-circle-plus',
-  'lv6 el-icon-info',
-  'lv7 el-icon-s-tools'
-];
+import { NodeNotificationLevels } from '@/constants/node-notification-levels';
 
 export default {
   name: 'sd-status-notify-item',
@@ -30,10 +21,10 @@ export default {
   computed: {
     hasLevel() {
       return typeof this.notification.level === 'number';
+    },
+    level() {
+      return NodeNotificationLevels[this.notification.level] || {};
     }
-  },
-  created() {
-    this.LevelIconClass = LevelIconClass;
   }
 };
 </script>
