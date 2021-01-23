@@ -95,8 +95,13 @@ MqttClient.on('plan_running', (id, job) => {
 });
 
 if (__SDWC_DEV__) {
+  // 'DEVELOPMENT' badge
   import(/* webpackChunkName: 'development' */ './styles/development.css');
   const el = document.createElement('div');
   el.classList.add('development-ribbon');
   document.body.append(el);
+  // attach mqttclient to window
+  import('@/api/mqtt').then(c => {
+    window._mqttClient = c.default;
+  });
 }
