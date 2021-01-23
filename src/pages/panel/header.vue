@@ -167,9 +167,10 @@ export default {
       /** @type {SDWC.PlanDialog[]} */
       const dialog = this.plan.dialog;
       return dialog.map(d => {
+        /** @type {SDWC.PlanInfo} */
         const plan = this.plan.info.find(p => p.id === d.id) || {};
         const prefix = `${plan.name || d.id} · ${this.$d(d.time, 'time')}`;
-        const icon = getLevelIconClass(dialog.level);
+        const icon = getLevelIconClass(d.dialog.level);
         return { id: d.id, prefix, icon, title: d.dialog.name };
       });
     },
