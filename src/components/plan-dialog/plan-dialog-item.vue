@@ -13,7 +13,8 @@
 
 <script>
 import Icon from '@/components/sd-icon.vue';
-import { getLevelIconClass } from '@/constants/level-icon-class';
+
+import { PlanDialogLevelClass } from '@/constants/plan-dialog-level-class';
 
 const LevelColorClass = {
   warning: 'level--warning',
@@ -39,8 +40,7 @@ export default {
       return LevelColorClass[this.level] || '';
     },
     iconClass() {
-      if (typeof this.level === 'string') return getLevelIconClass(this.level);
-      return '';
+      return PlanDialogLevelClass[this.level] || PlanDialogLevelClass.unknown;
     }
   },
   components: {

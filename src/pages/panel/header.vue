@@ -137,7 +137,7 @@ import Icon from '@/components/sd-icon.vue';
 import PlanDialog from '@/components/plan-dialog/plan-dialog.vue';
 
 import { RpcStatusClass } from '@/constants/rpc-status-class';
-import { getLevelIconClass } from '@/constants/level-icon-class';
+import { PlanDialogLevelClass } from '@/constants/plan-dialog-level-class';
 import { getNodeStatusClass } from '@/constants/node-status-class';
 
 import { MutationTypes as PLAN } from '@/store/modules/plan';
@@ -170,7 +170,7 @@ export default {
         /** @type {SDWC.PlanInfo} */
         const plan = this.plan.info.find(p => p.id === d.id) || {};
         const prefix = `${plan.name || d.id} · ${this.$d(d.time, 'time')}`;
-        const icon = getLevelIconClass(d.dialog.level);
+        const icon = PlanDialogLevelClass[d.dialog.level] || PlanDialogLevelClass.unknown;
         return { id: d.id, prefix, icon, title: d.dialog.name };
       });
     },
@@ -311,7 +311,7 @@ export default {
           h('span', { class: 'status-notify__title' }, [plan.name]),
           h('span', null, [' · ', this.$d(Date.now(), 'seconds')]),
         ]),
-        h('i', { class: getLevelIconClass(dialog.level) }),
+        h('i', { class: PlanDialogLevelClass[dialog.level] || PlanDialogLevelClass.unknown }),
         h('span', null, [' ', dialog.name])
       ];
     }
