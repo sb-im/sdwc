@@ -138,7 +138,7 @@ import PlanDialog from '@/components/plan-dialog/plan-dialog.vue';
 
 import { RpcStatusClass } from '@/constants/rpc-status-class';
 import { PlanDialogLevelClass } from '@/constants/plan-dialog-level-class';
-import { getNodeStatusClass } from '@/constants/node-status-class';
+import { NodeStatusClass } from '@/constants/node-status-class';
 
 import { MutationTypes as PLAN } from '@/store/modules/plan';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
@@ -187,7 +187,7 @@ export default {
       /** @type {SDWC.Node[]} */
       const nodes = this.node;
       return nodes.map(n => {
-        const icon = getNodeStatusClass(n.status.code);
+        const icon = NodeStatusClass[n.status.code];
         const typeText = this.$t(`common.${n.info.type_name}`);
         const prefix = `${typeText} ${n.info.name}`;
         let title = this.$t(`common.status.${n.status.code}`);

@@ -8,7 +8,3 @@ export const NodeStatusClass = {
   // network error
   2: 'el-icon-error color--red'
 };
-
-export function getNodeStatusClass(status) {
-  return NodeStatusClass[status];
-}
