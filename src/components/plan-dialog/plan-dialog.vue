@@ -10,7 +10,7 @@
       v-if="form.message"
       show-icon
       :title="form.message"
-      :type="form.level || 'info'"
+      :type="alertType"
       :closable="false"
     ></el-alert>
     <template v-for="item of form.items">
@@ -50,6 +50,11 @@ export default {
     form() {
       const d = this.$store.state.plan.dialog.find(d => d.id === this.planId) || {};
       return d.dialog || {};
+    },
+    alertType() {
+      if (!this.form.level) return 'info';
+      if (this.form.level === 'danger') return 'error';
+      return this.form.level;
     }
   },
   methods: {
