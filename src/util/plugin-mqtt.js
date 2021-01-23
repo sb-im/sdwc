@@ -130,7 +130,7 @@ function registerNotificationListener() {
     const n = msg.notification;
     if (!n) return;
     const node = store.state.node.find(node => node.info.id === id);
-    if (!node || !store.state.preference.notifyPopup.includes(node.info.id)) return;
+    if (!node || store.state.preference.notifyNoPopup.includes(node.info.id)) return;
     const notify = Notification({
       offset: 50,
       message: 'REPLACED_BY_VNODE',

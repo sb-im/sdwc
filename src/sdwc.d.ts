@@ -322,7 +322,7 @@ declare namespace SDWC {
     mapType: string;
     mapFollow: boolean;
     overviewFit: boolean;
-    notifyPopup: number[];
+    notifyNoPopup: number[];
     rpcMsgPopup: boolean;
     planDialogPopup: boolean;
   }

@@ -71,20 +71,20 @@ export default {
     ...mapState(['preference']),
     popup() {
       if (!this.canPopup) return false;
-      return this.preference.notifyPopup.includes(this.nodeId);
+      return !this.preference.notifyNoPopup.includes(this.nodeId);
     }
   },
   methods: {
     ...mapActions(['setPreference']),
     handlePopup() {
       if (!this.canPopup) return;
-      const arr = Array.from(this.preference.notifyPopup);
+      const arr = Array.from(this.preference.notifyNoPopup);
       if (this.popup) {
-        arr.splice(arr.indexOf(this.nodeId), 1);
-      } else {
         arr.push(this.nodeId);
+      } else {
+        arr.splice(arr.indexOf(this.nodeId), 1);
       }
-      this.setPreference({ notifyPopup: arr });
+      this.setPreference({ notifyNoPopup: arr });
     },
     handleHistory() {
       this.historyShown = !this.historyShown;

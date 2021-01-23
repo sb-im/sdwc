@@ -6,8 +6,8 @@ const state = {
   mapType: 'sd-map-mapbox',
   mapFollow: true,
   overviewFit: true,
-  notifyPopup: [],
-  rpcMsgPopup: true,
+  notifyNoPopup: [],
+  rpcMsgPopup: false,
   planDialogPopup: true
 };
 
@@ -20,7 +20,11 @@ export const MutationTypes = {
  */
 const mutations = {
   [MutationTypes.SET_PREFERENCE](state, /** @type {Partial<SDWC.Preference>} */ payload) {
-    Object.assign(state, payload);
+    for (const [key, value] of Object.entries(payload)) {
+      if (Object.prototype.hasOwnProperty.call(state, key)) {
+        state[key] = value;
+      }
+    }
   }
 };
 
