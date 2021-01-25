@@ -322,6 +322,57 @@ time | uint64 | timestamp length `10`
 level| uint   | 0-7 `0: Emergency, 1: Alert, 2: Critical, 3: Error, 4: Warn, 5: Notice, 6: Info, 7: Debug` Reference: [RFC5424](https://tools.ietf.org/html/rfc5424#section-6.2.1)
 msg  | string | message body
 
+## settings
+
+### Params
+
+```json
+[
+  {
+    "name": "Group 1",
+    "topic": "settings1",
+    "method": "set_param_1",
+    "item": [
+      { "type": "switch", "label": "Switch0", "field": "switch" },
+      { "type": "radio", "label": "Radio_00", "field": "radio","values": ["A", "B", "C"] },
+      { "type": "slider", "label": "Slider0", "field": "ttt.slider", "range": [-50, 100], "step": 1 },
+      { "type": "input", "label": "Input_00", "field": "input" }
+    ]
+  },
+  {
+    "name": "Group 2",
+    "topic": "settings2",
+    "method": "set_param_2",
+    "item": [
+      { "type": "switch", "label": "Switch0", "field": "switch" },
+      { "type": "radio", "label": "Radio_00", "field": "radio", "values": ["A", "B", "C"] },
+      { "type": "slider", "label": "Slider0", "field": "ttt.slider", "range": [-50, 100], "step": 1 },
+      { "type": "input", "label": "Input_00", "field": "input" }
+    ]
+  }
+]
+```
+
+### RPC:
+
+#### Request:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "setparam_1",
+  "params": {
+    "label": "value"
+  }
+}
+```
+
+### Sub: `nodes/:id/msg/<topic>`
+
+```json
+{"switch": true, "radio": "A", "ttt": {"slider": 10}}
+```
+
 
 ## debug
 ### Params
