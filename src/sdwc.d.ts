@@ -169,8 +169,17 @@ declare namespace SDWC {
     lat: number;
     /** Longitude */
     lng: number;
-    /** Altitude */
-    alt: number;
+    /** Altitude (Optional) */
+    alt?: number;
+    /** Height (Optional) */
+    height?: number;
+  }
+  export interface NodePosition extends GPSCoordinate {
+    /** Heading 0°~360° */
+    heading: number;
+  }
+  export interface NodePlaces {
+    [key: string]: GPSCoordinate;
   }
   export interface GPSHeatPoint {
     /** Latitude */
@@ -180,15 +189,9 @@ declare namespace SDWC {
     /** Point weight on heatmap */
     weight: number;
   }
-  export interface NodePosition extends GPSCoordinate {
-    /** Heading 0°~360° */
-    heading: number;
-    place: {
-      [key: string]: GPSCoordinate | GPSCoordinate[];
-    };
-    heatmap: {
-      [key: string]: GPSHeatPoint[];
-    };
+  export type NodeHeatmap = GPSHeatPoint[];
+  export interface NodeWaypoint {
+    waypoint_url: string;
   }
   export interface NodeNotification {
     time: string;
@@ -211,6 +214,9 @@ declare namespace SDWC {
       action_enabled: NodeActionEnabled;
       overlay_screen: NodeOverlayScreen;
       position: NodePosition[];
+      place: NodePlaces;
+      heatmap: NodeHeatmap;
+      waypoint: NodeWaypoint;
       notification: NodeNotification[];
       overview: any;
     };
@@ -222,7 +228,12 @@ declare namespace SDWC {
     depot_status: NodeDepotStatus;
     drone_status: NodeDroneStatus;
     gimbal: NodeGimbal;
+    action_enabled: NodeActionEnabled;
+    overlay_screen: NodeOverlayScreen;
     position: NodePosition;
+    place: NodePlaces;
+    heatmap: NodeHeatmap;
+    waypoint: NodeWaypoint;
     notification: NodeNotification;
     overview: any;
   }>

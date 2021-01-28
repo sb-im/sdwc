@@ -184,10 +184,9 @@ export default {
       return markers;
     },
     placeMarkers() {
-      const position = this.msg.position[0];
+      const { place } = this.msg;
       const markers = [];
-      if (!position || !position.place) return markers;
-      for (const [name, pos] of Object.entries(position.place)) {
+      for (const [name, pos] of Object.entries(place)) {
         const arr = Array.isArray(pos) ? pos : [pos];
         for (let i = 0; i < arr.length; i++) {
           markers.push({
@@ -204,14 +203,13 @@ export default {
       return [...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
     },
     places() {
-      const position = this.msg.position[0];
+      const { position, place } = this.msg;
+      const current = position[0];
       const paths = [];
-      if (!position || !position.place) return paths;
-      const p = [position];
-      for (const [name, pos] of Object.entries(position.place)) {
+      for (const [name, pos] of Object.entries(place)) {
         paths.push({
           name,
-          path: p.concat(pos)
+          path: [current, pos]
         });
       }
       return paths;

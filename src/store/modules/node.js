@@ -92,6 +92,11 @@ const mutations = {
           shapes: []
         },
         position: [],
+        place: {},
+        heatmap: [],
+        waypoint: {
+          waypoint_url: ''
+        },
         notification: [],
         overview: {}
       }

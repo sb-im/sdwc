@@ -183,7 +183,7 @@ const NodePointTopic = {
   gimbal: 'gimbal',
   action: 'action_enabled',
   overlay: 'overlay_screen',
-  map: 'position'
+  map: ['position', 'place', 'heatmap', 'waypoint']
 };
 
 /**
