@@ -3,10 +3,9 @@
     class="overview-map"
     icon="map-marker"
     title="common.overview"
+    :polylines="polylines"
     :markers="markers"
-    :places="places"
     :fit="fit"
-    :marker-styling="styling"
     @map-move="handleMove"
     @map-change="handleClose"
     @marker-click="handleMarkerClick"
@@ -39,9 +38,10 @@
 </template>
 
 <script>
+import get from 'lodash/get';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-import { MarkerStyling } from '@/constants/marker-styling';
+import { PlaceStyle } from '@/constants/drone-place-style';
 import SdMap from '@/components/map/map.vue';
 
 import OverviewPopover from './overview-popover.vue';
@@ -67,6 +67,35 @@ export default {
       'depots',
       'drones'
     ]),
+    dronePlaceStyle() {
+      const style = {};
+      for (const d of this.drones) {
+        const mapPoint = d.info.points.find(p => p.point_type_name === 'map') || {};
+        style[d.info.id] = Object.assign({}, PlaceStyle, get(mapPoint, 'params.common.place', {}));
+      }
+      return style;
+    },
+    polylines() {
+      const polylines = [];
+      for (const d of this.drones) {
+        const { position, place } = d.msg;
+        if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
+        const droneId = d.info.id;
+        const placeStyle = this.dronePlaceStyle[droneId];
+        const origin = position[0];
+        for (const [placeName, pos] of Object.entries(place)) {
+          const style = placeStyle[placeName] || {};
+          if (style.stroke) {
+            polylines.push({
+              name: `${droneId}_${placeName}`,
+              style,
+              coordinates: [origin, pos]
+            });
+          }
+        }
+      }
+      return polylines;
+    },
     droneMarkers() {
       const markers = [];
       for (let d of this.drones) {
@@ -104,40 +133,25 @@ export default {
     placeMarkers() {
       const markers = [];
       for (const d of this.drones) {
-        const position = d.msg.position[0];
-        if (d.status.code !== 0 || !position || !position.place) continue;
+        const { position, place } = d.msg;
+        if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
         const droneId = d.info.id;
-        for (const [placeName, pos] of Object.entries(position.place)) {
-          const arr = Array.isArray(pos) ? pos : [pos];
-          for (const p of arr) {
-            markers.push({
-              type: 'place',
-              id: `${droneId}_${placeName}`,
-              name: placeName,
-              position: p
-            });
-          }
+        const placeStyle = this.dronePlaceStyle[droneId];
+        for (const [placeName, pos] of Object.entries(place)) {
+          const style = placeStyle[placeName] || {};
+          markers.push({
+            type: 'place',
+            id: `${droneId}_${placeName}`,
+            name: placeName,
+            style: style,
+            position: pos
+          });
         }
       }
       return markers;
     },
     markers() {
       return [...this.depotMarkers, ...this.droneMarkers, ...this.placeMarkers];
-    },
-    places() {
-      const paths = [];
-      for (const d of this.drones) {
-        const position = d.msg.position[0];
-        if (d.status.code !== 0 || !position || !position.place) continue;
-        const p = [position];
-        for (const [name, pos] of Object.entries(position.place)) {
-          paths.push({
-            name,
-            path: p.concat(pos)
-          });
-        }
-      }
-      return paths;
     },
     selectedNode() {
       if (this.popover.node < 0) return null;
@@ -199,7 +213,6 @@ export default {
   created() {
     this.type = this.preference.mapType;
     this.fit = this.preference.overviewFit;
-    this.styling = MarkerStyling;
   },
   components: {
     [SdMap.name]: SdMap,

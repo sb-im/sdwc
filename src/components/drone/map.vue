@@ -2,15 +2,12 @@
   <sd-map
     icon="map-marker"
     title="map.satellite"
-    :path="msg.position"
+    :polylines="polylines"
     :markers="markers"
     :heatmap="msg.heatmap"
-    :places="places"
     :follow="follow"
     selectable
-    path-color="#909399"
     :popover-shown="popover.show"
-    :marker-styling="styling"
     @map-move="handleMove"
     @map-change="handlePopoverCancel"
     @select-point="handlePointSelect"
@@ -69,9 +66,10 @@
 </template>
 
 <script>
+import get from 'lodash/get';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
-import { MarkerStyling } from '@/constants/marker-styling';
+import { PlaceStyle } from '@/constants/drone-place-style';
 import NodeMap from '@/components/map/map.vue';
 
 /** @type {SDWC.DroneMapControl[]} */
@@ -145,11 +143,34 @@ export default {
     ]),
     commands() {
       if (!this.point.params) return DefaultCommands;
-      return this.point.params.common.move || DefaultCommands;
+      return get(this.point, 'params.common.move', DefaultCommands);
     },
-    styling() {
-      if (!this.point.params) return MarkerStyling;
-      return this.point.params.common.place || MarkerStyling;
+    placeStyle() {
+      if (!this.point.params) return PlaceStyle;
+      return Object.assign({}, PlaceStyle, get(this.point, 'params.common.place', {}));
+    },
+    polylines() {
+      const polylines = [];
+      const { position, place } = this.msg;
+      if (position.length > 0) {
+        polylines.push({
+          name: 'path',
+          style: { stroke: 'solid', color: '#909399' },
+          coordinates: position
+        });
+        const origin = position[0];
+        for (const [name, pos] of Object.entries(place)) {
+          const style = this.placeStyle[name] || {};
+          if (style.stroke) {
+            polylines.push({
+              name: name,
+              style: style,
+              coordinates: [origin, pos]
+            });
+          }
+        }
+      }
+      return polylines;
     },
     droneMarkers() {
       const markers = [];
@@ -187,32 +208,19 @@ export default {
       const { place } = this.msg;
       const markers = [];
       for (const [name, pos] of Object.entries(place)) {
-        const arr = Array.isArray(pos) ? pos : [pos];
-        for (let i = 0; i < arr.length; i++) {
+          const style = this.placeStyle[name] || {};
           markers.push({
             type: 'place',
-            id: `${name}_${i}`,
-            name,
-            position: arr[i]
+            id: name,
+            name: name,
+            style: style,
+            position: pos
           });
-        }
       }
       return markers;
     },
     markers() {
       return [...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
-    },
-    places() {
-      const { position, place } = this.msg;
-      const current = position[0];
-      const paths = [];
-      for (const [name, pos] of Object.entries(place)) {
-        paths.push({
-          name,
-          path: [current, pos]
-        });
-      }
-      return paths;
     }
   },
   methods: {

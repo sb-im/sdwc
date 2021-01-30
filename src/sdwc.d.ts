@@ -404,6 +404,7 @@ declare namespace SDWC {
   }
   export interface MarkerPlace extends MarkerBase {
     type: 'place';
+    style: DronePlaceStyle;
   }
   export type Marker = MarkerAction | MarkerDepot | MarkerDrone | MarkerPlace;
   export type DroneMapControlParamDescriptor = {
@@ -421,7 +422,7 @@ declare namespace SDWC {
       [key: string]: DroneMapControlParamDescriptor;
     }
   }
-  export interface DroneMapStyling {
+  export interface DronePlaceStyle {
     stroke?: 'dotted' | 'dashed' | 'solid';
     color?: string;
     point?: 'glow';
