@@ -427,6 +427,16 @@ declare namespace SDWC {
     color?: string;
     point?: 'glow';
   }
+  export interface MapPolyline {
+    name: string;
+    coordinates: GPSCoordinate[];
+    style: DronePlaceStyle;
+  }
+  export interface PolylineDescriptor {
+    data: GeoJSON.LineString;
+    source: string;
+    layers: string[];
+  }
 
   export interface MqttControlOptions {
     /** send as JSONRPC Notification */

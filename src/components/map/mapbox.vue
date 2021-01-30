@@ -9,11 +9,6 @@ import { waitSelector } from '@/util/wait-selector';
 
 import { randColor } from './common';
 
-/**
- * @typedef {{ lng: number, lat: number }} LngLatLiteral
- * @typedef {{ data: GeoJSON.LineString, source: string, layers: string[] }} PathDescriptor
- */
-
 /** @type {number} */
 let __MAPBOX_ZOOM__;
 
@@ -40,23 +35,15 @@ const Boundary = {
   Paint: { 'fill-color': '#03a9f4', 'fill-opacity': 0.3 }
 };
 
-const Path = {
-  Source: 'PathSource',
-  Layer: 'PathLayer',
-  OutlineLayer: 'PathOutlineLayer',
-  /** @type {mapboxgl.LineLayout} */
-  Layout: { 'line-cap': 'round', 'line-join': 'round' }
-};
-
 /** @type {{ [key: string]: { layout: mapboxgl.LineLayout, outline: mapboxgl.LinePaint, paint: mapboxgl.LinePaint } }} */
-const PlacePathStyle = {
+const PolylineStyle = {
   solid: {
-    layout: Path.Layout,
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-width': 2 },
-    outline: { 'line-width': 2, 'line-gap-width': 1, 'line-color': '#fff' }
+    outline: { 'line-width': 4, 'line-color': '#fff' }
   },
   dotted: {
-    layout: Path.Layout,
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-dasharray': [0, 3], 'line-width': 3 },
     outline: { 'line-dasharray': [0, 1.8], 'line-width': 5, 'line-color': '#fff' }
   },
@@ -107,22 +94,18 @@ function createPointElement(action = '') {
 export default {
   name: 'sd-map-mapbox',
   props: {
-    /** @type {Vue.PropOptions<LngLatLiteral[]>} */
+    /** @type {Vue.PropOptions<SDWC.GPSCoordinate[]>} */
     boundary: {
       type: Array,
       default: () => []
     },
-    /** @type {Vue.PropOptions<LngLatLiteral[]>} */
-    path: {
+    /** @type {Vue.PropOptions<{[key: string]: SDWC.MapPolyline}>} */
+    polylines: {
       type: Array,
       default: () => []
     },
     /** @type {Vue.PropOptions<SDWC.Marker[]>} */
     markers: {
-      type: Array,
-      default: () => []
-    },
-    places: {
       type: Array,
       default: () => []
     },
@@ -143,17 +126,9 @@ export default {
       type: Boolean,
       default: false
     },
-    pathColor: {
-      type: String,
-      default: '#ea4335'
-    },
     popoverShown: {
       type: Boolean,
       default: false
-    },
-    markerStyling: {
-      type: Object,
-      required: false
     }
   },
   methods: {
@@ -229,102 +204,65 @@ export default {
       } else {
         map.addSource(Boundary.Source, { type: 'geojson', data: boundaryData });
         // if `Path.OutlineLayer` already exists, `Boundary.Layer` must beneath it
-        const hasOutlineLayer = typeof map.getLayer(Path.OutlineLayer) === 'object';
+        const PathOutlineLayer = 'path_outline_layer';
+        const hasOutlineLayer = typeof map.getLayer(PathOutlineLayer) === 'object';
         map.addLayer({
           id: Boundary.Layer,
           type: 'fill',
           source: Boundary.Source,
           paint: Boundary.Paint
-        }, hasOutlineLayer ? Path.OutlineLayer : undefined);
+        }, hasOutlineLayer ? PathOutlineLayer : undefined);
       }
       this.boundaryData = boundaryData;
     },
-    async drawPath() {
+    async drawNamedPolylines() {
       /** @type {mapboxgl.Map} */
       const map = this.map;
       if (!map) return;
-      const coordinates = this.path.map(p => [p.lng, p.lat]);
-      /** @type {GeoJSON.LineString} */
-      const pathData = { type: 'LineString', coordinates };
-      if (this.pathData) {
-        map.getSource(Path.Source).setData(pathData);
-      } else {
-        map.addSource(Path.Source, { type: 'geojson', data: pathData });
-        map.addLayer({
-          id: Path.OutlineLayer,
-          type: 'line',
-          source: Path.Source,
-          layout: Path.Layout,
-          paint: { 'line-color': '#fff', 'line-width': 4, }
-        });
-        map.addLayer({
-          id: Path.Layer,
-          type: 'line',
-          source: Path.Source,
-          layout: Path.Layout,
-          paint: { 'line-color': this.pathColor, 'line-width': 2 }
-        });
+      for (const [name, pd] of Object.entries(this.namedPolylines)) {
+        // remove unused polylines
+        if (this.polylines.findIndex(place => place.name === name) < 0) {
+          pd.layers.forEach(l => map.removeLayer(l));
+          map.removeSource(pd.source);
+          delete this.namedPolylines[name];
+        }
       }
-      this.pathData = pathData;
+      for (const l of this.polylines) {
+        const { name, style, coordinates } = l;
+        if (!style.stroke) return;
+        /** @type {GeoJSON.LineString} */
+        const data = { type: 'LineString', coordinates: coordinates.map(p => [p.lng, p.lat]) };
+        /** @type {SDWC.PolylineDescriptor} */
+        let pd = this.namedPolylines[name];
+        if (pd) {
+          pd.data = data;
+          map.getSource(pd.source).setData(data);
+          continue;
+        } else {
+          pd = { layers: [`${name}_layer`, `${name}_outline_layer`], source: `${name}_source`, data };
+          this.namedPolylines[name] = pd;
+          const layerStyle = PolylineStyle[style.stroke];
+          map.addSource(pd.source, { type: 'geojson', data });
+          map.addLayer({
+            id: pd.layers[1],
+            type: 'line',
+            source: pd.source,
+            layout: layerStyle.layout,
+            paint: layerStyle.outline
+          });
+          map.addLayer({
+            id: pd.layers[0],
+            type: 'line',
+            source: pd.source,
+            layout: layerStyle.layout,
+            paint: { ...layerStyle.paint, 'line-color': style.color }
+          });
+        }
+      }
       if (this.fit) {
         this.fitPath();
       } else if (this.follow && !this.popoverShown) {
-        map.setCenter(coordinates[0]);
-      }
-    },
-    /**
-     * @param {string} name
-     * @param {mapboxgl.LngLat[]} points
-     * @param {SDWC.DroneMapStyling} style
-     */
-    drawAnimatedPath(name, points, style) {
-      const coordinates = points.map(p => [p.lng, p.lat]);
-      /** @type {GeoJSON.LineString} */
-      const data = { type: 'LineString', coordinates };
-      /** @type {mapboxgl.Map} */
-      const map = this.map;
-      /** @type {PathDescriptor} */
-      let pd = this.placePaths[name];
-      if (pd) {
-        pd.data = data;
-        map.getSource(pd.source).setData(data);
-        return;
-      } else {
-        pd = { layers: [`${name}_layer`, `${name}_outline_layer`], source: `${name}_source`, data };
-        this.placePaths[name] = pd;
-        const layerStyle = PlacePathStyle[style.stroke];
-        map.addSource(pd.source, { type: 'geojson', data });
-        map.addLayer({
-          id: pd.layers[1],
-          type: 'line',
-          source: pd.source,
-          layout: layerStyle.layout,
-          paint: layerStyle.outline
-        });
-        map.addLayer({
-          id: pd.layers[0],
-          type: 'line',
-          source: pd.source,
-          layout: layerStyle.layout,
-          paint: { ...layerStyle.paint, 'line-color': style.color }
-        });
-      }
-    },
-    drawPlacePaths() {
-      /** @type {mapboxgl.Map} */
-      const map = this.map;
-      for (const [name, pd] of Object.entries(this.placePaths)) {
-        if (this.places.findIndex(place => place.name === name) < 0) {
-          pd.layers.forEach(l => map.removeLayer(l));
-          map.removeSource(pd.source);
-          delete this.placePaths[name];
-        }
-      }
-      for (const { name, path } of this.places) {
-        const style = this.markerStyling[name] || {};
-        if (style.stroke) {
-          this.drawAnimatedPath(name, path, style);
-        }
+        this.followPath();
       }
     },
     async drawNamedMarkers() {
@@ -332,7 +270,7 @@ export default {
       const bounds = new LngLatBounds();
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      // remove mapMarker which disappeared in markers
+      // remove unused markers
       for (const [name, mapMarker] of Object.entries(this.namedMarkers)) {
         if (this.markers.findIndex(m => m.id == name) < 0) {
           mapMarker.remove();
@@ -367,8 +305,7 @@ export default {
               .setLngLat(lnglat)
               .addTo(map);
           } else if (marker.type === 'place') {
-            const style = this.markerStyling[marker.name] || {};
-            const color = style.color || randColor(marker.name);
+            const color = marker.style.color || randColor(marker.name);
             mapMarker = new Marker({ element: createMarkerElement(marker.name, color), anchor: 'bottom' })
               .setLngLat(lnglat)
               .addTo(map);
@@ -385,9 +322,11 @@ export default {
         }
         bounds.extend(lnglat);
       }
-      if (this.fit && !bounds.isEmpty() && !this.popoverShown && this.path.length <= 0) {
+      if (this.fit && !bounds.isEmpty() && !this.popoverShown) {
         // only fit to markers if no path persent
-        map.fitBounds(bounds, { padding: 40, linear: true });
+        this.fitPath().then(success => {
+          if (!success) this.map.fitBounds(bounds, { padding: 40, linear: true });
+        });
       }
     },
     async drawHeatmap() {
@@ -430,13 +369,24 @@ export default {
         });
       }
     },
+    async followPath() {
+      const path = this.polylines.find(l => l.name === 'path');
+      if (!path) return false;
+      const { coordinates } = path;
+      if (!coordinates || coordinates.length <= 0) return false;
+      this.map.setCenter(path.coordinates[0]);
+      return true;
+    },
     async fitPath() {
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
-      for (const { lng, lat } of this.path) {
+      const path = this.polylines.find(l => l.name === 'path');
+      if (!path || !path.coordinates) return false;
+      for (const { lng, lat } of path.coordinates) {
         bounds.extend(new LngLat(lng, lat));
       }
       this.map.fitBounds(bounds, { padding: 40, linear: true });
+      return true;
     },
     async fitMarkers() {
       const { LngLat, LngLatBounds } = await loadMapbox();
@@ -444,18 +394,19 @@ export default {
       for (const { position: { lng, lat } } of this.markers) {
         bounds.extend(new LngLat(lng, lat));
       }
+      if (bounds.isEmpty()) return false;
       this.map.fitBounds(bounds, { padding: 40, linear: true });
+      return true;
     }
   },
   watch: {
     boundary() {
       this.drawBoundary();
     },
-    path() {
-      this.drawPath();
+    polylines() {
+      this.drawNamedPolylines();
     },
     markers() {
-      this.drawPlacePaths();
       this.drawNamedMarkers();
     },
     heatmap() {
@@ -463,16 +414,13 @@ export default {
     },
     fit(val) {
       if (!val) return;
-      if (this.path.length > 0) {
-        this.fitPath();
-      } else if (this.markers.length > 0) {
-        this.fitMarkers();
-      }
+      this.fitPath().then(success => {
+        if (!success) () => this.fitMarkers();
+      });
     },
     follow(val) {
       if (!val) return;
-      if (this.path.length <= 0) return;
-      this.map.setCenter(this.path[0]);
+      this.followPath();
     },
     popoverShown(val) {
       if (val === false) {
@@ -485,12 +433,10 @@ export default {
     this.map = null;
     /** @type {GeoJSON.Polygon} */
     this.boundaryData = null;
-    /** @type {GeoJSON.LineString} */
-    this.pathData = null;
+    /** @type {{ [key: string]: SDWC.PolylineDescriptor }} */
+    this.namedPolylines = {};
     /** @type {GeoJSON.FeatureCollection<GeoJSON.Point>} */
     this.heatmapData = null;
-    /** @type {{ [key: string]: PathDescriptor }} */
-    this.placePaths = {};
     /** @type {{ [key: string]: mapboxgl.Marker }} */
     this.namedMarkers = {};
     /** @type {mapboxgl.Marker} */
@@ -501,11 +447,10 @@ export default {
       if (this.boundary.length > 0) {
         this.drawBoundary();
       }
-      if (this.path.length > 0) {
-        this.drawPath();
+      if (this.polylines.length > 0) {
+        this.drawNamedPolylines();
       }
       if (this.markers.length > 0) {
-        this.drawPlacePaths();
         this.drawNamedMarkers();
       }
       if (this.heatmap.length > 0) {
@@ -515,7 +460,6 @@ export default {
   },
   beforeDestroy() {
     const data = [
-      'pathData',
       'boundaryData',
       'heatmapData',
     ];
@@ -524,7 +468,7 @@ export default {
     }
     const objects = [
       'selectedMarker',
-      ...Object.keys(this.placePaths),
+      ...Object.keys(this.namedPolylines),
       ...Object.keys(this.namedMarkers)
     ];
     for (const prop of objects) {
