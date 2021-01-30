@@ -46,75 +46,37 @@ export function nodes() {
     .json();
 }
 
-export function getNodeMissionQueue(id) {
-  return wr.url(`/api/v1/nodes/${id}/mission_queues/`)
-    .get()
-    .json();
-}
-
 /** @returns {Promise<SDWC.PlanInfo[]>} */
 export function plans() {
-  return wr.url('/api/v1/plans/')
+  return wr.url('/api/v2/plans/')
     .get()
     .json();
 }
 
+/**
+ * @param {SDWC.PlanInfo}
+ * @returns {Promise<SDWC.PlanInfo>}
+ */
 export function createPlan(plan) {
-  return wr.url('/api/v1/plans/')
-    .formData(plan)
-    .post()
+  return wr.url('/api/v2/plans/')
+    .post(plan)
     .json();
 }
 
-/** @returns {Promise<SDWC.PlanInfo>} */
-export function retrievePlan(id) {
-  return wr.url(`/api/v1/plans/${id}`)
-    .get()
-    .json();
-}
-
+/**
+ * @param {number} id Plan ID
+ * @param {SDWC.PlanInfo} plan PlanInfo
+ * @returns {Promise<SDWC.PlanInfo[]>}
+ */
 export function updatePlan(id, plan) {
-  return wr.url(`/api/v1/plans/${id}`)
-    .formData(plan)
-    .patch()
+  return wr.url(`/api/v2/plans/${id}`)
+    .put(plan)
     .json();
 }
 
 export function deletePlan(id) {
-  return wr.url(`/api/v1/plans/${id}`)
+  return wr.url(`/api/v2/plans/${id}`)
     .delete()
-    .json();
-}
-
-export function getPlanMissionQueue(id) {
-  return wr.url(`/api/v1/plans/${id}/mission_queues/`)
-    .get()
-    .json();
-}
-
-export function runPlan(id) {
-  return wr.url(`/api/v1/plans/${id}/plan_logs/`)
-    .post()
-    .text();
-}
-
-export function stopPlan(id) {
-  return wr.url(`/api/v1/mission_queues/plan/${id}`)
-    .delete()
-    .text();
-}
-
-/** @returns {Promise<SDWC.PlanLog[]>} */
-export function planLogs(id) {
-  return wr.url(`/api/v1/plans/${id}/plan_logs/`)
-    .get()
-    .json();
-}
-
-/** @returns {Promise<SDWC.PlanLog>} */
-export function retrievePlanLog(planId, logId) {
-  return wr.url(`/api/v1/plans/${planId}/plan_logs/${logId}`)
-    .get()
     .json();
 }
 
@@ -124,16 +86,17 @@ export function runPlanJob(id) {
     .text();
 }
 
+/** @returns {Promise<SDWC.PlanJob[]>} */
 export function getPlanJobs(id) {
   return wr.url(`/api/v2/plans/${id}/jobs/`)
-  .get()
-  .json();
+    .get()
+    .json();
 }
 
 export function cancelPlanJob(planId, jobId) {
   return wr.url(`/api/v2/plans/${planId}/jobs/${jobId}/cancel`)
-  .post()
-  .text();
+    .post()
+    .text();
 }
 
 export function downloadFile(url) {
@@ -143,5 +106,16 @@ export function downloadFile(url) {
 }
 
 export function downloadBlob(id) {
-  return downloadFile(`/api/v1/blobs/${id}`);
+  return downloadFile(`/api/v2/blobs/${id}`);
+}
+
+/**
+ * @param {{ [key: string]: File }} files
+ * @returns {Promise<{ [key: string]: string }>}
+ */
+export function uploadFile(files) {
+  return wr.url('/api/v2/blobs/')
+    .formData(files)
+    .post()
+    .json();
 }

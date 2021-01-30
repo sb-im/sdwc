@@ -263,12 +263,9 @@ declare namespace SDWC {
     id: number;
     name: string;
     description: string;
-    node_id?: number;
-    depot_id?: number;
-    cycle_types_id: number;
-    map_path: string;
-    created_at: string;
-    updated_at: string;
+    node_id: number;
+    files: { [key: string]: string; };
+    extra?: { [key: string]: string; };
   }
   // PlanTerm
   export interface PlanTerm {
@@ -306,8 +303,9 @@ declare namespace SDWC {
     id: number;
     job_id: number;
     plan_id: number;
-    files: any;
-    extra: any;
+    /** file name: blob id */
+    files: { [key: string]: string; };
+    extra: { [key: string]: string; };
     created_at: string;
     updated_at: string;
   }
