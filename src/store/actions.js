@@ -305,7 +305,7 @@ export async function downloadFile(_, path) {
  * @returns {Promise<{ filename: string, blob: Blob }>}
  */
 export async function downloadBlob({ dispatch }, id) {
-  return dispatch('downloadFile', `/api/v1/blobs/${id}`);
+  return dispatch('downloadFile', `/api/v2/blobs/${id}`);
 }
 
 /**
