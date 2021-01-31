@@ -8,7 +8,7 @@
     :follow="follow"
     selectable
     :popover-shown="popover.show"
-    @map-move="handleMove"
+    @map-move="handleMapMove"
     @map-change="handlePopoverCancel"
     @select-point="handlePointSelect"
     @cancel-point="handlePopoverCancel"
@@ -72,6 +72,8 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { PlaceStyle } from '@/constants/drone-place-style';
 import NodeMap from '@/components/map/map.vue';
 
+import { parseWaypoints } from '@/util/waypoint-parser';
+
 /** @type {SDWC.DroneMapControl[]} */
 const DefaultCommands = [
   {
@@ -122,6 +124,10 @@ export default {
   data() {
     return {
       follow: true,
+      waypoint: {
+        markers: [],
+        coordinates: []
+      },
       popover: {
         show: false,
         coordinate: null
@@ -152,6 +158,13 @@ export default {
     polylines() {
       const polylines = [];
       const { position, place } = this.msg;
+      if (this.waypoint.coordinates.length > 0) {
+        polylines.push({
+          name: 'waypoint',
+          style: { stroke: 'solid', color: '#ea4335' },
+          coordinates: this.waypoint.coordinates
+        });
+      }
       if (position.length > 0) {
         polylines.push({
           name: 'path',
@@ -220,20 +233,30 @@ export default {
       return markers;
     },
     markers() {
-      return [...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
+      return [...this.waypoint.markers, ...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
     }
   },
   methods: {
     ...mapActions([
+      'downloadFile',
       'clearDronePath'
     ]),
     tt(k) {
       return this.$te(`air.map.${k}`) ? `air.map.${k}` : k;
     },
+    async updateCurrentWaypoint() {
+      const { waypoint_url: u } = this.msg.waypoint;
+      if (!u) return;
+      const waypoint = await this.downloadFile(u)
+        .then(res =>res.blob.text())
+        .then(text => parseWaypoints(text));
+      this.waypoint.coordinates = waypoint.path;
+      this.waypoint.markers = waypoint.actions;
+    },
     handleFollow() {
       this.follow = !this.follow;
     },
-    handleMove() {
+    handleMapMove() {
       if (this.follow) {
         this.follow = false;
       }
@@ -304,6 +327,14 @@ export default {
           // noop
         }
       });
+    }
+  },
+  watch: {
+    ['msg.waypoint.waypoint_url']: {
+      immediate: true,
+      handler() {
+        this.updateCurrentWaypoint();
+      }
     }
   },
   components: {
