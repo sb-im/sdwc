@@ -75,6 +75,8 @@ import PlanReadonly from '@/components/plan/readonly.vue';
 import StatusNotify from '@/components/status/status-notify.vue';
 import JobFile from '@/components/job-file/job-file.vue';
 
+import { waypointsToMapProps } from './common';
+
 export default {
   name: 'sd-plan-view',
   props: {
@@ -85,11 +87,7 @@ export default {
   },
   data() {
     return {
-      map: {
-        boundary: [],
-        path: [],
-        markers: []
-      },
+      map: {},
       jobs: [],
       job: {
         loading: false,
@@ -123,8 +121,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'retrievePlan',
-      'getMapPath'
+      'getPlanWaypoints'
     ]),
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
@@ -184,13 +181,7 @@ export default {
     }
   },
   created() {
-    this.retrievePlan(this.plan.id)
-      .then(plan => this.getMapPath(plan.map_path))
-      .then(r => {
-        this.map.boundary = r.boundary || [];
-        this.map.path = r.path;
-        this.map.markers = r.actions;
-      });
+    this.getPlanWaypoints(this.plan).then(wp => this.map = waypointsToMapProps(wp));
     this.getPlanJobs();
   },
   components: {

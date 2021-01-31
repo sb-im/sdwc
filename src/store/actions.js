@@ -259,16 +259,6 @@ export async function createPlan({ commit }, plan) {
 
 /**
  * @param {Context} context
- * @param {number} id
- */
-export async function retrievePlan({ commit }, id) {
-  const data = await SuperDock.retrievePlan(id);
-  commit(PLAN.UPDATE_PLAN, data);
-  return data;
-}
-
-/**
- * @param {Context} context
  * @param {SDWC.PlanInfo} plan
  */
 export async function updatePlan({ commit }, plan) {
@@ -288,10 +278,11 @@ export async function deletePlan({ commit }, id) {
 
 /**
  * @param {Context} _
- * @param {string} url
+ * @param {SDWC.PlanInfo} plan
  */
-export async function getMapPath(_, url) {
-  const text = await SuperDock.downloadFile(url).then(r => r.text());
+export async function getPlanWaypoints(_, plan) {
+  const blobId = plan.files.map;
+  const text = await SuperDock.downloadBlob(blobId).then(r => r.text());
   return parseWaypoints(text);
 }
 

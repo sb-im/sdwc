@@ -157,6 +157,11 @@ const LitchiActions = {
   // '5': 'tlit camera'
 };
 
+/**
+ * parse litchi csv waypoint file to path object
+ * @param {string} text
+ * @returns {{ path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
+ */
 export function parseLitchiCSV(text) {
   /** @type {SDWC.LatLng[]} */
   const path = [];
@@ -187,7 +192,7 @@ export function parseLitchiCSV(text) {
 /**
  * parse waypoint file to path object
  * @param {string} text
- * @returns {{ boundary?: SDWC.LatLng[], path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }}
+ * @returns {SDWC.ParsedWaypoint}
  */
 export function parseWaypoints(text) {
   const t = text.trim();

@@ -9,6 +9,12 @@ declare namespace SDWC {
     lng: number;
   }
 
+  export interface ParsedWaypoint {
+    boundary?: LatLng[];
+    path: LatLng[];
+    actions: MarkerAction[];
+  }
+
   /// Vuex store state modules
   // store/modules/config.js
   export interface Config {

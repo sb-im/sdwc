@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
 import Edit from './edit.vue';
@@ -41,11 +41,6 @@ export default {
       }
       return {};
     }
-  },
-  methods: {
-    ...mapActions([
-      'getPlanLogs'
-    ])
   },
   components: {
     [Icon.name]: Icon,
