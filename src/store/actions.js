@@ -289,10 +289,11 @@ export async function getPlanWaypoints(_, plan) {
 /**
  * @param {Context} _
  * @param {string} path file path
+ * @returns {Promise<{ filename: string, blob: Blob }>}
  */
 export async function downloadFile(_, path) {
   const res = await SuperDock.downloadFile(path);
-  const cd = res.headers.get('content-disposition');
+  const cd = res.headers.get('content-disposition') || 'attachment';
   const { filename } = ContentDisposition.parse(cd).parameters;
   const blob = await res.blob();
   return { filename, blob };
@@ -301,6 +302,7 @@ export async function downloadFile(_, path) {
 /**
  * @param {Context} _
  * @param {string} id blob id
+ * @returns {Promise<{ filename: string, blob: Blob }>}
  */
 export async function downloadBlob({ dispatch }, id) {
   return dispatch('downloadFile', `/api/v1/blobs/${id}`);

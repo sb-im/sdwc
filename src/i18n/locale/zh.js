@@ -15,9 +15,8 @@ export default {
     edit: '编辑',
     save: '保存',
     delete: '删除',
+    file: '文件',
     download: '下载',
-    upload: '上传',
-    re_upload: '重新上传',
     retry: '重试',
     clear: '清空',
     none: '暂无',
@@ -87,36 +86,25 @@ export default {
       update_failed: '编辑任务失败：错误代码 {code}',
       name_inp: '请输入任务名称',
       desc_inp: '请输入任务描述',
-      first_time_inp: '请选择首次执行时间',
-      depot_inp: '请选择起降机场',
       air_inp: '请选择执飞无人机',
-      cycle_inp: '请选择执行频次',
-      cycle: {
-        0: '手动',
-        1: '一次',
-        2: '每小时',
-        3: '每天',
-        4: '每周',
-        5: '每月',
+      delete_title: '删除任务',
+      delete_tips: '确定要永久删除此任务吗？'
+    },
+    file: {
+      key: {
+        map: '航点站务文件'
       },
-      select_map: '选择地图',
-      please_name: '请输入任务名称！',
-      please_desc: '请输入任务描述！',
-      please_air: '请选择执飞无人机！',
-      please_depot: '请选择起降机场！',
-      please_cycle: '请选择执行频次！',
-      please_file: '请上传航点站务文件！',
-      delete_tips: '此操作将删除该任务，是否继续？'
+      new: '新增',
+      select: '选择文件',
+      pending: '\u3000上传中',
+      re: '重新上传',
+      error: '上传文件失败：错误代码 {code}'
     },
     name: '任务名称',
     desc: '任务描述',
     desc_no: '暂无任务描述',
     files: '文件列表',
     air: '执飞无人机',
-    depot: '起降机场',
-    cycle: '执行频次',
-    mapfile: '航点站务文件',
-    first_time: '首次执行时间',
     ctime: '创建时间'
   },
   air: {

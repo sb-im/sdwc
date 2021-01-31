@@ -15,9 +15,8 @@ export default {
     edit: 'Edit',
     save: 'Save',
     delete: 'Delete',
+    file: 'File',
     download: 'Download',
-    upload: 'Upload',
-    re_upload: 'Re-upload',
     retry: 'Retry',
     clear: 'Clear',
     none: 'None',
@@ -87,36 +86,25 @@ export default {
       update_failed: 'Failed to edit Plan: Error code {code}',
       name_inp: 'Enter the name of plan',
       desc_inp: 'Enter the description of plan',
-      first_time_inp: 'Select the first run time',
-      depot_inp: 'Select to take off and land',
       air_inp: 'Select the drone',
-      cycle_inp: 'Select the run cycle',
-      cycle: {
-        0: 'Manual',
-        1: 'Once',
-        2: 'EveryHour',
-        3: 'EveryDay',
-        4: 'EveryWeek',
-        5: 'EveryMonth',
+      delete_title: 'Delete Plan',
+      delete_tips: 'Do you really want to permanently delete this plan?'
+    },
+    file: {
+      key: {
+        map: 'Waypoint file'
       },
-      select_map: 'Select map',
-      please_name: 'Please enter the name of plan!',
-      please_desc: 'Please enter the description of plan!',
-      please_air: 'Please select the drone!',
-      please_depot: 'Please select to take off and land!',
-      please_cycle: 'Please select the run cycle!',
-      please_file: 'Please upload the waypoint file!',
-      delete_tips: 'This action will delete the plan, will it continue?'
+      new: 'New',
+      select: 'Select file',
+      pending: 'Uploading..',
+      re: 'Re-Select..',
+      error: 'Failed to upload file: Error code {code}'
     },
     name: 'Name',
     desc: 'Description',
     desc_no: 'No description',
     files: 'Files',
     air: 'Flying drone',
-    depot: 'Depot',
-    cycle: 'Cycle',
-    mapfile: 'Waypoint file',
-    first_time: 'First run time',
     ctime: 'Creation time'
   },
   air: {
