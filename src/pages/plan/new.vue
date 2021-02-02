@@ -32,7 +32,7 @@ export default {
         name: '',
         description: '',
         node_id: null,
-        files: { map: '' },
+        files: { waypoint: '' },
         extra: {}
       },
       map: {}

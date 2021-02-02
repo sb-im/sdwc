@@ -270,8 +270,16 @@ declare namespace SDWC {
     name: string;
     description: string;
     node_id: number;
-    files: { [key: string]: string; };
-    extra?: { [key: string]: string; };
+    files: {
+      waypoint?: string;
+      speaker?: string;
+      lua?: string;
+      droneconfig?: string;
+      [key: string]: string;
+    };
+    extra?: {
+      [key: string]: string;
+    };
   }
   // PlanTerm
   export interface PlanTerm {

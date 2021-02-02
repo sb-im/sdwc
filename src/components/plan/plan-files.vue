@@ -16,7 +16,7 @@
           popper-class="plan-file__select"
           placeholder="文件标签"
           filterable
-          allow-create
+          :allow-create="false"
           default-first-option
           :value="item.key"
           @change="handleFieldInput(index, $event)"
@@ -69,9 +69,12 @@ import { mapActions } from 'vuex';
  * @typedef {{ key: string, blobId: string, filename: string, button: FileButton }} FileEntry
  */
 
-const FileFields = [
-  { key: 'map' }
-];
+const PredefinedFileKeys = new Set([
+  'waypoint',
+  'speaker',
+  'lua',
+  'droneconfig'
+]);
 
 const FileButton = {
   created: { icon: 'el-icon-folder-opened', text: 'select' },
@@ -96,28 +99,42 @@ export default {
     fileEntries: []
   }),
   computed: {
+    /**
+     * `Set<string>` of every key in `fileEntries`
+     */
+    occupiedKeys() {
+      return new Set(this.fileEntries.map(e => e.key));
+    },
     canAdd() {
-      return !this.readonly;
+      if (this.readonly) {
+        return false;
+      }
+      if (
+        this.occupiedKeys.size >= PredefinedFileKeys.size &&
+        // keys in `this.fileEntries` contain every predefined key
+        Array.from(PredefinedFileKeys.values()).every(k => this.occupiedKeys.has(k))
+      ) {
+        return false;
+      }
+      return true;
     },
     /**
      * file field name dropdown options
      */
     fields() {
       const fields = [];
-      const predefinedKeys = new Set(FileFields.map(f => f.key));
-      const occupiedKeys = new Set(this.fileEntries.map(e => e.key));
       // static/predefined fileds
-      for (const f of FileFields) {
+      for (const k of PredefinedFileKeys) {
         fields.push({
-          key: f.key,
-          label: this.t(f.key),
-          hidden: occupiedKeys.has(f.key)
+          key: k,
+          label: this.t(k),
+          hidden: this.occupiedKeys.has(k)
         });
       }
       // files that already existed, including predefined or user-defined fileds
       for (const e of this.fileEntries) {
         // to avoid duplicate, only push user-defined fields
-        if (!predefinedKeys.has(e.key)) {
+        if (!PredefinedFileKeys.has(e.key)) {
           const translatedLabel = this.t(e.key);
           fields.push({
             key: e.key,
@@ -142,7 +159,8 @@ export default {
     ]),
     t(fileKey) {
       const fullKey = `plan.file.key.${fileKey}`;
-      return this.$t(this.$te(fullKey) ? fullKey : fileKey);
+      const t = this.$t(this.$te(fullKey) ? fullKey : fileKey);
+      return typeof t === 'string' ? t : fileKey;
     },
     updateValue() {
       const result = {};
@@ -173,7 +191,7 @@ export default {
       });
     },
     /**
-     * @param {{ data: FileEntry, file: File, filename: string }} options
+     * @param {import('element-ui/types/upload').HttpRequestOptions} options
      */
     handleUpload(options) {
       const file = options.file;
@@ -185,7 +203,7 @@ export default {
         fileEntry.button = FileButton.uploaded;
         fileEntry.blobId = r[key];
         this.updateValue();
-        if (key === 'map') {
+        if (key === 'waypoint') {
           this.$emit('waypoint-file-change', file);
         }
       }).catch(e => {

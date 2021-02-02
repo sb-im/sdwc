@@ -281,7 +281,7 @@ export async function deletePlan({ commit }, id) {
  * @param {SDWC.PlanInfo} plan
  */
 export async function getPlanWaypoints(_, plan) {
-  const blobId = plan.files.map;
+  const blobId = plan.files.waypoint;
   const text = await SuperDock.downloadBlob(blobId).then(r => r.text());
   return parseWaypoints(text);
 }

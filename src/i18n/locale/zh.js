@@ -92,7 +92,10 @@ export default {
     },
     file: {
       key: {
-        map: '航点站务文件'
+        waypoint: '航点',
+        speaker: '喊话器音频',
+        lua: '自定义流程',
+        droneconfig: '自定义无人机配置'
       },
       new: '新增',
       select: '选择文件',

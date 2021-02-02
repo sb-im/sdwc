@@ -92,7 +92,10 @@ export default {
     },
     file: {
       key: {
-        map: 'Waypoint file'
+        waypoint: 'Waypoint',
+        speaker: 'Speaker audio',
+        lua: 'Custom plan process',
+        droneconfig: 'Custom drone configuration'
       },
       new: 'New',
       select: 'Select file',
