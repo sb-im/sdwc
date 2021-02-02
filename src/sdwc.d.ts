@@ -197,7 +197,7 @@ declare namespace SDWC {
   }
   export type NodeHeatmap = GPSHeatPoint[];
   export interface NodeWaypoint {
-    waypoint_url: string;
+    [key: string]: string;
   }
   export interface NodeNotification {
     time: string;

@@ -94,9 +94,7 @@ const mutations = {
         position: [],
         place: {},
         heatmap: [],
-        waypoint: {
-          waypoint_url: ''
-        },
+        waypoint: {},
         notification: [],
         overview: {}
       }

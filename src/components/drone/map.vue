@@ -124,10 +124,8 @@ export default {
   data() {
     return {
       follow: true,
-      waypoint: {
-        markers: [],
-        coordinates: []
-      },
+      /** @type {{ coordinates: SDWC.GPSCoordinate[], markers: SDWC.MarkerAction[] }[]} */
+      waypoints: [],
       popover: {
         show: false,
         coordinate: null
@@ -158,11 +156,11 @@ export default {
     polylines() {
       const polylines = [];
       const { position, place } = this.msg;
-      if (this.waypoint.coordinates.length > 0) {
+      for (const wp of this.waypoints) {
         polylines.push({
-          name: 'waypoint',
+          name: `waypoint${polylines.length}`,
           style: { stroke: 'solid', color: '#ea4335' },
-          coordinates: this.waypoint.coordinates
+          coordinates: wp.coordinates
         });
       }
       if (position.length > 0) {
@@ -233,7 +231,12 @@ export default {
       return markers;
     },
     markers() {
-      return [...this.waypoint.markers, ...this.droneMarkers, ...this.depotMarkers, ...this.placeMarkers];
+      return [
+        ...this.waypoints.map(w => w.markers).flat(),
+        ...this.droneMarkers,
+        ...this.depotMarkers,
+        ...this.placeMarkers
+      ];
     }
   },
   methods: {
@@ -244,14 +247,20 @@ export default {
     tt(k) {
       return this.$te(`air.map.${k}`) ? `air.map.${k}` : k;
     },
-    async updateCurrentWaypoint() {
-      const { waypoint_url: u } = this.msg.waypoint;
-      if (!u) return;
-      const waypoint = await this.downloadFile(u)
-        .then(res =>res.blob.text())
-        .then(text => parseWaypoints(text));
-      this.waypoint.coordinates = waypoint.path;
-      this.waypoint.markers = waypoint.actions;
+    async updateCurrentWaypoints() {
+      const waypoints = [];
+      for (const url of Object.values(this.msg.waypoint)) {
+        const wp = await this.downloadFile(url)
+          .then(res =>res.blob.text())
+          .then(text => parseWaypoints(text));
+        const i = waypoints.length;
+        wp.actions.forEach(a => a.id = `wp${i}_${a.id}`);
+        waypoints.push({
+          coordinates: wp.path,
+          markers: wp.actions
+        });
+      }
+      this.waypoints = waypoints;
     },
     handleFollow() {
       this.follow = !this.follow;
@@ -330,10 +339,10 @@ export default {
     }
   },
   watch: {
-    ['msg.waypoint.waypoint_url']: {
+    ['msg.waypoint']: {
       immediate: true,
       handler() {
-        this.updateCurrentWaypoint();
+        this.updateCurrentWaypoints();
       }
     }
   },
