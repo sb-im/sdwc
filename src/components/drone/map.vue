@@ -241,7 +241,6 @@ export default {
   },
   methods: {
     ...mapActions([
-      'downloadFile',
       'clearDronePath'
     ]),
     tt(k) {
@@ -250,8 +249,8 @@ export default {
     async updateCurrentWaypoints() {
       const waypoints = [];
       for (const url of Object.values(this.msg.waypoint)) {
-        const wp = await this.downloadFile(url)
-          .then(res =>res.blob.text())
+        const wp = await fetch(url)
+          .then(res =>res.text())
           .then(text => parseWaypoints(text));
         const i = waypoints.length;
         wp.actions.forEach(a => a.id = `wp${i}_${a.id}`);
