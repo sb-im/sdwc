@@ -103,6 +103,13 @@ const mutations = {
   [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: number, payload: Partial<SDWC.NodeConnectionStatus> }} */ { id, payload }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
+    if (payload.status) {
+      for (const k of ['lng', 'lat', 'alt']) {
+        if (typeof payload.status[k] === 'string') {
+          payload.status[k] = Number.parseFloat(payload.status[k]);
+        }
+      }
+    }
     Object.assign(node.status, payload);
   },
   [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: number, payload: SDWC.NodeNetworkStatus }} */ { id, payload }) {

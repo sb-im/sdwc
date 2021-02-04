@@ -155,6 +155,7 @@ export default {
     },
     polylines() {
       const polylines = [];
+      /** @type {{ position: SDWC.NodePosition[], place: SDWC.NodePlaces }} */
       const { position, place } = this.msg;
       for (const wp of this.waypoints) {
         polylines.push({
@@ -185,6 +186,7 @@ export default {
     },
     droneMarkers() {
       const markers = [];
+      /** @type {SDWC.NodePosition} */
       const position = this.msg.position[0];
       if (this.status.code === 0 && typeof position === 'object') {
         markers.push({
@@ -206,10 +208,7 @@ export default {
             type: 'depot',
             id: d.info.id,
             name: d.info.name,
-            position: {
-              lng: +status.lng,
-              lat: +status.lat,
-            }
+            position: { lng: status.lng, lat: status.lat }
           });
         }
       }
