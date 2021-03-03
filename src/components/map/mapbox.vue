@@ -448,7 +448,7 @@ export default {
         this.drawBoundary();
       }
       if (this.polylines.length > 0) {
-        this.drawNamedPolylines();
+        this.drawNamedPolylines().then(() => this.fitPath());
       }
       if (this.markers.length > 0) {
         this.drawNamedMarkers();
