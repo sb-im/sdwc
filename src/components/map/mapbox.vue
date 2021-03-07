@@ -99,7 +99,7 @@ export default {
       type: Array,
       default: () => []
     },
-    /** @type {Vue.PropOptions<{[key: string]: SDWC.MapPolyline}>} */
+    /** @type {Vue.PropOptions<SDWC.MapPolyline[]>} */
     polylines: {
       type: Array,
       default: () => []
@@ -377,7 +377,7 @@ export default {
       this.map.setCenter(path.coordinates[0]);
       return true;
     },
-    async fitPath() {
+    async fitPath(duration = 500) {
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
       const path = this.polylines.find(l => l.name === 'path');
@@ -385,7 +385,7 @@ export default {
       for (const { lng, lat } of path.coordinates) {
         bounds.extend(new LngLat(lng, lat));
       }
-      this.map.fitBounds(bounds, { padding: 40, linear: true });
+      this.map.fitBounds(bounds, { padding: 40, linear: true, duration });
       return true;
     },
     async fitMarkers() {
@@ -448,7 +448,7 @@ export default {
         this.drawBoundary();
       }
       if (this.polylines.length > 0) {
-        this.drawNamedPolylines().then(() => this.fitPath());
+        this.drawNamedPolylines().then(() => this.fitPath(0));
       }
       if (this.markers.length > 0) {
         this.drawNamedMarkers();
