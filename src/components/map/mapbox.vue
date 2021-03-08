@@ -29,8 +29,8 @@ const GoogleRasterStyle = {
 };
 
 const Boundary = {
-  Source: 'BoundarySource',
-  Layer: 'BoundaryLayer',
+  Source: 'boundary_source',
+  Layer: 'boundary_layer',
   /** @type {mapboxgl.FillPaint} */
   Paint: { 'fill-color': '#03a9f4', 'fill-opacity': 0.3 }
 };
@@ -204,7 +204,7 @@ export default {
         map.getSource(Boundary.Source).setData(boundaryData);
       } else {
         map.addSource(Boundary.Source, { type: 'geojson', data: boundaryData });
-        // if `Path.OutlineLayer` already exists, `Boundary.Layer` must beneath it
+        // if `path` layers already exists, `Boundary.Layer` must beneath it
         const PathOutlineLayer = 'path_outline_layer';
         const hasOutlineLayer = typeof map.getLayer(PathOutlineLayer) === 'object';
         map.addLayer({
@@ -257,6 +257,13 @@ export default {
             layout: layerStyle.layout,
             paint: { ...layerStyle.paint, 'line-color': style.color }
           });
+          if (name.startsWith('waypoint')) {
+            // move `waypoint` layers beneath `path` layers
+            const PathOutlineLayer = 'path_outline_layer';
+            if (typeof map.getLayer(PathOutlineLayer) !== 'object') return;
+            map.moveLayer(pd.layers[0], PathOutlineLayer);
+            map.moveLayer(pd.layers[1], pd.layers[0]);
+          }
         }
       }
       if (this.fit) {
