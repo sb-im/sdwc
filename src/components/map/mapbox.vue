@@ -131,6 +131,9 @@ export default {
       default: false
     }
   },
+  data: () => ({
+    mapInitialized: false
+  }),
   methods: {
     async initMap() {
       const { Map, ScaleControl, NavigationControl } = await loadMapbox();
@@ -149,10 +152,9 @@ export default {
       if (this.selectable) {
         this.bindMapEvents();
       }
-      return new Promise((resolve, reject) => {
-        map.once('load', resolve);
-        map.once('error', reject);
-      });
+      await new Promise(resolve => map.once('load', resolve));
+      this.mapInitialized = true;
+      return map;
     },
     async bindMapEvents() {
       /** @type {mapboxgl.Map} */
@@ -192,10 +194,9 @@ export default {
       this.selectedMarker.remove();
     },
     async drawBoundary() {
-      if (this.boundary.length <= 0) return;
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      if (!map) return;
+      if (!map || this.boundary.length <= 0) return;
       const lnglats = this.boundary.map(p => [p.lng, p.lat]);
       /** @type {GeoJSON.Polygon} */
       const boundaryData = { type: 'Polygon', coordinates: [lnglats] };
@@ -218,7 +219,6 @@ export default {
     async drawNamedPolylines() {
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      if (!map) return;
       for (const [name, pd] of Object.entries(this.namedPolylines)) {
         // remove unused polylines
         if (this.polylines.findIndex(place => place.name === name) < 0) {
@@ -330,6 +330,8 @@ export default {
       }
     },
     async drawHeatmap() {
+      /** @type {mapboxgl.Map} */
+      const map = this.map;
       const maxWeight = Math.max.apply(null, this.heatmap.map(p => p.weight));
       /** @type {GeoJSON.Feature<GeoJSON.Point>[]} */
       const features = [];
@@ -342,8 +344,6 @@ export default {
       }
       /** @type {GeoJSON.FeatureCollection<GeoJSON.Point>} */
       const data = { type: 'FeatureCollection', features };
-      /** @type {mapboxgl.Map} */
-      const map = this.map;
       if (this.heatmapData) {
         map.getSource(Heatmap.Source).setData(data);
       } else {
@@ -401,28 +401,33 @@ export default {
   },
   watch: {
     boundary() {
+      if (!this.mapInitialized) return;
       this.drawBoundary();
     },
     polylines() {
+      if (!this.mapInitialized) return;
       this.drawNamedPolylines();
     },
     markers() {
+      if (!this.mapInitialized) return;
       this.drawNamedMarkers();
     },
     heatmap() {
+      if (!this.mapInitialized) return;
       this.drawHeatmap();
     },
     fit(val) {
-      if (!val) return;
+      if (!this.mapInitialized || !val) return;
       this.fitPath().then(success => {
         if (!success) () => this.fitMarkers();
       });
     },
     follow(val) {
-      if (!val) return;
+      if (!this.mapInitialized || !val) return;
       this.followPath();
     },
     popoverShown(val) {
+      if (!this.mapInitialized) return;
       if (val === false) {
         this.removeSeletedMarker();
       }
@@ -444,6 +449,7 @@ export default {
   },
   mounted() {
     this.initMap().then(() => {
+      // map is loaded and initialized
       if (this.boundary.length > 0) {
         this.drawBoundary();
       }
