@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import { loadMapbox } from '@/api/mapbox';
 import { h, hs } from '@/util/create-element';
 import { waitSelector } from '@/util/wait-selector';
@@ -134,8 +136,16 @@ export default {
   data: () => ({
     mapInitialized: false
   }),
+  computed: {
+    ...mapState([
+      'config'
+    ])
+  },
   methods: {
     async initMap() {
+      if (this.config.map_tiles_url) {
+        GoogleRasterStyle.sources.google.tiles = [this.config.map_tiles_url];
+      }
       const { Map, ScaleControl, NavigationControl } = await loadMapbox();
       const map = new Map({
         container: this.$refs.map,

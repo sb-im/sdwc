@@ -26,6 +26,7 @@ declare namespace SDWC {
     lang: string;
     amap_key: string;
     gmap_key: string;
+    map_tiles_url: string;
     heweather_key: string;
     mapbox_key: string;
     mqtt_url: string;

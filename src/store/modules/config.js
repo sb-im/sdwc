@@ -10,6 +10,7 @@ const state = {
   lang: 'en',
   amap_key: '',
   gmap_key: '',
+  map_tiles_url: '',
   heweather_key: '',
   mapbox_key: '',
   mqtt_url: '',
