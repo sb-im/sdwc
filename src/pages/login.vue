@@ -29,7 +29,7 @@
       </el-form>
     </div>
     <div class="login__footer">
-      <a class="login__beian" href="http://www.beian.miit.gov.cn/">
+      <a class="login__beian" href="https://beian.miit.gov.cn">
         <i class="el-icon-document-checked"></i>
         {{ footerText }}
       </a>
