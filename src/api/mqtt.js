@@ -22,6 +22,10 @@ class MqttClient extends EventEmitter {
     }
   }
 
+  static warn(...args) {
+    console.warn('[MQTT]', ...args); // eslint-disable-line no-console
+  }
+
   /**
    * @param {string} topic
    * @returns {{ type: 'nodes'|'plans', id: number }}
@@ -82,13 +86,20 @@ class MqttClient extends EventEmitter {
       const str = message.toString();
       const { type, id } = MqttClient.parseTopic(topic);
       MqttClient.log('msg:', topic, str);
-      switch (type) {
-        case 'nodes':
-          this.onNodeMsg(topic, id, str);
-          break;
-        case 'plans':
-          this.onPlanMsg(topic, id, str);
-          break;
+      try {
+        switch (type) {
+          case 'nodes':
+            this.onNodeMsg(topic, id, str);
+            break;
+          case 'plans':
+            this.onPlanMsg(topic, id, str);
+            break;
+          default:
+            MqttClient.warn(`Invalid message type "${type}" in topic "${topic}", with payload:`, str);
+            break;
+        }
+      } catch (e) {
+        MqttClient.warn(`Invalid message in topic "${topic}", with payload:`, str);
       }
     });
   }
