@@ -301,11 +301,23 @@ export default {
         /** @type {mapboxgl.Marker} */
         let mapMarker = this.namedMarkers[marker.id];
         if (mapMarker) {
+          // patch existing markers
           mapMarker.setLngLat(lnglat);
           if (marker.type === 'drone') {
             mapMarker.getElement().querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
-          }
+          } else if (marker.type === 'depot') {
+            const labelElm = mapMarker.getElement().getElementsByClassName('mapbox-marker__label')[0];
+            if (labelElm.textContet !== marker.name) {
+              labelElm.textContent = marker.name;
+            }
+          } else if (marker.type === 'action') {
+            mapMarker.getElement().getElementsByClassName('material-icons')[0].textContent = marker.action.join('');
+          } /* else if (marker.type === 'place') {
+            // 'place' marker's id is bind to its name (at least for now)
+            // so we should not need to patch it
+          } */
         } else {
+          // create new markers
           if (marker.type === 'drone') {
             const element = createDroneElement(marker.name);
             element.querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
