@@ -64,8 +64,11 @@ export default {
     handleButtonClick(button) {
       MqttClient.mqtt.publish(`plans/${this.planId}/term`, button.message);
     },
-    toggle() {
-      this.visible = !this.visible;
+    open() {
+      this.visible = true;
+    },
+    close() {
+      this.visible = false;
     }
   },
   components: {

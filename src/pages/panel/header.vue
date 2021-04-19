@@ -263,7 +263,7 @@ export default {
         }
       } else if (typeof cmd.dialog === 'number') {
         this.planDialog.id = cmd.dialog;
-        this.$refs.planDialog.toggle();
+        this.$refs.planDialog.open();
       } else if (typeof cmd.dialog === 'string') {
         switch (cmd.dialog) {
           case 'popup':
@@ -276,7 +276,7 @@ export default {
       if (this.plan.dialog.findIndex(d => d.id === id) < 0) return;
       this.planDialog.id = id;
       if (this.$refs.planDialog.visible) return;
-      this.$nextTick(() => this.$refs.planDialog.toggle());
+      this.$nextTick(() => this.$refs.planDialog.open());
     },
     closePlanNotify(id) {
       const notifyInstance = this.planNotify[id];
@@ -339,7 +339,7 @@ export default {
             // dialog is empty
             if (this.planDialog.id === payload.id && this.$refs.planDialog.visible) {
               // opening dialog became empty
-              this.$refs.planDialog.toggle();
+              this.$refs.planDialog.close();
             }
             this.closePlanNotify(payload.id);
           }
