@@ -102,7 +102,7 @@ export function parseKML(text) {
   const xml = parser.parseFromString(text, 'text/xml');
   const placemarks = xml.querySelectorAll('Document>Folder>Placemark');
   const placemarkArray = Array.from(placemarks).sort((a, b) => {
-    const [ia, ib] = [a, b].map(e => Number.parseInt(e.querySelector('name').textContent.replace(/\w/g, ''), 10));
+    const [ia, ib] = [a, b].map(e => Number.parseInt(e.querySelector('name').textContent.replace(/[A-Za-z]/g, ''), 10));
     return ia - ib;
   });
   for (const pm of placemarkArray) {
