@@ -29,10 +29,6 @@ export function logout(token) {
     .json();
 }
 
-/**
- * @see https://staging.sblab.xyz/apidoc/
- */
-
 export function user() {
   return wr.url('/api/v1/user/')
     .get()
@@ -43,14 +39,14 @@ export function user() {
 export function nodes() {
   return wr.url('/api/v1/nodes/')
     .get()
-    .json();
+    .json(json => json || []);
 }
 
 /** @returns {Promise<SDWC.PlanInfo[]>} */
 export function plans() {
   return wr.url('/api/v2/plans/')
     .get()
-    .json();
+    .json(json => json || []);
 }
 
 /**
@@ -90,7 +86,7 @@ export function runPlanJob(id) {
 export function getPlanJobs(id) {
   return wr.url(`/api/v2/plans/${id}/jobs/`)
     .get()
-    .json();
+    .json(json => json || []);
 }
 
 export function cancelPlanJob(planId, jobId) {

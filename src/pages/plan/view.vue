@@ -21,7 +21,7 @@
           <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
-      <sd-plan-readonly :plan="plan"></sd-plan-readonly>
+      <sd-plan-readonly :plan="planToShow"></sd-plan-readonly>
     </sd-card>
     <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
     <sd-job-file ref="jobFile"></sd-job-file>
@@ -30,12 +30,13 @@
         stripe
         v-loading="job.loading"
         :data="jobsToShow"
+        :row-class-name="getTableRowClass"
         :default-sort="{ prop: 'created_at', order: 'descending' }"
         @sort-change="handleSortChange"
       >
         <el-table-column
           align="center"
-          width="180"
+          width="170"
           prop="created_at"
           sortable="custom"
           :sort-orders="['ascending', 'descending']"
@@ -47,11 +48,7 @@
           <span slot="header" v-t="'plan.view.raw_data'"></span>
           <template v-slot="{ row }">
             <template v-for="(blobId, name) of row.files">
-              <el-button
-                :key="name"
-                size="mini"
-                @click="handleOpenFile(blobId)"
-              >{{ name }}</el-button>
+              <el-button :key="name" size="mini" @click="handleOpenFile(blobId)">{{ name }}</el-button>
             </template>
           </template>
         </el-table-column>
@@ -75,11 +72,14 @@ import PlanReadonly from '@/components/plan/readonly.vue';
 import StatusNotify from '@/components/status/status-notify.vue';
 import JobFile from '@/components/job-file/job-file.vue';
 
+import { MutationTypes as PLAN } from '@/store/modules/plan';
+
 import { waypointsToMapProps } from './common';
 
 export default {
   name: 'sd-plan-view',
   props: {
+    /** @type {import('vue').PropOptions<SDWC.PlanInfo>}*/
     plan: {
       type: Object,
       required: true
@@ -88,6 +88,7 @@ export default {
   data() {
     return {
       map: {},
+      /** @type {SDWC.PlanJob[]} */
       jobs: [],
       job: {
         loading: false,
@@ -101,17 +102,33 @@ export default {
   },
   computed: {
     ...mapState({
+      /**
+       * @param {SDWC.State} state
+       * @returns {SDWC.PlanTermOutput[]}
+       */
       termOutput(state) {
-        const t = state.plan.term.find(t => t.id === this.plan.id) || { output: [] };
-        return t.output;
+        const term = state.plan.term.find(t => t.id === this.plan.id);
+        return term ? term.output : [];
       },
+      /**
+       * @param {SDWC.State} state
+       * @returns {SDWC.PlanRunningContent}
+       */
       runningJob(state) {
-        const s = state.plan.running.find(s => s.id === this.plan.id);
-        return s ? s.job : null;
+        /** @type {SDWC.PlanRunning} */
+        const running = state.plan.running.find(r => r.id === this.plan.id);
+        return running ? running.running : null;
       }
     }),
     isRunning() {
-      return Boolean(this.runningJob);
+      return this.runningJob !== null;
+    },
+    planToShow() {
+      if (!this.runningJob) return this.plan;
+      return Object.assign({}, this.plan, {
+        files: Object.assign({}, this.plan.files, this.runningJob.files),
+        extra: Object.assign({}, this.plan.extra, this.runningJob.extra)
+      });
     },
     jobsToShow() {
       const { size, current } = this.pagination;
@@ -162,11 +179,48 @@ export default {
     },
     async getPlanJobs() {
       this.job.loading = true;
-      const res = (await getPlanJobs(this.plan.id)) || [];
+      const res = await getPlanJobs(this.plan.id);
+      if (this.isRunning) {
+        this.patchRunningJob(res, this.runningJob);
+      }
       res.forEach(l => l.created_at = new Date(l.created_at));
       this.jobs = res;
       this.sortJobs();
       this.job.loading = false;
+    },
+    /**
+     * @param {SDWC.PlanJob[]} jobs
+     * @param {SDWC.PlanRunningContent} content
+     */
+    patchRunningJob(jobs, content) {
+      /** @type {SDWC.PlanJob} */
+      const job = jobs.find(j => j.job_id === content.job.job_id);
+      if (typeof job !== 'object') {
+        const now = new Date();
+        jobs.push(Object.assign({
+          temporary: true,
+          id: content.job.job_id,
+          plan_id: this.plan.id,
+          created_at: now,
+          updated_at: now
+        }, content.job));
+      } else {
+        if (job.temporary) {
+          job.files = content.job.files;
+          job.extra = content.job.extra;
+        } else {
+          job.files = Object.assign({}, job.files, content.job.files);
+          job.extra = Object.assign({}, job.extra, content.job.extra);
+        }
+      }
+    },
+    /**
+     * @param {{ row: SDWC.PlanJob }} _
+     * @returns {string}
+     */
+    getTableRowClass({ row }) {
+      if (!this.isRunning) return '';
+      return this.runningJob.job.job_id === row.job_id ? 'is-running' : '';
     },
     handleSortChange({ order }) {
       this.job.order = order;
@@ -183,6 +237,16 @@ export default {
   created() {
     this.getPlanWaypoints(this.plan).then(wp => this.map = waypointsToMapProps(wp));
     this.getPlanJobs();
+    this._unsub = this.$store.subscribe(({ type, payload }) => {
+      if (type === PLAN.SET_PLAN_RUNNING) {
+        if (payload.id === this.plan.id) {
+          this.patchRunningJob(this.jobs, payload.running);
+        }
+      }
+    });
+  },
+  beforeDestroy() {
+    if (typeof this._unsub === 'function') this._unsub();
   },
   components: {
     [Card.name]: Card,
@@ -207,5 +271,9 @@ export default {
 }
 .plan__history .el-pagination {
   padding: 8px 25px;
+}
+
+.plan__history .el-table__row.is-running>td {
+  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px);
 }
 </style>

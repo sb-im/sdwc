@@ -162,6 +162,14 @@ export default {
       const t = this.$t(this.$te(fullKey) ? fullKey : fileKey);
       return typeof t === 'string' ? t : fileKey;
     },
+    updateFileEntries() {
+      this.fileEntries = Object.entries(this.value).map(([key, blobId]) => ({
+        key,
+        blobId,
+        filename: '',
+        button: `${blobId}`.length > 0 ? FileButton.uploaded : FileButton.created
+      }));
+    },
     updateValue() {
       const result = {};
       for (const e of this.fileEntries) {
@@ -226,13 +234,14 @@ export default {
       this.fileEntries.push({ key: newKey, button: FileButton.created });
     }
   },
+  watch: {
+    value() {
+      if (!this.readonly) return;
+      this.updateFileEntries();
+    }
+  },
   created() {
-    this.fileEntries = Object.entries(this.value).map(([key, blobId]) => ({
-      key,
-      blobId,
-      filename: '',
-      button: `${blobId}`.length > 0 ? FileButton.uploaded : FileButton.created
-    }));
+    this.updateFileEntries();
   }
 };
 </script>
