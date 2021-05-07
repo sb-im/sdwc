@@ -35,6 +35,7 @@ import Img from './img.vue';
 import WebRTC from './webrtc.vue';
 import WebRTC2 from './webrtc2.vue';
 import WebRTC3 from './webrtc3.vue';
+import WebRTC4 from './webrtc4.vue';
 import IFrame from './iframe.vue';
 
 const CompoName = {
@@ -44,6 +45,7 @@ const CompoName = {
   'livestream_webrtc': WebRTC.name,
   'livestream_webrtc2': WebRTC2.name,
   'livestream_webrtc3': WebRTC3.name,
+  'livestream_webrtc4': WebRTC4.name,
   'iframe': IFrame.name
 };
 
@@ -113,6 +115,7 @@ export default {
     [WebRTC.name]: WebRTC,
     [WebRTC2.name]: WebRTC2,
     [WebRTC3.name]: WebRTC3,
+    [WebRTC4.name]: WebRTC4,
     [IFrame.name]: IFrame
   }
 };
