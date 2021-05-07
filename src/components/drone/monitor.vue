@@ -103,7 +103,7 @@
           ></div>
         </transition>
         <div
-          v-if="point.params.control.gimbal"
+          v-if="point.params && point.params.control && point.params.control.gimbal"
           v-show="control.enabled === 'gimbal'"
           class="monitor-drone-control--horizontal"
         >
@@ -122,7 +122,7 @@
           </el-tooltip>
         </div>
         <div
-          v-if="point.params.control.gimbal"
+          v-if="point.params && point.params.control && point.params.control.gimbal"
           v-show="control.enabled === 'gimbal'"
           class="monitor-drone-control--vertical"
         >
@@ -137,7 +137,7 @@
           />
         </div>
         <div
-          v-if="point.params.control.zoom"
+          v-if="point.params && point.params.control && point.params.control.zoom"
           v-show="control.enabled === 'zoom'"
           class="monitor-drone-control--bottom"
         >
