@@ -324,9 +324,19 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  export interface PlanRunningContent {
+    files: { [key: string]: string; };
+    extra: { [key: string]: string; };
+    job: {
+      job_id: number;
+      files: { [key: string]: string; };
+      extra: { [key: string]: string; };
+    }
+  }
   export interface PlanRunning {
+    /** Plan Id */
     id: number;
-    job: PlanJob;
+    running: PlanRunningContent;
   }
   // PlanLog
   export interface PlanLog {
@@ -373,6 +383,7 @@ declare namespace SDWC {
       info: PlanInfo[];
       term: PlanTerm[];
       dialog: PlanDialog[];
+      running: PlanRunning[]
     }
     preference: Preference;
     ui: UI;

@@ -55,11 +55,11 @@ const mutations = {
       }
     }
   },
-  [MutationTypes.SET_PLAN_RUNNING](state, /** @type {SDWC.PlanRunning} */ payload) {
+  [MutationTypes.SET_PLAN_RUNNING](state, /** @type {{ id: number, running: SDWC.PlanRunningContent }} */ payload) {
     const index = state.info.findIndex(plan => plan.id === payload.id);
     if (index < 0) return;
-    const exist = state.running.findIndex(d => d.id === payload.id);
-    const empty = Object.getOwnPropertyNames(payload.job).length === 0;
+    const exist = state.running.findIndex(r => r.id === payload.id);
+    const empty = Object.getOwnPropertyNames(payload.running).length === 0;
     if (exist >= 0) {
       if (empty) {
         state.running.splice(exist, 1);

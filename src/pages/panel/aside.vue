@@ -30,7 +30,7 @@
         :key="plan.id"
         :index="`plan-${plan.id}`"
         :route="{ name: 'plan', params: { id: plan.id } }"
-        :class="{ 'is-running': planRunning[plan.id] }"
+        :class="{ 'is-running': isPlanRunning[plan.id] }"
       >{{ plan.name }}</el-menu-item>
     </el-submenu>
     <el-submenu index="drone">
@@ -84,14 +84,18 @@ export default {
   },
   computed: {
     ...mapState({
+      /** @type { () => SDWC.Config[] } */
       config: state => state.config,
+      /** @type { () => SDWC.PlanInfo[] } */
       plans: state => state.plan.info,
-      jobs: state => state.plan.running
+      /** @type { () => SDWC.PlanRunning[] } */
+      running: state => state.plan.running
     }),
     ...mapGetters([
       'drones',
       'depots'
     ]),
+    /** @returns {string} */
     activeIndex() {
       const { name, params: { id } } = this.$route;
       switch (name) {
@@ -107,13 +111,15 @@ export default {
       }
       return '';
     },
-    planRunning() {
+    /** @returns {{ [planId: string]: boolean }} */
+    isPlanRunning() {
       const result = {};
-      for (const job of this.jobs) {
-        result[job.job.plan_id] = true;
+      for (const r of this.running) {
+        result[r.id] = true;
       }
       return result;
     },
+    /** @returns {string} */
     version() {
       return __SDWC__VERSION__; // would be replaced on compile
     }
