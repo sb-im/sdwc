@@ -5,7 +5,7 @@ stages:
 
 before_script:
   - eval "$(ssh-agent -s)"
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - >/dev/null
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
@@ -18,7 +18,7 @@ deploy_staging:
       - dev
   script:
     - ./scripts/gitlab-ci.sh --env dev
-    - cat file.tar.xz | ssh ${USER_CLOUD_STAGING}@${HOST_CLOUD_STAGING} 'cd ~/www/sb.im/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
+    - cat file.tar.xz | ssh ${USER_CLOUD_STAGING}@${HOST_CLOUD_STAGING} 'cd ~/www/sb.im/sdwc && find . ! -name 'config.json*' -delete && tar -xJf -'
 
 deploy_production:
   stage: deploy
@@ -27,5 +27,5 @@ deploy_production:
       - master
   script:
     - ./scripts/gitlab-ci.sh
-    - cat file.tar.xz | ssh ${USER_CLOUD_PRODUCTION}@${HOST_CLOUD_PRODUCTION} 'cd ~/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
+    - cat file.tar.xz | ssh ${USER_CLOUD_PRODUCTION}@${HOST_CLOUD_PRODUCTION} 'cd ~/sdwc && find . ! -name 'config.json*' -delete && tar -xJf -'
 
