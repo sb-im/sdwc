@@ -1,6 +1,6 @@
 // @ts-check
 
-import { EventEmitter } from 'events';
+import { EventEmitter2 } from 'eventemitter2';
 
 export function trace() {
   // @ts-ignore
@@ -140,7 +140,7 @@ class PeerConnectionClient {
 /**
  * @see https://github.com/kclyu/rpi-webrtc-streamer/blob/6881a5cc9571807bf16372b020ae96e5d64b891c/web-root/native-peerconnection/js/websocket_signaling.js
  */
-export class WebSocketSignalingChannel extends EventEmitter {
+export class WebSocketSignalingChannel extends EventEmitter2 {
   /**
    * @param {string} url
    * @param {HTMLVideoElement} videoElem

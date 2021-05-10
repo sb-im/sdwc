@@ -1,8 +1,10 @@
-import { EventEmitter } from 'events';
+// @ts-check
+
+import { EventEmitter2 } from 'eventemitter2';
 
 import { trace } from './webrtc-client';
 
-export class WebRTC3Client extends EventEmitter {
+export class WebRTC3Client extends EventEmitter2 {
   /**
    * @param {string | RTCIceServer[]} iceServer
    * @param {string} cableURL
@@ -36,7 +38,7 @@ export class WebRTC3Client extends EventEmitter {
   }
 
   /**
-   * @param {WebSocketEventMap} event
+   * @param {MessageEvent<string>} event
    */
   onCableMessage(event) {
     trace('onCableMessage', event.data);

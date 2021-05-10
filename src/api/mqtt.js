@@ -1,11 +1,13 @@
-import { EventEmitter } from 'events';
+// @ts-check
+
+import { EventEmitter2 } from 'eventemitter2';
 
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
 
 import { transformMessage } from './mqtt-adapter';
 
-class MqttClient extends EventEmitter {
+class MqttClient extends EventEmitter2 {
   constructor() {
     super();
     this.lastPing = -1;
@@ -28,7 +30,7 @@ class MqttClient extends EventEmitter {
 
   /**
    * @param {string} topic
-   * @returns {{ type: 'nodes'|'plans', id: number }}
+   * @returns {{ type: 'nodes'|'plans'|string, id: number }}
    */
   static parseTopic(topic) {
     const parts = topic.split('/');
@@ -109,6 +111,7 @@ class MqttClient extends EventEmitter {
   }
 
   ping() {
+    // @ts-ignore
     this.mqtt._sendPacket({ cmd: 'pingreq' });
   }
 
@@ -215,6 +218,7 @@ class MqttClient extends EventEmitter {
    * @param {string} str
    */
   onRpcSend(id, str) {
+    /** @type {import('jsonrpc-lite').IParsedObject} */  // @ts-ignore
     const request = jsonrpc.parse(str);
     switch (request.type) {
       case 'request':
@@ -229,8 +233,10 @@ class MqttClient extends EventEmitter {
    * @param {string} str
    */
   onRpcRecv(id, str) {
+    /** @type {import('jsonrpc-lite').IParsedObject} */  // @ts-ignore
     const response = jsonrpc.parse(str);
     this.emit('rpc:response', { id, response });
+    // @ts-ignore
     const res = this.resolveMap.get(response.payload.id);
     if (!res) return;
     if (response.type === 'success') {
@@ -240,6 +246,7 @@ class MqttClient extends EventEmitter {
     } else {
       res.reject(response.payload);
     }
+    // @ts-ignore
     this.resolveMap.delete(response.payload.id);
   }
 

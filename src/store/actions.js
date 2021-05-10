@@ -1,6 +1,6 @@
 // @ts-check
 
-import ContentDisposition from 'content-disposition';
+import { parse as parseContentDisposition } from '@tinyhttp/content-disposition';
 
 import { setLocale, locales } from '@/i18n';
 import * as S from '@/api/sdwc';
@@ -295,7 +295,7 @@ export async function getPlanWaypoints(_, plan) {
 export async function downloadFile(_, path) {
   const res = await SuperDock.downloadFile(path);
   const cd = res.headers.get('content-disposition') || 'attachment';
-  const { filename } = ContentDisposition.parse(cd).parameters;
+  const { filename } = parseContentDisposition(cd).parameters;
   const blob = await res.blob();
   return { filename, blob };
 }

@@ -1,8 +1,10 @@
-import { EventEmitter } from 'events';
+// @ts-check
+
+import { EventEmitter2 } from 'eventemitter2';
 
 import { trace } from './webrtc-client';
 
-export class WebRTC2Client extends EventEmitter {
+export class WebRTC2Client extends EventEmitter2 {
   /**
    * @param {string | RTCIceServer[]} iceServer
    */

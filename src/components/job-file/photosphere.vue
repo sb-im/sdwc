@@ -17,7 +17,7 @@ export default {
   },
   async mounted() {
     const { Viewer } = await import(/* webpackChunkName: 'photo-sphere-viewer' */ 'photo-sphere-viewer');
-    await import(/* webpackChunkName: 'photo-sphere-viewer' */'photo-sphere-viewer/dist/photo-sphere-viewer.css');
+    await import(/* webpackChunkName: 'photo-sphere-viewer-style' */ 'photo-sphere-viewer/dist/photo-sphere-viewer.css');
     const url = URL.createObjectURL(this.blob);
     this.url = url;
     const viewer = new Viewer({

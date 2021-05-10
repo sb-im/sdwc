@@ -8,8 +8,8 @@ const cp = require('child_process');
 const webpack = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
 
 const packageJson = require('../package.json');
 
@@ -33,7 +33,7 @@ const cfg = {
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: '[name].[hash].js',
+    filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
   },
   module: {
@@ -90,6 +90,9 @@ const cfg = {
       'assets': path.resolve(__dirname, '../assets'),
       // use browser version mqtt.js
       'mqtt': 'mqtt/dist/mqtt.js'
+    },
+    fallback: {
+      path: false
     }
   },
   plugins: [
@@ -98,7 +101,8 @@ const cfg = {
       filename: 'index.html',
       title: 'S Dashboard Web Console'
     }),
-    new webpack.DefinePlugin({ '__SDWC__VERSION__': `"${resolveVersion(true)}"` })
+    new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
+    new webpack.DefinePlugin({ __SDWC__VERSION__: `"${resolveVersion(true)}"` })
   ],
   devServer: {
     hot: true,
@@ -108,13 +112,8 @@ const cfg = {
   performance: {
     hints: false
   },
-  stats: {
-    all: false,
-    assets: true,
-    errors: true,
-    version: true
-  },
-  devtool: 'cheap-module-eval-source-map'
+  stats: 'normal',
+  devtool: 'eval-cheap-module-source-map'
 }
 
 /**
@@ -128,15 +127,20 @@ module.exports = function (env, argv) {
     cfg.mode = 'production';
     cfg.devtool = 'source-map';
     cfg.module.rules[0].use = [
-      { loader: MiniCSSExtractPlugin.loader },
+      { loader: MiniCssExtractPlugin.loader },
       { loader: 'css-loader' }
     ];
+    cfg.optimization = {
+      minimize: true,
+      minimizer: [
+        new CssMinimizerWebpackPlugin()
+      ]
+    };
     cfg.plugins.push(
-      new MiniCSSExtractPlugin({
+      new MiniCssExtractPlugin({
         filename: 'style.[contenthash].css',
         chunkFilename: '[name].[contenthash].css'
-      }),
-      new OptimizeCssAssetsPlugin()
+      })
     );
   }
   // 'DEVELOPMENT' ribbon on left top corner
