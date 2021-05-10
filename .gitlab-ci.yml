@@ -17,7 +17,7 @@ deploy_staging:
     refs:
       - dev
   script:
-    - ./scripts/gitlab-ci.sh --env.dev
+    - ./scripts/gitlab-ci.sh --env dev
     - cat file.tar.xz | ssh ${USER_CLOUD_STAGING}@${HOST_CLOUD_STAGING} 'cd ~/www/sb.im/sdwc && ls -A | grep -v 'config.json*' | xargs rm -rf && tar -xJf -'
 
 deploy_production:

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -v
+set -ev
 
 yarn install
 yarn test
