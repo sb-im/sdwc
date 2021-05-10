@@ -1,6 +1,7 @@
 FROM node:lts-alpine as build-stage
+RUN apk update && apk add --no-cache git
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json yarn.lock ./
 RUN yarn install
 COPY . .
 RUN yarn build; \
