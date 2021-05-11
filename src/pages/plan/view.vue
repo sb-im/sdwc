@@ -114,20 +114,20 @@ export default {
        * @param {SDWC.State} state
        * @returns {SDWC.PlanRunningContent}
        */
-      runningJob(state) {
+      runningContent(state) {
         /** @type {SDWC.PlanRunning} */
         const running = state.plan.running.find(r => r.id === this.plan.id);
         return running ? running.running : null;
       }
     }),
     isRunning() {
-      return this.runningJob !== null;
+      return this.runningContent !== null;
     },
     planToShow() {
-      if (!this.runningJob) return this.plan;
+      if (!this.isRunning) return this.plan;
       return Object.assign({}, this.plan, {
-        files: Object.assign({}, this.plan.files, this.runningJob.files),
-        extra: Object.assign({}, this.plan.extra, this.runningJob.extra)
+        files: Object.assign({}, this.plan.files, this.runningContent.files),
+        extra: Object.assign({}, this.plan.extra, this.runningContent.extra)
       });
     },
     jobsToShow() {
@@ -159,7 +159,7 @@ export default {
         title: this.plan.name,
         message: this.$t('plan.view.pending'),
       });
-      cancelPlanJob(this.plan.id, this.runningJob.id).then(() => {
+      cancelPlanJob(this.plan.id, this.runningContent.id).then(() => {
         Object.assign(n.$data, {
           message: this.$t('plan.view.stop_run'),
           type: 'warning',
@@ -181,7 +181,7 @@ export default {
       this.job.loading = true;
       const res = await getPlanJobs(this.plan.id);
       if (this.isRunning) {
-        this.patchRunningJob(res, this.runningJob);
+        this.patchRunningJob(res, this.runningContent.job);
       }
       res.forEach(l => l.created_at = new Date(l.created_at));
       this.jobs = res;
@@ -190,27 +190,28 @@ export default {
     },
     /**
      * @param {SDWC.PlanJob[]} jobs
-     * @param {SDWC.PlanRunningContent} content
+     * @param {SDWC.PlanRunningContentJob} runningJob
      */
-    patchRunningJob(jobs, content) {
+    patchRunningJob(jobs, runningJob) {
+      if (!runningJob || !runningJob.job_id) return;
       /** @type {SDWC.PlanJob} */
-      const job = jobs.find(j => j.job_id === content.job.job_id);
+      const job = jobs.find(j => j.job_id === runningJob.job_id);
       if (typeof job !== 'object') {
         const now = new Date();
-        jobs.push(Object.assign({
+        jobs.unshift(Object.assign({
           temporary: true,
-          id: content.job.job_id,
+          id: runningJob.job_id,
           plan_id: this.plan.id,
           created_at: now,
           updated_at: now
-        }, content.job));
+        }, runningJob));
       } else {
         if (job.temporary) {
-          job.files = content.job.files;
-          job.extra = content.job.extra;
+          job.files = runningJob.files;
+          job.extra = runningJob.extra;
         } else {
-          job.files = Object.assign({}, job.files, content.job.files);
-          job.extra = Object.assign({}, job.extra, content.job.extra);
+          job.files = Object.assign({}, job.files, runningJob.files);
+          job.extra = Object.assign({}, job.extra, runningJob.extra);
         }
       }
     },
@@ -220,7 +221,7 @@ export default {
      */
     getTableRowClass({ row }) {
       if (!this.isRunning) return '';
-      return this.runningJob.job.job_id === row.job_id ? 'is-running' : '';
+      return this.runningContent.job.job_id === row.job_id ? 'is-running' : '';
     },
     handleSortChange({ order }) {
       this.job.order = order;
@@ -239,8 +240,8 @@ export default {
     this.getPlanJobs();
     this._unsub = this.$store.subscribe(({ type, payload }) => {
       if (type === PLAN.SET_PLAN_RUNNING) {
-        if (payload.id === this.plan.id) {
-          this.patchRunningJob(this.jobs, payload.running);
+        if (payload.id === this.plan.id && payload.running.job) {
+          this.patchRunningJob(this.jobs, payload.running.job);
         }
       }
     });
@@ -273,7 +274,7 @@ export default {
   padding: 8px 25px;
 }
 
-.plan__history .el-table__row.is-running>td {
-  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px);
+.plan__history .el-table__row.is-running > td {
+  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px) !important;
 }
 </style>
