@@ -19,12 +19,14 @@ import Url from './url.vue';
 import Text from './text.vue';
 import Image from './image.vue';
 import IFrame from './iframe.vue';
+import IFrameDoc from './iframe-doc.vue';
 import PhotoSphere from './photosphere.vue';
 import Unknown from './unknown.vue';
 
 const FileTypes = {
   'pano.jpg': PhotoSphere.name,
   'iframe': IFrame.name,
+  'html': IFrameDoc.name,
   'jpg': Image.name,
   'txt': Text.name,
   'url': Url.name
@@ -75,6 +77,7 @@ export default {
     [Text.name]: Text,
     [Image.name]: Image,
     [IFrame.name]: IFrame,
+    [IFrameDoc.name]: IFrameDoc,
     [PhotoSphere.name]: PhotoSphere,
     [Unknown.name]: Unknown
   }
