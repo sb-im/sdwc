@@ -280,8 +280,8 @@ export default {
           elements.push({
             type: 'text',
             text: s.label,
-            x: s.x + offset,
-            y: s.y + offset,
+            x: s.x || s.cx || 0 + offset,
+            y: s.y || s.cy || 0 + offset,
             'alignment-baseline': 'hanging',
             fill: s.stroke || s.fill
           });
