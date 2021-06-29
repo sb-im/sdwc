@@ -18,7 +18,7 @@
               @click.native="handleVideoSource(s.source, $event)"
             >
               <el-radio :value="msg.gimbal.source" :label="s.source">
-                <span v-t="s.label || s.source"></span>
+                <span v-t="s.label || `monitor.source.${s.source}` || s.source"></span>
               </el-radio>
             </el-dropdown-item>
             <el-dropdown-item divided @click.native="handleRestratStream">
@@ -48,7 +48,7 @@
             @click.native="handleControlType(c.type, $event)"
           >
             <el-radio :value="control.enabled" :label="c.type">
-              <span v-t="c.label || c.method"></span>
+              <span v-t="c.label || `monitor.control.${c.type}`  || c.method"></span>
             </el-radio>
           </el-dropdown-item>
           <!-- dedicated dropdown-item for virtual joystick control -->
@@ -59,7 +59,7 @@
             @click.native="handleControlType('stick', $event)"
           >
             <el-checkbox :value="joystick.show" :disabled="joystick.pending">
-              <span v-t="point.params.control.stick.label || point.params.control.stick.method"></span>
+              <span v-t="'monitor.control.stick'"></span>
             </el-checkbox>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -75,7 +75,7 @@
             <span v-t="'monitor.action.empty'"></span>
           </el-dropdown-item>
           <el-dropdown-item v-for="a of availableActions" :key="a.method" :command="a.method">
-            <span v-t="a.label || a.method"></span>
+            <span v-t="a.label || `monitor.action.${a.method}` || a.method"></span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -99,45 +99,42 @@
           <div
             v-show="target.show"
             class="monitor-drone-control__target"
+            :class="target.type"
             :style="`left:${target.left}px;top:${target.top}px`"
           ></div>
         </transition>
-        <div
-          v-if="point.params && point.params.control && point.params.control.gimbal"
-          v-show="control.enabled === 'gimbal'"
-          class="monitor-drone-control--horizontal"
-        >
-          <!-- pitch angle right -->
-          <el-slider
-            v-model="gimbal.yaw"
-            :min="point.params.control.gimbal.yaw[0]"
-            :max="point.params.control.gimbal.yaw[1]"
-            @change="handleGimbalCtl({ yaw: $event })"
-            style="width:180px"
-          />
-          <!-- button 'center' -->
-          <el-tooltip class="monitor-drone-control__restore" placement="top">
-            <span slot="content" v-t="'monitor.gimbal.reset'"></span>
-            <el-button circle size="mini" icon="el-icon-refresh" @click="handleGimbalRestore"></el-button>
-          </el-tooltip>
+        <!-- gimbal slider and reset button -->
+        <div v-if="hasGimbalControl" v-show="control.enabled === 'gimbal'">
+          <div class="monitor-drone-control--vertical">
+            <!-- button 'center' -->
+            <el-tooltip class="monitor-drone-control__restore" placement="top">
+              <span slot="content" v-t="'monitor.gimbal.reset'"></span>
+              <el-button circle size="mini" icon="el-icon-refresh" @click="handleGimbalRestore"></el-button>
+            </el-tooltip>
+            <!-- pitch angle left -->
+            <el-slider
+              vertical
+              v-model="gimbal.pitch"
+              :min="point.params.control.gimbal.pitch[0]"
+              :max="point.params.control.gimbal.pitch[1]"
+              @change="handleGimbalCtl({ pitch: $event })"
+              height="135px"
+            />
+          </div>
+          <div class="monitor-drone-control--horizontal">
+            <!-- pitch angle right -->
+            <el-slider
+              v-model="gimbal.yaw"
+              :min="point.params.control.gimbal.yaw[0]"
+              :max="point.params.control.gimbal.yaw[1]"
+              @change="handleGimbalCtl({ yaw: $event })"
+              style="width:180px"
+            />
+          </div>
         </div>
+        <!-- zoom slider and reset button -->
         <div
-          v-if="point.params && point.params.control && point.params.control.gimbal"
-          v-show="control.enabled === 'gimbal'"
-          class="monitor-drone-control--vertical"
-        >
-          <!-- pitch angle left -->
-          <el-slider
-            vertical
-            v-model="gimbal.pitch"
-            :min="point.params.control.gimbal.pitch[0]"
-            :max="point.params.control.gimbal.pitch[1]"
-            @change="handleGimbalCtl({ pitch: $event })"
-            height="135px"
-          />
-        </div>
-        <div
-          v-if="point.params && point.params.control && point.params.control.zoom"
+          v-if="hasZoomControl"
           v-show="control.enabled === 'zoom'"
           class="monitor-drone-control--bottom"
         >
@@ -149,7 +146,7 @@
             :max="point.params.control.zoom.zoom[1]"
             :step="0.1"
             @change="handleGimbalZoom"
-            height="100px"
+            height="135px"
           />
           <!-- zoom reset -->
           <el-tooltip class="monitor-drone-control__restore" placement="bottom">
@@ -167,6 +164,8 @@
 </template>
 
 <script>
+import get from 'lodash/get';
+import has from 'lodash/has';
 import throttle from 'lodash/throttle';
 import nipplejs from 'nipplejs';
 
@@ -174,6 +173,11 @@ import { h } from '@/util/create-element';
 import { waitSelector } from '@/util/wait-selector';
 
 import Monitor from '@/components/monitor/monitor.vue';
+
+const trunc = (decimal, digit = 3) => {
+  const p = Math.pow(10, digit);
+  return Math.trunc(decimal * p) / p;
+};
 
 export default {
   name: 'sd-drone-mointor',
@@ -215,6 +219,7 @@ export default {
         }
       },
       target: {
+        type: '',
         show: false,
         left: 0,
         top: 0
@@ -234,26 +239,36 @@ export default {
       return this.status.code !== 0;
     },
     videoSources() {
-      const params = this.point.params || { source: [] };
-      return params.source;
+      return get(this.point.params, 'source', []);
     },
     availableControls() {
-      const params = this.point.params || { control: {} };
       const controls = [];
-      for (const [k, v] of Object.entries(params.control)) {
+      for (const [k, v] of Object.entries(get(this.point.params, 'control', {}))) {
         if (k === 'stick') continue;
         controls.push(Object.assign({ type: k }, v));
       }
       return controls;
     },
+    hasClickControl() {
+      // single click `pin_screen`
+      return has(this.point.params, 'control.click');
+    },
+    hasTargetControl() {
+      // double click `gimbal_target`
+      return has(this.point.params, 'control.target');
+    },
+    hasGimbalControl() {
+      return has(this.point.params, 'control.gimbal');
+    },
+    hasZoomControl() {
+      return has(this.point.params, 'control.zoom');
+    },
     hasStickControl() {
-      const params = this.point.params || { control: {} };
-      return Object.prototype.hasOwnProperty.call(params.control, 'stick');
+      return has(this.point.params, 'control.stick');
     },
     availableActions() {
-      const params = this.point.params || { action: [] };
       const enabled = this.msg.action_enabled;
-      return params.action.filter(a => enabled.includes(a.method));
+      return get(this.point.params, 'action', []).filter(a => enabled.includes(a.method));
     },
     overlaySVG() {
       const { width, height, shapes } = this.msg.overlay_screen;
@@ -360,11 +375,16 @@ export default {
         notification: true
       });
     },
+    handlePinScreen(x, y) {
+      this.$mqtt(this.point.node_id, {
+        mission: 'pin_screen',
+        arg: { x: trunc(x), y: trunc(y) }
+      });
+    },
     handleGimbalTarget(x, y) {
-      const t = x => Math.trunc(x * 1000) / 1000;
       this.$mqtt(this.point.node_id, {
         mission: 'gimbal_target',
-        arg: { x: t(x), y: t(y) }
+        arg: { x: trunc(x), y: trunc(y) }
       }, {
         notification: true
       });
@@ -427,13 +447,31 @@ export default {
      * @param {DOMRect} rect
      * @param {MouseEvent} ev
      */
+    handleSingleClick(rect, ev) {
+      if (ev.detail === 2) return;
+      const left = ev.clientX - rect.left;
+      const top = ev.clientY - rect.top;
+      const x = left / rect.width;
+      const y = top / rect.height;
+      this.handlePinScreen(x, y);
+      this.target = { left, top, show: true, type: 'single' };
+      setTimeout(() => {
+        if (top === this.target.top && left === this.target.left) {
+          this.target.show = false;
+        }
+      }, 500);
+    },
+    /**
+     * @param {DOMRect} rect
+     * @param {MouseEvent} ev
+     */
     handleDblClick(rect, ev) {
       const left = ev.clientX - rect.left;
       const top = ev.clientY - rect.top;
       const x = left / rect.width;
       const y = top / rect.height;
       this.handleGimbalTarget(x, y);
-      this.target = { left, top, show: true };
+      this.target = { left, top, show: true, type: 'double' };
       setTimeout(() => {
         if (top === this.target.top && left === this.target.left) {
           this.target.show = false;
@@ -485,11 +523,22 @@ export default {
       el.addEventListener('mouseleave', ev => {
         this.handleGestureEnd(ev.x, ev.y);
       });
+      // Single Click
+      if (this.hasClickControl) {
+        el.addEventListener('click', ev => {
+          if (this.control.enabled !== 'click') return;
+          const rect = el.getBoundingClientRect();
+          this.handleSingleClick(rect, ev);
+        });
+      }
       // Double Click
-      el.addEventListener('dblclick', ev => {
-        const rect = el.getBoundingClientRect();
-        this.handleDblClick(rect, ev);
-      });
+      if (this.hasTargetControl) {
+        el.addEventListener('dblclick', ev => {
+          if (this.control.enabled !== 'target') return;
+          const rect = el.getBoundingClientRect();
+          this.handleDblClick(rect, ev);
+        });
+      }
     },
     /**
      * @param {number} index
@@ -647,17 +696,19 @@ export default {
   height: 40px;
   border-radius: 20px;
   margin: -20px 0 0 -20px;
-  background-color: #409effb2;
   transition-property: opacity;
 }
-.monitor-drone-control--horizontal {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+.monitor-drone-control__target.single {
+  background-color: #ffffffb2;
+}
+.monitor-drone-control__target.double {
+  background-color: #409effb2;
 }
 .monitor-drone-control--vertical {
-  display: flex;
-  justify-content: flex-end;
+  float: right;
+}
+.monitor-drone-control--horizontal {
+  float: right;
 }
 .monitor-drone-control--bottom {
   position: absolute;

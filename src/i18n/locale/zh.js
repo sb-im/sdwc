@@ -194,8 +194,10 @@ export default {
     control: {
       title: '控制',
       empty: '暂无可用控制',
-      gimbal: '云台',
-      zoom: '变焦',
+      click: '信息探针',
+      target: '指点朝向',
+      gimbal: '云台角度',
+      zoom: '变焦倍率',
       stick: '虚拟摇杆'
     },
     action: {
