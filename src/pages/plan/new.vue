@@ -6,6 +6,9 @@
           <el-button type="success" size="medium" icon="el-icon-document-checked" @click="handleCreate">
             <span v-t="'common.save'"></span>
           </el-button>
+          <el-button type="info" size="medium" icon="el-icon-close" @click="handleCancel">
+            <span v-t="'common.cancel'"></span>
+          </el-button>
         </template>
         <sd-plan-editable ref="edit" :initial="initial" @waypoint-change="handleWaypointChange"></sd-plan-editable>
       </sd-card>
@@ -47,6 +50,9 @@ export default {
       this.createPlan(plan)
         .then(p => this.$router.push({ name: 'plan/view', params: { id: p.id } }))
         .catch(e => this.$message.error(this.$t('plan.edit.create_failed', { code: e.status })));
+    },
+    handleCancel() {
+      this.$router.push({ name: 'overview' });
     },
     handleWaypointChange(wp) {
       this.map = waypointsToMapProps(wp);
