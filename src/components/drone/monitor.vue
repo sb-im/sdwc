@@ -365,12 +365,12 @@ export default {
       });
     },
     /**
-     * @param {number} zoom
+     * @param {number} value
      */
-    handleGimbalZoom(zoom) {
+    handleGimbalZoom(value) {
       this.$mqtt(this.point.node_id, {
         mission: 'camera',
-        arg: { action: 'zoom', zoom }
+        arg: { action: 'zoom', value }
       }, {
         notification: true
       });
