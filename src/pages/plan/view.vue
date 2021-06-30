@@ -200,7 +200,7 @@ export default {
         const now = new Date();
         jobs.unshift(Object.assign({
           temporary: true,
-          id: runningJob.job_id,
+          job_id: runningJob.job_id,
           plan_id: this.plan.id,
           created_at: now,
           updated_at: now
