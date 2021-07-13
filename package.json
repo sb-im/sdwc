@@ -1,7 +1,7 @@
 {
   "name": "@sb-im/sdwc",
   "description": "Multiple drones and ground station Web consoles",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "author": "Rocka <rocka@sb.im>",
   "contributors": [
     "metal A-wing <metal@sb.im>",
