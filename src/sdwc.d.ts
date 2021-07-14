@@ -24,11 +24,13 @@ declare namespace SDWC {
     oauth_client_id: string;
     oauth_client_secret: string;
     lang: string;
+    ice_server?: string;
+    ice_servers?: RTCIceServer[];
     amap_key: string;
     gmap_key: string;
+    mapbox_key: string;
     map_tiles_url: string;
     heweather_key: string;
-    mapbox_key: string;
     mqtt_url: string;
   }
 
@@ -324,14 +326,15 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  export interface PlanRunningContentJob {
+    job_id: number;
+    files: { [key: string]: string; };
+    extra: { [key: string]: string; };
+  }
   export interface PlanRunningContent {
     files: { [key: string]: string; };
     extra: { [key: string]: string; };
-    job: {
-      job_id: number;
-      files: { [key: string]: string; };
-      extra: { [key: string]: string; };
-    }
+    job: PlanRunningContentJob;
   }
   export interface PlanRunning {
     /** Plan Id */

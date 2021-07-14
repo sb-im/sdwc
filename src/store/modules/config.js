@@ -8,12 +8,14 @@ const state = {
   oauth_client_id: '',
   oauth_client_secret: '',
   lang: 'en',
+  ice_server: '',
+  ice_servers: null,
   amap_key: '',
   gmap_key: '',
+  mapbox_key: '',
   map_tiles_url: '',
   heweather_key: '',
-  mapbox_key: '',
-  mqtt_url: '',
+  mqtt_url: ''
 };
 
 export const MutationTypes = {

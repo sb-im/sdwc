@@ -15,6 +15,7 @@
   ],
   "amap_key": "",
   "gmap_key": "",
+  "mapbox_key": "",
   "map_tiles_url": "",
   "heweather_key": "",
   "mqtt_url": "wss://<host>:<port>/<path>"
