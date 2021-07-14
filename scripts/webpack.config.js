@@ -7,17 +7,19 @@ const cp = require('child_process');
 
 const webpack = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
 
-const packageJson = require('../package.json');
+const ProjectRoot = path.resolve(__dirname, '../');
+const P = (...segments) => path.join(ProjectRoot, ...segments);
+const packageJson = require(P('package.json'));
 
-function resolveVersion(hash) {
+function resolveVersion() {
   let v = packageJson.version;
   try {
     v = cp.execSync(`git describe --long`, { encoding: 'utf8' }).trim();
-    if (!hash) v = v.replace(/-g[0-9a-f]+$/, '');
   } catch (e) { /* noop */ }
   return v;
 }
@@ -27,12 +29,11 @@ function resolveVersion(hash) {
  */
 const cfg = {
   mode: 'development',
-  context: path.resolve(__dirname, '../src'),
   entry: {
-    main: path.resolve(__dirname, '../src/main.js'),
+    main: P('/src/main.js'),
   },
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: P('/dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
   },
@@ -86,8 +87,8 @@ const cfg = {
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '../src'),
-      'assets': path.resolve(__dirname, '../assets'),
+      '@': P('/src'),
+      'assets': P('/assets'),
       // use browser version mqtt.js
       'mqtt': 'mqtt/dist/mqtt.js'
     },
@@ -102,7 +103,7 @@ const cfg = {
       title: 'S Dashboard Web Console'
     }),
     new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
-    new webpack.DefinePlugin({ __SDWC__VERSION__: `"${resolveVersion(true)}"` })
+    new webpack.DefinePlugin({ __SDWC__VERSION__: `"${resolveVersion()}"` })
   ],
   devServer: {
     hot: true,
@@ -112,7 +113,7 @@ const cfg = {
     },
     static: {
       publicPath: '/',
-      directory: path.resolve(__dirname, '../')
+      directory: P('/')
     },
     proxy: {
       '/gosd': {
@@ -122,10 +123,6 @@ const cfg = {
       }
     }
   },
-  performance: {
-    hints: false
-  },
-  stats: 'normal',
   devtool: 'eval-cheap-module-source-map'
 }
 
@@ -153,6 +150,13 @@ module.exports = function (env, argv) {
       new MiniCssExtractPlugin({
         filename: 'style.[contenthash].css',
         chunkFilename: '[name].[contenthash].css'
+      }),
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: P('/assets'), to: P('dist/assets') },
+          { from: P('/assets/robots.txt'), to: P('dist/') },
+          { from: P('/assets/favicon.ico'), to: P('dist/') }
+        ]
       })
     );
   }

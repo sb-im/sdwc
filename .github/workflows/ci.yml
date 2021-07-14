@@ -16,7 +16,7 @@ jobs:
 
     - name: Build Releases
       if: startsWith(github.ref, 'refs/tags/')
-      run: ./scripts/gitlab-ci.sh
+      run: ./scripts/build-tar.sh
 
     - name: Upload Release
       uses: softprops/action-gh-release@v1

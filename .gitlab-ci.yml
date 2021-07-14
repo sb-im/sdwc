@@ -18,7 +18,7 @@ deploy_staging:
     refs:
       - dev
   script:
-    - ./scripts/gitlab-ci.sh --env dev
+    - ./scripts/build-tar.sh --env dev
     - cat file.tar.xz | ssh ${USER_CLOUD_STAGING}@${HOST_CLOUD_STAGING} 'cd ~/www/sb.im/sdwc && find . ! -name 'config.json*' -delete && tar -xJf -'
 
 deploy_production:
@@ -27,7 +27,7 @@ deploy_production:
     refs:
       - master
   script:
-    - ./scripts/gitlab-ci.sh
+    - ./scripts/build-tar.sh
     - cat file.tar.xz | ssh ${USER_CLOUD_PRODUCTION}@${HOST_CLOUD_PRODUCTION} 'cd ~/sdwc && find . ! -name 'config.json*' -delete && tar -xJf -'
 
 build-docker:

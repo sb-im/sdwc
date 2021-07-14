@@ -1,6 +1,7 @@
 .development-ribbon {
   content: '';
-  background-image: url('../../assets/images/staging-tip.svg');
+  /* webpackIgnore: true */
+  background-image: url('./assets/images/staging-tip.svg');
   background-repeat: no-repeat;
   position: fixed;
   top: 0;
