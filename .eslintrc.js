@@ -1,3 +1,4 @@
+/* global module */
 module.exports = {
   parserOptions: {
     ecmaVersion: 2020
@@ -17,4 +18,4 @@ module.exports = {
     __SDWC__VERSION__: 'readonly',
     __SDWC_DEV__: 'readonly'
   }
-}
+};

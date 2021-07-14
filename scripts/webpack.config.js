@@ -106,8 +106,21 @@ const cfg = {
   ],
   devServer: {
     hot: true,
-    overlay: true,
-    stats: 'errors-only'
+    liveReload: false,
+    client: {
+      overlay: true,
+    },
+    static: {
+      publicPath: '/',
+      directory: path.resolve(__dirname, '../')
+    },
+    proxy: {
+      '/gosd': {
+        target: process.env.SUPERDOCK_API_SERVER || 'https://demo.sblab.xyz/gosd',
+        pathRewrite: { '^/gosd':  '' },
+        changeOrigin: true
+      }
+    }
   },
   performance: {
     hints: false
