@@ -15,6 +15,7 @@
       <i v-if="item.popover" class="el-icon-arrow-down el-icon--right"></i>
     </div>
     <el-popover
+      v-if="$slots.popover"
       ref="popover"
       trigger="manual"
       style="display:none"
@@ -99,6 +100,14 @@ export default {
 </script>
 
 <style>
+.status__line {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.status__line:not(:first-child) {
+  border-top: 1px solid #ebeef5;
+}
 .status__item {
   flex-basis: calc(100% / var(--status-count, 8));
   box-sizing: border-box;

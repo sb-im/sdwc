@@ -46,14 +46,6 @@ export default {
 </script>
 
 <style>
-.status__line {
-  font-size: 14px;
-  display: flex;
-}
-.status__line:not(:first-child) {
-  border-top: 1px solid #ebeef5;
-}
-
 .status--disconnected {
   background-color: #00000020;
   transition: opacity 0s;
