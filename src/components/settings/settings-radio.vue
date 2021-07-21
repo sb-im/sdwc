@@ -1,5 +1,5 @@
 <template>
-  <el-radio-group size="mini" v-model="model" :disabled="disabled" @change="handleChange">
+  <el-radio-group v-model="model" :disabled="disabled" @change="handleChange">
     <el-radio-button v-for="v in values" :key="v" :label="v"></el-radio-button>
   </el-radio-group>
 </template>

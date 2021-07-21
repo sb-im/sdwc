@@ -1,7 +1,6 @@
 <template>
   <el-input
     class="settings__input"
-    size="mini"
     v-model="model"
     :disabled="disabled"
     @change="handleChange"
@@ -45,9 +44,6 @@ export default {
 </script>
 
 <style>
-.settings__input {
-  width: 100px;
-}
 .settings__input .el-input__inner {
   padding: 0 0 0 10px;
 }

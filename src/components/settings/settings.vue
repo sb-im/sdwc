@@ -6,7 +6,7 @@
       element-loading-spinner="el-icon-warning-outline"
       :element-loading-text="disabledText"
     >
-      <el-form inline>
+      <el-form inline size="mini">
         <div v-for="group in groups" :key="group.name">
           <el-divider v-if="groups.length > 1" content-position="left">{{ group.name }}</el-divider>
           <el-form-item v-for="item in group.item" :key="item.field" :label="$t(item.label)">
@@ -114,6 +114,12 @@ export default {
 </script>
 
 <style>
+.settings .settings__input.el-input {
+  width: 120px;
+}
+.settings .el-slider {
+  width: 180px;
+}
 .settings .el-divider {
   margin: 12px 0;
 }
