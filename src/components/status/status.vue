@@ -6,7 +6,7 @@
     element-loading-spinner="el-icon-warning"
     element-loading-custom-class="status--disconnected"
   >
-    <sd-status-meter :items="items" v-on="$listeners">
+    <sd-status-meter :items="items" :nodeId="nodeId" :statusCode="statusCode" v-on="$listeners">
       <slot name="popover" slot="popover"></slot>
     </sd-status-meter>
     <sd-status-notify :nodeId="nodeId" :notification="notification"></sd-status-notify>

@@ -14,6 +14,17 @@
       </span>
       <i v-if="item.popover" class="el-icon-arrow-down el-icon--right"></i>
     </div>
+    <el-tooltip placement="bottom" :content="$t('status.parameters')">
+      <el-button
+        circle
+        size="small"
+        icon="el-icon-s-tools"
+        class="status__parameters"
+        :disabled="statusCode !== 0"
+        @click="handleNodeParameters"
+      ></el-button>
+    </el-tooltip>
+    <sd-node-parameters ref="parameters" :nodeId="nodeId" :statusCode="statusCode"></sd-node-parameters>
     <el-popover
       v-if="$slots.popover"
       ref="popover"
@@ -32,11 +43,21 @@
 <script>
 import Icon from '@/components/sd-icon.vue';
 
+import NodeParameters from '@/components/settings/node-parameters.vue';
+
 export default {
   name: 'sd-status-meter',
   props: {
     items: {
       type: Array,
+      required: true
+    },
+    nodeId: {
+      type: Number,
+      required: true
+    },
+    statusCode: {
+      type: Number,
       required: true
     }
   },
@@ -53,6 +74,9 @@ export default {
     }
   },
   methods: {
+    handleNodeParameters() {
+      this.$refs.parameters.open();
+    },
     closePopover() {
       this.popover.show = false;
       this.$emit('popover', false);
@@ -94,7 +118,8 @@ export default {
     window.document.removeEventListener('click', this.handleDocumentClick);
   },
   components: {
-    [Icon.name]: Icon
+    [Icon.name]: Icon,
+    [NodeParameters.name]: NodeParameters
   }
 };
 </script>
@@ -130,6 +155,9 @@ export default {
 }
 .status__item.active {
   background-color: #00000014;
+}
+.status__parameters {
+  margin-right: 10px;
 }
 /* popover */
 .status__popover {

@@ -164,6 +164,8 @@ export default {
   },
   status: {
     disconnected: '当前节点未连接',
+    parameters: '节点设置',
+    set_param_failed: '参数设置失败：{message} 错误代码 {code}',
     log: '日志',
     no_log: '暂无日志',
     popup: '弹出',
