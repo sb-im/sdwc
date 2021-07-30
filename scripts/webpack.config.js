@@ -142,7 +142,8 @@ module.exports = function (env, argv) {
     cfg.optimization = {
       minimize: true,
       minimizer: [
-        new CssMinimizerWebpackPlugin()
+        new CssMinimizerWebpackPlugin(),
+        '...', // minimizer defaults, namely 'terser-webpack-plugin'
       ]
     };
     cfg.plugins.push(
