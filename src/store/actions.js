@@ -7,6 +7,7 @@ import * as S from '@/api/sdwc';
 import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
 import * as Mapbox from '@/api/mapbox';
+import * as CaiYun from '@/api/caiyun';
 import * as HeWeather from '@/api/heweather';
 import * as SuperDock from '@/api/super-dock';
 import * as GoogleMap from '@/api/google-map';
@@ -73,6 +74,7 @@ export async function configure({ state, commit }) {
   GoogleMap.setApiKey(config.gmap_key);
   HeWeather.setApiKey(config.heweather_key);
   Mapbox.setAccessToken(config.mapbox_key);
+  CaiYun.setApiKey(config.caiyun_key);
   AMap.setApiKey(config.amap_key);
   setLocale(state.preference.lang);
 }
