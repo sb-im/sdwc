@@ -114,6 +114,10 @@ export default {
 </script>
 
 <style>
+.settings .el-loading-parent--relative {
+  /* make el-loading-mask cover first el-divider */
+  padding-top: 1px;
+}
 .settings .settings__input.el-input {
   width: 120px;
 }
