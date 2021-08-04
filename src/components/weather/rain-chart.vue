@@ -13,34 +13,37 @@ import { h, hs } from '@/util/create-element';
 export default {
   name: 'sd-weather-rain',
   props: {
-    minutely: {
+    data: {
       type: Array,
-      required: true
+      default: () => []
+    },
+    timestamp: {
+      type: Number,
+      default: () => Date.now()
     }
   },
   methods: {
     /**
      * @param {number} offset in minute
      */
-    shortTime(offset) {
-      const updateTime = new Date(this.minutely[0].fxTime).getTime();
-      const dt = new Date(updateTime + offset * 5 * 60 * 1000);
+    formatTime(offset) {
+      const dt = new Date(this.timestamp + offset * 60 * 1000);
       return this.$d(dt, 'time');
     },
     draw() {
       /** @type {Chartist.IChartistData} */
       const data = {
-        series: [this.minutely.map((item, index) => ({ x: index, y: item.precip }))]
+        series: [this.data.map((value, index) => ({ x: index, y: value }))]
       };
       if (this.chart === null) {
         /** @type {Chartist.ILineChartOptions} */
         const options = {
           axisX: {
             type: Chartist.FixedScaleAxis,
-            ticks: [0, 6, 12, 18],
-            high: 23,
+            ticks: [0, 15, 30, 45],
+            high: 59,
             low: 0,
-            labelInterpolationFnc: value => this.shortTime(value)
+            labelInterpolationFnc: value => this.formatTime(value)
           },
           showArea: true,
           plugins: [
@@ -49,7 +52,7 @@ export default {
               tooltipOffset: { x: 0, y: -14 },
               tooltipFnc: (meta, value) => {
                 const [minute, rain] = value.split(',');
-                return `${this.shortTime(minute)} , ${rain}`;
+                return `${this.formatTime(minute)} , ${rain}`;
               }
             })
           ]
@@ -68,8 +71,14 @@ export default {
       }
     },
   },
+  watch: {
+    data() {
+      this.draw();
+    }
+  },
   mounted() {
     this.chart = null;
+    this.draw();
   },
   beforeDestroy() {
     if (this.chart !== null) {
