@@ -132,6 +132,10 @@ export default {
 </script>
 
 <style>
+.el-card.weather {
+  /* make chartist's tooltip visible */
+  overflow: visible;
+}
 .weather .el-card__body {
   display: flex;
   padding: 8px 0 0;
