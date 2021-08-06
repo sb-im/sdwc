@@ -48,8 +48,8 @@ const Compo = {
 export default {
   name: 'sd-node-parameters',
   props: {
-    nodeId: {
-      type: Number,
+    point: {
+      type: Object,
       required: true
     },
     statusCode: {
@@ -78,10 +78,13 @@ export default {
   },
   methods: {
     async fetchParameters() {
+      const keys = this.point.params || [];
+      if (keys.length <= 0) return;
       this.fetching = true;
-      const params = await this.$mqtt(this.nodeId, { mission: 'get_parameters' });
-      const keys = Object.keys(params);
-      const types = await this.$mqtt(this.nodeId, { mission: 'get_parameter_type', arg: keys });
+      const [params, types] = await Promise.all([
+        this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: keys }),
+        this.$mqtt(this.point.node_id, { mission: 'get_parameter_type', arg: keys })
+      ]);
       for (const [key, val] of Object.entries(types)) {
         this.$set(this.pending, key, false);
         val.value = params[key];
@@ -112,8 +115,10 @@ export default {
       this.fetching = false;
     },
     async refreshValues() {
+      const keys = this.point.params || [];
+      if (keys.length <= 0) return;
       this.fetching = true;
-      const params = await this.$mqtt(this.nodeId, { mission: 'get_parameters' });
+      const params = await this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: keys });
       for (const [key, val] of Object.entries(params)) {
         const item = this.items[key];
         if (item) {
@@ -124,11 +129,11 @@ export default {
     },
     handleChange(item, key, value) {
       this.$set(this.pending, key, true);
-      this.$mqtt(this.nodeId, {
+      this.$mqtt(this.point.node_id, {
         mission: 'set_parameter',
         arg: { [key]: value }
       }).catch(e => {
-        this.$message.error( this.$t('status.set_param_failed', e));
+        this.$message.error(this.$t('status.set_param_failed', e));
       }).then(() => {
         this.$set(this.pending, key, false);
         this.refreshValues();
