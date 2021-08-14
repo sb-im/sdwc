@@ -414,8 +414,11 @@ export default {
     handleGestureMove(x, y) {
       if (this.gimbalDisabled) return;
       if (!this.gesture.pressed) return;
-      this.gesture.moving = true;
-      this.sendGestureCtl(x, y);
+      if (!this.gesture.moving) {
+        this.gesture.moving = true;
+      } else {
+        this.sendGestureCtl(x, y);
+      }
       this.gesture.lastPos = { x, y };
     },
     handleGestureEnd(x, y) {
@@ -432,6 +435,11 @@ export default {
     },
     sendGestureCtl(x, y) {
       const now = Date.now();
+      if (this.gesture.lastTime >= now) {
+        // 'mousedown' happens too late, at same time or even after 'mousemove',
+        // thus this move event should be ignored.
+        return;
+      }
       const factor = (now - this.gesture.lastTime) / 8;
       let { yaw, pitch } = this.gimbal;
       const dx = Math.trunc((this.gesture.lastPos.x - x) / factor);
