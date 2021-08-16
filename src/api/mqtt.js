@@ -5,9 +5,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
 
-import { transformMessage } from './mqtt-adapter';
-
-class MqttClient extends EventEmitter2 {
+export class MqttClient extends EventEmitter2 {
   constructor() {
     super();
     this.lastPing = -1;
@@ -29,21 +27,24 @@ class MqttClient extends EventEmitter2 {
   }
 
   /**
+   * possible topic format:
+   * - `nodes/:id/{status,network}`
+   * - `nodes/:id/rpc/{send,recv}`
+   * - `nodes/:id/msg/{position,battery,weather,...}`
+   * - `plans/:id/{term,dialog,running}`
    * @param {string} topic
-   * @returns {{ type: 'nodes'|'plans'|string, id: number }}
+   * @typedef {{ entity: 'nodes'|'plans'|string, id: number, category: string, param: string }} TopicInfo
+   * @returns {TopicInfo}
    */
   static parseTopic(topic) {
     const parts = topic.split('/');
-    return { type: parts[0], id: Number.parseInt(parts[1], 10) };
-  }
-
-  /**
-   * @param {string} topic
-   */
-  static parseMsgCategory(topic) {
-    const parts = topic.split('/');
-    if (parts[0] !== 'nodes' && parts[2] !== 'msg') throw new TypeError(`No category in topic: ${topic}`);
-    return parts[3];
+    const result = {
+      entity: parts[0],
+      id: Number.parseInt(parts[1], 10),
+      category: parts[2],
+      param: parts[3]
+    };
+    return result;
   }
 
   /**
@@ -86,22 +87,22 @@ class MqttClient extends EventEmitter2 {
     });
     this.mqtt.on('message', (topic, message) => {
       const str = message.toString();
-      const { type, id } = MqttClient.parseTopic(topic);
+      const t = MqttClient.parseTopic(topic);
       MqttClient.log('msg:', topic, str);
       try {
-        switch (type) {
+        switch (t.entity) {
           case 'nodes':
-            this.onNodeMsg(topic, id, str);
+            this.onNode(t, str);
             break;
           case 'plans':
-            this.onPlanMsg(topic, id, str);
+            this.onPlan(t, str);
             break;
           default:
-            MqttClient.warn(`Invalid message type "${type}" in topic "${topic}", with payload:`, str);
+            MqttClient.warn(`Unknown entity "${t.entity}" in topic "${topic}", with payload:`, str);
             break;
         }
       } catch (e) {
-        MqttClient.warn(`Invalid message in topic "${topic}", with payload:`, str);
+        MqttClient.warn(`Error when processing message in topic "${topic}", with payload:`, str, e);
       }
     });
   }
@@ -123,7 +124,6 @@ class MqttClient extends EventEmitter2 {
     [
       `nodes/${id}/rpc/send`,
       `nodes/${id}/rpc/recv`,
-      `nodes/${id}/message`,
       `nodes/${id}/network`,
       `nodes/${id}/status`
     ].forEach(topic => {
@@ -192,24 +192,33 @@ class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {string} topic
-   * @param {number} id
+   * @param {TopicInfo} topic
    * @param {string} str
    */
-  onNodeMsg(topic, id, str) {
-    if (topic.endsWith('/rpc/send')) {
-      this.onRpcSend(id, str);
-    } else if (topic.endsWith('/rpc/recv')) {
-      this.onRpcRecv(id, str);
-    } else if (topic.includes('/msg/')) {
-      const category = MqttClient.parseMsgCategory(topic);
-      this.onMessage(id, str, category);
-    } else if (topic.endsWith('/network')) {
-      this.onNetwork(id, str);
-    } else if (topic.endsWith('/status')) {
-      this.onStatus(id, str);
-    } else {
-      this.onMessageLegacy(id, str);
+  onNode(topic, str) {
+    switch (topic.category) {
+      case 'status':
+        this.emit('status', topic.id, JSON.parse(str));
+        break;
+      case 'network':
+        this.emit('network', topic.id, JSON.parse(str));
+        break;
+      case 'rpc':
+        switch (topic.param) {
+          case 'send':
+            this.onNodeRpcSend(topic.id, str);
+            break;
+          case 'recv':
+            this.onNodeRpcRecv(topic.id, str);
+            break;
+        }
+        break;
+      case 'msg':
+        this.emit('message', topic.id, { [topic.category]: JSON.parse(str) });
+        break;
+      default:
+        MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);
+        break;
     }
   }
 
@@ -217,7 +226,7 @@ class MqttClient extends EventEmitter2 {
    * @param {number} id
    * @param {string} str
    */
-  onRpcSend(id, str) {
+  onNodeRpcSend(id, str) {
     /** @type {import('jsonrpc-lite').IParsedObject} */  // @ts-ignore
     const request = jsonrpc.parse(str);
     switch (request.type) {
@@ -232,80 +241,46 @@ class MqttClient extends EventEmitter2 {
    * @param {number} id
    * @param {string} str
    */
-  onRpcRecv(id, str) {
+  onNodeRpcRecv(id, str) {
     /** @type {import('jsonrpc-lite').IParsedObject} */  // @ts-ignore
     const response = jsonrpc.parse(str);
     this.emit('rpc:response', { id, response });
     // @ts-ignore
     const res = this.resolveMap.get(response.payload.id);
     if (!res) return;
-    if (response.type === 'success') {
-      res.resolve(response.payload.result);
-    } else if (response.type === 'error') {
-      res.reject(response.payload.error);
-    } else {
-      res.reject(response.payload);
+    switch (response.type) {
+      case 'success':
+        res.resolve(response.payload.result);
+        break;
+      case 'error':
+        res.reject(response.payload.error);
+        break;
+      default:
+        res.reject(response.payload);
+        break;
     }
     // @ts-ignore
     this.resolveMap.delete(response.payload.id);
   }
 
   /**
-   * @param {number} id
-   * @param {string} str
-   * @param {string} category
-   */
-  onMessage(id, str, category) {
-    const msg = {
-      [category]: JSON.parse(str)
-    };
-    this.emit('message', id, msg);
-  }
-
-  /**
-   * @param {number} id
+   * @param {TopicInfo} topic
    * @param {string} str
    */
-  onNetwork(id, str) {
-    const payload = JSON.parse(str);
-    this.emit('network', id, payload);
-  }
-
-  /**
-   * @param {number} id
-   * @param {string} str
-   */
-  onStatus(id, str) {
-    if (str.trim().startsWith('{')) {
-      const payload = JSON.parse(str);
-      this.emit('status', id, payload);
-    } else {
-      const code = Number.parseInt(str, 10);
-      this.emit('status', id, { legacy: true, code });
-    }
-  }
-
-  /**
-   * @param {number} id
-   * @param {string} str
-   */
-  onMessageLegacy(id, str) {
-    const msg = transformMessage(str);
-    this.emit('message', id, msg);
-  }
-
-  /**
-   * @param {string} topic
-   * @param {number} id
-   * @param {string} str
-   */
-  onPlanMsg(topic, id, str) {
-    if (topic.endsWith('/term')) {
-      this.emit('plan', id, str, undefined);
-    } else if (topic.endsWith('/dialog')) {
-      this.emit('plan', id, null, JSON.parse(str));
-    } else if (topic.endsWith('/running')) {
-      this.emit('plan_running', id, JSON.parse(str));
+  onPlan(topic, str) {
+    switch (topic.category) {
+      case 'term':
+        this.emit('plan', topic.id, str, undefined);
+        break;
+      case 'dialog':
+        this.emit('plan', topic.id, null, JSON.parse(str));
+        break;
+      case 'running':
+        this.emit('plan_running', topic.id, JSON.parse(str));
+        break;
+      default:
+        MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);
+        break;
     }
   }
 
