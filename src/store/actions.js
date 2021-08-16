@@ -4,12 +4,10 @@ import { parse as parseContentDisposition } from '@tinyhttp/content-disposition'
 
 import { setLocale, locales } from '@/i18n';
 import * as S from '@/api/sdwc';
-import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
 import * as HeWeather from '@/api/heweather';
 import * as SuperDock from '@/api/super-dock';
-import * as GoogleMap from '@/api/google-map';
 import { parseWaypoints } from '@/util/waypoint-parser';
 
 import { MutationTypes as PREF } from './modules/preference';
@@ -70,10 +68,8 @@ export async function configure({ state, commit }) {
   }
   const config = state.config;
   SuperDock.setBaseURL(config.super_dock_api_server);
-  GoogleMap.setApiKey(config.gmap_key);
   HeWeather.setApiKey(config.heweather_key);
   CaiYun.setApiKey(config.caiyun_key);
-  AMap.setApiKey(config.amap_key);
   setLocale(state.preference.lang);
 }
 

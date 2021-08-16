@@ -26,9 +26,6 @@ declare namespace SDWC {
     lang: string;
     ice_server?: string;
     ice_servers?: RTCIceServer[];
-    amap_key: string;
-    gmap_key: string;
-    mapbox_key: string;
     map_tiles_url: string;
     caiyun_key: string;
     heweather_key: string;
@@ -357,7 +354,6 @@ declare namespace SDWC {
   // store/modules/preference.js
   export interface Preference {
     lang: string;
-    mapType: string;
     mapFollow: boolean;
     overviewFit: boolean;
     notifyNoPopup: number[];
