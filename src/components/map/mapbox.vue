@@ -3,13 +3,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-import { loadMapbox } from '@/api/mapbox';
 import { h, hs } from '@/util/create-element';
 import { waitSelector } from '@/util/wait-selector';
 
 import { randColor } from './common';
+import { loadMapbox } from './mapbox-loader';
 
 /** @type {number} */
 let __MAPBOX_ZOOM__;
@@ -137,9 +135,10 @@ export default {
     mapInitialized: false
   }),
   computed: {
-    ...mapState([
-      'config'
-    ])
+    /** @returns {SDWC.Config} */
+    config() {
+      return this.$store.state.config;
+    }
   },
   methods: {
     async initMap() {
