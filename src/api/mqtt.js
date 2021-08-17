@@ -214,7 +214,7 @@ export class MqttClient extends EventEmitter2 {
         }
         break;
       case 'msg':
-        this.emit('message', topic.id, { [topic.category]: JSON.parse(str) });
+        this.emit('message', topic.id, { [topic.param]: JSON.parse(str) });
         break;
       default:
         MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);
