@@ -62,6 +62,7 @@ export function restorePreference({ commit }) {
  */
 export async function configure({ state, commit }) {
   const data = await S.config();
+  document.title = data.title;
   commit(CONF.SET_CONFIG, data);
   if (!state.preference.lang) {
     commit(PREF.SET_PREFERENCE, { lang: data.lang });

@@ -1,7 +1,7 @@
 <template>
   <el-header class="header">
     <!-- title -->
-    <span class="header-title">{{ $t('header.title') }}</span>
+    <span class="header-title" v-text="config.title" ></span>
     <!-- plan dialog dropdown -->
     <el-dropdown
       class="header-dropdown"
@@ -155,6 +155,8 @@ export default {
     };
   },
   computed: {
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; },
     ...mapState([
       'node',
       'notification',

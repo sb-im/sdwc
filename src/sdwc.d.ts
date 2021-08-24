@@ -19,6 +19,7 @@ declare namespace SDWC {
   // store/modules/config.js
   export interface Config {
     beian: string;
+    title: string;
     aside_logo: string;
     super_dock_api_server: string;
     oauth_client_id: string;

@@ -60,11 +60,16 @@
       >{{ depot.info.name }}</el-menu-item>
     </el-submenu>
     <div class="aside__version">
-      <span v-if="!collapse" class="aside__version-text">{{ version }}</span>
+      <template v-if="!collapse">
+        <div class="aside__version-text">
+          <div v-text="version"></div>
+          <div>Powered by Superdock</div>
+        </div>
+      </template>
     </div>
     <el-menu-item index="never" :route="{}" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
-      <span slot="title" class="aside__collapse-text">{{ $t(`aside.${collapse ? 'un' : ''}fold`) }}</span>
+      <span slot="title" class="aside__collapse-text" v-t="`aside.${collapse ? 'un' : ''}fold`"></span>
     </el-menu-item>
   </el-menu>
 </template>

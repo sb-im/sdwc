@@ -3,6 +3,7 @@
 /** @type {SDWC.Config} */
 const state = {
   beian: '',
+  title: 'S Dashboard Web Console',
   aside_logo: '',
   super_dock_api_server: '',
   oauth_client_id: '',
