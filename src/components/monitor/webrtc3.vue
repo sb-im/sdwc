@@ -45,7 +45,7 @@ export default {
   methods: {
     async createClient() {
       this.msg = this.$t('monitor.connecting');
-      this.couldRetry = true;
+      this.couldRetry = false;
       const result = await this.$mqtt(this.point.node_id, {
         mission: 'webrtc3',
         arg: { url: this.point.name }
@@ -55,9 +55,6 @@ export default {
         switch (state) {
           case 'connected':
             this.msg = '';
-            break;
-          case 'checking':
-            this.couldRetry = false;
             break;
           case 'disconnected':
             this.couldRetry = true;
@@ -78,7 +75,6 @@ export default {
     },
     handleRetry() {
       this.destroyClient();
-      this.couldRetry = false;
       this.createClient();
     },
     reloadVideo() {

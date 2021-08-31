@@ -45,7 +45,7 @@ export default {
   methods: {
     async createClient() {
       this.msg = this.$t('monitor.connecting');
-      this.couldRetry = true;
+      this.couldRetry = false;
       const iceServers = this.config.ice_servers || this.config.ice_server;
       const { signal_url, id, track_source } = this.point.params.broadcast;
       const client = new WebRTC4Client(iceServers, signal_url, id, track_source);
@@ -53,9 +53,6 @@ export default {
         switch (state) {
           case 'connected':
             this.msg = '';
-            break;
-          case 'checking':
-            this.couldRetry = false;
             break;
           case 'disconnected':
             this.couldRetry = true;
@@ -76,7 +73,6 @@ export default {
     },
     handleRetry() {
       this.destroyClient();
-      this.couldRetry = false;
       this.createClient();
     },
     reloadVideo() {

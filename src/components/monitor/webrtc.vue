@@ -43,6 +43,7 @@ export default {
   },
   methods: {
     createChannel() {
+      this.couldRetry = false;
       const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_server);
       channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
@@ -64,10 +65,12 @@ export default {
     },
     recreateChannel() {
       this.destroyChannel();
-      this.retryTimeout = setTimeout(() => this.createChannel(), 3 * 1000);
+      this.retryTimeout = setTimeout(() => {
+        this.retryTimeout = 0;
+        this.createChannel();
+      }, 3 * 1000);
     },
     handleRetry() {
-      this.couldRetry = false;
       this.msg = '';
       this.destroyChannel();
       this.createChannel();
@@ -81,6 +84,10 @@ export default {
     this.createChannel();
   },
   beforeDestroy() {
+    if (this.retryTimeout) {
+      clearTimeout(this.retryTimeout);
+      delete this.retryTimeout;
+    }
     this.destroyChannel();
   }
 };
