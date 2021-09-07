@@ -1,6 +1,6 @@
 <template>
   <div class="drone">
-    <template v-for="{ point, compo, key } of points">
+    <template v-for="{ node, point, compo, key } of points">
       <component
         :is="compo"
         :key="key"
@@ -55,20 +55,24 @@ const CompoOrder = {
 export default {
   name: 'sd-node-drone',
   props: {
+    /** @type {Vue.PropOptions<SDWC.Node>} */
     node: {
       type: Object,
       required: true
     }
   },
   computed: {
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {{ node: SDWC.Node, point: SDWC.NodePoint, compo: string, key: string }[]} */
     points() {
       let i = 0;
-      const nodeId = this.node.info.id;
       return this.node.info.points.map(point => {
-        const { id, point_type_name } = point;
+        const { node_id, point_type_name } = point;
+        const node = this.drones.find(n => n.info.id === node_id);
         const compo = CompoName[point_type_name] || '';
-        const key = `${nodeId}-${id}-${point_type_name}-${i++}`;
-        return { point, compo, key };
+        const key = `${node_id}-${point_type_name}-${i++}`;
+        return { node, point, compo, key };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
     }
   },
