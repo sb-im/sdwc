@@ -19,6 +19,7 @@
       <template #title>
         <sd-icon value="tasks-blue"></sd-icon>
         <span v-t="'common.plan'"></span>
+        <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
       </template>
       <li v-if="collapse" class="aside__subtitle" v-t="'common.plan'"></li>
       <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
@@ -26,7 +27,7 @@
         <span v-t="'plan.edit.add'"></span>
       </el-menu-item>
       <el-menu-item
-        v-for="plan in plans"
+        v-for="plan in orderedPlans"
         :key="plan.id"
         :index="`plan-${plan.id}`"
         :route="{ name: 'plan', params: { id: plan.id } }"
@@ -124,6 +125,16 @@ export default {
       }
       return result;
     },
+    /** @returns {SDWC.PlanInfo[]} */
+    orderedPlans() {
+      const running = [];
+      const standby = [];
+      for (const p of this.plans) {
+        if (this.isPlanRunning[p.id]) running.push(p);
+        else standby.push(p);
+      }
+      return running.concat(standby);
+    },
     /** @returns {string} */
     version() {
       return __SDWC__VERSION__; // would be replaced on compile
@@ -171,6 +182,20 @@ export default {
   width: 50px;
   height: 50px;
   margin: 25px;
+}
+.aside__badge {
+  position: static;
+}
+.aside__badge .el-badge__content {
+  position: absolute;
+}
+.aside__badge .el-badge__content {
+  left: 140px;
+  top: 18px;
+}
+.el-menu--collapse .aside__badge .el-badge__content {
+  top: 10px;
+  left: 34px;
 }
 .aside__subtitle {
   padding: 7px 0 7px 20px;
