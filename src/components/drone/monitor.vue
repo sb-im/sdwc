@@ -25,10 +25,6 @@
               <i class="el-icon-video-play"></i>
               <span v-t="'monitor.source.reload'"></span>
             </el-dropdown-item>
-            <el-dropdown-item @click.native="handleReconnect">
-              <i class="el-icon-refresh-right"></i>
-              <span v-t="'monitor.source.reconnect'"></span>
-            </el-dropdown-item>
           </template>
         </el-dropdown-menu>
       </el-dropdown>
@@ -337,9 +333,6 @@ export default {
         });
       } catch (e) { /* noop */ }
       this.source.pending = false;
-    },
-    handleReconnect() {
-      this.$refs.monitor.$refs.content.handleRetry();
     },
     /**
      * @param {string} type
