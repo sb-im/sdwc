@@ -45,6 +45,18 @@ const routes = [
     }
   },
   {
+    path: '/login/:username/:password/:path',
+    name: 'login-api-path',
+    component: Login,
+    beforeEnter(to, from, next) {
+      let path = to.params.path;
+      if (path.length > 0 && path[0] !== '/') {
+        path = '/' + path;
+      }
+      next(checkUser() ? (path || '/panel') : undefined);
+    }
+  },
+  {
     path: '/panel',
     name: 'panel',
     component: Panel,

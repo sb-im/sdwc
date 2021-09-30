@@ -50,6 +50,7 @@ export default {
       errorUsername: '',
       password: '',
       errorPassword: '',
+      redirectPath: null,
       pending: false
     };
   },
@@ -82,7 +83,7 @@ export default {
       this.pending = true;
       try {
         await this.login({ username: this.username, password: this.password });
-        this.$router.push({ name: 'panel' });
+        this.$router.push(this.redirectPath || { name: 'panel' });
       } catch (e) {
         switch (e.status) {
           case 401:
@@ -94,22 +95,29 @@ export default {
         }
       }
       this.pending = false;
+    },
+    handleAutoLogin() {
+      /**
+       * `configurePromise`, provided by root Vue instance, in src/main.js ,
+       * is the Promise returned by dispatching action `configure`.
+       * Once it became fullfilled, `config.json` has been loaded.
+       */
+      this.configurePromise.then(() => {
+        const { username = '', password = '', path } = this.$route.params;
+        if (username && password) {
+          this.username = username;
+          this.password = password;
+          if (path.length > 0 && path[0] !== '/') {
+            this.redirectPath = '/' + path;
+          } else {
+            this.redirectPath = path;
+          }
+          this.handleLogin();
+        }
+      });
     }
   },
   mounted() {
-    /**
-     * `configurePromise`, provided by root Vue instance, in src/main.js ,
-     * is the Promise returned by dispatching action `configure`.
-     * Once it became fullfilled, `config.json` has been loaded.
-     */
-    this.configurePromise.then(() => {
-      const { username = '', password = '' } = this.$route.params;
-      if (username && password) {
-        this.username = username;
-        this.password = password;
-        this.handleLogin();
-      }
-    });
     /** @type {HTMLInputElement} */
     const inputPwd = this.$refs.inputPwd.$el.getElementsByTagName('input')[0];
     if (inputPwd) {
@@ -132,6 +140,12 @@ export default {
         }
       });
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => vm.handleAutoLogin());
+  },
+  beforeRouteUpdate(to, from, next) {
+    next(vm => vm.handleAutoLogin());
   }
 };
 </script>
