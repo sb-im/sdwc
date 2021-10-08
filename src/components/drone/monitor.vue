@@ -277,7 +277,7 @@ export default {
       return get(this.point.params, 'action', []).filter(a => enabled.includes(a.method));
     },
     overlaySVG() {
-      const { width, height, shapes } = this.msg.overlay_screen;
+      const { width = 1280, height = 720, shapes = [] } = this.msg.overlay_screen;
       const elements = [];
       for (const s of shapes) {
         elements.push(s);
