@@ -45,6 +45,9 @@ export default {
             low: 0,
             labelInterpolationFnc: value => this.formatTime(value)
           },
+          axisY: {
+            low: 0
+          },
           showArea: true,
           plugins: [
             Chartist.plugins.tooltip({
