@@ -11,6 +11,7 @@ import PlanNew from './pages/plan/new.vue';
 import PlanEdit from './pages/plan/edit.vue';
 import PlanView from './pages/plan/view.vue';
 import Node from './pages/node/node.vue';
+import Embedded from './pages/embedded.vue';
 
 Vue.use(Router);
 
@@ -19,6 +20,8 @@ function checkUser() {
   if (token && due > Date.now()) return true;
   return false;
 }
+
+const int = s => Number.parseInt(s, 10);
 
 /**
  * @type {import('vue-router').RouteConfig[]}
@@ -74,7 +77,7 @@ const routes = [
         path: 'node/:id',
         name: 'node',
         component: Node,
-        props: route => ({ id: Number.parseInt(route.params.id, 10) })
+        props: route => ({ id: int(route.params.id) })
       },
       {
         path: 'plan/new',
@@ -86,7 +89,7 @@ const routes = [
         name: 'plan',
         component: Plan,
         redirect: { name: 'plan/view' },
-        props: route => ({ id: Number.parseInt(route.params.id, 10) }),
+        props: route => ({ id: int(route.params.id) }),
         children: [
           {
             path: 'edit',
@@ -101,6 +104,15 @@ const routes = [
         ]
       }
     ]
+  },
+  {
+    path: '/embedded/:node/:point',
+    name: 'embedded',
+    component: Embedded,
+    props: route => ({ node: int(route.params.node), point: route.params.point }),
+    beforeEnter(to, from, next) {
+      next(checkUser() ? undefined : '/login');
+    },
   }
 ];
 
