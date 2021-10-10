@@ -44,7 +44,7 @@ export default {
   methods: {
     createChannel() {
       this.couldRetry = false;
-      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_server);
+      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_servers || this.config.ice_server);
       channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;

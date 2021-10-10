@@ -28,24 +28,20 @@ function randStr(len = 5) {
 }
 
 /**
- * @see https://github.com/kclyu/rpi-webrtc-streamer/blob/6881a5cc9571807bf16372b020ae96e5d64b891c/web-root/native-peerconnection/js/peerconnection_client.js
+ * @see https://github.com/kclyu/rpi-webrtc-streamer/blob/v0.74/web-root/native-peerconnection/js/peerconnection_client.js
  */
 class PeerConnectionClient {
   /**
    * @param {HTMLVideoElement} videoElem
    * @param {Function} doSendPeerMessage
-   * @param {string} iceServer
+   * @param {string | RTCIceServer[]} iceServer
    */
   constructor(videoElem, doSendPeerMessage, iceServer) {
     /**
      * configuration for peerconnection
      * @type {RTCConfiguration}
      */
-    this.pcConfig = {
-      iceServers: [
-        { urls: iceServer || 'stun:stun.l.google.com:19302' }
-      ]
-    };
+    this.pcConfig = { iceServers: typeof iceServer === 'string' ? [{ urls: iceServer }] : iceServer };
     this.messageCounter = 0;
     this.doSendPeerMessage = doSendPeerMessage;
     this.videoElem = videoElem;
@@ -138,13 +134,13 @@ class PeerConnectionClient {
 }
 
 /**
- * @see https://github.com/kclyu/rpi-webrtc-streamer/blob/6881a5cc9571807bf16372b020ae96e5d64b891c/web-root/native-peerconnection/js/websocket_signaling.js
+ * @see https://github.com/kclyu/rpi-webrtc-streamer/blob/v0.74/web-root/native-peerconnection/js/websocket_signaling.js
  */
 export class WebSocketSignalingChannel extends EventEmitter2 {
   /**
    * @param {string} url
    * @param {HTMLVideoElement} videoElem
-   * @param {string} iceServer
+   * @param {string | RTCIceServer[]} iceServer
    */
   constructor(url, videoElem, iceServer) {
     super();
