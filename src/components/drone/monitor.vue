@@ -199,10 +199,10 @@ export default {
       },
       control: {
         enabled: {
-          click: true,
-          target: true,
-          gimbal: true,
-          zoom: true
+          click: false,
+          target: false,
+          gimbal: false,
+          zoom: false
         }
       },
       gimbal: {
