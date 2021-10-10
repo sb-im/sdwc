@@ -43,7 +43,7 @@ export default {
         timeZone: 'UTC',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false
+        hourCycle: 'h23'
       };
       if (time >= 3600) options.hour = 'numeric';
       return new Date(time * 1000).toLocaleString('en-US', options);
