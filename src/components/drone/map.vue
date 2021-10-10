@@ -184,26 +184,32 @@ export default {
       }
       return polylines;
     },
+    /** @returns {SDWC.MarkerDrone[]} */
     droneMarkers() {
       const markers = [];
-      /** @type {SDWC.NodePosition} */
-      const position = this.msg.position[0];
-      if (this.status.code === 0 && typeof position === 'object') {
-        markers.push({
-          type: 'drone',
-          id: this.info.id,
-          name: this.info.name,
-          position,
-          heading: position.heading
-        });
+      const nodeId = this.point.node_id;
+      for (const d of this.drones) {
+        if (d.info.id === nodeId && d.status.code === 0) {
+          const position = d.msg.position[0];
+          if (typeof position !== 'object') continue;
+          markers.push({
+            type: 'drone',
+            id: d.info.id,
+            name: d.info.name,
+            position: { lng: position.lng, lat: position.lat },
+            heading: position.heading
+          });
+        }
       }
       return markers;
     },
+    /** @returns {SDWC.MarkerDepot[]} */
     depotMarkers() {
       const markers = [];
+      const nodeId = this.point.node_id;
       for (const d of this.depots) {
         const { code, status } = d.status;
-        if (code === 0 && status.link_id === this.info.id) {
+        if (code === 0 && status.link_id === nodeId) {
           markers.push({
             type: 'depot',
             id: d.info.id,
@@ -320,7 +326,7 @@ export default {
       };
     },
     sendCommand(mission, arg) {
-      this.$mqtt(this.info.id, { mission, arg }).catch(() => { /* noop */ });
+      this.$mqtt(this.point.node_id, { mission, arg }).catch(() => { /* noop */ });
     },
     handlePromptCancel() {
       this.prompt.show = false;
