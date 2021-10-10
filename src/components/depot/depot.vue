@@ -63,12 +63,11 @@ export default {
     depots() { return this.$store.getters.depots; },
     /** @returns {{ node: SDWC.Node, point: SDWC.NodePoint, compo: string, key: string }[]} */
     points() {
-      let i = 0;
-      return this.node.info.points.map(point => {
+      return this.node.info.points.map((point, index) => {
         const { node_id, point_type_name } = point;
         const node = this.depots.find(n => n.info.id === node_id);
         const compo = CompoName[point_type_name] || '';
-        const key = `${node_id}-${point_type_name}-${i++}`;
+        const key = `${node_id}-${point_type_name}-${index}`;
         return { node, point, compo, key };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
     }
