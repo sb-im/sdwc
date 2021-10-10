@@ -38,7 +38,7 @@ export default {
 }
 .map__el {
   width: 100%;
-  height: 400px;
+  height: 480px;
 }
 /**
  * disable magnifier when touch-hold on Safari

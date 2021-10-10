@@ -99,7 +99,7 @@ export default {
 }
 .monitor-webrtc__overlay {
   position: absolute;
-  top: 220px;
+  top: calc(50% - 16px);
   width: 100%;
   text-align: center;
   z-index: 1;
