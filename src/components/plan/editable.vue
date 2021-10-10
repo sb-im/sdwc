@@ -16,7 +16,7 @@
     <el-form-item>
       <span slot="label" v-t="'plan.air'"></span>
       <el-select v-model="plan.node_id" :placeholder="$t('plan.edit.air_inp')">
-        <el-option v-for="d in drones" :key="d.id" :label="d.info.name" :value="d.info.id"></el-option>
+        <el-option v-for="d in drones" :key="d.info.id" :label="d.info.name" :value="d.info.id"></el-option>
       </el-select>
     </el-form-item>
     <el-form-item size="small">
