@@ -27,8 +27,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
 import { parseWaypoints } from '@/util/waypoint-parser';
 
 import Icon from '@/components/sd-icon.vue';
@@ -37,6 +35,7 @@ import PlanFiles from './plan-files.vue';
 export default {
   name: 'sd-plan-editable',
   props: {
+    /** @type {Vue.PropOptions<SDWC.PlanInfo>} */
     initial: {
       type: Object,
       required: true
@@ -44,13 +43,13 @@ export default {
   },
   data() {
     return {
+      /** @type {SDWC.PlanInfo} */
       plan: Object.assign({}, this.initial)
     };
   },
   computed: {
-    ...mapGetters([
-      'drones'
-    ]),
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; }
   },
   methods: {
     getPlan() {

@@ -36,6 +36,7 @@ export default {
     };
   },
   computed: {
+    /** @returns {any} */
     json() {
       if (!this.node) return '';
       let val = this.node.msg.overview;

@@ -26,23 +26,22 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
 import Icon from '@/components/sd-icon.vue';
 import PlanFiles from './plan-files.vue';
 
 export default {
   name: 'sd-plan-readonly',
   props: {
+    /** @type {Vue.PropOptions<SDWC.PlanInfo>} */
     plan: {
       type: Object,
       required: true
     }
   },
   computed: {
-    ...mapGetters([
-      'drones'
-    ]),
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {string} */
     droneName() {
       const drone = this.drones.find(d => d.info.id === this.plan.node_id);
       if (drone) return drone.info.name;

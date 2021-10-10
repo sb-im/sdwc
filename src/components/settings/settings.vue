@@ -11,9 +11,8 @@
           <el-divider v-if="groups.length > 1" content-position="left">{{ group.name }}</el-divider>
           <el-form-item v-for="item in group.item" :key="item.field" :label="$t(item.label)">
             <component
-              :is="ComponentName[item.type]"
+              :is="item.type"
               :disabled="pending[group.name][item.label]"
-              :value="item.value"
               v-bind="item"
               @change="handleChange(group, item, $event)"
             ></component>
@@ -63,12 +62,15 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     disabled() {
       return this.status.code !== 0;
     },
+    /** @returns {string} */
     disabledText() {
       return this.$t('control.abnormal');
     },
+    /** @returns {SDWC.SettingsGroup[]} */
     groups() {
       return this.point.params.map(group => {
         const pool = this.msg[group.topic] || {};
@@ -77,6 +79,7 @@ export default {
           method: group.method,
           item: group.item.map(item => ({
             ...item,
+            type: ComponentName[item.type],
             value: get(pool, item.field)
           }))
         };

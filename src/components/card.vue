@@ -34,6 +34,7 @@ export default {
     }
   },
   computed: {
+    /** @returns {{ [key: string]: boolean }} */
     className() {
       return {
         'sd-card--dense': this.dense

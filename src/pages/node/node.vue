@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import Depot from '@/components/depot/depot.vue';
 import Drone from '@/components/drone/drone.vue';
 
@@ -24,12 +22,11 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      'node'
-    ]),
+    /** @returns {SDWC.Node} */
     selectedNode() {
-      return this.node.find(node => node.info.id === this.id);
+      return this.$store.state.node.find(node => node.info.id === this.id);
     },
+    /** @returns {string} */
     componentName() {
       return ComponentName[this.selectedNode.info.type_name];
     }

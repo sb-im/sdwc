@@ -33,8 +33,7 @@ export class MqttClient extends EventEmitter2 {
    * - `nodes/:id/msg/{position,battery,weather,...}`
    * - `plans/:id/{term,dialog,running}`
    * @param {string} topic
-   * @typedef {{ entity: 'nodes'|'plans'|string, id: number, category: string, param: string }} TopicInfo
-   * @returns {TopicInfo}
+   * @returns {SDWC.MqttTopicInfo}
    */
   static parseTopic(topic) {
     const parts = topic.split('/');
@@ -150,7 +149,7 @@ export class MqttClient extends EventEmitter2 {
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
-   * @param {SDWC.MqttControlOptions} [options]
+   * @param {SDWC.MqttRpcOptions} [options]
    * @returns {Promise<any>}
    */
   invoke(target, method, arg, options) {
@@ -169,7 +168,7 @@ export class MqttClient extends EventEmitter2 {
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
-   * @param {SDWC.MqttControlOptions} [options]
+   * @param {SDWC.MqttRpcOptions} [options]
    */
   _invoke(target, method, arg, options = {}) {
     const rpcId = this.nextRpcId();
@@ -192,7 +191,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {TopicInfo} topic
+   * @param {SDWC.MqttTopicInfo} topic
    * @param {string} str
    */
   onNode(topic, str) {
@@ -264,7 +263,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {TopicInfo} topic
+   * @param {SDWC.MqttTopicInfo} topic
    * @param {string} str
    */
   onPlan(topic, str) {

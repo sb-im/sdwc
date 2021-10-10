@@ -18,8 +18,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import { reloadVideo, WebSocketSignalingChannel } from './webrtc-client';
 
 export default {
@@ -37,9 +35,8 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'config'
-    ])
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; }
   },
   methods: {
     createChannel() {

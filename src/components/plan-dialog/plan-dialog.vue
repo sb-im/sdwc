@@ -47,10 +47,12 @@ export default {
     visible: false
   }),
   computed: {
+    /** @returns {SDWC.PlanDialogContent} */
     form() {
       const d = this.$store.state.plan.dialog.find(d => d.id === this.planId) || {};
       return d.dialog || {};
     },
+    /** @returns {string} */
     alertType() {
       if (!this.form.level) return 'info';
       if (this.form.level === 'danger') return 'error';

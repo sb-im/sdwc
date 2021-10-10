@@ -179,14 +179,17 @@ export default {
   name: 'sd-drone-mointor',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeMsg>} */
     msg: {
       type: Object,
       required: true
@@ -241,12 +244,15 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     allDisabled() {
       return this.status.code !== 0;
     },
+    /** @returns {{ source: string, label: string }[]} */
     videoSources() {
       return get(this.point.params, 'source', []);
     },
+    /** @returns {{ type: string, method: string, label: string }[]} */
     availableControls() {
       const controls = [];
       for (const [k, v] of Object.entries(get(this.point.params, 'control', {}))) {
@@ -255,27 +261,34 @@ export default {
       }
       return controls;
     },
+    /** @returns {boolean} */
     hasClickControl() {
       // single click `pin_screen`
       return has(this.point.params, 'control.click');
     },
+    /** @returns {boolean} */
     hasTargetControl() {
       // double click `gimbal_target`
       return has(this.point.params, 'control.target');
     },
+    /** @returns {boolean} */
     hasGimbalControl() {
       return has(this.point.params, 'control.gimbal');
     },
+    /** @returns {boolean} */
     hasZoomControl() {
       return has(this.point.params, 'control.zoom');
     },
+    /** @returns {boolean} */
     hasStickControl() {
       return has(this.point.params, 'control.stick');
     },
+    /** @returns {{ method: string, label: string }[]} */
     availableActions() {
       const enabled = this.msg.action_enabled;
       return get(this.point.params, 'action', []).filter(a => enabled.includes(a.method));
     },
+    /** @returns {{ viewBox: string, elements: { type: string, text: string }[] }} */
     overlaySVG() {
       const { width = 1280, height = 720, shapes = [] } = this.msg.overlay_screen;
       const elements = [];
@@ -295,9 +308,11 @@ export default {
       }
       return { viewBox: `0 0 ${width} ${height}`, elements };
     },
+    /** @returns {boolean} */
     gimbalDisabled() {
       return this.allDisabled || !this.control.enabled.gimbal;
     },
+    /** @returns {{ [key: string]: boolean }} */
     wrapperClass() {
       return {
         'monitor-drone-control--moving': this.gesture.moving
@@ -306,7 +321,7 @@ export default {
   },
   methods: {
     /**
-     * @param {'visual' | 'thermal' | 'msx'} source
+     * @param {string} source
      * @param {MouseEvent} event
      */
     async handleVideoSource(source, event) {
@@ -594,7 +609,7 @@ export default {
           const [min, max] = get(this, 'point.params.control.zoom.zoom', [1, 5.5]);
           if (value > max) {
             value = max;
-          } else if (value < min){
+          } else if (value < min) {
             value = min;
           }
           if (Math.abs(value - this.gimbal.zoom) < 1e-2) {

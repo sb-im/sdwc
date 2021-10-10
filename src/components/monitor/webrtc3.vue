@@ -18,8 +18,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import { reloadVideo } from './webrtc-client';
 import { WebRTC3Client } from './webrtc3-client';
 
@@ -38,9 +36,8 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'config'
-    ])
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; }
   },
   methods: {
     async createClient() {

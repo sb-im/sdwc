@@ -13,6 +13,7 @@ import { h, hs } from '@/util/create-element';
 export default {
   name: 'sd-weather-rain',
   props: {
+    /** @type {Vue.PropOptions<number[]>} */
     data: {
       type: Array,
       default: () => []

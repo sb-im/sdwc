@@ -67,7 +67,7 @@
 
 <script>
 import get from 'lodash/get';
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { PlaceStyle } from '@/constants/drone-place-style';
 import NodeMap from '@/components/map/map.vue';
@@ -139,20 +139,23 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'preference'
-    ]),
-    ...mapGetters([
-      'depots'
-    ]),
+    /** @returns {SDWC.Preference} */
+    preference() { return this.$store.state.preference; },
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
+    /** @returns {SDWC.DroneMapControl[]} */
     commands() {
       if (!this.point.params) return DefaultCommands;
       return get(this.point, 'params.common.move', DefaultCommands);
     },
+    /** @returns {{ [key: string]: SDWC.DronePlaceStyle }} */
     placeStyle() {
       if (!this.point.params) return PlaceStyle;
       return Object.assign({}, PlaceStyle, get(this.point, 'params.common.place', {}));
     },
+    /** @return {SDWC.MapPolyline[]} */
     polylines() {
       const polylines = [];
       /** @type {{ position: SDWC.NodePosition[], place: SDWC.NodePlaces }} */
@@ -220,6 +223,7 @@ export default {
       }
       return markers;
     },
+    /** @returns {SDWC.MarkerPlace[]} */
     placeMarkers() {
       const { place } = this.msg;
       const markers = [];
@@ -235,6 +239,7 @@ export default {
       }
       return markers;
     },
+    /** @returns {SDWC.Marker[]} */
     markers() {
       return [
         ...this.waypoints.map(w => w.markers).flat(),

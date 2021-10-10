@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import Icon from '@/components/sd-icon.vue';
 import Edit from './edit.vue';
 import View from './view.vue';
@@ -20,23 +18,24 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      plans: state => state.plan.info,
-      logs: state => state.plan.log
-    }),
+    /** @returns {SDWC.PlanInfo[]} */
+    plans() { return this.$store.state.plan.info; },
+    /** @returns {SDWC.PlanInfo} */
     plan() {
       return this.plans.find(p => p.id === this.id);
     },
+    /** @returns {string} */
     key() {
       const { name, params: { id } } = this.$route;
       return `${name}-${id}`;
     },
+    /** @returns {{ plan?: SDWC.PlanInfo, initial?: SDWC.PlanInfo }} */
     componentProps() {
       if (!this.plan) {
         return { plan: {}, initial: {} };
       }
       switch (this.$route.name) {
-        case 'plan/view': return { plan: this.plan, log: this.log };
+        case 'plan/view': return { plan: this.plan };
         case 'plan/edit': return { initial: this.plan };
       }
       return {};

@@ -43,6 +43,7 @@ export default {
     }
   }),
   computed: {
+    /** @returns {string} */
     compo() {
       if (typeof this.file.filename !== 'string') return null;
       const filename = this.file.filename.toLowerCase();

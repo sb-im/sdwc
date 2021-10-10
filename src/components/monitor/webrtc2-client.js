@@ -51,7 +51,7 @@ export class WebRTC2Client extends EventEmitter2 {
   }
 
   /**
-   * @param {Partial<RTCSessionDescription>} remoteSdp
+   * @param {RTCSessionDescriptionInit} remoteSdp
    */
   startSession(remoteSdp) {
     return this.pc.setRemoteDescription(remoteSdp);

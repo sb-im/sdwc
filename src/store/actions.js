@@ -219,6 +219,7 @@ export function subscribeNodes({ state, commit }) {
           break;
         }
         case 'settings': {
+          /** @type {SDWC.SettingsGroup[]} */
           const params = point.params;
           if (!Array.isArray(params)) break;
           params.forEach(({ topic }) => {

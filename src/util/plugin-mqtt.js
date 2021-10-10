@@ -15,7 +15,7 @@ const RpcNotifications = new Map();
  * @this {Vue}
  * @param {number} id
  * @param {SDWC.ControlItem} ctl
- * @param {SDWC.MqttControlOptions} options
+ * @param {SDWC.MqttRpcOptions} options
  */
 export async function mqtt(id, { mission, arg = [] }, options = {}) {
   return MqttClient.invoke(id, mission, arg, options);

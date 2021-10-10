@@ -53,10 +53,12 @@ export default {
   name: 'sd-node-monitor',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
@@ -68,14 +70,17 @@ export default {
     };
   },
   computed: {
+    /** @returns {{ [key: string]: boolean }} */
     monitorClassName() {
       return {
         'monitor--full': this.fullscreen
       };
     },
+    /** @returns {keyof CompoName} */
     compoName() {
       return CompoName[this.point.point_type_name] || '';
     },
+    /** @returns {boolean} */
     streamAvailable() {
       if (this.status.code !== 0) return false;
       if (this.point.point_type_name === 'livestream_webrtc2') {

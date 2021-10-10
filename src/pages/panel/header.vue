@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { locales } from '@/i18n';
 
@@ -142,6 +142,8 @@ import { NodeStatusClass } from '@/constants/node-status-class';
 
 import { MutationTypes as PLAN } from '@/store/modules/plan';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
+
+/** @typedef {{ id: number, prefix: string, icon: string, title: string }} NotifyItem */
 
 export default {
   name: 'sd-header',
@@ -157,16 +159,20 @@ export default {
   computed: {
     /** @returns {SDWC.Config} */
     config() { return this.$store.state.config; },
-    ...mapState([
-      'node',
-      'notification',
-      'plan',
-      'preference',
-      'ui',
-      'user'
-    ]),
+    /** @returns {SDWC.Node[]} */
+    node() { return this.$store.state.node; },
+    /** @returns {SDWC.NotificationItem[]} */
+    notification() { return this.$store.state.notification; },
+    /** @returns {SDWC.PlanState} */
+    plan() { return this.$store.state.plan; },
+    /** @returns {SDWC.Preference} */
+    preference() { return this.$store.state.preference; },
+    /** @returns {SDWC.UI} */
+    ui() { return this.$store.state.ui; },
+    /** @returns {SDWC.User} */
+    user() { return this.$store.state.user; },
+    /** @returns {NotifyItem[]} */
     dialog() {
-      /** @type {SDWC.PlanDialog[]} */
       const dialog = this.plan.dialog;
       return dialog.map(d => {
         /** @type {SDWC.PlanInfo} */
@@ -176,8 +182,8 @@ export default {
         return { id: d.id, prefix, icon, title: d.dialog.name };
       });
     },
+    /** @returns {NotifyItem[]} */
     notify() {
-      /** @type {SDWC.NotificationItem[]} */
       const notification = this.notification;
       return notification.map(n => {
         const prefix = `${n.prefix} · ${this.$d(n.time, 'time')}`;
@@ -185,8 +191,8 @@ export default {
         return { id: n.id, prefix, icon, title: n.title };
       });
     },
+    /** @returns {NotifyItem[]} */
     status() {
-      /** @type {SDWC.Node[]} */
       const nodes = this.node;
       return nodes.map(n => {
         const icon = NodeStatusClass[n.status.code];
@@ -201,6 +207,7 @@ export default {
         return { id: n.info.id, prefix, icon, title };
       });
     },
+    /** @returns {{ [key: string]: string }} */
     locales() {
       return locales;
     }

@@ -27,12 +27,15 @@ export default {
     }
   },
   computed: {
+    /** @returns {string} */
     icon() {
       return this.point.params.icon || 'views';
     },
+    /** @returns {string} */
     title() {
       return this.point.params.title || 'custom.title';
     },
+    /** @returns {{ label: string, field: string, unit?: string, value: any }[]} */
     items() {
       const { topic = 'custom', items = [] } = this.point.params;
       const pool = this.msg[topic] || {};

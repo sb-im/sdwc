@@ -24,6 +24,10 @@ const AlertLevel = {
   'Red': 'red',
 };
 
+/**
+ * @typedef {{ level: string, type: string, title: string, text: string }} AlertItem
+ */
+
 export default {
   name: 'sd-weather-alert',
   props: {
@@ -32,6 +36,7 @@ export default {
     }
   },
   computed: {
+    /** @returns {AlertItem[]} */
     alerts() {
       const alerts = {};
       for (const a of this.alert) {

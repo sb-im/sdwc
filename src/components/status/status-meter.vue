@@ -36,6 +36,7 @@ import Icon from '@/components/sd-icon.vue';
 export default {
   name: 'sd-status-meter',
   props: {
+    /** @type {Vue.PropOptions<SDWC.StatusItem[]>} */
     items: {
       type: Array,
       required: true
@@ -48,6 +49,7 @@ export default {
     }
   }),
   computed: {
+    /** @returns {string} */
     lineStyle() {
       const l = this.items.length;
       return l === 8 ? '' : `--status-count:${l}`;

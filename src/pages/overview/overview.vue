@@ -6,9 +6,8 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
-
 import { config } from '@/api/sdwc';
+
 import Card from '@/components/card.vue';
 import OverviewMap from './overview-map.vue';
 import OverviewNotify from './overview-notify.vue';
@@ -19,15 +18,6 @@ export default {
     return {
       configLoaded: false
     };
-  },
-  computed: {
-    ...mapState([
-      'plan'
-    ]),
-    ...mapGetters([
-      'depots',
-      'drones'
-    ])
   },
   created() {
     config().then(() => this.configLoaded = true);

@@ -39,7 +39,7 @@
 
 <script>
 import get from 'lodash/get';
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { PlaceStyle } from '@/constants/drone-place-style';
 import SdMap from '@/components/map/map.vue';
@@ -59,14 +59,17 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'node',
-      'preference'
-    ]),
-    ...mapGetters([
-      'depots',
-      'drones'
-    ]),
+    /** @returns {SDWC.Node[]} */
+    node() { return this.$store.state.node; },
+    /** @returns {SDWC.Preference} */
+    preference() { return this.$store.state.preference; },
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
+    /**
+     * @returns {{ [droneId: number]: { [placeType: string]: SDWC.DronePlaceStyle }}}
+     */
     dronePlaceStyle() {
       const style = {};
       for (const d of this.drones) {
@@ -75,6 +78,9 @@ export default {
       }
       return style;
     },
+    /**
+     * @returns {SDWC.MapPolyline[]}
+     */
     polylines() {
       const polylines = [];
       for (const d of this.drones) {
@@ -96,6 +102,9 @@ export default {
       }
       return polylines;
     },
+    /**
+     * @returns {SDWC.MarkerDrone[]}
+     */
     droneMarkers() {
       const markers = [];
       for (let d of this.drones) {
@@ -112,6 +121,9 @@ export default {
       }
       return markers;
     },
+    /**
+     * @returns {SDWC.MarkerDepot[]}
+     */
     depotMarkers() {
       const markers = [];
       for (const d of this.depots) {
@@ -130,6 +142,9 @@ export default {
       }
       return markers;
     },
+    /**
+     * @returns {SDWC.MarkerPlace[]}
+     */
     placeMarkers() {
       const markers = [];
       for (const d of this.drones) {
@@ -150,9 +165,13 @@ export default {
       }
       return markers;
     },
+    /**
+     * @returns {SDWC.MarkerBase[]}
+     */
     markers() {
       return [...this.depotMarkers, ...this.droneMarkers, ...this.placeMarkers];
     },
+    /** @returns {SDWC.Node} */
     selectedNode() {
       if (this.popover.node < 0) return null;
       return this.node.find(n => n.info.id === this.popover.node);

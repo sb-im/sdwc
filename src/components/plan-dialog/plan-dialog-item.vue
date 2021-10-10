@@ -36,9 +36,11 @@ export default {
     }
   },
   computed: {
+    /** @returns {string} */
     levelClass() {
       return LevelColorClass[this.level] || '';
     },
+    /** @returns {string} */
     iconClass() {
       return PlanDialogLevelClass[this.level] || PlanDialogLevelClass.unknown;
     }

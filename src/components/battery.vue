@@ -72,18 +72,23 @@ export default {
     }
   },
   computed: {
+    /** @returns {SDWC.NodeBattery} */
     battery() {
       return this.msg.battery;
     },
+    /** @returns {string} */
     current() {
-      const I = ((this.battery.cur || 0) / 1000);
+      const I = (this.battery.cur || 0) / 1000;
       return Math.abs(I) > 1 ? I.toFixed(1) : I.toFixed(2);
     },
+    /** @returns {string} */
     voltage() {
       return (this.battery.vol_cell || '').replace(/\//g, ' / ');
     },
+    /** @returns {string} */
     totalVoltage() {
-      return (this.battery.vol_cell || '').split('/').reduce((a, b) => +b + a, 0) / 1000;
+      const U = (this.battery.vol_cell || '').split('/').reduce((a, b) => +b + a, 0) / 1000;
+      return U.toFixed(3);
     }
   },
   watch: {

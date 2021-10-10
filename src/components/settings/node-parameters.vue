@@ -19,7 +19,7 @@
       <el-form label-position="left" label-width="100px" size="small">
         <el-form-item v-for="(item, key) of items" :key="key" :label="$t(item.label)">
           <component
-            :is="Compo[item.type]"
+            :is="item.type"
             :disabled="pending[key]"
             :value="item.value"
             v-bind="item"
@@ -48,6 +48,7 @@ const Compo = {
 export default {
   name: 'sd-node-parameters',
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
@@ -66,12 +67,15 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     disabled() {
       return this.statusCode !== 0 || this.fetching;
     },
+    /** @returns {string} */
     disabledIcon() {
       return this.statusCode === 0 ? null : 'el-icon-warning-outline';
     },
+    /** @returns {string} */
     disabledText() {
       return this.statusCode === 0 ? null : this.$t('control.abnormal');
     }
@@ -90,24 +94,24 @@ export default {
         val.value = params[key];
         switch (val.type) {
           case 'enum':
-            val.type = 'radio';
+            val.type = Compo.radio;
             val.values = val.type_param;
             break;
           case 'string':
-            val.type = 'input';
+            val.type = Compo.input;
             break;
           case 'float':
             val.value = Number.parseFloat(val.value) || 0;
             if (Array.isArray(val.type_param)) {
-              val.type = 'slider';
+              val.type = Compo.slider;
               val.range = val.type_param;
               val.step = 1;
             } else {
-              val.type = 'input';
+              val.type = Compo.input;
             }
             break;
           case 'bool':
-            val.type = 'switch';
+            val.type = Compo.switch;
             break;
         }
       }
@@ -148,9 +152,6 @@ export default {
     handleClosed() {
       this.items = [];
     }
-  },
-  created() {
-    this.Compo = Compo;
   },
   components: {
     [Radio.name]: Radio,

@@ -13,10 +13,12 @@ import { h, hs } from '@/util/create-element';
 export default {
   name: 'sd-weather-wind',
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true

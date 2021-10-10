@@ -8,7 +8,7 @@
     :marks="marks"
     :show-input="true"
     :show-input-controls="false"
-    :input-size="elFormItem.elFormItemSize"
+    :input-size="size"
     v-model="model"
     @change="handleChange"
   ></el-slider>
@@ -48,8 +48,13 @@ export default {
     }
   },
   computed: {
+    /** @returns {{ [key: number]: string }} */
     marks() {
       return Object.fromEntries(this.range.map(v => [v, `${v}`]));
+    },
+    /** @returns {string} */
+    size() {
+      return this.elFormItem.elFormItemSize || 'small';
     }
   },
   methods: {

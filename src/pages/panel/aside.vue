@@ -77,7 +77,6 @@
 
 <script>
 import throttle from 'lodash/throttle';
-import { mapState, mapGetters } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
 
@@ -89,18 +88,16 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      /** @type { () => SDWC.Config[] } */
-      config: state => state.config,
-      /** @type { () => SDWC.PlanInfo[] } */
-      plans: state => state.plan.info,
-      /** @type { () => SDWC.PlanRunning[] } */
-      running: state => state.plan.running
-    }),
-    ...mapGetters([
-      'drones',
-      'depots'
-    ]),
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; },
+    /** @returns {SDWC.PlanInfo[]} */
+    plans() { return this.$store.state.plan.info; },
+    /** @returns {SDWC.PlanRunning[]} */
+    running() { return this.$store.state.plan.running; },
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
     /** @returns {string} */
     activeIndex() {
       const { name, params: { id } } = this.$route;

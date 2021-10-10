@@ -60,9 +60,11 @@ export default {
     }
   },
   computed: {
+    /** @returns {string} */
     transform() {
       return `translate(20 5)\nrotate(${this.direction} 20 35)`;
     },
+    /** @returns {number[]} */
     barb() {
       const barb = [];
       let remain = Math.round(this.speed) || 0;

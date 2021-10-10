@@ -61,12 +61,15 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     disabled() {
       return this.status.code !== 0;
     },
+    /** @returns {string} */
     disabledText() {
       return this.$t('control.abnormal');
     },
+    /** @returns {{ value: string }[]} */
     commands() {
       return this.point.name.trim().split(' ').filter(c => c !== '').map(value => ({ value }));
     }
@@ -118,7 +121,7 @@ export default {
      * @param {KeyboardEvent} e
      */
     onKeyPress(e) {
-      if (e.keyCode === 13 || e.key === 'Enter') {
+      if (e.key === 'Enter') {
         this.handleSend();
       }
     }

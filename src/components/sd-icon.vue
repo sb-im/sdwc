@@ -1,5 +1,5 @@
 <template>
-  <img class="el-icon-__custom" :src="imgSrc" :width="size" :height="size">
+  <img class="el-icon-__custom" :src="src" :width="size" :height="size">
 </template>
 
 <script>
@@ -17,7 +17,8 @@ export default {
     }
   },
   computed: {
-    imgSrc() {
+    /** @returns {string} */
+    src() {
       return `/assets/icons/${this.value}.svg`;
     }
   }

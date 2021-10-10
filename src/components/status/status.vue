@@ -15,7 +15,7 @@
             icon="el-icon-s-tools"
             class="status__parameters"
             :disabled="statusCode !== 0"
-            @click="$refs.parameters.open()"
+            @click="handleParametersClick"
           ></el-button>
         </el-tooltip>
         <sd-node-parameters ref="parameters" :point="parameterPoint" :statusCode="statusCode"></sd-node-parameters>
@@ -56,11 +56,17 @@ export default {
     }
   },
   computed: {
+    /** @returns {SDWC.NodePoint} */
     parameterPoint() {
       const node = this.$store.state.node.find(n => n.info.id === this.nodeId);
       if (!node) return null;
       const point = node.info.points.find(p => p.point_type_name === 'parameter');
       return point;
+    }
+  },
+  methods: {
+    handleParametersClick() {
+      this.$refs.parameters.open();
     }
   },
   components: {
