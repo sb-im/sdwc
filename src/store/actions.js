@@ -78,12 +78,13 @@ export async function configure({ state, commit }) {
  * @param {Context} context
  * @param {{username: string; password: string}} payload
  */
-export async function login({ state, commit }, { username, password }) {
+export async function login({ state, commit, dispatch }, { username, password }) {
   const data = await SuperDock.token(username, password, state.config.oauth_client_id, state.config.oauth_client_secret);
   const token = `${data.token_type} ${data.access_token}`;
   const due = (data.created_at + data.expires_in) * 1000;
   commit(USER.SET_USER_TOKEN, { token, due });
   SuperDock.setAuth(token);
+  dispatch('initialize');
   setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
   return token;
 }
@@ -137,12 +138,24 @@ export async function restoreSession({ commit }) {
 }
 
 /**
- * initialize and establish mqtt connection
+ * establish mqtt connection
  * @param {Context} context
  */
-export function initializeMqtt({ state }) {
+export function connectMqtt({ state }) {
   MqttClient.setRpcPrefix(state.user.id);
   MqttClient.connect(state.config.mqtt_url);
+}
+
+/**
+ * initialize all necessary data and mqtt subs
+ * @param {Context} context
+ */
+export function initialize({ dispatch }) {
+  dispatch('getUserInfo').then(() => {
+    dispatch('connectMqtt');
+    dispatch('getNodes').then(() => dispatch('subscribeNodes'));
+    dispatch('getPlans').then(() => dispatch('subscribePlans'));
+  });
 }
 
 /**

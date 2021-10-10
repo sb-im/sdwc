@@ -9,34 +9,11 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 import Aside from './aside.vue';
 import Header from './header.vue';
 
 export default {
   name: 'sd-panel',
-  methods: {
-    ...mapActions([
-      'getUserInfo',
-      'initializeMqtt',
-      'getNodes',
-      'subscribeNodes',
-      'getPlans',
-      'subscribePlans'
-    ])
-  },
-  inject: ['configurePromise'],
-  created() {
-    // ensure action `configure` completed
-    this.configurePromise
-      .then(() => this.getUserInfo())
-      .then(() => {
-        this.initializeMqtt();
-        this.getNodes().then(() => this.subscribeNodes());
-        this.getPlans().then(() => this.subscribePlans());
-      });
-  },
   components: {
     [Aside.name]: Aside,
     [Header.name]: Header
