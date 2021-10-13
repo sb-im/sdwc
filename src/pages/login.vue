@@ -104,14 +104,20 @@ export default {
        */
       this.configurePromise.then(() => {
         const { username = '', password = '', path } = this.$route.params;
+        let redir = '';
         if (username && password) {
           this.username = username;
           this.password = password;
-          if (path.length > 0 && path[0] !== '/') {
-            this.redirectPath = '/' + path;
-          } else {
-            this.redirectPath = path;
+          if (path.length > 0) {
+            if (path[0] !== '/') {
+              redir += '/';
+            }
+            redir += path;
+            if (Object.keys(this.$route.query).length > 0) {
+              redir += `?${new URLSearchParams(this.$route.query).toString()}`;
+            }
           }
+          this.redirectPath = redir;
           this.handleLogin();
         }
       });
