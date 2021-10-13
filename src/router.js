@@ -56,7 +56,7 @@ const routes = [
       if (path.length > 0 && path[0] !== '/') {
         path = '/' + path;
       }
-      next(checkUser() ? (path || '/panel') : undefined);
+      next(checkUser() ? ({ path, query: to.query } || '/panel') : undefined);
     }
   },
   {
@@ -109,7 +109,11 @@ const routes = [
     path: '/embedded/:node/:point',
     name: 'embedded',
     component: Embedded,
-    props: route => ({ node: int(route.params.node), point: route.params.point }),
+    props(route) {
+      const { node, point } = route.params;
+      const { header = '' } = route.query;
+      return { node: int(node), point, header };
+    },
     beforeEnter(to, from, next) {
       next(checkUser() ? undefined : '/login');
     },

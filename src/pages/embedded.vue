@@ -1,5 +1,5 @@
 <template>
-  <div class="embedded" v-loading="!selectedNode">
+  <div class="embedded" :class="className" v-loading="!selectedNode">
     <component v-if="selectedNode" :is="componentName" :node="bindNode"></component>
   </div>
 </template>
@@ -23,9 +23,19 @@ export default {
     point: {
       type: String,
       required: true
+    },
+    header: {
+      type: String,
+      default: ''
     }
   },
   computed: {
+    /** @returns {{ [key: string]: boolean }} */
+    className() {
+      return {
+        'embedded--hide-header': this.header === 'hide'
+      };
+    },
     /** @returns {SDWC.Node} */
     selectedNode() {
       return this.$store.state.node.find(node => node.info.id === this.node);
@@ -70,14 +80,22 @@ export default {
   width: 100%;
   height: 100%;
 }
-.embedded .sd-card {
+.embedded .el-card {
   width: 100%;
   height: 100%;
   border: none;
   border-radius: 0;
+  margin: 0;
 }
-.embedded .sd-card .el-card__body {
+.embedded .el-card__body {
   height: calc(100% - 73px);
+}
+/* hide card header */
+.embedded--hide-header .el-card__header {
+  display: none;
+}
+.embedded--hide-header .el-card__body {
+  height: 100%;
 }
 /* map */
 .embedded .map__el {
