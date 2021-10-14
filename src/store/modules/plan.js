@@ -21,8 +21,7 @@ export const MutationTypes = {
 };
 
 /**
- * @typedef {typeof state} State
- * @type {{ [x: string]: (state: State, payload: any) => void }}
+ * @type {{ [x: string]: (state: SDWC.PlanState, payload: any) => void }}
  */
 const mutations = {
   [MutationTypes.ADD_PLAN](state, /** @type {SDWC.PlanInfo} */ payload) {

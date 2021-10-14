@@ -4,12 +4,10 @@ import { parse as parseContentDisposition } from '@tinyhttp/content-disposition'
 
 import { setLocale, locales } from '@/i18n';
 import * as S from '@/api/sdwc';
-import * as AMap from '@/api/amap';
 import MqttClient from '@/api/mqtt';
-import * as Mapbox from '@/api/mapbox';
+import * as CaiYun from '@/api/caiyun';
 import * as HeWeather from '@/api/heweather';
 import * as SuperDock from '@/api/super-dock';
-import * as GoogleMap from '@/api/google-map';
 import { parseWaypoints } from '@/util/waypoint-parser';
 
 import { MutationTypes as PREF } from './modules/preference';
@@ -64,16 +62,15 @@ export function restorePreference({ commit }) {
  */
 export async function configure({ state, commit }) {
   const data = await S.config();
+  document.title = data.title;
   commit(CONF.SET_CONFIG, data);
   if (!state.preference.lang) {
     commit(PREF.SET_PREFERENCE, { lang: data.lang });
   }
   const config = state.config;
   SuperDock.setBaseURL(config.super_dock_api_server);
-  GoogleMap.setApiKey(config.gmap_key);
   HeWeather.setApiKey(config.heweather_key);
-  Mapbox.setAccessToken(config.mapbox_key);
-  AMap.setApiKey(config.amap_key);
+  CaiYun.setApiKey(config.caiyun_key);
   setLocale(state.preference.lang);
 }
 
@@ -81,12 +78,13 @@ export async function configure({ state, commit }) {
  * @param {Context} context
  * @param {{username: string; password: string}} payload
  */
-export async function login({ state, commit }, { username, password }) {
+export async function login({ state, commit, dispatch }, { username, password }) {
   const data = await SuperDock.token(username, password, state.config.oauth_client_id, state.config.oauth_client_secret);
   const token = `${data.token_type} ${data.access_token}`;
   const due = (data.created_at + data.expires_in) * 1000;
   commit(USER.SET_USER_TOKEN, { token, due });
   SuperDock.setAuth(token);
+  dispatch('initialize');
   setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
   return token;
 }
@@ -140,12 +138,24 @@ export async function restoreSession({ commit }) {
 }
 
 /**
- * initialize and establish mqtt connection
+ * establish mqtt connection
  * @param {Context} context
  */
-export function initializeMqtt({ state }) {
+export function connectMqtt({ state }) {
   MqttClient.setRpcPrefix(state.user.id);
   MqttClient.connect(state.config.mqtt_url);
+}
+
+/**
+ * initialize all necessary data and mqtt subs
+ * @param {Context} context
+ */
+export function initialize({ dispatch }) {
+  dispatch('getUserInfo').then(() => {
+    dispatch('connectMqtt');
+    dispatch('getNodes').then(() => dispatch('subscribeNodes'));
+    dispatch('getPlans').then(() => dispatch('subscribePlans'));
+  });
 }
 
 /**
@@ -176,14 +186,14 @@ export async function updateDepotStatus({ commit }, id) {
   commit(NODE.SET_NODE_STATUS, { id, payload: { status } });
 }
 
-const NodePointTopic = {
+const PointTopic = {
   depot_status: ['depot_status', 'notification', 'overview', 'charger'],
   drone_status: ['drone_status', 'notification', 'overview'],
-  battery: 'battery',
-  weather: 'weather',
-  gimbal: 'gimbal',
-  action: 'action_enabled',
-  overlay: 'overlay_screen',
+  battery: ['battery'],
+  weather: ['weather'],
+  gimbal: ['gimbal'],
+  action: ['action_enabled'],
+  overlay: ['overlay_screen'],
   map: ['position', 'place', 'heatmap', 'waypoint']
 };
 
@@ -195,32 +205,40 @@ export function subscribeNodes({ state, commit }) {
     const { id, points } = node.info;
     MqttClient.subscribeNode(id);
     if (points.some(p => p.point_type_name.startsWith('livestream_'))) {
-      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.gimbal}`);
-      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.action}`);
-      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${NodePointTopic.overlay}`);
+      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.gimbal}`);
+      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.action}`);
+      MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.overlay}`);
     }
-    for (const point of points) {
-      if (point.point_type_name === 'custom') {
-        if (!point.params || typeof point.params !== 'object') continue;
-        const { topic = 'custom' } = point.params;
-        commit(NODE.ADD_NODE_TOPIC, { id, topic });
-        MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
-        continue;
-      } else if (point.point_type_name === 'settings') {
-        if (!point.params || typeof point.params !== 'object') continue;
-        point.params.forEach(group => {
-          const topic = group.topic;
-          commit(NODE.ADD_NODE_TOPIC, { id, topic: group.topic });
+    points.forEach(point => {
+      switch (point.point_type_name) {
+        case 'custom': {
+          if (typeof point.params !== 'object') break;
+          const { topic = 'custom' } = point.params;
+          commit(NODE.ADD_NODE_TOPIC, { id, topic });
           MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
-        });
+          break;
+        }
+        case 'settings': {
+          /** @type {SDWC.SettingsGroup[]} */
+          const params = point.params;
+          if (!Array.isArray(params)) break;
+          params.forEach(({ topic }) => {
+            commit(NODE.ADD_NODE_TOPIC, { id, topic });
+            MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
+          });
+          break;
+        }
+        default: {
+          /** @type {string[]} */
+          const topics = PointTopic[point.point_type_name];
+          if (!topics) break;
+          topics.forEach(topic => {
+            MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
+          });
+          break;
+        }
       }
-      const t = NodePointTopic[point.point_type_name];
-      if (!t) continue;
-      const topics = Array.isArray(t) ? t : [t];
-      for (const topic of topics) {
-        MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
-      }
-    }
+    });
   });
 }
 
@@ -295,7 +313,8 @@ export async function getPlanWaypoints(_, plan) {
 export async function downloadFile(_, path) {
   const res = await SuperDock.downloadFile(path);
   const cd = res.headers.get('content-disposition') || 'attachment';
-  const { filename } = parseContentDisposition(cd).parameters;
+  /** @type {Record<string, any>} */
+  const { filename = '' } = parseContentDisposition(cd).parameters;
   const blob = await res.blob();
   return { filename, blob };
 }

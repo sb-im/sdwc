@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import { runPlanJob, getPlanJobs, cancelPlanJob } from '@/api/super-dock';
 
 import Card from '@/components/card.vue';
@@ -101,28 +101,29 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      /**
-       * @param {SDWC.State} state
-       * @returns {SDWC.PlanTermOutput[]}
-       */
-      termOutput(state) {
-        const term = state.plan.term.find(t => t.id === this.plan.id);
-        return term ? term.output : [];
-      },
-      /**
-       * @param {SDWC.State} state
-       * @returns {SDWC.PlanRunningContent}
-       */
-      runningContent(state) {
-        /** @type {SDWC.PlanRunning} */
-        const running = state.plan.running.find(r => r.id === this.plan.id);
-        return running ? running.running : null;
-      }
-    }),
+    /**
+     * @returns {SDWC.PlanTermOutput[]}
+     */
+    termOutput() {
+      /** @type {SDWC.State} */
+      const state = this.$store.state;
+      const term = state.plan.term.find(t => t.id === this.plan.id);
+      return term ? term.output : [];
+    },
+    /**
+     * @returns {SDWC.PlanRunningContent}
+     */
+    runningContent() {
+      /** @type {SDWC.State} */
+      const state = this.$store.state;
+      const running = state.plan.running.find(r => r.id === this.plan.id);
+      return running ? running.running : null;
+    },
+    /** @returns {boolean} */
     isRunning() {
       return this.runningContent !== null;
     },
+    /** @returns {SDWC.PlanInfo} */
     planToShow() {
       if (!this.isRunning) return this.plan;
       return Object.assign({}, this.plan, {
@@ -130,6 +131,7 @@ export default {
         extra: Object.assign({}, this.plan.extra, this.runningContent.extra)
       });
     },
+    /** @returns {SDWC.PlanJob[]} */
     jobsToShow() {
       const { size, current } = this.pagination;
       const end = current * size;

@@ -19,6 +19,7 @@
       <template #title>
         <sd-icon value="tasks-blue"></sd-icon>
         <span v-t="'common.plan'"></span>
+        <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
       </template>
       <li v-if="collapse" class="aside__subtitle" v-t="'common.plan'"></li>
       <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
@@ -26,7 +27,7 @@
         <span v-t="'plan.edit.add'"></span>
       </el-menu-item>
       <el-menu-item
-        v-for="plan in plans"
+        v-for="plan in orderedPlans"
         :key="plan.id"
         :index="`plan-${plan.id}`"
         :route="{ name: 'plan', params: { id: plan.id } }"
@@ -60,18 +61,22 @@
       >{{ depot.info.name }}</el-menu-item>
     </el-submenu>
     <div class="aside__version">
-      <span v-if="!collapse" class="aside__version-text">{{ version }}</span>
+      <template v-if="!collapse">
+        <div class="aside__version-text">
+          <div v-text="version"></div>
+          <div>Powered by Superdock</div>
+        </div>
+      </template>
     </div>
     <el-menu-item index="never" :route="{}" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
-      <span slot="title" class="aside__collapse-text">{{ $t(`aside.${collapse ? 'un' : ''}fold`) }}</span>
+      <span slot="title" class="aside__collapse-text" v-t="`aside.${collapse ? 'un' : ''}fold`"></span>
     </el-menu-item>
   </el-menu>
 </template>
 
 <script>
 import throttle from 'lodash/throttle';
-import { mapState, mapGetters } from 'vuex';
 
 import Icon from '@/components/sd-icon.vue';
 
@@ -83,18 +88,16 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      /** @type { () => SDWC.Config[] } */
-      config: state => state.config,
-      /** @type { () => SDWC.PlanInfo[] } */
-      plans: state => state.plan.info,
-      /** @type { () => SDWC.PlanRunning[] } */
-      running: state => state.plan.running
-    }),
-    ...mapGetters([
-      'drones',
-      'depots'
-    ]),
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; },
+    /** @returns {SDWC.PlanInfo[]} */
+    plans() { return this.$store.state.plan.info; },
+    /** @returns {SDWC.PlanRunning[]} */
+    running() { return this.$store.state.plan.running; },
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
     /** @returns {string} */
     activeIndex() {
       const { name, params: { id } } = this.$route;
@@ -118,6 +121,16 @@ export default {
         result[r.id] = true;
       }
       return result;
+    },
+    /** @returns {SDWC.PlanInfo[]} */
+    orderedPlans() {
+      const running = [];
+      const standby = [];
+      for (const p of this.plans) {
+        if (this.isPlanRunning[p.id]) running.push(p);
+        else standby.push(p);
+      }
+      return running.concat(standby);
     },
     /** @returns {string} */
     version() {
@@ -166,6 +179,20 @@ export default {
   width: 50px;
   height: 50px;
   margin: 25px;
+}
+.aside__badge {
+  position: static;
+}
+.aside__badge .el-badge__content {
+  position: absolute;
+}
+.aside__badge .el-badge__content {
+  left: 140px;
+  top: 18px;
+}
+.el-menu--collapse .aside__badge .el-badge__content {
+  top: 10px;
+  left: 34px;
 }
 .aside__subtitle {
   padding: 7px 0 7px 20px;

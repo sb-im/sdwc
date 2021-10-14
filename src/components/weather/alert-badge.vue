@@ -14,15 +14,18 @@
 
 <script>
 const AlertLevel = {
+  '白色': 'white',
   '蓝色': 'blue',
+  '绿色': 'green',
   '黄色': 'yellow',
   '橙色': 'orange',
   '红色': 'red',
-  'Blue': 'blue',
-  'Yellow': 'yellow',
-  'Orange': 'orange',
-  'Red': 'red',
+  '黑色': 'black'
 };
+
+/**
+ * @typedef {{ level: string, type: string, title: string, text: string }} AlertItem
+ */
 
 export default {
   name: 'sd-weather-alert',
@@ -32,12 +35,13 @@ export default {
     }
   },
   computed: {
+    /** @returns {AlertItem[]} */
     alerts() {
       const alerts = {};
       for (const a of this.alert) {
         const { title, type, typeName, level, text } = a;
         alerts[type] = {
-          level: AlertLevel[level],
+          level: AlertLevel[level] || level.toLowerCase(),
           type: typeName,
           title,
           text
@@ -63,10 +67,20 @@ export default {
   user-select: none;
   margin-right: 4px;
 }
+.sd-weather-alert .el-tag--white {
+  color: #909399;
+  border-color: #909399;
+  background-color: white;
+}
 .sd-weather-alert .el-tag--blue {
   color: #1e88e5;
   border-color: #1e88e5;
   background-color: #e3f2fd;
+}
+.sd-weather-alert .el-tag--green {
+  color: #67c23a;
+  border-color: #67c23a;
+  background-color: white;
 }
 .sd-weather-alert .el-tag--yellow {
   color: #fbc02d;
@@ -82,5 +96,10 @@ export default {
   color: #d32f2f;
   border-color: #d32f2f;
   background-color: #ffebee;
+}
+.sd-weather-alert .el-tag--black {
+  color: white;
+  border-color: #575757;
+  background-color: #909399;
 }
 </style>

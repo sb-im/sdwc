@@ -30,6 +30,7 @@ import { waypointsToMapProps } from './common';
 export default {
   name: 'sd-plan-edit',
   props: {
+    /** @type {Vue.PropOptions<SDWC.PlanInfo>} */
     initial: {
       type: Object,
       required: true

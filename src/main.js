@@ -37,6 +37,16 @@ const configurePromise = store.dispatch('configure');
  */
 store.dispatch('restoreSession');
 store.dispatch('restorePreference');
+/**
+ * re-initialize data and connections after configure completed and session
+ * restored
+ */
+configurePromise.then(() => {
+  const { token, due } = store.state.user;
+  if (token && due > Date.now()) {
+    store.dispatch('initialize');
+  }
+});
 
 window.addEventListener('beforeunload', () => {
   store.dispatch('storePreference');

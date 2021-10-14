@@ -164,6 +164,8 @@ export default {
   },
   status: {
     disconnected: 'Node Disconnected',
+    parameters: 'Node Parameters',
+    set_param_failed: 'Failed to set parameter: {message} Error Code: {code}',
     log: 'Log',
     no_log: 'No log',
     popup: 'Popup',

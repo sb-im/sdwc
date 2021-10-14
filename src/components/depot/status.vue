@@ -36,14 +36,17 @@ export default {
   name: 'sd-depot-status',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeMsg>} */
     msg: {
       type: Object,
       required: true
@@ -61,6 +64,7 @@ export default {
     }
   }),
   computed: {
+    /** @returns {SDWC.StatusItem[]} */
     items() {
       const s = this.msg.depot_status;
       const c = this.msg.charger;

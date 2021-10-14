@@ -59,6 +59,9 @@ export class WebRTC4Client extends EventEmitter2 {
     });
   }
 
+  /**
+   * @param {CloseEvent} e
+   */
   onSignalClose(e) {
     trace('onSignalClose', e);
   }
@@ -84,6 +87,9 @@ export class WebRTC4Client extends EventEmitter2 {
     }
   }
 
+  /**
+   * @param {RTCSessionDescriptionInit} sdp
+   */
   async onRemoteSdp(sdp) {
     trace('onRemoteSdp', sdp);
     await this.pc.setRemoteDescription(sdp);
@@ -92,6 +98,9 @@ export class WebRTC4Client extends EventEmitter2 {
     this.candidates = [];
   }
 
+  /**
+   * @param {RTCIceCandidateInit} candidate
+   */
   onRemoteIceCandidate(candidate) {
     trace('onRemoteCandidate', candidate);
     if (this.pcAnswered) {

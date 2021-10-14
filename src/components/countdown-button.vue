@@ -1,7 +1,7 @@
 <template>
   <el-button v-bind="$attrs" v-on="$listeners" :disabled="disabled" ref="button">
     <span v-t="text"></span>
-    <span>{{confirmSuffix}}</span>
+    <span v-t="confirmSuffix"></span>
   </el-button>
 </template>
 
@@ -37,9 +37,11 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     disabled() {
       return this.mode === 'delay' && this.remain > 0;
     },
+    /** @returns {string} */
     confirmSuffix() {
       return this.remain > 0 ? ` (${this.remain})` : '';
     }

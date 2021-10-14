@@ -18,8 +18,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import { reloadVideo, WebSocketSignalingChannel } from './webrtc-client';
 
 export default {
@@ -37,13 +35,13 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'config'
-    ])
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; }
   },
   methods: {
     createChannel() {
-      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_server);
+      this.couldRetry = false;
+      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_servers || this.config.ice_server);
       channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;
@@ -64,10 +62,12 @@ export default {
     },
     recreateChannel() {
       this.destroyChannel();
-      this.retryTimeout = setTimeout(() => this.createChannel(), 3 * 1000);
+      this.retryTimeout = setTimeout(() => {
+        this.retryTimeout = 0;
+        this.createChannel();
+      }, 3 * 1000);
     },
     handleRetry() {
-      this.couldRetry = false;
       this.msg = '';
       this.destroyChannel();
       this.createChannel();
@@ -81,6 +81,10 @@ export default {
     this.createChannel();
   },
   beforeDestroy() {
+    if (this.retryTimeout) {
+      clearTimeout(this.retryTimeout);
+      delete this.retryTimeout;
+    }
     this.destroyChannel();
   }
 };
@@ -92,7 +96,7 @@ export default {
 }
 .monitor-webrtc__overlay {
   position: absolute;
-  top: 220px;
+  top: calc(50% - 16px);
   width: 100%;
   text-align: center;
   z-index: 1;

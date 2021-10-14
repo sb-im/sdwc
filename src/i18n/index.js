@@ -16,7 +16,8 @@ const i18n = new I18n({
   dateTimeFormats: {
     'en': format,
     'zh': format
-  }
+  },
+  silentTranslationWarn: process.env.NODE_ENV !== 'development' // eslint-disable-line no-undef
 });
 
 export default i18n;

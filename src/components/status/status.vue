@@ -7,13 +7,30 @@
     element-loading-custom-class="status--disconnected"
   >
     <sd-status-meter :items="items" v-on="$listeners">
-      <slot name="popover" slot="popover"></slot>
+      <template #append v-if="parameterPoint">
+        <el-tooltip placement="bottom" :content="$t('status.parameters')">
+          <el-button
+            circle
+            size="small"
+            icon="el-icon-s-tools"
+            class="status__parameters"
+            :disabled="statusCode !== 0"
+            @click="handleParametersClick"
+          ></el-button>
+        </el-tooltip>
+        <sd-node-parameters ref="parameters" :point="parameterPoint" :statusCode="statusCode"></sd-node-parameters>
+      </template>
+      <template #popover>
+        <slot name="popover"></slot>
+      </template>
     </sd-status-meter>
     <sd-status-notify :nodeId="nodeId" :notification="notification"></sd-status-notify>
   </div>
 </template>
 
 <script>
+import NodeParameters from '@/components/settings/node-parameters.vue';
+
 import Meter from './status-meter.vue';
 import Notify from './status-notify.vue';
 
@@ -38,22 +55,29 @@ export default {
       required: true
     }
   },
+  computed: {
+    /** @returns {SDWC.NodePoint} */
+    parameterPoint() {
+      const node = this.$store.state.node.find(n => n.info.id === this.nodeId);
+      if (!node) return null;
+      const point = node.info.points.find(p => p.point_type_name === 'parameter');
+      return point;
+    }
+  },
+  methods: {
+    handleParametersClick() {
+      this.$refs.parameters.open();
+    }
+  },
   components: {
     [Meter.name]: Meter,
-    [Notify.name]: Notify
+    [Notify.name]: Notify,
+    [NodeParameters.name]: NodeParameters
   }
 };
 </script>
 
 <style>
-.status__line {
-  font-size: 14px;
-  display: flex;
-}
-.status__line:not(:first-child) {
-  border-top: 1px solid #ebeef5;
-}
-
 .status--disconnected {
   background-color: #00000020;
   transition: opacity 0s;
@@ -64,5 +88,9 @@ export default {
 }
 .status--disconnected .el-loading-text {
   color: unset;
+}
+
+.status__parameters {
+  margin-right: 10px;
 }
 </style>

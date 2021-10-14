@@ -14,7 +14,9 @@
       </span>
       <i v-if="item.popover" class="el-icon-arrow-down el-icon--right"></i>
     </div>
+    <slot name="append"></slot>
     <el-popover
+      v-if="$slots.popover"
       ref="popover"
       trigger="manual"
       style="display:none"
@@ -34,6 +36,7 @@ import Icon from '@/components/sd-icon.vue';
 export default {
   name: 'sd-status-meter',
   props: {
+    /** @type {Vue.PropOptions<SDWC.StatusItem[]>} */
     items: {
       type: Array,
       required: true
@@ -46,6 +49,7 @@ export default {
     }
   }),
   computed: {
+    /** @returns {string} */
     lineStyle() {
       const l = this.items.length;
       return l === 8 ? '' : `--status-count:${l}`;
@@ -99,6 +103,14 @@ export default {
 </script>
 
 <style>
+.status__line {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.status__line:not(:first-child) {
+  border-top: 1px solid #ebeef5;
+}
 .status__item {
   flex-basis: calc(100% / var(--status-count, 8));
   box-sizing: border-box;

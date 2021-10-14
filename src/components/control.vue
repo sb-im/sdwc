@@ -30,7 +30,7 @@ import Icon from '@/components/sd-icon.vue';
 
 /**
  * custom control group
- * @type {{ icon: string, item: SDWC.ControlButton[] }[]}
+ * @type {ControlButtonGroup[]}
  */
 const Controls = [
   {
@@ -61,15 +61,22 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     disabled() {
       return this.status.code !== 0;
     },
+    /** @returns {string} */
     disabledText() {
       return this.$t('control.abnormal');
     },
+    /**
+     * override in derived class
+     * @returns {SDWC.ControlButtonGroup[]}
+     */
     staticControls() {
       return Controls;
     },
+    /** @returns {SDWC.ControlButtonGroup[]} */
     controls() {
       return this.point.params || this.staticControls;
     }

@@ -23,6 +23,9 @@ export class WebRTC3Client extends EventEmitter2 {
     pc.addEventListener('track', e => this.onTrack(e));
   }
 
+  /**
+   * @param {any} data
+   */
   cableSend(data) {
     trace('cableSend', data);
     this.cable.send(typeof data === 'string' ? data : JSON.stringify(data));
@@ -52,6 +55,9 @@ export class WebRTC3Client extends EventEmitter2 {
     } catch (e) { /* noop */ }
   }
 
+  /**
+   * @param {RTCSessionDescriptionInit} sdp
+   */
   async onRemoteSdp(sdp) {
     trace('onRemoteSdp', sdp);
     this.pc.addTransceiver('video', { direction: 'recvonly' });
@@ -61,6 +67,9 @@ export class WebRTC3Client extends EventEmitter2 {
     this.cableSend({ sdp: answer });
   }
 
+  /**
+   * @param {RTCIceCandidateInit} ice
+   */
   onRemoteIceCandidate(ice) {
     trace('onRemoteCandidate', ice);
     this.pc.addIceCandidate(ice);

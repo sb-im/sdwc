@@ -19,9 +19,11 @@ export default {
     }
   },
   computed: {
+    /** @returns {boolean} */
     hasLevel() {
       return typeof this.notification.level === 'number';
     },
+    /** @returns {{ name: string, class: string }} */
     level() {
       return NodeNotificationLevels[this.notification.level] || {};
     }

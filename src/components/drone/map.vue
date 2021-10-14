@@ -67,7 +67,7 @@
 
 <script>
 import get from 'lodash/get';
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { PlaceStyle } from '@/constants/drone-place-style';
 import NodeMap from '@/components/map/map.vue';
@@ -139,20 +139,23 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'preference'
-    ]),
-    ...mapGetters([
-      'depots'
-    ]),
+    /** @returns {SDWC.Preference} */
+    preference() { return this.$store.state.preference; },
+    /** @returns {SDWC.Node[]} */
+    drones() { return this.$store.getters.drones; },
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
+    /** @returns {SDWC.DroneMapControl[]} */
     commands() {
       if (!this.point.params) return DefaultCommands;
       return get(this.point, 'params.common.move', DefaultCommands);
     },
+    /** @returns {{ [key: string]: SDWC.DronePlaceStyle }} */
     placeStyle() {
       if (!this.point.params) return PlaceStyle;
       return Object.assign({}, PlaceStyle, get(this.point, 'params.common.place', {}));
     },
+    /** @return {SDWC.MapPolyline[]} */
     polylines() {
       const polylines = [];
       /** @type {{ position: SDWC.NodePosition[], place: SDWC.NodePlaces }} */
@@ -184,26 +187,32 @@ export default {
       }
       return polylines;
     },
+    /** @returns {SDWC.MarkerDrone[]} */
     droneMarkers() {
       const markers = [];
-      /** @type {SDWC.NodePosition} */
-      const position = this.msg.position[0];
-      if (this.status.code === 0 && typeof position === 'object') {
-        markers.push({
-          type: 'drone',
-          id: this.info.id,
-          name: this.info.name,
-          position,
-          heading: position.heading
-        });
+      const nodeId = this.point.node_id;
+      for (const d of this.drones) {
+        if (d.info.id === nodeId && d.status.code === 0) {
+          const position = d.msg.position[0];
+          if (typeof position !== 'object') continue;
+          markers.push({
+            type: 'drone',
+            id: d.info.id,
+            name: d.info.name,
+            position: { lng: position.lng, lat: position.lat },
+            heading: position.heading
+          });
+        }
       }
       return markers;
     },
+    /** @returns {SDWC.MarkerDepot[]} */
     depotMarkers() {
       const markers = [];
+      const nodeId = this.point.node_id;
       for (const d of this.depots) {
         const { code, status } = d.status;
-        if (code === 0 && status.link_id === this.info.id) {
+        if (code === 0 && status.link_id === nodeId) {
           markers.push({
             type: 'depot',
             id: d.info.id,
@@ -214,6 +223,7 @@ export default {
       }
       return markers;
     },
+    /** @returns {SDWC.MarkerPlace[]} */
     placeMarkers() {
       const { place } = this.msg;
       const markers = [];
@@ -229,6 +239,7 @@ export default {
       }
       return markers;
     },
+    /** @returns {SDWC.Marker[]} */
     markers() {
       return [
         ...this.waypoints.map(w => w.markers).flat(),
@@ -320,7 +331,7 @@ export default {
       };
     },
     sendCommand(mission, arg) {
-      this.$mqtt(this.info.id, { mission, arg }).catch(() => { /* noop */ });
+      this.$mqtt(this.point.node_id, { mission, arg }).catch(() => { /* noop */ });
     },
     handlePromptCancel() {
       this.prompt.show = false;

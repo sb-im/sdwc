@@ -1,11 +1,12 @@
 <template>
   <el-input
     class="settings__input"
-    size="mini"
     v-model="model"
     :disabled="disabled"
     @change="handleChange"
-  ></el-input>
+  >
+    <template v-if="unit" #append>{{ unit }}</template>
+  </el-input>
 </template>
 
 <script>
@@ -21,8 +22,11 @@ export default {
       default: false
     },
     value: {
-      type: String,
+      type: [String, Number],
       default: ''
+    },
+    unit: {
+      type: String
     }
   },
   data: () => ({
@@ -30,6 +34,9 @@ export default {
   }),
   methods: {
     handleChange(val) {
+      if (typeof this.value === 'number') {
+        val = Number.parseFloat(val);
+      }
       this.$emit('change', val);
     }
   },
@@ -45,10 +52,10 @@ export default {
 </script>
 
 <style>
-.settings__input {
-  width: 100px;
-}
 .settings__input .el-input__inner {
   padding: 0 0 0 10px;
+}
+.settings__input .el-input-group__append {
+  padding: 0 10px;
 }
 </style>

@@ -65,6 +65,7 @@ import { uploadFile } from '@/api/super-dock';
 import { mapActions } from 'vuex';
 
 /**
+ * @typedef {{ key: string, label: string, hidden: boolean }} FileField
  * @typedef {{ icon: string, text: string, type?: string, disabled?: boolean }} FileButton
  * @typedef {{ key: string, blobId: string, filename: string, button: FileButton }} FileEntry
  */
@@ -100,11 +101,13 @@ export default {
   }),
   computed: {
     /**
-     * `Set<string>` of every key in `fileEntries`
+     * every key in `fileEntries`
+     * @returns {Set<string>}
      */
     occupiedKeys() {
       return new Set(this.fileEntries.map(e => e.key));
     },
+    /** @returns {boolean} */
     canAdd() {
       if (this.readonly) {
         return false;
@@ -120,6 +123,7 @@ export default {
     },
     /**
      * file field name dropdown options
+     * @returns {FileField[]}
      */
     fields() {
       const fields = [];

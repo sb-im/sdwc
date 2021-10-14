@@ -45,17 +45,21 @@ export default {
     };
   },
   computed: {
+    /** @returns {{ [key: string]: boolean }} */
     containerClass() {
       return {
         'sd-slide-confirm--completed': this.completed
       };
     },
+    /** @returns {{ [key: string]: boolean }} */
     containerStyle() {
       return { width: `${this.width}px` };
     },
+    /** @returns {{ [key: string]: boolean }} */
     textStyle() {
       return { visibility: this.position ? 'hidden' : 'visible' };
     },
+    /** @returns {Partial<import('element-ui').Button>} */
     buttonAttrs() {
       return {
         ...this.$attrs,
@@ -63,6 +67,7 @@ export default {
         icon: this.completed ? 'el-icon-check' : this.$attrs.icon || 'el-icon-arrow-right'
       };
     },
+    /** @returns {{ [key: string]: boolean }} */
     buttonStyle() {
       if (this.completed) return { marginLeft: `${this.completedPosition}px` };
       if (!this.dragable) return {};
@@ -71,6 +76,7 @@ export default {
         transitionProperty: 'background-color',
       };
     },
+    /** @returns {number} */
     completedPosition() {
       return this.width - this.buttonWidth;
     }

@@ -2,28 +2,15 @@
   <sd-card class="sd-map" :icon="icon" :title="title" dense>
     <template #action>
       <slot name="action"></slot>
-      <el-radio-group class="map__switch" size="small" v-model="type" @change="handleMapChange">
-        <el-radio-button v-for="(value, key) of MapType" :key="key" :label="value">{{ key }}</el-radio-button>
-      </el-radio-group>
     </template>
-    <component :is="type" v-bind="$attrs" v-on="$listeners"></component>
+    <sd-map-mapbox v-bind="$attrs" v-on="$listeners"></sd-map-mapbox>
   </sd-card>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-
 import Card from '@/components/card.vue';
 
-import AMap from './amap.vue';
-import Google from './google.vue';
 import Mapbox from './mapbox.vue';
-
-const MapType = {
-  AMap: AMap.name,
-  Google: Google.name,
-  Mapbox: Mapbox.name
-};
 
 export default {
   name: 'sd-map',
@@ -38,33 +25,8 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      type: ''
-    };
-  },
-  computed: {
-    ...mapState([
-      'preference'
-    ])
-  },
-  methods: {
-    ...mapActions([
-      'setPreference'
-    ]),
-    handleMapChange(mapType) {
-      this.$emit('map-change');
-      this.setPreference({ mapType });
-    }
-  },
-  created() {
-    this.MapType = MapType;
-    this.type = this.preference.mapType;
-  },
   components: {
     [Card.name]: Card,
-    [AMap.name]: AMap,
-    [Google.name]: Google,
     [Mapbox.name]: Mapbox
   }
 };
@@ -76,7 +38,7 @@ export default {
 }
 .map__el {
   width: 100%;
-  height: 400px;
+  height: 480px;
 }
 /**
  * disable magnifier when touch-hold on Safari

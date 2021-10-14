@@ -70,17 +70,16 @@ const cfg = {
       },
       {
         test: /\.(ttf|eot|woff2?)$/,
-        loader: 'file-loader',
-        options: {
-          name: 'fonts/[name].[ext]'
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]'
         }
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/,
-        loader: 'file-loader',
-        options: {
-          name: 'images/[name].[ext]',
-          esModule: false
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]'
         }
       }
     ]
@@ -143,7 +142,8 @@ module.exports = function (env, argv) {
     cfg.optimization = {
       minimize: true,
       minimizer: [
-        new CssMinimizerWebpackPlugin()
+        new CssMinimizerWebpackPlugin(),
+        '...', // minimizer defaults, namely 'terser-webpack-plugin'
       ]
     };
     cfg.plugins.push(

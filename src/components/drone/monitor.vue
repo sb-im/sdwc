@@ -25,10 +25,6 @@
               <i class="el-icon-video-play"></i>
               <span v-t="'monitor.source.reload'"></span>
             </el-dropdown-item>
-            <el-dropdown-item @click.native="handleReconnect">
-              <i class="el-icon-refresh-right"></i>
-              <span v-t="'monitor.source.reconnect'"></span>
-            </el-dropdown-item>
           </template>
         </el-dropdown-menu>
       </el-dropdown>
@@ -47,9 +43,9 @@
             :key="c.type"
             @click.native="handleControlType(c.type, $event)"
           >
-            <el-radio :value="control.enabled" :label="c.type">
+            <el-checkbox :value="control.enabled[c.type]" :label="c.type">
               <span v-t="c.label || `monitor.control.${c.type}`  || c.method"></span>
-            </el-radio>
+            </el-checkbox>
           </el-dropdown-item>
           <!-- dedicated dropdown-item for virtual joystick control -->
           <el-dropdown-item
@@ -104,7 +100,7 @@
           ></div>
         </transition>
         <!-- gimbal slider and reset button -->
-        <div v-if="hasGimbalControl" v-show="control.enabled === 'gimbal'">
+        <div v-if="hasGimbalControl" v-show="control.enabled.gimbal">
           <div class="monitor-drone-control--vertical">
             <!-- button 'center' -->
             <el-tooltip class="monitor-drone-control__restore" placement="top">
@@ -135,7 +131,7 @@
         <!-- zoom slider and reset button -->
         <div
           v-if="hasZoomControl"
-          v-show="control.enabled === 'zoom'"
+          v-show="control.enabled.zoom"
           class="monitor-drone-control--bottom"
         >
           <!-- zoom slider bottom -->
@@ -183,14 +179,17 @@ export default {
   name: 'sd-drone-mointor',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeMsg>} */
     msg: {
       type: Object,
       required: true
@@ -202,7 +201,12 @@ export default {
         pending: false
       },
       control: {
-        enabled: ''
+        enabled: {
+          click: false,
+          target: false,
+          gimbal: false,
+          zoom: false
+        }
       },
       gimbal: {
         yaw: 0,
@@ -211,12 +215,17 @@ export default {
         source: ''
       },
       gesture: {
-        valid: false,
+        pressed: false,
+        moving: false,
         lastTime: -1,
         lastPos: {
           x: 0,
           y: 0
         }
+      },
+      click: {
+        timeoutId: -1,
+        prevent: false
       },
       target: {
         type: '',
@@ -235,12 +244,15 @@ export default {
     };
   },
   computed: {
+    /** @returns {boolean} */
     allDisabled() {
       return this.status.code !== 0;
     },
+    /** @returns {{ source: string, label: string }[]} */
     videoSources() {
       return get(this.point.params, 'source', []);
     },
+    /** @returns {{ type: string, method: string, label: string }[]} */
     availableControls() {
       const controls = [];
       for (const [k, v] of Object.entries(get(this.point.params, 'control', {}))) {
@@ -249,29 +261,36 @@ export default {
       }
       return controls;
     },
+    /** @returns {boolean} */
     hasClickControl() {
       // single click `pin_screen`
       return has(this.point.params, 'control.click');
     },
+    /** @returns {boolean} */
     hasTargetControl() {
       // double click `gimbal_target`
       return has(this.point.params, 'control.target');
     },
+    /** @returns {boolean} */
     hasGimbalControl() {
       return has(this.point.params, 'control.gimbal');
     },
+    /** @returns {boolean} */
     hasZoomControl() {
       return has(this.point.params, 'control.zoom');
     },
+    /** @returns {boolean} */
     hasStickControl() {
       return has(this.point.params, 'control.stick');
     },
+    /** @returns {{ method: string, label: string }[]} */
     availableActions() {
       const enabled = this.msg.action_enabled;
       return get(this.point.params, 'action', []).filter(a => enabled.includes(a.method));
     },
+    /** @returns {{ viewBox: string, elements: { type: string, text: string }[] }} */
     overlaySVG() {
-      const { width, height, shapes } = this.msg.overlay_screen;
+      const { width = 1280, height = 720, shapes = [] } = this.msg.overlay_screen;
       const elements = [];
       for (const s of shapes) {
         elements.push(s);
@@ -289,18 +308,20 @@ export default {
       }
       return { viewBox: `0 0 ${width} ${height}`, elements };
     },
+    /** @returns {boolean} */
     gimbalDisabled() {
-      return this.allDisabled || this.control.enabled !== 'gimbal';
+      return this.allDisabled || !this.control.enabled.gimbal;
     },
+    /** @returns {{ [key: string]: boolean }} */
     wrapperClass() {
       return {
-        'monitor-drone-control--moving': this.gesture.valid
+        'monitor-drone-control--moving': this.gesture.moving
       };
     }
   },
   methods: {
     /**
-     * @param {'visual' | 'thermal' | 'msx'} source
+     * @param {string} source
      * @param {MouseEvent} event
      */
     async handleVideoSource(source, event) {
@@ -328,21 +349,15 @@ export default {
       } catch (e) { /* noop */ }
       this.source.pending = false;
     },
-    handleReconnect() {
-      this.$refs.monitor.$refs.content.handleRetry();
-    },
     /**
-     * @param {'gimbal' | 'zoom' | 'stick'} type
+     * @param {string} type
      * @param {MouseEvent} event
      */
     handleControlType(type, event) {
       if (event.target.tagName === 'INPUT') return;
+      this.$set(this.control.enabled, type, !this.control.enabled[type]);
       if (type === 'stick') {
         this.toggleJoystick();
-      } else if (this.control.enabled === type) {
-        this.control.enabled = '';
-      } else {
-        this.control.enabled = type;
       }
     },
     /**
@@ -400,26 +415,39 @@ export default {
     },
     handleGestureStart(x, y) {
       if (this.gimbalDisabled) return;
-      this.gesture.valid = true;
+      this.gesture.pressed = true;
       this.gesture.lastPos = { x, y };
       this.gesture.lastTime = Date.now();
     },
     handleGestureMove(x, y) {
       if (this.gimbalDisabled) return;
-      if (!this.gesture.valid) return;
-      this.sendGestureCtl(x, y);
+      if (!this.gesture.pressed) return;
+      if (!this.gesture.moving) {
+        this.gesture.moving = true;
+      } else {
+        this.sendGestureCtl(x, y);
+      }
       this.gesture.lastPos = { x, y };
     },
     handleGestureEnd(x, y) {
       if (this.gimbalDisabled) return;
-      if (!this.gesture.valid) return;
+      if (!this.gesture.pressed) return;
+      this.gesture.pressed = false;
+      if (this.gesture.moving) {
+        this.gesture.moving = false;
+        this.click.prevent = true;
+      }
       if (this.gesture.lastPos.x !== x || this.gesture.lastPos.y !== y) {
         this.sendGestureCtl(x, y);
       }
-      this.gesture.valid = false;
     },
     sendGestureCtl(x, y) {
       const now = Date.now();
+      if (this.gesture.lastTime >= now) {
+        // 'mousedown' happens too late, at same time or even after 'mousemove',
+        // thus this move event should be ignored.
+        return;
+      }
       const factor = (now - this.gesture.lastTime) / 8;
       let { yaw, pitch } = this.gimbal;
       const dx = Math.trunc((this.gesture.lastPos.x - x) / factor);
@@ -444,15 +472,24 @@ export default {
       this.gesture.lastTime = now;
     },
     /**
-     * @param {DOMRect} rect
+     * @param {Element} el
      * @param {MouseEvent} ev
+     * @returns {{ left: number, top: number, x: number, y: number }}
      */
-    handleSingleClick(rect, ev) {
-      if (ev.detail === 2) return;
+    getClickPosition(el, ev) {
+      const rect = el.getBoundingClientRect();
       const left = ev.clientX - rect.left;
       const top = ev.clientY - rect.top;
       const x = left / rect.width;
       const y = top / rect.height;
+      return { left, top, x, y };
+    },
+    /**
+     * @param {Element} el
+     * @param {MouseEvent} ev
+     */
+    handleSingleClick(el, ev) {
+      const { left, top, x, y } = this.getClickPosition(el, ev);
       this.handlePinScreen(x, y);
       this.target = { left, top, show: true, type: 'single' };
       setTimeout(() => {
@@ -462,14 +499,11 @@ export default {
       }, 500);
     },
     /**
-     * @param {DOMRect} rect
+     * @param {Element} el
      * @param {MouseEvent} ev
      */
-    handleDblClick(rect, ev) {
-      const left = ev.clientX - rect.left;
-      const top = ev.clientY - rect.top;
-      const x = left / rect.width;
-      const y = top / rect.height;
+    handleDblClick(el, ev) {
+      const { left, top, x, y } = this.getClickPosition(el, ev);
       this.handleGimbalTarget(x, y);
       this.target = { left, top, show: true, type: 'double' };
       setTimeout(() => {
@@ -487,11 +521,11 @@ export default {
       }
       // Gesture Start
       el.addEventListener('mousedown', ev => {
-        if (ev.target !== el && event.target.parentElement !== el) return;
+        if (ev.target !== el) return;
         this.handleGestureStart(ev.x, ev.y);
       });
       el.addEventListener('touchstart', ev => {
-        if (ev.target !== el && event.target.parentElement !== el) return;
+        if (ev.target !== el) return;
         // do not prevent scroll when control disabled
         if (this.gimbalDisabled) return;
         ev.preventDefault();
@@ -504,7 +538,7 @@ export default {
         this.handleGestureMoveThrottled(ev.x, ev.y);
       });
       el.addEventListener('touchmove', ev => {
-        if (ev.target !== el && event.target.parentElement !== el) return;
+        if (ev.target !== el) return;
         const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
         if (!t) return;
         this.handleGestureMoveThrottled(t.pageX, t.pageY);
@@ -514,7 +548,7 @@ export default {
         this.handleGestureEnd(ev.x, ev.y);
       });
       el.addEventListener('touchend', ev => {
-        if (ev.target !== el && event.target.parentElement !== el) return;
+        if (ev.target !== el) return;
         const t = ev.touches[0] || ev.targetTouches[0] || ev.changedTouches[0];
         if (!t) return;
         this.handleGestureEnd(t.pageX, t.pageY);
@@ -523,20 +557,66 @@ export default {
       el.addEventListener('mouseleave', ev => {
         this.handleGestureEnd(ev.x, ev.y);
       });
-      // Single Click
-      if (this.hasClickControl) {
+      /** @type {(ev: MouseEvent) => boolean} */
+      const shouldPreventClick = ev => {
+        if (ev.target !== el) return true;
+        if (this.click.prevent) {
+          this.click.prevent = false;
+          return true;
+        }
+        return false;
+      };
+      // Single and Double Click
+      if (this.hasClickControl && this.hasTargetControl) {
         el.addEventListener('click', ev => {
-          if (this.control.enabled !== 'click') return;
-          const rect = el.getBoundingClientRect();
-          this.handleSingleClick(rect, ev);
+          if (shouldPreventClick(ev)) return;
+          if (this.click.timeoutId > 0) {
+            clearTimeout(this.click.timeoutId);
+            this.click.timeoutId = -1;
+            if (this.control.enabled.target) {
+              this.handleDblClick(el, ev);
+            }
+            return;
+          }
+          this.click.timeoutId = setTimeout(() => {
+            this.click.timeoutId = -1;
+            if (this.control.enabled.click) {
+              this.handleSingleClick(el, ev);
+            }
+          }, 300);
+        });
+      } else if (this.hasClickControl) {
+        // Single Click
+        el.addEventListener('click', ev => {
+          if (!this.control.enabled.click) return;
+          if (shouldPreventClick(ev)) return;
+          this.handleSingleClick(el, ev);
+        });
+      } else if (this.hasTargetControl) {
+        // Double Click
+        el.addEventListener('dblclick', ev => {
+          if (!this.control.enabled.target) return;
+          if (ev.target !== el) return;
+          this.handleDblClick(el, ev);
         });
       }
-      // Double Click
-      if (this.hasTargetControl) {
-        el.addEventListener('dblclick', ev => {
-          if (this.control.enabled !== 'target') return;
-          const rect = el.getBoundingClientRect();
-          this.handleDblClick(rect, ev);
+      // Mouse wheel
+      if (this.hasZoomControl) {
+        el.addEventListener('wheel', ev => {
+          if (!this.control.enabled.zoom) return;
+          ev.preventDefault();
+          let value = (this.gimbal.zoom * 10 - Math.sign(ev.deltaY)) / 10;
+          const [min, max] = get(this, 'point.params.control.zoom.zoom', [1, 5.5]);
+          if (value > max) {
+            value = max;
+          } else if (value < min) {
+            value = min;
+          }
+          if (Math.abs(value - this.gimbal.zoom) < 1e-2) {
+            return;
+          }
+          this.gimbal.zoom = value;
+          this.handleGimbalZoom(value);
         });
       }
     },
@@ -668,8 +748,11 @@ export default {
 </script>
 
 <style>
-.drone .sd-card__action .el-dropdown {
+.monitor .sd-card__action .el-dropdown {
   margin-left: 10px;
+}
+.monitor .el-card__body {
+  user-select: none;
 }
 .monitor-drone__switch {
   margin-left: 10px;
@@ -697,6 +780,7 @@ export default {
   border-radius: 20px;
   margin: -20px 0 0 -20px;
   transition-property: opacity;
+  pointer-events: none;
 }
 .monitor-drone-control__target.single {
   background-color: #ffffffb2;

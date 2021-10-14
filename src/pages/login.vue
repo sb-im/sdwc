@@ -13,7 +13,7 @@
       ></video>
     </div>
     <div class="login__form">
-      <h1 class="login__title">S Dashboard Web Console</h1>
+      <h1 class="login__title" v-text="config.title"></h1>
       <el-form label-width="80px" label-position="left">
         <el-form-item :error="errorUsername">
           <span slot="label" v-t="'login.username'"></span>
@@ -23,7 +23,7 @@
           <span slot="label" v-t="'login.password'"></span>
           <el-input ref="inputPwd" type="password" show-password v-model="password"></el-input>
         </el-form-item>
-        <el-button type="primary" icon="el-icon-minus" @click="handleLogin" :loading="pending">
+        <el-button type="primary" icon="el-icon-user" @click="handleLogin" :loading="pending">
           <span v-t="'login.button'"></span>
         </el-button>
       </el-form>
@@ -31,14 +31,14 @@
     <div class="login__footer">
       <a class="login__beian" href="https://beian.miit.gov.cn">
         <i class="el-icon-document-checked"></i>
-        {{ footerText }}
+        <span v-text="config.beian"></span>
       </a>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'sd-login',
@@ -50,17 +50,17 @@ export default {
       errorUsername: '',
       password: '',
       errorPassword: '',
+      redirectPath: null,
       pending: false
     };
   },
   computed: {
-    ...mapState(['config']),
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; },
+    /** @returns {string} */
     video() {
       const i = Math.floor(Math.random() * 7);
       return `/assets/videos/aerial${i}-10s.mp4`;
-    },
-    footerText() {
-      return this.config.beian;
     }
   },
   methods: {
@@ -83,7 +83,7 @@ export default {
       this.pending = true;
       try {
         await this.login({ username: this.username, password: this.password });
-        this.$router.push({ name: 'panel' });
+        this.$router.push(this.redirectPath || { name: 'panel' });
       } catch (e) {
         switch (e.status) {
           case 401:
@@ -95,27 +95,40 @@ export default {
         }
       }
       this.pending = false;
+    },
+    handleAutoLogin() {
+      /**
+       * `configurePromise`, provided by root Vue instance, in src/main.js ,
+       * is the Promise returned by dispatching action `configure`.
+       * Once it became fullfilled, `config.json` has been loaded.
+       */
+      this.configurePromise.then(() => {
+        const { username = '', password = '', path } = this.$route.params;
+        let redir = '';
+        if (username && password) {
+          this.username = username;
+          this.password = password;
+          if (path.length > 0) {
+            if (path[0] !== '/') {
+              redir += '/';
+            }
+            redir += path;
+            if (Object.keys(this.$route.query).length > 0) {
+              redir += `?${new URLSearchParams(this.$route.query).toString()}`;
+            }
+          }
+          this.redirectPath = redir;
+          this.handleLogin();
+        }
+      });
     }
   },
   mounted() {
-    /**
-     * `configurePromise`, provided by root Vue instance, in src/main.js ,
-     * is the Promise returned by dispatching action `configure`.
-     * Once it became fullfilled, `config.json` has been loaded.
-     */
-    this.configurePromise.then(() => {
-      const { username = '', password = '' } = this.$route.params;
-      if (username && password) {
-        this.username = username;
-        this.password = password;
-        this.handleLogin();
-      }
-    });
     /** @type {HTMLInputElement} */
     const inputPwd = this.$refs.inputPwd.$el.getElementsByTagName('input')[0];
     if (inputPwd) {
       inputPwd.addEventListener('keypress', (ev) => {
-        if (ev.keyCode === 13 || ev.key === 'Enter') {
+        if (ev.key === 'Enter') {
           this.handleLogin();
         }
       });
@@ -124,7 +137,7 @@ export default {
     const inputUsr = this.$refs.inputUsr.$el.getElementsByTagName('input')[0];
     if (inputUsr) {
       inputUsr.addEventListener('keypress', (ev) => {
-        if (ev.keyCode === 13 || ev.key === 'Enter') {
+        if (ev.key === 'Enter') {
           if (this.password.length === 0 && inputPwd) {
             inputPwd.focus();
           } else {
@@ -133,6 +146,12 @@ export default {
         }
       });
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => vm.handleAutoLogin());
+  },
+  beforeRouteUpdate(to, from, next) {
+    next(vm => vm.handleAutoLogin());
   }
 };
 </script>

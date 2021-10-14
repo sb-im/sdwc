@@ -3,7 +3,6 @@
 /** @type {SDWC.Preference} */
 const state = {
   lang: '',
-  mapType: 'sd-map-mapbox',
   mapFollow: true,
   overviewFit: true,
   notifyNoPopup: [],

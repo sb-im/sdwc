@@ -19,6 +19,7 @@ declare namespace SDWC {
   // store/modules/config.js
   export interface Config {
     beian: string;
+    title: string;
     aside_logo: string;
     super_dock_api_server: string;
     oauth_client_id: string;
@@ -26,10 +27,8 @@ declare namespace SDWC {
     lang: string;
     ice_server?: string;
     ice_servers?: RTCIceServer[];
-    amap_key: string;
-    gmap_key: string;
-    mapbox_key: string;
     map_tiles_url: string;
+    caiyun_key: string;
     heweather_key: string;
     mqtt_url: string;
   }
@@ -38,9 +37,7 @@ declare namespace SDWC {
   export interface NodePoint {
     id: number;
     name: string;
-    params: {
-      [key: string]: any;
-    };
+    params: any;
     node_id: number;
     point_type_id: number;
     point_type_name: string;
@@ -208,27 +205,28 @@ declare namespace SDWC {
     level: number;
     msg: string;
   }
+  export interface NodeMsg {
+    weather: NodeWeather;
+    battery: NodeBattery;
+    charger: NodeCharger;
+    depot_status: NodeDepotStatus;
+    drone_status: NodeDroneStatus;
+    gimbal: NodeGimbal;
+    action_enabled: NodeActionEnabled;
+    overlay_screen: NodeOverlayScreen;
+    position: NodePosition[];
+    place: NodePlaces;
+    heatmap: NodeHeatmap;
+    waypoint: NodeWaypoint;
+    notification: NodeNotification[];
+    overview: any;
+  }
   export interface Node {
     info: NodeInfo;
     /** connection status */
     status: NodeConnectionStatus;
     network: NodeNetworkStatus;
-    msg: {
-      weather: NodeWeather;
-      battery: NodeBattery;
-      charger: NodeCharger;
-      depot_status: NodeDepotStatus;
-      drone_status: NodeDroneStatus;
-      gimbal: NodeGimbal;
-      action_enabled: NodeActionEnabled;
-      overlay_screen: NodeOverlayScreen;
-      position: NodePosition[];
-      place: NodePlaces;
-      heatmap: NodeHeatmap;
-      waypoint: NodeWaypoint;
-      notification: NodeNotification[];
-      overview: any;
-    };
+    msg: NodeMsg;
   }
   export type RawNodeMessage = Partial<{
     weather: NodeWeather;
@@ -245,16 +243,6 @@ declare namespace SDWC {
     waypoint: NodeWaypoint;
     notification: NodeNotification;
     overview: any;
-  }>
-  /**
-   * interface won't work here
-   */
-  export type NodeMessageLegacy = Partial<{
-    [key in 'status' | 'heartbeat']: {
-      [key in 'battery' | 'flight' | 'gps' | 'mount']: {
-        [key: string]: NodeMessageLegacy
-      }
-    }
   }>
 
   // store/modules/notitication.js
@@ -352,11 +340,16 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  export interface PlanState {
+    info: PlanInfo[];
+    term: PlanTerm[];
+    dialog: PlanDialog[];
+    running: PlanRunning[]
+  }
 
   // store/modules/preference.js
   export interface Preference {
     lang: string;
-    mapType: string;
     mapFollow: boolean;
     overviewFit: boolean;
     notifyNoPopup: number[];
@@ -382,12 +375,7 @@ declare namespace SDWC {
     config: Config;
     node: Node[];
     notification: NotificationItem[];
-    plan: {
-      info: PlanInfo[];
-      term: PlanTerm[];
-      dialog: PlanDialog[];
-      running: PlanRunning[]
-    }
+    plan: PlanState;
     preference: Preference;
     ui: UI;
     user: User;
@@ -410,6 +398,10 @@ declare namespace SDWC {
     values?: any;
     /** display button type. default: `warning` */
     type?: LevelEnum;
+  }
+  export interface ControlButtonGroup {
+    icon: string;
+    item: ControlButton[];
   }
 
   // components/map.vue
@@ -465,7 +457,37 @@ declare namespace SDWC {
     layers: string[];
   }
 
-  export interface MqttControlOptions {
+  // components/settings/settings.vue
+  export interface SettingsItem {
+    type: string;
+    label: string;
+    field: string;
+    value?: any;
+  }
+  export interface SettingsGroup {
+    name: string;
+    method: string;
+    topic: string;
+    item: SettingsItem[];
+  }
+
+  // components/status/status-meter.vue
+  export interface StatusItem {
+    icon: string;
+    name?: string;
+    value: string;
+    unit?: string;
+    popover?: string;
+  }
+
+  // MqttClient
+  export interface MqttTopicInfo {
+    entity: 'nodes' | 'plans' | string;
+    id: number;
+    category: string;
+    param: string;
+  }
+  export interface MqttRpcOptions {
     /** send as JSONRPC Notification */
     notification?: boolean;
   }

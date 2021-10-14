@@ -5,16 +5,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import StatusNotify from '@/components/status/status-notify.vue';
 
 export default {
   name: 'sd-overview-notify',
   computed: {
-    ...mapState([
-      'node'
-    ]),
+    /** @returns {SDWC.Node[]} */
+    node() { return this.$store.state.node; },
+    /** @returns {SDWC.NodeNotification[]} */
     notification() {
       const result = [];
       for (const node of this.node) {

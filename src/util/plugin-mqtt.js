@@ -15,7 +15,7 @@ const RpcNotifications = new Map();
  * @this {Vue}
  * @param {number} id
  * @param {SDWC.ControlItem} ctl
- * @param {SDWC.MqttControlOptions} options
+ * @param {SDWC.MqttRpcOptions} options
  */
 export async function mqtt(id, { mission, arg = [] }, options = {}) {
   return MqttClient.invoke(id, mission, arg, options);
@@ -29,6 +29,8 @@ export async function mqtt(id, { mission, arg = [] }, options = {}) {
 function replacer(key, value) {
   if (typeof value === 'string' && value.length > 10) {
     return '...';
+  } if (Array.isArray(value) && value.length > 2) {
+    return ['...'];
   }
   return value;
 }
@@ -48,11 +50,15 @@ function stringifyMission({ method, params }) {
   return `${method} ${a}`;
 }
 
+function nextAnimationFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
 /**
  * @param {SDWC.NotificationItem} n
  * @param {boolean} mod
  */
-function emitNotification(n, mod = false) {
+async function emitNotification(n, mod = false) {
   if (store.state.notification.findIndex(item => item.id === n.id) > -1) {
     mod = true;
   }
@@ -63,6 +69,14 @@ function emitNotification(n, mod = false) {
     if (!rn) return;
     rn.$data.iconClass = RpcStatusClass[n.status];
   } else {
+    /**
+     * An element-ui `Notification` needs other instances' offsetHeight to
+     * calculate its own offset, see:
+     * https://github.com/ElemeFE/element/blob/v2.15.5/packages/notification/src/main.js#L40
+     * If 2 `Notification`s were created at the same time, they would overlap.
+     * So we need to wait layout to finish before creating `Notification`.
+     */
+    await nextAnimationFrame();
     const [title, message] = n.title.split(' : ');
     const rn = Notification({
       offset: 50,

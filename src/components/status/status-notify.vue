@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 import NotifyItem from './status-notify-item.vue';
 
@@ -68,7 +68,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(['preference']),
+    /** @returns {SDWC.Preference} */
+    preference() { return this.$store.state.preference; },
+    /** @returns {string} */
     popup() {
       if (!this.canPopup) return false;
       return !this.preference.notifyNoPopup.includes(this.nodeId);

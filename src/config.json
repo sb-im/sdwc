@@ -1,5 +1,6 @@
 {
   "beian": "",
+  "title": "S Dashboard Web Console",
   "aside_logo": "https://sb.im/img/sb-logo.png",
   "super_dock_api_server": "https://<host>",
   "oauth_client_id": "",
@@ -10,12 +11,11 @@
     {
       "urls": [
         "stun:stun.l.google.com:19302"
-      ]
+      ],
+      "username": "",
+      "credential": ""
     }
   ],
-  "amap_key": "",
-  "gmap_key": "",
-  "mapbox_key": "",
   "map_tiles_url": "",
   "heweather_key": "",
   "mqtt_url": "wss://<host>:<port>/<path>"

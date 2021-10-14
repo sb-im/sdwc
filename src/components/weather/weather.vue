@@ -1,6 +1,6 @@
 <template>
   <sd-card class="weather" icon="barometer" title="weather.title">
-    <sd-weather-rain :minutely="minutely" ref="rain"></sd-weather-rain>
+    <sd-weather-rain v-bind="precipitation"></sd-weather-rain>
     <sd-weather-wind :point="point" :status="status" :weather="msg.weather"></sd-weather-wind>
     <div class="weather__column weather__column--multi">
       <div class="weather__coord">
@@ -46,7 +46,8 @@
 </template>
 
 <script>
-import { weather, minutely, warning } from '@/api/heweather';
+import { weather, warning } from '@/api/heweather';
+import { minutely } from '@/api/caiyun';
 
 import Card from '@/components/card.vue';
 import WindIcon from './wind-icon.vue';
@@ -58,14 +59,17 @@ export default {
   name: 'sd-node-weather',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeMsg>} */
     msg: {
       type: Object,
       required: true
@@ -73,8 +77,11 @@ export default {
   },
   data() {
     return {
+      precipitation: {
+        data: [],
+        timestamp: Date.now()
+      },
       weather: {},
-      minutely: [],
       alert: [],
       interval: null
     };
@@ -83,16 +90,19 @@ export default {
     getWeather() {
       const { lng, lat } = this.status.status;
       return Promise.all([
-        minutely(lng, lat).then(data => this.minutely = data.minutely || []),
+        minutely(lng, lat).then(data => {
+          this.precipitation = {
+            data: data.result.minutely.precipitation,
+            timestamp: data.server_time * 1000
+          };
+        }),
         weather(lng, lat).then(data => this.weather = data.now || {}),
         warning(lng, lat).then(data => this.alert = data.warning || [])
       ]);
     },
     refreshWeather() {
       if (this.status.code !== 0) return;
-      this.getWeather().then(() => {
-        this.$refs.rain.draw();
-      });
+      this.getWeather();
     }
   },
   watch: {
@@ -125,6 +135,10 @@ export default {
 </script>
 
 <style>
+.el-card.weather {
+  /* make chartist's tooltip visible */
+  overflow: visible;
+}
 .weather .el-card__body {
   display: flex;
   padding: 8px 0 0;

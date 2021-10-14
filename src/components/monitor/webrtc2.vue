@@ -18,8 +18,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import { reloadVideo } from './webrtc-client';
 import { WebRTC2Client } from './webrtc2-client';
 
@@ -38,14 +36,13 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'config'
-    ])
+    /** @returns {SDWC.Config} */
+    config() { return this.$store.state.config; }
   },
   methods: {
     createClient() {
       this.msg = this.$t('monitor.connecting');
-      this.couldRetry = true;
+      this.couldRetry = false;
       const client = new WebRTC2Client(this.config.ice_servers || this.config.ice_server);
       client.on('candidatecomplete', () => {
         this.$mqtt(this.point.node_id, {
@@ -59,9 +56,6 @@ export default {
         switch (state) {
           case 'connected':
             this.msg = '';
-            break;
-          case 'checking':
-            this.couldRetry = false;
             break;
           case 'disconnected':
             this.couldRetry = true;
@@ -80,7 +74,6 @@ export default {
         this.client.destroy();
         this.client = null;
       }
-      this.couldRetry = false;
       this.client = this.createClient();
     },
     reloadVideo() {

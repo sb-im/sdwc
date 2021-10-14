@@ -53,10 +53,12 @@ export default {
   name: 'sd-node-monitor',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
@@ -68,14 +70,17 @@ export default {
     };
   },
   computed: {
+    /** @returns {{ [key: string]: boolean }} */
     monitorClassName() {
       return {
         'monitor--full': this.fullscreen
       };
     },
+    /** @returns {keyof CompoName} */
     compoName() {
       return CompoName[this.point.point_type_name] || '';
     },
+    /** @returns {boolean} */
     streamAvailable() {
       if (this.status.code !== 0) return false;
       if (this.point.point_type_name === 'livestream_webrtc2') {
@@ -128,22 +133,24 @@ export default {
 .monitor__content {
   background-color: black;
   font-size: 0;
+  height: 480px;
 }
 .monitor-video,
 .monitor-img,
-.monitor-iframe {
+.monitor-iframe,
+.monitor-webrtc {
   border: 0;
   width: 100%;
-  height: 480px;
+  height: 100%;
 }
 .monitor--full .monitor-video,
 .monitor--full .monitor-img,
-.monitor--full .monitor-iframe {
+.monitor--full .monitor-iframe,
+.monitor--full .monitor-webrtc {
   width: 100vw;
   height: 100vh;
 }
 .monitor__content--empty {
-  height: 480px;
   display: flex;
   justify-content: center;
   align-items: center;
