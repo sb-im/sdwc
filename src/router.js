@@ -15,12 +15,6 @@ import Embedded from './pages/embedded.vue';
 
 Vue.use(Router);
 
-function checkUser() {
-  const { token, due } = store.state.user;
-  if (token && due > Date.now()) return true;
-  return false;
-}
-
 const int = s => Number.parseInt(s, 10);
 
 /**
@@ -29,44 +23,28 @@ const int = s => Number.parseInt(s, 10);
 const routes = [
   {
     path: '/',
-    redirect: () => checkUser() ? '/panel' : '/login'
+    name: 'root'
   },
   {
     path: '/login',
     name: 'login',
-    component: Login,
-    beforeEnter(to, from, next) {
-      next(checkUser() ? '/panel' : undefined);
-    }
+    component: Login
   },
   {
     path: '/login/:username/:password',
     name: 'login-api',
-    component: Login,
-    beforeEnter(to, from, next) {
-      next(checkUser() ? '/panel' : undefined);
-    }
+    component: Login
   },
   {
     path: '/login/:username/:password/:path',
     name: 'login-api-path',
-    component: Login,
-    beforeEnter(to, from, next) {
-      let path = to.params.path;
-      if (path.length > 0 && path[0] !== '/') {
-        path = '/' + path;
-      }
-      next(checkUser() ? ({ path, query: to.query } || '/panel') : undefined);
-    }
+    component: Login
   },
   {
     path: '/panel',
     name: 'panel',
     component: Panel,
     redirect: { name: 'overview' },
-    beforeEnter(to, from, next) {
-      next(checkUser() ? undefined : '/login');
-    },
     children: [
       {
         path: 'overview',
@@ -116,13 +94,34 @@ const routes = [
       const { node, point } = route.params;
       const { header = '' } = route.query;
       return { node: int(node), point, header };
-    },
-    beforeEnter(to, from, next) {
-      next(checkUser() ? undefined : '/login');
-    },
+    }
   }
 ];
 
-export default new Router({
+const router = new Router({
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  const auth = store.getters.authenticated;
+  switch (to.name) {
+    case 'root':
+      next(auth ? '/panel' : '/login');
+      break;
+    case 'login':
+    case 'login-api':
+    case 'login-api-path':
+      // eslint-disable-next-line no-case-declarations
+      let { path = '' } = to.params;
+      if (path[0] !== '/') {
+        path = '/' + path;
+      }
+      next(auth ? { path, query: to.query } : undefined);
+      break;
+    default:
+      next(auth ? undefined : '/login');
+      break;
+  }
+});
+
+export default router;

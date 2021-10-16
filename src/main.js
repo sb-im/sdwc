@@ -42,8 +42,7 @@ store.dispatch('restorePreference');
  * restored
  */
 configurePromise.then(() => {
-  const { token, due } = store.state.user;
-  if (token && due > Date.now()) {
+  if (store.getters.authenticated) {
     store.dispatch('initialize');
   }
 });
