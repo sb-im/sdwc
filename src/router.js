@@ -109,6 +109,9 @@ const routes = [
     path: '/embedded/:node/:point',
     name: 'embedded',
     component: Embedded,
+    meta: {
+      suppressNotify: true
+    },
     props(route) {
       const { node, point } = route.params;
       const { header = '' } = route.query;

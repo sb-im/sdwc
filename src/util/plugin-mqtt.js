@@ -4,6 +4,7 @@ import { Notification } from 'element-ui';
 
 import i18n from '@/i18n';
 import store from '@/store';
+import router from '@/router';
 import MqttClient from '@/api/mqtt';
 import { RpcStatusClass } from '@/constants/rpc-status-class';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
@@ -59,6 +60,7 @@ function nextAnimationFrame() {
  * @param {boolean} mod
  */
 async function emitNotification(n, mod = false) {
+  if (router.currentRoute.meta.suppressNotify) return;
   if (store.state.notification.findIndex(item => item.id === n.id) > -1) {
     mod = true;
   }
@@ -140,6 +142,7 @@ function registerStatusListener() {
 
 function registerNotificationListener() {
   MqttClient.on('message', (id, msg) => {
+    if (router.currentRoute.meta.suppressNotify) return;
     /** @type {SDWC.NodeNotification} */
     const n = msg.notification;
     if (!n) return;

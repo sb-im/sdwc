@@ -327,6 +327,7 @@ export default {
   },
   created() {
     this._unsub = this.$store.subscribe(({ type, payload }, state) => {
+      if (this.$route.meta.suppressNotify) return;
       switch (type) {
         case NOTI.MOD_NOTI:
           if (
