@@ -80,7 +80,8 @@ export default {
   width: 100%;
   height: 100%;
 }
-.embedded .el-card {
+.embedded .drone .el-card,
+.embedded .depot .el-card {
   width: 100%;
   height: 100%;
   border: none;
