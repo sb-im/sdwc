@@ -10,9 +10,11 @@
       <slot></slot>
       <div class="monitor__control">
         <el-button
+          circle
           size="mini"
-          :type="fullscreen ? 'primary' : ''"
+          type="info"
           icon="el-icon-full-screen"
+          class="monitor__btn-fullscreen"
           @click="handleFullscreen"
         ></el-button>
       </div>
@@ -159,6 +161,12 @@ export default {
   position: absolute;
   bottom: 5px;
   left: 5px;
+}
+.monitor__btn-fullscreen {
+  opacity: 0.4;
+}
+.monitor__btn-fullscreen:hover {
+  opacity: 0.6;
 }
 .monitor__tip {
   color: white;
