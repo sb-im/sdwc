@@ -295,15 +295,34 @@ export default {
       for (const s of shapes) {
         elements.push(s);
         if (s.label) {
-          const offset = s['stroke-width'] || 1;
-          elements.push({
+          // offset so it won't overlap with element's fill and stroke
+          const offset = (s['stroke-width'] || 2) / 2 + (s.r || 0);
+          const metrics = this.measureLabel(s);
+          const elm = {
             type: 'text',
             text: s.label,
-            x: s.x || s.cx || 0 + offset,
-            y: s.y || s.cy || 0 + offset,
-            'alignment-baseline': 'hanging',
-            fill: s.stroke || s.fill
-          });
+            // when `s.x` is `0`, don't fallback to `s.cx` which likely to be `undefined`
+            x: s.x ?? s.cx,
+            y: s.y ?? s.cy,
+            fill: s.fill || s.stroke
+          };
+          if (elm.x + metrics.width + offset > width) {
+            // extra 2px offset on X axis, so the left or right edge of the text
+            // won't touch element's stroke edge
+            elm.x -= (offset + 2);
+            elm['text-anchor'] = 'end';
+          } else {
+            elm.x += (offset + 2);
+            elm['text-anchor'] = 'start';
+          }
+          if (elm.y + metrics.height + offset > height) {
+            elm.y -= offset;
+            elm['dominant-baseline'] = 'text-top';
+          } else {
+            elm.y += offset;
+            elm['dominant-baseline'] = 'hanging';
+          }
+          elements.push(elm);
         }
       }
       return { viewBox: `0 0 ${width} ${height}`, elements };
@@ -621,6 +640,18 @@ export default {
       }
     },
     /**
+     * @param {SDWC.NodeOverlayScreenShape} shape
+     * @returns {{ width: number, height: number }}
+     */
+    measureLabel(shape) {
+      /** @type {TextMetrics} */
+      const metrics = this._ctx2d.measureText(shape.label);
+      return {
+        width: metrics.width,
+        height: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+      };
+    },
+    /**
      * @param {number} index
      */
     createSingleJoystick(index) {
@@ -733,6 +764,9 @@ export default {
   created() {
     // TODO: sync values between msg.gimbal and $data.gimbal
     this.gimbal = { ...this.msg.gimbal };
+    this._canvas = new OffscreenCanvas(500, 100);
+    this._ctx2d = this._canvas.getContext('2d');
+    this._ctx2d.font = '24px sans-serif';
   },
   mounted() {
     this.handleGestureMoveThrottled = throttle(this.handleGestureMove, 55);
@@ -740,6 +774,10 @@ export default {
   },
   beforeDestroy() {
     this.destroyJoystick();
+    if (this._canvas) {
+      this._ctx2d = null;
+      this._canvas = null;
+    }
   },
   components: {
     [Monitor.name]: Monitor
