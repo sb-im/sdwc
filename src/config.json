@@ -17,6 +17,7 @@
     }
   ],
   "map_tiles_url": "",
+  "caiyun_key": "",
   "heweather_key": "",
   "mqtt_url": "wss://<host>:<port>/<path>"
 }
