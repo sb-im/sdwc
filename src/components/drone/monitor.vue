@@ -170,7 +170,7 @@ import { waitSelector } from '@/util/wait-selector';
 
 import Monitor from '@/components/monitor/monitor.vue';
 
-const trunc = (decimal, digit = 3) => {
+const trunc = (decimal, digit = 4) => {
   const p = Math.pow(10, digit);
   return Math.trunc(decimal * p) / p;
 };
@@ -251,6 +251,14 @@ export default {
     /** @returns {{ source: string, label: string }[]} */
     videoSources() {
       return get(this.point.params, 'source', []);
+    },
+    /**
+     * `height / width`, typically `9 / 16 == 0.5265`
+     * @returns {number}
+     */
+    videoAspectRatio() {
+      const { width = 1280, height = 720 } = get(this.point.params, 'resolution', {});
+      return height / width;
     },
     /** @returns {{ type: string, method: string, label: string }[]} */
     availableControls() {
@@ -497,10 +505,20 @@ export default {
      */
     getClickPosition(el, ev) {
       const rect = el.getBoundingClientRect();
+      const rectRatio = rect.height / rect.width;
       const left = ev.clientX - rect.left;
       const top = ev.clientY - rect.top;
-      const x = left / rect.width;
-      const y = top / rect.height;
+      let x = left / rect.width;
+      let y = top / rect.height;
+      if (rectRatio > this.videoAspectRatio) {
+        // too tall
+        const normalizedHeight = rect.width * this.videoAspectRatio;
+        y = (top - (rect.height - normalizedHeight) / 2) / normalizedHeight;
+      } else {
+        // too wide
+        const normalizedWidth = rect.height / this.videoAspectRatio;
+        x = (left - (rect.width - normalizedWidth) / 2) / normalizedWidth;
+      }
       return { left, top, x, y };
     },
     /**
