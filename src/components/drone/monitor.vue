@@ -462,6 +462,9 @@ export default {
       this.gesture.pressed = false;
       if (this.gesture.moving) {
         this.gesture.moving = false;
+        // after a click-drag-release gesture, the final 'mouseup' would trigger
+        // a 'click' event, but it's not a valid 'click' by user, so we should
+        // ignore it.
         this.click.prevent = true;
       }
       if (this.gesture.lastPos.x !== x || this.gesture.lastPos.y !== y) {
@@ -597,6 +600,8 @@ export default {
       /** @type {(ev: MouseEvent) => boolean} */
       const shouldPreventClick = ev => {
         if (ev.target !== el) return true;
+        // ignore 'click' evnet caused by click-drag-release gesture.
+        // see `handleGestureEnd` for more details.
         if (this.click.prevent) {
           this.click.prevent = false;
           return true;
