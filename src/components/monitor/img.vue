@@ -1,5 +1,5 @@
 <template>
-  <img class="monitor-img" :src="point.name">
+  <img class="monitor-img" :src="point.name" :style="imgStyle" />
 </template>
 
 <script>
@@ -9,7 +9,18 @@ export default {
     point: {
       type: Object,
       required: true
+    },
+    objectFit: {
+      type: String,
+      default: ''
     }
+  },
+  computed: {
+    /** @returns {string} */
+    imgStyle() {
+      if (!this.objectFit) return '';
+      return `object-fit:${this.objectFit}`;
+    },
   }
 };
 </script>
