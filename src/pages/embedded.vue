@@ -1,6 +1,6 @@
 <template>
   <div class="embedded" :class="className" v-loading="!selectedNode">
-    <component v-if="selectedNode" :is="componentName" :node="bindNode"></component>
+    <component v-if="selectedNode" :is="componentName" :node="bindNode" v-bind="$attrs"></component>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ const ComponentName = {
 
 export default {
   name: 'sd-embedded',
+  inheritAttrs: false,
   props: {
     node: {
       type: Number,

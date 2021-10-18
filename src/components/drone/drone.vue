@@ -8,6 +8,7 @@
         :point="point"
         :status="node.status"
         :msg="node.msg"
+        v-bind="$attrs"
       ></component>
     </template>
   </div>
@@ -54,6 +55,7 @@ const CompoOrder = {
 
 export default {
   name: 'sd-node-drone',
+  inheritAttrs: false,
   props: {
     /** @type {Vue.PropOptions<SDWC.Node>} */
     node: {

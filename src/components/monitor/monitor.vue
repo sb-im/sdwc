@@ -5,7 +5,7 @@
     </template>
     <template v-if="streamAvailable">
       <div class="monitor__content">
-        <component ref="content" :is="compoName" :point="point"></component>
+        <component ref="content" :is="compoName" :point="point" v-bind="$attrs"></component>
       </div>
       <slot></slot>
       <div class="monitor__control">

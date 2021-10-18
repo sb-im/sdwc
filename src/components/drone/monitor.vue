@@ -1,5 +1,5 @@
 <template>
-  <sd-node-monitor ref="monitor" :point="point" :status="status">
+  <sd-node-monitor ref="monitor" :point="point" :status="status" v-bind="$attrs">
     <template #action>
       <!-- video source dropdown -->
       <el-dropdown trigger="click">

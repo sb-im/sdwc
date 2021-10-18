@@ -17,6 +17,11 @@ Vue.use(Router);
 
 const int = s => Number.parseInt(s, 10);
 
+const camelizeRE = /-(\w)/g;
+const camelize = (/** @type {string} */ str) => {
+  return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '');
+};
+
 /**
  * @type {import('vue-router').RouteConfig[]}
  */
@@ -92,8 +97,11 @@ const routes = [
     },
     props(route) {
       const { node, point } = route.params;
-      const { header = '' } = route.query;
-      return { node: int(node), point, header };
+      const props = { node: int(node), point };
+      for (const key of route.query) {
+        props[camelize(key)] = route.query[key];
+      }
+      return props;
     }
   }
 ];
