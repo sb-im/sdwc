@@ -1,47 +1,15 @@
-<template>
-  <div class="monitor-webrtc">
-    <video class="monitor-video" ref="video" autoplay muted></video>
-    <div class="monitor-webrtc__overlay">
-      <template v-if="this.msg">
-        <div class="monitor__tip">{{ this.msg }}</div>
-        <el-button
-          v-show="couldRetry"
-          size="small"
-          icon="el-icon-refresh-right"
-          @click="handleRetry"
-        >
-          <span v-t="'common.retry'"></span>
-        </el-button>
-      </template>
-    </div>
-  </div>
-</template>
-
 <script>
-import { reloadVideo, WebSocketSignalingChannel } from './webrtc-client';
+import WebRTCBase from './webrtc-base.vue';
+
+import { WebSocketSignalingChannel } from './webrtc-client';
 
 export default {
+  extends: WebRTCBase,
   name: 'sd-node-monitor-webrtc',
-  props: {
-    point: {
-      type: Object,
-      required: true
-    }
-  },
-  data() {
-    return {
-      msg: '',
-      couldRetry: false
-    };
-  },
-  computed: {
-    /** @returns {SDWC.Config} */
-    config() { return this.$store.state.config; }
-  },
   methods: {
     createChannel() {
       this.couldRetry = false;
-      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.config.ice_servers || this.config.ice_server);
+      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.iceServer);
       channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;
@@ -71,9 +39,6 @@ export default {
       this.msg = '';
       this.destroyChannel();
       this.createChannel();
-    },
-    reloadVideo() {
-      reloadVideo(this.channel.pc.peerConnection, this.$refs.video);
     }
   },
   mounted() {

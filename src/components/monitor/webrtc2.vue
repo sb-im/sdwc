@@ -1,49 +1,16 @@
-<template>
-  <div class="monitor-webrtc">
-    <video class="monitor-video" ref="video" autoplay muted></video>
-    <div class="monitor-webrtc__overlay">
-      <template v-if="this.msg">
-        <div class="monitor__tip">{{ this.msg }}</div>
-        <el-button
-          v-show="couldRetry"
-          size="small"
-          icon="el-icon-refresh-right"
-          @click="handleRetry"
-        >
-          <span v-t="'common.retry'"></span>
-        </el-button>
-      </template>
-    </div>
-  </div>
-</template>
-
 <script>
-import { reloadVideo } from './webrtc-client';
+import WebRTCBase from './webrtc-base.vue';
+
 import { WebRTC2Client } from './webrtc2-client';
 
 export default {
+  extends: WebRTCBase,
   name: 'sd-node-monitor-webrtc2',
-  props: {
-    point: {
-      type: Object,
-      required: true
-    }
-  },
-  data() {
-    return {
-      msg: '',
-      couldRetry: false
-    };
-  },
-  computed: {
-    /** @returns {SDWC.Config} */
-    config() { return this.$store.state.config; }
-  },
   methods: {
     createClient() {
       this.msg = this.$t('monitor.connecting');
       this.couldRetry = false;
-      const client = new WebRTC2Client(this.config.ice_servers || this.config.ice_server);
+      const client = new WebRTC2Client(this.ice_server);
       client.on('candidatecomplete', () => {
         this.$mqtt(this.point.node_id, {
           mission: 'webrtc',
@@ -75,9 +42,6 @@ export default {
         this.client = null;
       }
       this.client = this.createClient();
-    },
-    reloadVideo() {
-      reloadVideo(this.client.pc, this.$refs.video);
     }
   },
   mounted() {

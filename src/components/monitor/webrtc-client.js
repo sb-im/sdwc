@@ -9,20 +9,6 @@ export function trace() {
   }
 }
 
-/**
- * @param {RTCPeerConnection} pc
- * @param {HTMLVideoElement} video
- */
-export function reloadVideo(pc, video) {
-  video.pause();
-  video.currentTime = 0;
-  video.srcObject = null;
-  const receivers = pc.getReceivers();
-  const ms = new MediaStream();
-  ms.addTrack(receivers[0].track);
-  video.srcObject = ms;
-}
-
 function randStr(len = 5) {
   return Math.random().toString().slice(2, len + 2);
 }
