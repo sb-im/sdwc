@@ -14,7 +14,7 @@ export default {
         mission: 'webrtc3',
         arg: { url: this.point.name }
       });
-      const client = new WebRTC3Client(this.ice_server, result.url);
+      const client = new WebRTC3Client(this.iceServer, result.url);
       client.on('icestatechange', (/** @type {RTCIceConnectionState} */ state) => {
         switch (state) {
           case 'connected':

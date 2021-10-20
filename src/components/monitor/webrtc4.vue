@@ -11,7 +11,7 @@ export default {
       this.msg = this.$t('monitor.connecting');
       this.couldRetry = false;
       const { signal_url, id, track_source } = this.point.params.broadcast;
-      const client = new WebRTC4Client(this.ice_server, signal_url, id, track_source);
+      const client = new WebRTC4Client(this.iceServer, signal_url, id, track_source);
       client.on('icestatechange', (/** @type {RTCIceConnectionState} */ state) => {
         switch (state) {
           case 'connected':

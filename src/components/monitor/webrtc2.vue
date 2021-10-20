@@ -10,7 +10,7 @@ export default {
     createClient() {
       this.msg = this.$t('monitor.connecting');
       this.couldRetry = false;
-      const client = new WebRTC2Client(this.ice_server);
+      const client = new WebRTC2Client(this.iceServer);
       client.on('candidatecomplete', () => {
         this.$mqtt(this.point.node_id, {
           mission: 'webrtc',
