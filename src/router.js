@@ -98,7 +98,7 @@ const routes = [
     props(route) {
       const { node, point } = route.params;
       const props = { node: int(node), point };
-      for (const key of route.query) {
+      for (const key in route.query) {
         props[camelize(key)] = route.query[key];
       }
       return props;
