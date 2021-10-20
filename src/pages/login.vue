@@ -103,12 +103,12 @@ export default {
        * Once it became fullfilled, `config.json` has been loaded.
        */
       this.configurePromise.then(() => {
-        const { username = '', password = '', path } = this.$route.params;
+        const { username, password, path } = this.$route.params;
         let redir = '';
         if (username && password) {
           this.username = username;
           this.password = password;
-          if (path.length > 0) {
+          if (path) {
             if (path[0] !== '/') {
               redir += '/';
             }
