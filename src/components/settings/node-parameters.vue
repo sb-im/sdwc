@@ -16,19 +16,18 @@
       :element-loading-spinner="disabledIcon"
       :element-loading-text="disabledText"
     >
-      <el-form label-position="left" label-width="100px" size="small">
-        <el-form-item v-for="(item, key) of items" :key="key" :label="$t(item.label)">
-          <component
-            :is="item.type"
-            :disabled="pending[key]"
-            :value="item.value"
-            v-bind="item"
-            @change="handleChange(item, key, $event)"
-          ></component>
-          <p class="parameter__desc" v-text="item.description"></p>
-        </el-form-item>
-      </el-form>
+      <sd-node-parameter-group :items="types" :value.sync="values"></sd-node-parameter-group>
     </div>
+    <template #footer>
+      <el-button size="small" @click="close" v-t="'common.cancel'"></el-button>
+      <el-button
+        type="primary"
+        size="small"
+        :disabled="disabled"
+        @click="handleSave"
+        v-t="'common.save'"
+      ></el-button>
+    </template>
   </el-dialog>
 </template>
 
@@ -37,13 +36,7 @@ import Radio from './settings-radio.vue';
 import Input from './settings-input.vue';
 import Switch from './settings-switch.vue';
 import Slider from './settings-slider.vue';
-
-const Compo = {
-  radio: Radio.name,
-  input: Input.name,
-  switch: Switch.name,
-  slider: Slider.name
-};
+import Group from './parameter-group.vue';
 
 export default {
   name: 'sd-node-parameters',
@@ -62,8 +55,10 @@ export default {
     return {
       visible: false,
       fetching: true,
-      items: {},
-      pending: {}
+      /** @type {{ [key: string]: SDWC.NodeParameterType }} */
+      types: {},
+      /** @type {{ [key: string]: any }} */
+      values: {}
     };
   },
   computed: {
@@ -81,65 +76,77 @@ export default {
     }
   },
   methods: {
+    /**
+     * @param {SDWC.NodeParameterTypesRaw}
+     * @returns {{ [key: string]: SDWC.NodeParameterType }}
+     */
+    normalizeTypes(types) {
+      const result = {};
+      for (const [key, item] of Object.entries(types)) {
+        /** @type {SDWC.NodeParameterType} */
+        let r = {
+          label: item.label,
+          description: item.description
+        };
+        switch (item.type) {
+          case 'enum':
+            r.type = Radio.name;
+            r.values = item.type_param;
+            break;
+          case 'string':
+            r.type = Input.name;
+            break;
+          case 'float':
+            if (Array.isArray(item.type_param)) {
+              r.type = Slider.name;
+              r.range = item.type_param;
+              r.step = 1;
+            } else {
+              r.type = Input.name;
+            }
+            break;
+          case 'bool':
+            r.type = Switch.name;
+            break;
+          case 'group':
+            r.type = Group.name;
+            r.items = this.normalizeTypes(item.type_param);
+            break;
+        }
+        result[key] = r;
+      }
+      return result;
+    },
     async fetchParameters() {
       const keys = this.point.params || [];
       if (keys.length <= 0) return;
       this.fetching = true;
-      const [params, types] = await Promise.all([
+      /** @type {[ {[k: string]: any}, SDWC.NodeParameterTypesRaw ]} */
+      const [values, types] = await Promise.all([
         this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: keys }),
         this.$mqtt(this.point.node_id, { mission: 'get_parameter_type', arg: keys })
       ]);
-      for (const [key, val] of Object.entries(types)) {
-        this.$set(this.pending, key, false);
-        val.value = params[key];
-        switch (val.type) {
-          case 'enum':
-            val.type = Compo.radio;
-            val.values = val.type_param;
-            break;
-          case 'string':
-            val.type = Compo.input;
-            break;
-          case 'float':
-            val.value = Number.parseFloat(val.value) || 0;
-            if (Array.isArray(val.type_param)) {
-              val.type = Compo.slider;
-              val.range = val.type_param;
-              val.step = 1;
-            } else {
-              val.type = Compo.input;
-            }
-            break;
-          case 'bool':
-            val.type = Compo.switch;
-            break;
-        }
-      }
-      this.items = types;
+      this.types = this.normalizeTypes(types);
+      this.values = values;
       this.fetching = false;
     },
     async refreshValues() {
       const keys = this.point.params || [];
       if (keys.length <= 0) return;
       this.fetching = true;
-      const params = await this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: keys });
-      for (const [key, val] of Object.entries(params)) {
-        const item = this.items[key];
-        if (item) {
-          item.value = val;
-        }
-      }
+      const values = await this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: keys });
+      this.values = values;
       this.fetching = false;
     },
-    handleChange(item, key, value) {
-      this.$set(this.pending, key, true);
+    handleSave() {
+      this.fetching = true;
       this.$mqtt(this.point.node_id, {
         mission: 'set_parameter',
-        arg: { [key]: value }
+        arg: this.values
       }).catch(e => {
         this.$message.error(this.$t('status.set_param_failed', e));
       }).then(() => {
-        this.$set(this.pending, key, false);
+        this.fetching = false;
         this.refreshValues();
       });
     },
@@ -150,14 +157,12 @@ export default {
       this.visible = false;
     },
     handleClosed() {
-      this.items = [];
+      this.types = {};
+      this.values = {};
     }
   },
   components: {
-    [Radio.name]: Radio,
-    [Input.name]: Input,
-    [Switch.name]: Switch,
-    [Slider.name]: Slider,
+    [Group.name]: Group
   }
 };
 </script>
@@ -169,10 +174,5 @@ export default {
 }
 .parameter__body {
   min-height: 400px;
-}
-.parameter__desc {
-  font-size: 12px;
-  line-height: 16px;
-  margin: 6px 0 0;
 }
 </style>

@@ -471,6 +471,21 @@ declare namespace SDWC {
     item: SettingsItem[];
   }
 
+  // components/settings/node-parameters.vue
+  export interface NodeParameterTypesRaw {
+    [key: string]: {
+      type: 'bool' | 'enum' | 'string' | 'float';
+      type_param: any;
+      label: string;
+      description?: string?;
+    }
+  }
+  export interface NodeParameterType {
+    type: string;
+    label: string;
+    description: string;
+  }
+
   // components/status/status-meter.vue
   export interface StatusItem {
     icon: string;
