@@ -30,8 +30,10 @@ export async function mqtt(id, { mission, arg = [] }, options = {}) {
 function replacer(key, value) {
   if (typeof value === 'string' && value.length > 10) {
     return '...';
-  } if (Array.isArray(value) && value.length > 2) {
-    return ['...'];
+  } else if (Array.isArray(value) && value.length > 2) {
+    return '[...]';
+  } else if (typeof value === 'object' && Object.keys(value).length > 2) {
+    return '{...}';
   }
   return value;
 }
