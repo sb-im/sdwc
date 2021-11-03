@@ -16,18 +16,13 @@
       :element-loading-spinner="disabledIcon"
       :element-loading-text="disabledText"
     >
-      <sd-node-parameter-group :items="types" :value.sync="values"></sd-node-parameter-group>
+      <sd-node-parameter-group
+        :root="true"
+        :items="types"
+        :value.sync="values"
+        @save="handleSetParameter"
+      ></sd-node-parameter-group>
     </div>
-    <template #footer>
-      <el-button size="small" @click="close" v-t="'common.cancel'"></el-button>
-      <el-button
-        type="primary"
-        size="small"
-        :disabled="disabled"
-        @click="handleSave"
-        v-t="'common.save'"
-      ></el-button>
-    </template>
   </el-dialog>
 </template>
 
@@ -51,16 +46,14 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      visible: false,
-      fetching: true,
-      /** @type {{ [key: string]: SDWC.NodeParameterType }} */
-      types: {},
-      /** @type {{ [key: string]: any }} */
-      values: {}
-    };
-  },
+  data: () => ({
+    visible: false,
+    fetching: true,
+    /** @type {{ [key: string]: SDWC.NodeParameterType }} */
+    types: {},
+    /** @type {{ [key: string]: any }} */
+    values: {}
+  }),
   computed: {
     /** @returns {boolean} */
     disabled() {
@@ -130,19 +123,18 @@ export default {
       this.values = values;
       this.fetching = false;
     },
-    async refreshValues() {
-      const keys = this.point.params || [];
-      if (keys.length <= 0) return;
+    async refreshValues(key) {
+      if (!key) return;
       this.fetching = true;
-      const values = await this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: keys });
+      const values = await this.$mqtt(this.point.node_id, { mission: 'get_parameter', arg: [key] });
       this.values = values;
       this.fetching = false;
     },
-    handleSave() {
+    handleSetParameter(key, value) {
       this.fetching = true;
       this.$mqtt(this.point.node_id, {
         mission: 'set_parameter',
-        arg: this.values
+        arg: { [key]: value }
       }).catch(e => {
         this.$message.error(this.$t('status.set_param_failed', e));
       }).then(() => {
@@ -171,6 +163,7 @@ export default {
 .sd-node-parameters .el-dialog__body {
   max-height: min(600px, calc(100vh - 240px));
   overflow-y: auto;
+  padding: 10px 20px;
 }
 .parameter__body {
   min-height: 400px;
