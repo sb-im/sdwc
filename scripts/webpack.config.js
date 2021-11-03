@@ -36,6 +36,7 @@ const cfg = {
     path: P('/dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
+    hashFunction: 'xxhash64'
   },
   module: {
     rules: [
