@@ -4,6 +4,6 @@
 
 <script>
 export default {
-  name: 'sdwc'
+  name: 'sdwc-app'
 };
 </script>
