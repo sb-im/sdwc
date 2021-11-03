@@ -7,7 +7,6 @@
       <sd-node-parameter-group
         v-if="item.type === $options.name"
         :key="key"
-        :field="key"
         :value.sync="value[key]"
         v-bind="item"
         @change="handleChange(key, $event)"
@@ -52,10 +51,6 @@ export default {
     },
     description: {
       type: String
-    },
-    field: {
-      type: String,
-      default: ''
     },
     /** @type {Vue.PropOptions<{ [key: string]: SDWC.NodeParameterType }>} */
     items: {
