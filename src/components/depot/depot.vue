@@ -44,9 +44,9 @@ const CompoOrder = {
   [Status.name]: 0,
   [Monitor.name]: 3,
   [Weather.name]: 5,
-  [Custom.name]: 6,
   [Control.name]: 9,
   [Settings.name]: 10,
+  [Custom.name]: 20,
   [Debug.name]: 99,
 };
 
