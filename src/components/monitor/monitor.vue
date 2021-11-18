@@ -163,6 +163,10 @@ export default {
   left: 5px;
 }
 .monitor__btn-fullscreen {
+  transition: opacity 0.2s;
+  opacity: 0;
+}
+.monitor .el-card__body:hover .monitor__btn-fullscreen {
   opacity: 0.4;
 }
 .monitor__btn-fullscreen:hover {
