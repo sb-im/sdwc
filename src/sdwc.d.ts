@@ -358,9 +358,17 @@ declare namespace SDWC {
   }
 
   // store/modules/ui.js
+  export interface SidebarItem {
+    icon: string;
+    name: string;
+    type: 'overview' | 'plan' | 'node' | 'path' | 'iframe';
+    args: string;
+  }
+
   export interface UI {
     mqttConnected: boolean;
     mqttDelay: number;
+    sidebar: SidebarItem[];
   }
 
   // store/modules/user.js

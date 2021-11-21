@@ -35,6 +35,21 @@ export function user() {
     .json();
 }
 
+export const DefaultSidebar = [
+  { type: 'overview' },
+  { type: 'plan' },
+  { type: 'node', args: 'drone' },
+  { type: 'node', args: 'depot' }
+];
+
+/** @returns {Promise<SDWC.SidebarItem[]>} */
+export function sidebar() {
+  return wr.url('/api/v1/sidebar/')
+    .get()
+    .json()
+    .catch(() => DefaultSidebar);
+}
+
 /** @returns {Promise<SDWC.NodeInfo[]>} */
 export function nodes() {
   return wr.url('/api/v1/nodes/')

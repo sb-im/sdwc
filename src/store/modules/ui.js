@@ -5,7 +5,8 @@
  */
 const state = {
   mqttConnected: false,
-  mqttDelay: -1
+  mqttDelay: -1,
+  sidebar: []
 };
 
 export const MutationTypes = {

@@ -15,6 +15,8 @@ import { MutationTypes as CONF } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
 import { MutationTypes as NODE } from './modules/node';
 import { MutationTypes as PLAN } from './modules/plan';
+import { MutationTypes as UI } from './modules/ui';
+
 
 /**
  * @typedef {object} Context
@@ -147,10 +149,20 @@ export function connectMqtt({ state }) {
 }
 
 /**
+ * establish mqtt connection
+ * @param {Context} context
+ */
+export async function getSidebar({ commit }) {
+  const sidebar = await SuperDock.sidebar();
+  commit(UI.SET_UI, { sidebar });
+}
+
+/**
  * initialize all necessary data and mqtt subs
  * @param {Context} context
  */
 export function initialize({ dispatch }) {
+  dispatch('getSidebar');
   dispatch('getUserInfo').then(() => {
     dispatch('connectMqtt');
     dispatch('getNodes').then(() => dispatch('subscribeNodes'));
