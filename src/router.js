@@ -12,6 +12,7 @@ import PlanEdit from './pages/plan/edit.vue';
 import PlanView from './pages/plan/view.vue';
 import Node from './pages/node/node.vue';
 import Embedded from './pages/embedded.vue';
+import Iframe from './pages/iframe.vue';
 
 Vue.use(Router);
 
@@ -85,6 +86,14 @@ const routes = [
             component: PlanView
           }
         ]
+      },
+      {
+        path: 'iframe/:index',
+        name: 'iframe',
+        component: Iframe,
+        props: route => ({
+          src: store.state.ui.sidebar[int(route.params.index)].args
+        })
       }
     ]
   },
