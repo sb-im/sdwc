@@ -6,60 +6,100 @@
     active-text-color="#fff"
     :default-active="activeIndex"
     :collapse="collapse"
+    @select="handleSelect"
     router
   >
     <div class="aside__header">
       <img v-if="config.aside_logo" class="aside__logo" :src="config.aside_logo" />
     </div>
-    <el-menu-item index="overview" :route="{ name: 'overview' }">
-      <sd-icon value="info-circle"></sd-icon>
-      <span slot="title" v-t="'common.overview'"></span>
-    </el-menu-item>
-    <el-submenu index="plan">
-      <template #title>
-        <sd-icon value="tasks-blue"></sd-icon>
-        <span v-t="'common.plan'"></span>
-        <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
-      </template>
-      <li v-if="collapse" class="aside__subtitle" v-t="'common.plan'"></li>
-      <el-menu-item :index="`plan-new`" :route="{ name: 'plan/new' }">
-        <i class="el-icon-plus"></i>
-        <span v-t="'plan.edit.add'"></span>
+    <template v-for="(item, index) of ui.sidebar">
+      <!-- type: overview -->
+      <el-menu-item
+        :key="index"
+        v-if="item.type === 'overview'"
+        :index="`${index}`"
+        :route="{ name: 'overview' }"
+      >
+        <sd-icon :value="item.icon || 'info-circle'"></sd-icon>
+        <span slot="title" v-t="'common.overview'"></span>
       </el-menu-item>
+      <!-- type: plan -->
+      <el-submenu :key="index" v-else-if="item.type === 'plan'" :index="`${index}`">
+        <template #title>
+          <sd-icon :value="item.icon || 'tasks-blue'"></sd-icon>
+          <span v-t="item.name || 'common.plan'"></span>
+          <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
+        </template>
+        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.plan'"></li>
+        <el-menu-item index="plan-new" :route="{ name: 'plan/new' }">
+          <i class="el-icon-plus"></i>
+          <span v-t="'plan.edit.add'"></span>
+        </el-menu-item>
+        <el-menu-item
+          v-for="plan in orderedPlans"
+          :key="plan.id"
+          :index="`${index}-plan-${plan.id}`"
+          :route="{ name: 'plan', params: { id: plan.id } }"
+          :class="{ 'is-running': isPlanRunning[plan.id] }"
+        >{{ plan.name }}</el-menu-item>
+      </el-submenu>
+      <!-- type: node/drone -->
+      <el-submenu
+        :key="index"
+        v-else-if="item.type === 'node' && item.args === 'drone'"
+        :index="`${index}`"
+      >
+        <template #title>
+          <sd-icon :value="item.icon || 'drone-blue'"></sd-icon>
+          <span slot="title" v-t="item.name || 'common.air'"></span>
+        </template>
+        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.air'"></li>
+        <el-menu-item
+          v-for="drone in drones"
+          :key="drone.info.id"
+          :index="`${index}-node-${drone.info.id}`"
+          :route="{ name: 'node', params: { id: drone.info.id } }"
+        >{{ drone.info.name }}</el-menu-item>
+      </el-submenu>
+      <!-- type: node/depot -->
+      <el-submenu
+        :key="index"
+        v-else-if="item.type === 'node' && item.args === 'depot'"
+        :index="`${index}`"
+      >
+        <template #title>
+          <sd-icon :value="item.icon || 'depot-blue'"></sd-icon>
+          <span slot="title" v-t="item.name || 'common.depot'"></span>
+        </template>
+        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.depot'"></li>
+        <el-menu-item
+          v-for="depot in depots"
+          :key="depot.info.id"
+          :index="`${index}-node-${depot.info.id}`"
+          :route="{ name: 'node', params: { id: depot.info.id } }"
+        >{{ depot.info.name }}</el-menu-item>
+      </el-submenu>
+      <!-- type: path -->
       <el-menu-item
-        v-for="plan in orderedPlans"
-        :key="plan.id"
-        :index="`plan-${plan.id}`"
-        :route="{ name: 'plan', params: { id: plan.id } }"
-        :class="{ 'is-running': isPlanRunning[plan.id] }"
-      >{{ plan.name }}</el-menu-item>
-    </el-submenu>
-    <el-submenu index="drone">
-      <template #title>
-        <sd-icon value="drone-blue"></sd-icon>
-        <span slot="title" v-t="'common.air'"></span>
-      </template>
-      <li v-if="collapse" class="aside__subtitle" v-t="'common.air'"></li>
+        :key="index"
+        v-else-if="item.type === 'path'"
+        :index="`${index}`"
+        :route="{ path: item.args.replace(/^\/?#/, '') }"
+      >
+        <sd-icon :value="item.icon || 'views'"></sd-icon>
+        <span slot="title" v-text="item.name"></span>
+      </el-menu-item>
+      <!-- type: iframe -->
       <el-menu-item
-        v-for="drone in drones"
-        :key="drone.info.id"
-        :index="`node-${drone.info.id}`"
-        :route="{ name: 'node', params: { id: drone.info.id } }"
-      >{{ drone.info.name }}</el-menu-item>
-    </el-submenu>
-    <el-submenu index="depot">
-      <template #title>
-        <sd-icon value="depot-blue"></sd-icon>
-        <span slot="title" v-t="'common.depot'"></span>
-      </template>
-      <li v-if="collapse" class="aside__subtitle" v-t="'common.depot'"></li>
-      <el-menu-item
-        v-for="depot in depots"
-        :key="depot.info.id"
-        :index="`node-${depot.info.id}`"
-        :route="{ name: 'node', params: { id: depot.info.id } }"
-      >{{ depot.info.name }}</el-menu-item>
-    </el-submenu>
+        :key="index"
+        v-else-if="item.type === 'iframe' "
+        :index="`${index}`"
+        :route="{ name: 'iframe', params: { index } }"
+      >
+        <sd-icon :value="item.icon || 'doc'"></sd-icon>
+        <span slot="title" v-text="item.name"></span>
+      </el-menu-item>
+    </template>
     <div class="aside__version">
       <template v-if="!collapse">
         <div class="aside__version-text">
@@ -84,10 +124,13 @@ export default {
   name: 'sd-aside',
   data() {
     return {
+      activeIndex: '',
       collapse: window.innerWidth < 1580
     };
   },
   computed: {
+    /** @returns {SDWC.UI} */
+    ui() { return this.$store.state.ui; },
     /** @returns {SDWC.Config} */
     config() { return this.$store.state.config; },
     /** @returns {SDWC.PlanInfo[]} */
@@ -98,22 +141,6 @@ export default {
     drones() { return this.$store.getters.drones; },
     /** @returns {SDWC.Node[]} */
     depots() { return this.$store.getters.depots; },
-    /** @returns {string} */
-    activeIndex() {
-      const { name, params: { id } } = this.$route;
-      switch (name) {
-        case 'overview':
-          return 'overview';
-        case 'node':
-          return `${name}-${id}`;
-        case 'plan/view':
-        case 'plan/edit':
-          return `plan-${id}`;
-        case 'plan/new':
-          return 'plan-new';
-      }
-      return '';
-    },
     /** @returns {{ [planId: string]: boolean }} */
     isPlanRunning() {
       const result = {};
@@ -138,6 +165,14 @@ export default {
     }
   },
   methods: {
+    /**
+     * @param {string} index
+     * @param {string[]} indexPath
+     */
+    handleSelect(index /*, indexPath*/) {
+      // TODO: find out current active index on first render
+      this.activeIndex = index;
+    },
     toggleCollpase() {
       this.collapse = !this.collapse;
     }
