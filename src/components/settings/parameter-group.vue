@@ -7,14 +7,14 @@
       <sd-node-parameter-group
         v-if="item.type === $options.name"
         :key="key"
-        :value.sync="value[key]"
+        :value="value[key]"
         v-bind="item"
         @change="handleChange(key, $event)"
       ></sd-node-parameter-group>
       <el-form-item v-else :key="key" :label="$t(item.label)">
         <component
           :is="item.type"
-          :value.sync="value[key]"
+          :value="value[key]"
           v-bind="item"
           @change="handleChange(key, $event)"
         ></component>
