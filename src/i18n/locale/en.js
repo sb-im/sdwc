@@ -336,5 +336,18 @@ export default {
   },
   settings: {
     title: 'Settings'
+  },
+  speaker: {
+    title: 'Speaker',
+    press2record: 'Press to Record',
+    release2stop: 'Release to Stop',
+    discard: 'Discard',
+    keep: 'Keep',
+    listen: 'Play',
+    stop: 'Stop',
+    send: 'Send',
+    confirm_discard_title: 'Confirm',
+    confirm_discard_msg: 'Do you want to discard recorded audio?',
+    upload_failed: 'Upload failed: {msg}'
   }
 };

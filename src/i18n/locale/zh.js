@@ -336,5 +336,18 @@ export default {
   },
   settings: {
     title: '节点设置'
+  },
+  speaker: {
+    title: '喊话器',
+    press2record: '按住录制',
+    release2stop: '松开停止',
+    discard: '放弃',
+    keep: '保留',
+    listen: '试听',
+    stop: '停止',
+    send: '发送',
+    confirm_discard_title: '提示',
+    confirm_discard_msg: '要放弃已经录制完成的音频吗？',
+    upload_failed: '上传失败：{msg}'
   }
 };

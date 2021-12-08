@@ -91,6 +91,7 @@ body {
   /* drone & depot */
   .battery,
   .control,
+  .speaker,
   .debug {
     width: calc(50% - 2px);
   }
