@@ -133,7 +133,9 @@ export default {
       prompt: {
         show: false,
         method: 'prompt',
+        /** @type {{ [key: string]: SDWC.DroneMapControlParamDescriptor }} */
         fields: {},
+        /** @type {{ [key: string]: string | number }} */
         values: {}
       }
     };

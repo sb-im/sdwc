@@ -438,10 +438,12 @@ declare namespace SDWC {
     type: 'string';
     required?: boolean;
     default?: string;
+    unit?: string;
   } | {
     type: 'number';
     required?: boolean;
     default?: number;
+    unit?: string;
   }
   export interface DroneMapControl {
     method: string;
