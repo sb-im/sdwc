@@ -62,10 +62,21 @@ const cfg = {
         loader: 'babel-loader',
         options: {
           presets: [
-            ['@babel/preset-env', { targets: { chrome: 64, firefox: 58, edge: 15, safari: 11 } }]
+            [
+              '@babel/preset-env', {
+                useBuiltIns: 'usage',
+                corejs: { version: '3.9' },
+                shippedProposals: true
+              }
+            ]
           ],
           plugins: [
-            ['component', { libraryName: 'element-ui', styleLibraryName: 'theme-chalk' }]
+            [
+              'component', {
+                libraryName: 'element-ui',
+                styleLibraryName: 'theme-chalk'
+              }
+            ]
           ]
         }
       },
@@ -118,7 +129,7 @@ const cfg = {
     proxy: {
       '/gosd': {
         target: process.env.SUPERDOCK_API_SERVER || 'https://demo.sblab.xyz/gosd',
-        pathRewrite: { '^/gosd':  '' },
+        pathRewrite: { '^/gosd': '' },
         changeOrigin: true
       }
     }
@@ -128,7 +139,7 @@ const cfg = {
 
 /**
  * @see https://webpack.js.org/configuration/configuration-types/#exporting-a-function
- * @param {{mode: 'development'|'production'; dev?: true}} env
+ * @param {{ mode: 'development' | 'production'; dev?: true }} env
  * @param {string[]} argv
  */
 module.exports = function (env, argv) {

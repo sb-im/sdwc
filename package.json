@@ -53,6 +53,7 @@
     "babel-loader": "^8.2.3",
     "babel-plugin-component": "^1.1.1",
     "copy-webpack-plugin": "^10.0.0",
+    "core-js": "^3.19.3",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
     "eslint": "^8.4.1",
@@ -68,5 +69,10 @@
   },
   "resolutions": {
     "element-ui/async-validator": "^4.0.7"
-  }
+  },
+  "browserslist": [
+    "Chrome > 89",
+    "Firefox > 87",
+    "Safari > 14"
+  ]
 }
