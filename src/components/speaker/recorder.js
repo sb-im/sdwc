@@ -48,32 +48,54 @@ class RecorderAudioData {
   }
 
   onStop() {
-    this.data = new Float32Array(this.size);
+    const ratio = Math.trunc(this.inputSampleRate / this.outputSampleRate);
+    const data = new Float32Array(this.size / ratio);
     let offset = 0;
     for (let i = 0; i < this.buffer.length; i++) {
-      this.data.set(this.buffer[i], offset);
-      offset += this.buffer[i].length;
+      const buf = this.buffer[i];
+      const bufLen = buf.length;
+      for (let j = 0; j < bufLen; j += ratio) {
+        data[offset++] = buf[j];
+      }
     }
     this.buffer = [];
+    this.data = data;
   }
 
-  getRawData() {
-    const ratio = Math.trunc(this.inputSampleRate / this.outputSampleRate);
-    const length = this.data.length / ratio;
-    const result = new Float32Array(length);
-    for (let i = 0, j = 0; i < length; i++, j += ratio) {
-      result[i] = this.data[j];
+  toPcmBuffer() {
+    const bytes = this.data;
+    const sampleBits = Math.min(this.inputSampleBits, this.oututSampleBits);
+    const dataLength = bytes.length * (sampleBits / 8);
+    const buffer = new ArrayBuffer(dataLength);
+    const data = new DataView(buffer);
+    let offset = 0;
+    if (sampleBits === 8) {
+      for (let i = 0; i < bytes.length; i++, offset++) {
+        let s = Math.max(-1, Math.min(1, bytes[i]));
+        let val = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        val = Math.trunc(0xFF / (0xFFFF / (val + 0x8000)));
+        data.setInt8(offset, val);
+      }
+    } else {
+      for (let i = 0; i < bytes.length; i++, offset += 2) {
+        let s = Math.max(-1, Math.min(1, bytes[i]));
+        data.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
     }
-    return result;
+    return buffer;
   }
 
-  toWav() {
+  toPcmBlob() {
+    return new Blob([this.toPcmBuffer()]);
+  }
+
+  toWavBlob() {
+    const pcm = this.toPcmBuffer();
     const sampleRate = Math.min(this.inputSampleRate, this.outputSampleRate);
     const sampleBits = Math.min(this.inputSampleBits, this.oututSampleBits);
-    const bytes = this.getRawData();
-    const dataLength = bytes.length * (sampleBits / 8);
-    const buffer = new ArrayBuffer(44 + dataLength);
-    const data = new DataView(buffer);
+    const dataLength = pcm.byteLength;
+    const header = new ArrayBuffer(44);
+    const data = new DataView(header);
     let offset = 0;
     /** @type {(str: string) => void} */
     const writeStr = str => {
@@ -105,38 +127,7 @@ class RecorderAudioData {
     writeUint16(sampleBits);                         // bits per sample
     writeStr('data');                                // data chunk identifier
     writeUnit32(dataLength);                         // data chunk length
-    if (sampleBits === 8) {
-      for (let i = 0; i < bytes.length; i++, offset++) {
-        let s = Math.max(-1, Math.min(1, bytes[i]));
-        let val = s < 0 ? s * 0x8000 : s * 0x7FFF;
-        val = Math.trunc(255 / (65535 / (val + 32768)));
-        data.setInt8(offset, val);
-      }
-    } else {
-      for (let i = 0; i < bytes.length; i++, offset += 2) {
-        let s = Math.max(-1, Math.min(1, bytes[i]));
-        data.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-      }
-    }
-    return buffer;
-  }
-
-  toWavBlob() {
-    const data = this.toWav();
-    return new Blob([data], { type: 'audio/wav' });
-  }
-
-  toPcmBlob() {
-    const bytes = this.getRawData();
-    const dataLength = bytes.length * (this.oututSampleBits / 8);
-    const buffer = new ArrayBuffer(dataLength);
-    const data = new DataView(buffer);
-    let offset = 0;
-    for (let i = 0; i < bytes.length; i++, offset += 2) {
-      let s = Math.max(-1, Math.min(1, bytes[i]));
-      data.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-    }
-    return new Blob([data], { type: 'audio/pcm' });
+    return new Blob([header, pcm], { type: 'audio/wav' });
   }
 }
 
