@@ -18,15 +18,6 @@
       </el-button>
       <div class="speaker__divider"></div>
       <el-button
-        plain
-        type="danger"
-        icon="el-icon-delete"
-        :disabled="!recorded"
-        @click="handleDiscard"
-      >
-        <span v-t="'speaker.discard'"></span>
-      </el-button>
-      <el-button
         :icon="`el-icon-${playing ? 'remove-outline' : 'video-play'}`"
         :disabled="!recorded"
         @click="handlePlayback"
@@ -114,20 +105,10 @@ export default {
     },
     async handleRecordStart() {
       if (this.recorded) {
-        try {
-          await this.$confirm(this.$t('speaker.confirm_discard_msg'), {
-            title: this.$t('speaker.confirm_discard_title'),
-            type: 'warning',
-            confirmButtonText: this.$t('speaker.discard'),
-            confirmButtonClass: 'el-button--warning',
-            cancelButtonText: this.$t('speaker.keep')
-          });
-          // discard
-          this.handleDiscard();
-        } catch (e) {
-          // keep
+        if (this.playing) {
+          this.handlePlayback();
         }
-        return;
+        this.handleDiscard();
       }
       if (this.recorder) {
         this.recorder.close();
