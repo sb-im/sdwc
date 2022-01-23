@@ -35,12 +35,14 @@ export default {
       });
       return client;
     },
+    destroyClient() {
+      if (!this.client) return;
+      this.$refs.video.srcObject = null;
+      this.client.destroy();
+      this.client = null;
+    },
     handleRetry() {
-      if (this.client) {
-        this.$refs.video.srcObject = null;
-        this.client.destroy();
-        this.client = null;
-      }
+      this.destroyClient();
       this.client = this.createClient();
     }
   },
@@ -48,11 +50,7 @@ export default {
     this.client = this.createClient();
   },
   beforeDestroy() {
-    if (this.client) {
-      this.$refs.video.srcObject = null;
-      this.client.destroy();
-      this.client = null;
-    }
+    this.destroyClient();
   }
 };
 </script>

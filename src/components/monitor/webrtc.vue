@@ -8,6 +8,7 @@ export default {
   name: 'sd-node-monitor-webrtc',
   methods: {
     createChannel() {
+      this.msg = this.$t('monitor.connecting');
       this.couldRetry = false;
       const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.iceServer);
       channel.on('event', ev => {
@@ -16,7 +17,6 @@ export default {
           this.couldRetry = true;
         }
       });
-      this.msg = this.$t('monitor.connecting');
       channel.on('pc:connected', () => this.msg = '');
       channel.once('ws:error', () => this.recreateChannel());
       channel.once('pc:closed', () => this.recreateChannel());
@@ -36,7 +36,6 @@ export default {
       }, 3 * 1000);
     },
     handleRetry() {
-      this.msg = '';
       this.destroyChannel();
       this.createChannel();
     }
