@@ -41,7 +41,8 @@ const CompoName = {
   'livestream_webrtc': Monitor.name,
   'livestream_webrtc2': Monitor.name,
   'livestream_webrtc3': Monitor.name,
-  'livestream_webrtc4': Monitor.name
+  'livestream_webrtc4': Monitor.name,
+  'livestream_webrtc_srs': Monitor.name
 };
 
 const CompoOrder = {
