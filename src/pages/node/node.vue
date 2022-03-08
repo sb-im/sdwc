@@ -1,17 +1,13 @@
 <template>
   <div class="node" v-loading="!selectedNode">
-    <component v-if="selectedNode" :is="componentName" :node="selectedNode"></component>
+    <sd-node-drone v-if="selectedNode" :node="selectedNode" />
   </div>
 </template>
 
 <script>
+// TODO: merge depot and drone
 import Depot from '@/components/depot/depot.vue';
 import Drone from '@/components/drone/drone.vue';
-
-const ComponentName = {
-  'air': Drone.name,
-  'depot': Depot.name
-};
 
 export default {
   name: 'sd-node',
@@ -25,10 +21,6 @@ export default {
     /** @returns {SDWC.Node} */
     selectedNode() {
       return this.$store.state.node.find(node => node.info.id === this.id);
-    },
-    /** @returns {string} */
-    componentName() {
-      return ComponentName[this.selectedNode.info.type_name];
     }
   },
   components: {
