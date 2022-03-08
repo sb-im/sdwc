@@ -127,17 +127,22 @@ router.beforeEach((to, from, next) => {
       break;
     case 'login':
     case 'login-api':
-    case 'login-api-path':
-      // eslint-disable-next-line no-case-declarations
+    case 'login-api-path': {
       let { path = '' } = to.params;
       if (path[0] !== '/') {
         path = '/' + path;
       }
       next(auth ? { path, query: to.query } : undefined);
       break;
-    default:
-      next(auth ? undefined : '/login');
+    }
+    default: {
+      if (auth) {
+        next();
+        return;
+      }
+      next({ name: 'login', query: { redir: to.fullPath } });
       break;
+    }
   }
 });
 

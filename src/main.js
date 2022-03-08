@@ -44,7 +44,17 @@ store.dispatch('restorePreference');
 configurePromise.then(() => {
   if (store.getters.authenticated) {
     store.dispatch('initialize');
+    return;
   }
+  store.dispatch('checkSingleUserMode').then(() => {
+    store.dispatch('initialize');
+    const { name, query } = router.currentRoute;
+    if (name === 'login' && query.redir) {
+      router.replace(query.redir);
+      return;
+    }
+    router.replace({ name: 'panel' });
+  });
 });
 
 window.addEventListener('beforeunload', () => {

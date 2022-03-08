@@ -7,7 +7,7 @@ import * as S from '@/api/sdwc';
 import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
 import * as HeWeather from '@/api/heweather';
-import * as SuperDock from '@/api/super-dock';
+import * as SuperDockV3 from '@/api/super-dock-v3';
 import { parseWaypoints } from '@/util/waypoint-parser';
 
 import { MutationTypes as PREF } from './modules/preference';
@@ -70,7 +70,7 @@ export async function configure({ state, commit }) {
     commit(PREF.SET_PREFERENCE, { lang: data.lang });
   }
   const config = state.config;
-  SuperDock.setBaseURL(config.super_dock_api_server);
+  SuperDockV3.setBaseURL(config.super_dock_api_server);
   HeWeather.setApiKey(config.heweather_key);
   CaiYun.setApiKey(config.caiyun_key);
   setLocale(state.preference.lang);
@@ -78,39 +78,47 @@ export async function configure({ state, commit }) {
 
 /**
  * @param {Context} context
+ */
+export async function checkSingleUserMode({ state, commit, dispatch }) {
+  await dispatch('getUserInfo');
+  const { id, username, team_id } = state.user.info;
+  if (id > 0 && username.length > 0 && team_id > 0) {
+    commit(USER.SET_USER_TOKEN, { implicit: true });
+    return true;
+  }
+  throw false;
+}
+
+/**
+ * @param {Context} context
  * @param {{username: string; password: string}} payload
  */
-export async function login({ state, commit, dispatch }, { username, password }) {
-  const data = await SuperDock.token(username, password, state.config.oauth_client_id, state.config.oauth_client_secret);
-  const token = `${data.token_type} ${data.access_token}`;
-  const due = (data.created_at + data.expires_in) * 1000;
-  commit(USER.SET_USER_TOKEN, { token, due });
-  SuperDock.setAuth(token);
+export async function login({ commit, dispatch }, { username, password }) {
+  const data = await SuperDockV3.login(username, password);
+  commit(USER.SET_USER_TOKEN, data);
+  SuperDockV3.setAuth(data.token);
   dispatch('initialize');
-  setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
-  return token;
+  setTimeout(() => commit(USER.INVALIDATE_TOKEN), (new Date(data.expire).getTime() - Date.now()));
 }
 
 /**
  * @param {Context} context
  */
-export function logout({ state, commit }) {
-  commit(USER.SET_USER_TOKEN, { token: '', due: -1 });
-  commit(USER.SET_USER_INFO, { email: '', id: -1 });
+export function logout({ commit }) {
+  commit(USER.SET_USER_TOKEN, { token: '', expire: '' });
+  commit(USER.SET_USER_INFO, { id: -1, username: '', teams: [], team_id: -1 });
   commit(NODE.CLEAR_NODES);
   commit(PLAN.CLEAR_PLANS);
   sessionStorage.removeItem('user');
   MqttClient.disconnect();
-  SuperDock.logout(state.user.token.slice(7))
-    .catch(() => { /* noop */ })
-    .then(() => SuperDock.setAuth(''));
+  SuperDockV3.setAuth('');
 }
 
 /**
  * @param {Context} context
  */
 export async function getUserInfo({ commit, dispatch }) {
-  const data = await SuperDock.user();
+  const data = await SuperDockV3.getCurrentUser();
   commit(USER.SET_USER_INFO, data);
   dispatch('storeUser');
 }
@@ -132,20 +140,28 @@ export async function restoreSession({ commit }) {
   /** @type {SDWC.User} */
   let json;
   try { json = JSON.parse(str); } catch (e) { /* ignore it */ }
-  if (!json.token) return;
-  commit(USER.SET_USER_TOKEN, json);
-  commit(USER.SET_USER_INFO, json);
-  SuperDock.setAuth(json.token);
-  setTimeout(() => commit(USER.INVALIDATE_TOKEN), json.due - Date.now());
+  if (json.credential.implicit) {
+    // singer user mode; no token needed
+  } else if (json.credential.token) {
+    const timeRemaining = new Date(json.credential.expire).getTime() - Date.now();
+    if (timeRemaining < 10 * 1000) return;
+    SuperDockV3.setAuth(json.credential.token);
+    setTimeout(() => commit(USER.INVALIDATE_TOKEN), timeRemaining);
+  } else {
+    return;
+  }
+  commit(USER.SET_USER_TOKEN, json.credential);
+  commit(USER.SET_USER_INFO, json.info);
 }
 
 /**
  * establish mqtt connection
  * @param {Context} context
  */
-export function connectMqtt({ state }) {
-  MqttClient.setRpcPrefix(state.user.id);
-  MqttClient.connect(state.config.mqtt_url);
+export async function connectMqtt({ state }) {
+  const mqttUrl = await SuperDockV3.createMqttUser();
+  MqttClient.setRpcPrefix(state.user.info.id);
+  MqttClient.connect(mqttUrl);
 }
 
 /**
@@ -153,7 +169,7 @@ export function connectMqtt({ state }) {
  * @param {Context} context
  */
 export async function getSidebar({ commit }) {
-  const sidebar = await SuperDock.sidebar();
+  const sidebar = await SuperDockV3.getSidebar();
   commit(UI.SET_UI, { sidebar });
 }
 
@@ -161,20 +177,19 @@ export async function getSidebar({ commit }) {
  * initialize all necessary data and mqtt subs
  * @param {Context} context
  */
-export function initialize({ dispatch }) {
+export async function initialize({ dispatch }) {
   dispatch('getSidebar');
-  dispatch('getUserInfo').then(() => {
-    dispatch('connectMqtt');
-    dispatch('getNodes').then(() => dispatch('subscribeNodes'));
-    dispatch('getPlans').then(() => dispatch('subscribePlans'));
-  });
+  await dispatch('getUserInfo');
+  await dispatch('connectMqtt');
+  dispatch('getNodes').then(() => dispatch('subscribeNodes'));
+  dispatch('getPlans').then(() => dispatch('subscribePlans'));
 }
 
 /**
  * @param {Context} context
  */
 export async function getNodes({ commit }) {
-  const data = await SuperDock.nodes();
+  const data = await SuperDockV3.getNodes();
   data.sort((a, b) => a.id - b.id);
   data.forEach(node => {
     commit(NODE.ADD_NODE, node);
@@ -214,7 +229,8 @@ const PointTopic = {
  */
 export function subscribeNodes({ state, commit }) {
   state.node.forEach(node => {
-    const { id, points } = node.info;
+    const id = node.info.id;
+    const points = node.info.points ?? [];
     MqttClient.subscribeNode(id);
     if (points.some(p => p.point_type_name.startsWith('livestream_'))) {
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.gimbal}`);
@@ -258,7 +274,7 @@ export function subscribeNodes({ state, commit }) {
  * @param {Context} context
  */
 export async function getPlans({ commit }) {
-  const data = await SuperDock.plans();
+  const data = await SuperDockV3.getTasks();
   data.forEach(plan => {
     commit(PLAN.ADD_PLAN, plan);
   });

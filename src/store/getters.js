@@ -5,8 +5,8 @@
  * @returns {boolean}
  */
 export function authenticated(state) {
-  const { token, due } = state.user;
-  return token.length > 0 && due > Date.now();
+  const { implicit, token, expire } = state.user.credential;
+  return implicit || token.length > 0 && new Date(expire).getTime() > Date.now();
 }
 
 /**
