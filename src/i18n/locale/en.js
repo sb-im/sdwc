@@ -55,6 +55,10 @@ export default {
       loss: '{loss}% Packet Loss',
       delay: 'Delay {delay}ms'
     },
+    team: 'Team: ',
+    switch_team: 'Switch Team',
+    switch_team_to: 'Please select a Team to switch to:',
+    switching_team: 'Switching Team, please wait ...',
     logout: 'Logout'
   },
   aside: {

@@ -55,6 +55,10 @@ export default {
       loss: '丢包率 {loss}%',
       delay: '延迟 {delay}ms'
     },
+    team: '团队：',
+    switch_team: '切换团队',
+    switch_team_to: '请选择要切换到的团队：',
+    switching_team: '切换团队中，请稍等 ...',
     logout: '退出'
   },
   aside: {

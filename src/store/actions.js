@@ -125,6 +125,19 @@ export async function getUserInfo({ commit, dispatch }) {
 
 /**
  * @param {Context} context
+ * @param {number} id
+ */
+export async function switchTeam({ commit, dispatch }, id) {
+  const data = await SuperDockV3.switchTeam(id);
+  await dispatch('logout');
+  commit(USER.SET_USER_TOKEN, data);
+  SuperDockV3.setAuth(data.token);
+  dispatch('initialize');
+  setTimeout(() => commit(USER.INVALIDATE_TOKEN), (new Date(data.expire).getTime() - Date.now()));
+}
+
+/**
+ * @param {Context} context
  */
 export function storeUser({ state }) {
   sessionStorage.setItem('user', JSON.stringify(state.user));

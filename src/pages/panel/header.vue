@@ -1,7 +1,7 @@
 <template>
   <el-header class="header">
     <!-- title -->
-    <span class="header-title" v-text="config.title" ></span>
+    <span class="header-title" v-text="config.title"></span>
     <!-- plan dialog dropdown -->
     <el-dropdown
       class="header-dropdown"
@@ -110,7 +110,7 @@
     <el-dropdown class="header-dropdown" @command="handleCommand">
       <span class="header-dropdown-content">
         <sd-icon value="user" />
-        <span>{{ user.email }}</span>
+        <span>{{ user.info.username }}</span>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <template #dropdown>
@@ -118,13 +118,18 @@
           <el-dropdown-item v-for="(value, key) in locales" :key="key" :command="{ lang: key }">
             <el-radio :value="preference.lang" :label="key">{{ value }}</el-radio>
           </el-dropdown-item>
-          <el-dropdown-item divided :command="{ user: 'logout' }">
+          <el-dropdown-item divided :command="{ user: 'team' }">
+            <i class="el-icon-connection"></i>
+            <span v-t="'header.switch_team'"></span>
+          </el-dropdown-item>
+          <el-dropdown-item :command="{ user: 'logout' }">
             <i class="el-icon-back"></i>
             <span v-t="'header.logout'"></span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
+    <sd-team-dialog ref="teamDialog"></sd-team-dialog>
   </el-header>
 </template>
 
@@ -135,6 +140,7 @@ import { locales } from '@/i18n';
 
 import Icon from '@/components/sd-icon.vue';
 import PlanDialog from '@/components/plan-dialog/plan-dialog.vue';
+import TeamDialog from './team-dialog.vue';
 
 import { RpcStatusClass } from '@/constants/rpc-status-class';
 import { PlanDialogLevelClass } from '@/constants/plan-dialog-level-class';
@@ -196,7 +202,7 @@ export default {
       const nodes = this.node;
       return nodes.map(n => {
         const icon = NodeStatusClass[n.status.code];
-        const typeText = this.$t(`common.${n.info.type_name}`);
+        const typeText = this.$t('common.node');
         const prefix = `${typeText} ${n.info.name}`;
         let title = this.$t(`common.status.${n.status.code}`);
         if (n.status.code === 0) {
@@ -232,9 +238,12 @@ export default {
       if (!cmd) return;
       if (typeof cmd.user === 'string') {
         switch (cmd.user) {
-          case 'logout':
+          case 'team': {
+            this.$refs.teamDialog.open();
+            break;
+          }
+          case 'logout': {
             this.$message.closeAll();
-            // eslint-disable-next-line no-case-declarations
             let msg = this.$message({
               customClass: 'el-message--info',
               iconClass: 'el-message__icon el-icon-loading',
@@ -256,6 +265,7 @@ export default {
               msg.startTimer();
             });
             break;
+          }
         }
       } else if (typeof cmd.lang === 'string') {
         this.setPreference(cmd);
@@ -364,7 +374,8 @@ export default {
   },
   components: {
     [Icon.name]: Icon,
-    [PlanDialog.name]: PlanDialog
+    [PlanDialog.name]: PlanDialog,
+    [TeamDialog.name]: TeamDialog
   }
 };
 </script>
