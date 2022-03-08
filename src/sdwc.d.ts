@@ -47,8 +47,6 @@ declare namespace SDWC {
   export interface NodeInfo {
     id: number;
     name: string;
-    type_name: 'air' | 'depot';
-    description: string;
     points: NodePoint[];
   }
   export interface NodeConnectionStatus {
@@ -373,10 +371,12 @@ declare namespace SDWC {
 
   // store/modules/user.js
   export interface User {
-    id: number;
-    email: string;
-    token: string;
-    due: number;
+    info: ApiTypes.V3.User;
+    credential: {
+      implicit: boolean;
+      token: string;
+      expire: string;
+    }
   }
 
   export interface State {
