@@ -7,6 +7,7 @@ export default {
   common: {
     air: 'Drone',
     depot: 'Depot',
+    node: 'Node',
     plan: 'Plan',
     overview: 'Overview',
     confirm: 'Confirm',

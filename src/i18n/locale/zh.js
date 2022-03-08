@@ -7,6 +7,7 @@ export default {
   common: {
     air: '无人机',
     depot: '机场',
+    node: '节点',
     plan: '任务',
     overview: '概况',
     confirm: '确定',

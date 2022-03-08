@@ -9,12 +9,13 @@ export function authenticated(state) {
   return implicit || token.length > 0 && new Date(expire).getTime() > Date.now();
 }
 
+// TODO: remove node type
 /**
  * @param {SDWC.State} state
  * @returns {SDWC.Node[]}
  */
 export function depots(state) {
-  return state.node.filter(node => node.info.type_name === 'depot');
+  return state.node;
 }
 
 /**
@@ -22,5 +23,5 @@ export function depots(state) {
  * @returns {SDWC.Node[]}
  */
 export function drones(state) {
-  return state.node.filter(node => node.info.type_name === 'air');
+  return state.node;
 }

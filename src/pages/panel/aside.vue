@@ -43,41 +43,23 @@
           :class="{ 'is-running': isPlanRunning[plan.id] }"
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
-      <!-- type: node/drone -->
+      <!-- type: node -->
       <el-submenu
         :key="index"
-        v-else-if="item.type === 'node' && item.args === 'drone'"
-        :index="`${index}`"
-      >
-        <template #title>
-          <sd-icon :value="item.icon || 'drone-blue'"></sd-icon>
-          <span slot="title" v-t="item.name || 'common.air'"></span>
-        </template>
-        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.air'"></li>
-        <el-menu-item
-          v-for="drone in drones"
-          :key="drone.info.id"
-          :index="`${index}-node-${drone.info.id}`"
-          :route="{ name: 'node', params: { id: drone.info.id } }"
-        >{{ drone.info.name }}</el-menu-item>
-      </el-submenu>
-      <!-- type: node/depot -->
-      <el-submenu
-        :key="index"
-        v-else-if="item.type === 'node' && item.args === 'depot'"
+        v-else-if="item.type === 'node'"
         :index="`${index}`"
       >
         <template #title>
           <sd-icon :value="item.icon || 'depot-blue'"></sd-icon>
-          <span slot="title" v-t="item.name || 'common.depot'"></span>
+          <span slot="title" v-t="item.name || 'common.node'"></span>
         </template>
-        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.depot'"></li>
+        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.node'"></li>
         <el-menu-item
-          v-for="depot in depots"
-          :key="depot.info.id"
-          :index="`${index}-node-${depot.info.id}`"
-          :route="{ name: 'node', params: { id: depot.info.id } }"
-        >{{ depot.info.name }}</el-menu-item>
+          v-for="node in nodes"
+          :key="node.info.id"
+          :index="`${index}-node-${node.info.id}`"
+          :route="{ name: 'node', params: { id: node.info.id } }"
+        >{{ node.info.name }}</el-menu-item>
       </el-submenu>
       <!-- type: path -->
       <el-menu-item
@@ -138,9 +120,7 @@ export default {
     /** @returns {SDWC.PlanRunning[]} */
     running() { return this.$store.state.plan.running; },
     /** @returns {SDWC.Node[]} */
-    drones() { return this.$store.getters.drones; },
-    /** @returns {SDWC.Node[]} */
-    depots() { return this.$store.getters.depots; },
+    nodes() { return this.$store.state.node; },
     /** @returns {{ [planId: string]: boolean }} */
     isPlanRunning() {
       const result = {};
