@@ -5,18 +5,9 @@
       <el-input v-model="plan.name" :placeholder="$t('plan.edit.name_inp')"></el-input>
     </el-form-item>
     <el-form-item>
-      <span slot="label" v-t="'plan.desc'"></span>
-      <el-input
-        type="textarea"
-        :rows="2"
-        :placeholder="$t('plan.edit.desc_inp')"
-        v-model="plan.description"
-      ></el-input>
-    </el-form-item>
-    <el-form-item>
       <span slot="label" v-t="'plan.air'"></span>
       <el-select v-model="plan.node_id" :placeholder="$t('plan.edit.air_inp')">
-        <el-option v-for="d in drones" :key="d.info.id" :label="d.info.name" :value="d.info.id"></el-option>
+        <el-option v-for="n in nodes" :key="n.info.id" :label="n.info.name" :value="n.info.id"></el-option>
       </el-select>
     </el-form-item>
     <el-form-item size="small">
@@ -49,7 +40,7 @@ export default {
   },
   computed: {
     /** @returns {SDWC.Node[]} */
-    drones() { return this.$store.getters.drones; }
+    nodes() { return this.$store.state.node; }
   },
   methods: {
     getPlan() {

@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { uploadFile } from '@/api/super-dock';
+import { createBlob } from '@/api/super-dock-v3';
 
 import { mapActions } from 'vuex';
 
@@ -211,7 +211,7 @@ export default {
       const key = fileEntry.key;
       fileEntry.button = FileButton.selected;
       fileEntry.filename = file.name;
-      uploadFile({ [key]: file }).then(r => {
+      createBlob({ [key]: file }).then(r => {
         fileEntry.button = FileButton.uploaded;
         fileEntry.blobId = r[key];
         this.updateValue();

@@ -29,7 +29,7 @@
       <el-table
         stripe
         v-loading="job.loading"
-        :data="jobsToShow"
+        :data="jobs"
         :row-class-name="getTableRowClass"
         :default-sort="{ prop: 'created_at', order: 'descending' }"
         @sort-change="handleSortChange"
@@ -55,8 +55,8 @@
       </el-table>
       <el-pagination
         layout="total, prev, pager, next"
-        :total="jobs.length"
-        :current-page.sync="pagination.current"
+        :total="job.total"
+        :current-page.sync="job.page"
       ></el-pagination>
     </sd-card>
   </div>
@@ -64,7 +64,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { runPlanJob, getPlanJobs, cancelPlanJob } from '@/api/super-dock';
+import { createTaskJob, getTaskJobs } from '@/api/super-dock-v3';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -92,11 +92,9 @@ export default {
       jobs: [],
       job: {
         loading: false,
+        total: -1,
+        page: 1,
         order: 'descending'
-      },
-      pagination: {
-        size: 10,
-        current: 1
       }
     };
   },
@@ -130,12 +128,6 @@ export default {
         files: Object.assign({}, this.plan.files, this.runningContent.files),
         extra: Object.assign({}, this.plan.extra, this.runningContent.extra)
       });
-    },
-    /** @returns {SDWC.PlanJob[]} */
-    jobsToShow() {
-      const { size, current } = this.pagination;
-      const end = current * size;
-      return this.jobs.slice(end - size, end);
     }
   },
   methods: {
@@ -146,7 +138,7 @@ export default {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
     handleRun() {
-      runPlanJob(this.plan.id).catch(() => { /* noop */ });
+      createTaskJob(this.plan.id).catch(() => { /* noop */ });
     },
     handleStop() {
       if (!this.isRunning) return;
@@ -161,6 +153,8 @@ export default {
         title: this.plan.name,
         message: this.$t('plan.view.pending'),
       });
+      // TODO: cancel job
+      const cancelPlanJob = () => Promise.resolve();
       cancelPlanJob(this.plan.id, this.runningContent.id).then(() => {
         Object.assign(n.$data, {
           message: this.$t('plan.view.stop_run'),
@@ -175,19 +169,16 @@ export default {
         });
       });
     },
-    sortJobs(order = 'descending') {
-      const modifier = order === 'descending' ? -1 : 1;
-      this.jobs.sort((a, b) => (a.created_at - b.created_at) * modifier);
-    },
     async getPlanJobs() {
       this.job.loading = true;
-      const res = await getPlanJobs(this.plan.id);
+      const res = await getTaskJobs(this.plan.id, this.job.page, 10);
       if (this.isRunning) {
         this.patchRunningJob(res, this.runningContent.job);
       }
       res.forEach(l => l.created_at = new Date(l.created_at));
       this.jobs = res;
-      this.sortJobs();
+      // TODO: total jobs
+      this.job.total = res.length;
       this.job.loading = false;
     },
     /**
@@ -227,8 +218,8 @@ export default {
     },
     handleSortChange({ order }) {
       this.job.order = order;
-      this.pagination.current = 1;
-      this.sortJobs(order);
+      this.job.page = 1;
+      // TODO: refetch jobs
     },
     handleOpenFile(blobId) {
       this.$refs.jobFile.open(blobId);
@@ -238,7 +229,9 @@ export default {
     }
   },
   created() {
-    this.getPlanWaypoints(this.plan).then(wp => this.map = waypointsToMapProps(wp));
+    this.getPlanWaypoints(this.plan)
+      .then(wp => this.map = waypointsToMapProps(wp))
+      .catch(() => { /* noop */ });
     this.getPlanJobs();
     this._unsub = this.$store.subscribe(({ type, payload }) => {
       if (type === PLAN.SET_PLAN_RUNNING) {

@@ -71,7 +71,9 @@ export default {
     }
   },
   created() {
-    this.getPlanWaypoints(this.plan).then(wp => this.map = waypointsToMapProps(wp));
+    this.getPlanWaypoints(this.plan)
+      .then(wp => this.map = waypointsToMapProps(wp))
+      .catch(() => { /* noop */ });
   },
   components: {
     [Card.name]: Card,

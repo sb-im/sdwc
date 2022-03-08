@@ -307,7 +307,7 @@ export function subscribePlans({ state }) {
  * @param {SDWC.PlanInfo} plan
  */
 export async function createPlan({ commit }, plan) {
-  const data = await SuperDock.createPlan(plan);
+  const data = await SuperDockV3.createTask(plan);
   if (data && typeof data.id === 'number') {
     commit(PLAN.ADD_PLAN, data);
     MqttClient.subscribePlan(data.id);
@@ -322,7 +322,7 @@ export async function createPlan({ commit }, plan) {
  * @param {SDWC.PlanInfo} plan
  */
 export async function updatePlan({ commit }, plan) {
-  const data = await SuperDock.updatePlan(plan.id, plan);
+  const data = await SuperDockV3.updateTask(plan.id, plan);
   commit(PLAN.UPDATE_PLAN, data);
   return data;
 }
@@ -332,7 +332,7 @@ export async function updatePlan({ commit }, plan) {
  * @param {number} id
  */
 export async function deletePlan({ commit }, id) {
-  await SuperDock.deletePlan(id);
+  await SuperDockV3.deleteTask(id);
   commit(PLAN.DELETE_PLAN, id);
 }
 
@@ -342,22 +342,9 @@ export async function deletePlan({ commit }, id) {
  */
 export async function getPlanWaypoints(_, plan) {
   const blobId = plan.files.waypoint;
-  const text = await SuperDock.downloadBlob(blobId).then(r => r.text());
+  if (!blobId) throw new Error('no waypoint in plan');
+  const text = await SuperDockV3.getBlob(blobId).then(r => r.text());
   return parseWaypoints(text);
-}
-
-/**
- * @param {Context} _
- * @param {string} path file path
- * @returns {Promise<{ filename: string, blob: Blob }>}
- */
-export async function downloadFile(_, path) {
-  const res = await SuperDock.downloadFile(path);
-  const cd = res.headers.get('content-disposition') || 'attachment';
-  /** @type {Record<string, any>} */
-  const { filename = '' } = parseContentDisposition(cd).parameters;
-  const blob = await res.blob();
-  return { filename, blob };
 }
 
 /**
@@ -365,8 +352,13 @@ export async function downloadFile(_, path) {
  * @param {string} id blob id
  * @returns {Promise<{ filename: string, blob: Blob }>}
  */
-export async function downloadBlob({ dispatch }, id) {
-  return dispatch('downloadFile', `/api/v2/blobs/${id}`);
+export async function downloadBlob(_, id) {
+  const res = await SuperDockV3.getBlob(id);
+  const cd = res.headers.get('content-disposition') || 'attachment';
+  /** @type {Record<string, any>} */
+  const { filename = '' } = parseContentDisposition(cd).parameters;
+  const blob = await res.blob();
+  return { filename, blob };
 }
 
 /**

@@ -5,18 +5,8 @@
       <el-input :value="plan.name" readonly></el-input>
     </el-form-item>
     <el-form-item>
-      <span slot="label" v-t="'plan.desc'"></span>
-      <el-input
-        type="textarea"
-        resize="none"
-        :placeholder="$t('plan.desc_no')"
-        :value="plan.description"
-        readonly
-      ></el-input>
-    </el-form-item>
-    <el-form-item>
       <span slot="label" v-t="'plan.air'"></span>
-      <el-input :value="droneName" :placeholder="$t('common.none')" readonly></el-input>
+      <el-input :value="nodeName" :placeholder="$t('common.none')" readonly></el-input>
     </el-form-item>
     <el-form-item size="small">
       <span slot="label" v-t="'plan.files'"></span>
@@ -40,12 +30,10 @@ export default {
   },
   computed: {
     /** @returns {SDWC.Node[]} */
-    drones() { return this.$store.getters.drones; },
+    nodes() { return this.$store.state.node; },
     /** @returns {string} */
-    droneName() {
-      const drone = this.drones.find(d => d.info.id === this.plan.node_id);
-      if (drone) return drone.info.name;
-      return '';
+    nodeName() {
+      return this.nodes.find(d => d.info.id === this.plan.node_id)?.info?.name ?? '';
     }
   },
   components: {
