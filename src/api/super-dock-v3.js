@@ -36,7 +36,7 @@ export function getCurrentUser() {
  */
 export function login(username, password) {
   return wr.url('/login')
-    .formData({ username, password })
+    .json({ username, password })
     .post()
     .json();
 }
@@ -101,11 +101,12 @@ export function getTasks() {
 }
 
 /**
+ * @param {Partial<ApiTypes.V3.Task>} task
  * @returns {Promise<ApiTypes.V3.Task>}
  */
-export function createTask(name, node_id) {
+export function createTask(task) {
   return wr.url('/tasks')
-    .formData({ name, node_id })
+    .json(task)
     .post()
     .json();
 }
@@ -134,10 +135,13 @@ export function updateTask(id, body) {
     .json();
 }
 
+/**
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 export function deleteTask(id) {
   return wr.url(`/tasks/${id}`)
-    .delete()
-    .json();
+    .delete();
 }
 
 /**
@@ -216,15 +220,18 @@ export function getSchedules(page, size) {
  */
 export function createSchedule(schedule) {
   return wr.url('/schedules')
-    .formData(schedule)
+    .json(schedule)
     .post()
     .json();
 }
 
+/**
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 export function deleteSchedule(id) {
   return wr.url(`/schedules/${id}`)
-    .delete()
-    .json();
+    .delete();
 }
 
 /**
@@ -234,7 +241,7 @@ export function deleteSchedule(id) {
  */
 export function updateSchedule(id, schedule) {
   return wr.url(`/schedules/${id}`)
-    .formData(schedule)
+    .json(schedule)
     .patch()
     .json();
 }
