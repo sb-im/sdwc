@@ -90,7 +90,7 @@
         </div>
       </template>
     </div>
-    <el-menu-item index="never" :route="{}" @click="toggleCollpase">
+    <el-menu-item index="never" :route="{}" @click.native="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
       <span slot="title" class="aside__collapse-text" v-t="`aside.${collapse ? 'un' : ''}fold`"></span>
     </el-menu-item>
