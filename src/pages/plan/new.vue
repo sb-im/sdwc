@@ -33,7 +33,6 @@ export default {
       /** @type {SDWC.PlanInfo} */
       initial: {
         name: '',
-        description: '',
         node_id: null,
         files: { waypoint: '' },
         extra: {}

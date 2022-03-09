@@ -67,6 +67,10 @@ export default {
     unfold: '展开菜单'
   },
   plan: {
+    name: '任务名称',
+    node: '执行设备',
+    files: '文件列表',
+    extra: '附加信息',
     view: {
       title: '查看任务',
       run: '执行任务',
@@ -90,12 +94,12 @@ export default {
       create_failed: '创建任务失败：错误代码 {code}',
       update_failed: '编辑任务失败：错误代码 {code}',
       name_inp: '请输入任务名称',
-      desc_inp: '请输入任务描述',
-      air_inp: '请选择执飞无人机',
+      node_inp: '请选择执行设备',
       delete_title: '删除任务',
       delete_tips: '确定要永久删除此任务吗？'
     },
     file: {
+      label: '文件标签',
       key: {
         waypoint: '航点',
         speaker: '喊话器音频',
@@ -107,13 +111,7 @@ export default {
       pending: '\u3000上传中',
       re: '重新上传',
       error: '上传文件失败：错误代码 {code}'
-    },
-    name: '任务名称',
-    desc: '任务描述',
-    desc_no: '暂无任务描述',
-    files: '文件列表',
-    air: '执飞无人机',
-    ctime: '创建时间'
+    }
   },
   air: {
     signal: '信号强度',

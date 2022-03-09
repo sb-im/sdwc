@@ -257,7 +257,6 @@ declare namespace SDWC {
   export interface PlanInfo {
     id: number;
     name: string;
-    description: string;
     node_id: number;
     files: {
       waypoint?: string;
@@ -266,7 +265,7 @@ declare namespace SDWC {
       droneconfig?: string;
       [key: string]: string;
     };
-    extra?: {
+    extra: {
       [key: string]: string;
     };
   }

@@ -14,7 +14,7 @@
       <template v-else>
         <el-select
           popper-class="plan-file__select"
-          placeholder="文件标签"
+          :placeholder="$t('plan.file.label')"
           filterable
           :allow-create="false"
           default-first-option
@@ -39,7 +39,7 @@
           :http-request="handleUpload"
           :disabled="item.button.disabled"
         >
-          <el-button class="plan-file__button" :icon="item.button.icon" :type="item.button.type">
+          <el-button class="plan-file__button" v-bind="item.button">
             <span v-t="`plan.file.${item.button.text}`"></span>
           </el-button>
         </el-upload>
@@ -207,6 +207,7 @@ export default {
      */
     handleUpload(options) {
       const file = options.file;
+      /** @type {FileEntry} */
       const fileEntry = options.data;
       const key = fileEntry.key;
       fileEntry.button = FileButton.selected;
@@ -251,10 +252,6 @@ export default {
 </script>
 
 <style>
-.plan__files {
-  height: 210px;
-  overflow-y: auto;
-}
 .plan-file-item {
   display: flex;
   margin-bottom: 6px;
@@ -279,8 +276,5 @@ export default {
 .plan-file-label__right {
   float: right;
   color: #8492a6;
-}
-.plan-file__add {
-  text-align: right;
 }
 </style>

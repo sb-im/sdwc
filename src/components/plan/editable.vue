@@ -1,12 +1,12 @@
 <template>
-  <el-form class="plan__form" label-width="100px" :model="plan">
+  <el-form class="plan__form" label-width="80px" :model="plan">
     <el-form-item>
       <span slot="label" v-t="'plan.name'"></span>
-      <el-input v-model="plan.name" :placeholder="$t('plan.edit.name_inp')"></el-input>
+      <el-input size="small" v-model="plan.name" :placeholder="$t('plan.edit.name_inp')"></el-input>
     </el-form-item>
     <el-form-item>
-      <span slot="label" v-t="'plan.air'"></span>
-      <el-select v-model="plan.node_id" :placeholder="$t('plan.edit.air_inp')">
+      <span slot="label" v-t="'plan.node'"></span>
+      <el-select size="small" v-model="plan.node_id" :placeholder="$t('plan.edit.node_inp')">
         <el-option v-for="n in nodes" :key="n.info.id" :label="n.info.name" :value="n.info.id"></el-option>
       </el-select>
     </el-form-item>
@@ -63,7 +63,13 @@ export default {
 
 <style>
 .plan__form {
-  height: 410px;
+  height: 400px;
+}
+.plan__form .el-form-item {
+  margin-bottom: 10px;
+}
+.plan__form .el-input--small {
+  font-size: inherit;
 }
 .plan__form .el-form-item:last-child {
   margin-bottom: 0;

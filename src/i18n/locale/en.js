@@ -67,6 +67,10 @@ export default {
     unfold: 'Unfold Menu'
   },
   plan: {
+    name: 'Name',
+    node: 'Node',
+    files: 'Files',
+    extra: 'Extra',
     view: {
       title: 'View Plan',
       run: 'Run Plan',
@@ -89,13 +93,13 @@ export default {
       edit: 'Edit Plan',
       create_failed: 'Failed to create Plan: Error code {code}',
       update_failed: 'Failed to edit Plan: Error code {code}',
-      name_inp: 'Enter the name of plan',
-      desc_inp: 'Enter the description of plan',
-      air_inp: 'Select the drone',
+      name_inp: 'Enter name of this plan',
+      node_inp: 'Select Node to run this plan',
       delete_title: 'Delete Plan',
       delete_tips: 'Do you really want to permanently delete this plan?'
     },
     file: {
+      label: 'File label',
       key: {
         waypoint: 'Waypoint',
         speaker: 'Speaker audio',
@@ -107,13 +111,7 @@ export default {
       pending: 'Uploading..',
       re: 'Re-Select..',
       error: 'Failed to upload file: Error code {code}'
-    },
-    name: 'Name',
-    desc: 'Description',
-    desc_no: 'No description',
-    files: 'Files',
-    air: 'Flying drone',
-    ctime: 'Creation time'
+    }
   },
   air: {
     signal: 'Signal Strength',

@@ -1,12 +1,12 @@
 <template>
-  <el-form class="plan__form" label-width="100px" :model="plan">
+  <el-form class="plan__form" label-width="80px" :model="plan">
     <el-form-item>
       <span slot="label" v-t="'plan.name'"></span>
-      <el-input :value="plan.name" readonly></el-input>
+      <el-input size="small" :value="plan.name" readonly></el-input>
     </el-form-item>
     <el-form-item>
-      <span slot="label" v-t="'plan.air'"></span>
-      <el-input :value="nodeName" :placeholder="$t('common.none')" readonly></el-input>
+      <span slot="label" v-t="'plan.node'"></span>
+      <el-input size="small" :value="nodeName" :placeholder="$t('common.none')" readonly></el-input>
     </el-form-item>
     <el-form-item size="small">
       <span slot="label" v-t="'plan.files'"></span>
