@@ -12,12 +12,17 @@
       <span slot="label" v-t="'plan.files'"></span>
       <sd-plan-files :value="plan.files" readonly></sd-plan-files>
     </el-form-item>
+    <el-form-item size="small">
+      <span slot="label" v-t="'plan.extra'"></span>
+      <sd-plan-extra :value="plan.extra" readonly></sd-plan-extra>
+    </el-form-item>
   </el-form>
 </template>
 
 <script>
 import Icon from '@/components/sd-icon.vue';
 import PlanFiles from './plan-files.vue';
+import PlanExtra from './plan-extra.vue';
 
 export default {
   name: 'sd-plan-readonly',
@@ -38,7 +43,8 @@ export default {
   },
   components: {
     [Icon.name]: Icon,
-    [PlanFiles.name]: PlanFiles
+    [PlanFiles.name]: PlanFiles,
+    [PlanExtra.name]: PlanExtra
   }
 };
 </script>

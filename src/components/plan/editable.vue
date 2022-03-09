@@ -14,6 +14,10 @@
       <span slot="label" v-t="'plan.files'"></span>
       <sd-plan-files v-model="plan.files" @waypoint-file-change="handleWaypointChange"></sd-plan-files>
     </el-form-item>
+    <el-form-item size="small">
+      <span slot="label" v-t="'plan.extra'"></span>
+      <sd-plan-extra v-model="plan.extra"></sd-plan-extra>
+    </el-form-item>
   </el-form>
 </template>
 
@@ -22,6 +26,7 @@ import { parseWaypoints } from '@/util/waypoint-parser';
 
 import Icon from '@/components/sd-icon.vue';
 import PlanFiles from './plan-files.vue';
+import PlanExtra from './plan-extra.vue';
 
 export default {
   name: 'sd-plan-editable',
@@ -56,7 +61,8 @@ export default {
   },
   components: {
     [Icon.name]: Icon,
-    [PlanFiles.name]: PlanFiles
+    [PlanFiles.name]: PlanFiles,
+    [PlanExtra.name]: PlanExtra
   }
 };
 </script>

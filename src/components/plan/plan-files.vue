@@ -1,5 +1,8 @@
 <template>
   <div class="plan__files">
+    <div v-if="readonly && fileEntries.length <= 0">
+      <el-input readonly :value="t('common.none')"></el-input>
+    </div>
     <div class="plan-file-item" v-for="(item, index) of fileEntries" :key="index">
       <template v-if="readonly">
         <el-input readonly :value="t(item.key)"></el-input>
