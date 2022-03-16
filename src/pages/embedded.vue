@@ -1,17 +1,11 @@
 <template>
   <div class="embedded" :class="className" v-loading="!selectedNode">
-    <component v-if="selectedNode" :is="componentName" :node="bindNode" v-bind="$attrs"></component>
+    <sd-node v-if="selectedNode" :id="node" :point="selectedPoint" v-bind="$attrs"></sd-node>
   </div>
 </template>
 
 <script>
-import Depot from '@/components/depot/depot.vue';
-import Drone from '@/components/drone/drone.vue';
-
-const ComponentName = {
-  'air': Drone.name,
-  'depot': Depot.name
-};
+import Node from '@/pages/node/node.vue';
 
 export default {
   name: 'sd-embedded',
@@ -41,10 +35,6 @@ export default {
     selectedNode() {
       return this.$store.state.node.find(node => node.info.id === this.node);
     },
-    /** @returns {string} */
-    componentName() {
-      return ComponentName[this.selectedNode.info.type_name];
-    },
     /** @returns {SDWC.NodePoint} */
     selectedPoint() {
       return this.selectedNode.info.points.find(p =>
@@ -54,18 +44,9 @@ export default {
         p.point_type_name.startsWith(this.point)
       );
     },
-    /** @returns {SDWC.Node} */
-    bindNode() {
-      const { info, msg, status, network } = this.selectedNode;
-      return {
-        info: { ...info, points: [this.selectedPoint], },
-        msg, status, network
-      };
-    }
   },
   components: {
-    [Depot.name]: Depot,
-    [Drone.name]: Drone
+    [Node.name]: Node
   }
 };
 </script>
@@ -75,14 +56,12 @@ export default {
   width: 100vw;
   height: 100vh;
 }
-.embedded .drone,
-.embedded .depot {
+.embedded .node {
   display: block;
   width: 100%;
   height: 100%;
 }
-.embedded .drone .el-card,
-.embedded .depot .el-card {
+.embedded .node .el-card {
   width: 100%;
   height: 100%;
   border: none;

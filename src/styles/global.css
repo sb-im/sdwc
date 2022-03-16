@@ -50,8 +50,7 @@ body {
 @media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
   /* container */
   .plan,
-  .drone,
-  .depot {
+  .node {
     display: flex;
     flex-wrap: wrap;
   }
@@ -70,28 +69,23 @@ body {
   /* drone & depot */
   .status,
   .battery,
-  .control,
   .debug {
     width: 100%;
   }
 
-  /* drone */
-  .drone .monitor,
-  .drone .sd-map {
+  .node .monitor,
+  .node .sd-map,
+  .weather,
+  .control,
+  .speaker {
     width: calc(50% - 2px);
-  }
-
-  /* depot */
-  .depot .monitor {
-    width: calc(100% - 604px);
   }
 }
 
 @media screen and (min-width: 1580px) { /* width > 1580, 全部双栏 */
   /* drone & depot */
   .battery,
-  .control,
-  .speaker,
+  .custom,
   .debug {
     width: calc(50% - 2px);
   }
