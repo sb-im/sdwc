@@ -131,14 +131,14 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * subscirbe `/plans/:id/{term,dialog}`
+   * subscirbe `/tasks/:id/{term,dialog,running}`
    * @param {number|string} id plan id
    */
   subscribePlan(id) {
     [
-      `plans/${id}/term`,
-      `plans/${id}/dialog`,
-      `plans/${id}/running`
+      `tasks/${id}/term`,
+      `tasks/${id}/dialog`,
+      `tasks/${id}/running`
     ].forEach(topic => {
       this.mqtt.subscribe(topic);
     });
