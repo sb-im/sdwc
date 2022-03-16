@@ -37,7 +37,6 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    <sd-plan-dialog ref="planDialog" :planId="planDialog.id"></sd-plan-dialog>
     <!-- notification dropdown -->
     <el-dropdown
       class="header-dropdown"
@@ -118,18 +117,19 @@
           <el-dropdown-item v-for="(value, key) in locales" :key="key" :command="{ lang: key }">
             <el-radio :value="preference.lang" :label="key">{{ value }}</el-radio>
           </el-dropdown-item>
-          <el-dropdown-item divided :command="{ user: 'team' }">
+          <el-dropdown-item v-if="!user.credential.implicit" divided :command="{ user: 'team' }">
             <i class="el-icon-connection"></i>
             <span v-t="'header.switch_team'"></span>
           </el-dropdown-item>
-          <el-dropdown-item :command="{ user: 'logout' }">
+          <el-dropdown-item :divided="user.credential.implicit" :command="{ user: 'logout' }">
             <i class="el-icon-back"></i>
             <span v-t="'header.logout'"></span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    <sd-team-dialog ref="teamDialog"></sd-team-dialog>
+    <sd-plan-dialog ref="planDialog" :planId="planDialog.id"></sd-plan-dialog>
+    <sd-team-dialog v-if="!user.credential.implicit" ref="teamDialog"></sd-team-dialog>
   </el-header>
 </template>
 
