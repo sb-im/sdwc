@@ -303,28 +303,20 @@ declare namespace SDWC {
   // PlanJob
   export interface PlanJob {
     id: number;
-    job_id: number;
-    plan_id: number;
     /** file name: blob id */
     files: { [key: string]: string; };
     extra: { [key: string]: string; };
     created_at: string;
     updated_at: string;
   }
-  export interface PlanRunningContentJob {
-    job_id: number;
-    files: { [key: string]: string; };
-    extra: { [key: string]: string; };
-  }
-  export interface PlanRunningContent {
-    files: { [key: string]: string; };
-    extra: { [key: string]: string; };
-    job: PlanRunningContentJob;
+  export interface RunningTask extends PlanInfo {
+    /** running task id */
+    job: PlanJob;
   }
   export interface PlanRunning {
     /** Plan Id */
     id: number;
-    running: PlanRunningContent;
+    running: RunningTask;
   }
   // PlanLog
   export interface PlanLog {

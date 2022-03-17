@@ -79,7 +79,7 @@ import { waypointsToMapProps } from './common';
 export default {
   name: 'sd-plan-view',
   props: {
-    /** @type {import('vue').PropOptions<SDWC.PlanInfo>}*/
+    /** @type {Vue.PropOptions<SDWC.PlanInfo>}*/
     plan: {
       type: Object,
       required: true
@@ -99,23 +99,15 @@ export default {
     };
   },
   computed: {
-    /**
-     * @returns {SDWC.PlanTermOutput[]}
-     */
+    /** @returns {SDWC.PlanState} */
+    plans() { return this.$store.state.plan; },
+    /** @returns {SDWC.PlanTermOutput[]} */
     termOutput() {
-      /** @type {SDWC.State} */
-      const state = this.$store.state;
-      const term = state.plan.term.find(t => t.id === this.plan.id);
-      return term ? term.output : [];
+      return this.plans.term.find(t => t.id === this.plan.id)?.output ?? [];
     },
-    /**
-     * @returns {SDWC.PlanRunningContent}
-     */
+    /** @returns {SDWC.RunningTask} */
     runningContent() {
-      /** @type {SDWC.State} */
-      const state = this.$store.state;
-      const running = state.plan.running.find(r => r.id === this.plan.id);
-      return running ? running.running : null;
+      return this.plans.running.find(r => r.id === this.plan.id)?.running ?? null;
     },
     /** @returns {boolean} */
     isRunning() {
@@ -175,7 +167,6 @@ export default {
       if (this.isRunning) {
         this.patchRunningJob(res, this.runningContent.job);
       }
-      res.forEach(l => l.created_at = new Date(l.created_at));
       this.jobs = res;
       // TODO: total jobs
       this.job.total = res.length;
@@ -183,18 +174,17 @@ export default {
     },
     /**
      * @param {SDWC.PlanJob[]} jobs
-     * @param {SDWC.PlanRunningContentJob} runningJob
+     * @param {SDWC.PlanJob} runningJob
      */
     patchRunningJob(jobs, runningJob) {
-      if (!runningJob || !runningJob.job_id) return;
+      if (!runningJob?.id) return;
       /** @type {SDWC.PlanJob} */
-      const job = jobs.find(j => j.job_id === runningJob.job_id);
+      const job = jobs.find(j => j.id === runningJob.id);
       if (typeof job !== 'object') {
-        const now = new Date();
+        const now = new Date().toISOString();
         jobs.unshift(Object.assign({
           temporary: true,
-          job_id: runningJob.job_id,
-          plan_id: this.plan.id,
+          id: runningJob.id,
           created_at: now,
           updated_at: now
         }, runningJob));
@@ -214,7 +204,7 @@ export default {
      */
     getTableRowClass({ row }) {
       if (!this.isRunning) return '';
-      return this.runningContent.job.job_id === row.job_id ? 'is-running' : '';
+      return this.runningContent.job.id === row.id ? 'is-running' : '';
     },
     handleSortChange({ order }) {
       this.job.order = order;
@@ -225,7 +215,7 @@ export default {
       this.$refs.jobFile.open(blobId);
     },
     dateFormatter(row, column, cellValue /*, index */) {
-      return this.$d(cellValue, 'long');
+      return this.$d(new Date(cellValue), 'long');
     }
   },
   created() {

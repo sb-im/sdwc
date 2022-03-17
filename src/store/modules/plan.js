@@ -54,7 +54,7 @@ const mutations = {
       }
     }
   },
-  [MutationTypes.SET_PLAN_RUNNING](state, /** @type {{ id: number, running: SDWC.PlanRunningContent }} */ payload) {
+  [MutationTypes.SET_PLAN_RUNNING](state, /** @type {{ id: number, running: SDWC.RunningTask }} */ payload) {
     const index = state.info.findIndex(plan => plan.id === payload.id);
     if (index < 0) return;
     const exist = state.running.findIndex(r => r.id === payload.id);
