@@ -64,7 +64,7 @@ export default {
      * @param {{ name: string, message: string, level: string }} button
      */
     handleButtonClick(button) {
-      MqttClient.mqtt.publish(`plans/${this.planId}/term`, button.message);
+      MqttClient.mqtt.publish(`tasks/${this.planId}/term`, button.message);
     },
     open() {
       this.visible = true;
