@@ -31,7 +31,7 @@ export class MqttClient extends EventEmitter2 {
    * - `nodes/:id/{status,network}`
    * - `nodes/:id/rpc/{send,recv}`
    * - `nodes/:id/msg/{position,battery,weather,...}`
-   * - `plans/:id/{term,dialog,running}`
+   * - `tasks/:id/{term,dialog,running}`
    * @param {string} topic
    * @returns {SDWC.MqttTopicInfo}
    */
@@ -93,7 +93,7 @@ export class MqttClient extends EventEmitter2 {
           case 'nodes':
             this.onNode(t, str);
             break;
-          case 'plans':
+          case 'tasks':
             this.onPlan(t, str);
             break;
           default:
