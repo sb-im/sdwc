@@ -145,7 +145,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * invoke rpc method, or add to queue if connection not ready.
+   * invoke node rpc method, or add to queue if connection not ready.
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
@@ -188,6 +188,15 @@ export class MqttClient extends EventEmitter2 {
         this.resolveMap.set(rpcId, { resolve, reject });
       });
     }
+  }
+
+  /**
+   * respond to task dialog
+   * @param {number} target task id
+   * @param {string} message button message
+   */
+  respond(target, message) {
+    this.mqtt.publish(`tasks/${target}/term`, message);
   }
 
   /**
