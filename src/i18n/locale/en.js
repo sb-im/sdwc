@@ -111,6 +111,9 @@ export default {
       pending: 'Uploading..',
       re: 'Re-Select..',
       error: 'Failed to upload file: Error code {code}'
+    },
+    dialog: {
+      running: 'Running Task: '
     }
   },
   air: {

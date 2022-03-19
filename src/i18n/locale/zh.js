@@ -111,6 +111,9 @@ export default {
       pending: '\u3000上传中',
       re: '重新上传',
       error: '上传文件失败：错误代码 {code}'
+    },
+    dialog: {
+      running: '执行中任务：'
     }
   },
   air: {
