@@ -2,16 +2,13 @@
   <sd-node-monitor ref="monitor" :point="point" :status="status" v-bind="$attrs">
     <template #action>
       <!-- video source dropdown -->
-      <el-dropdown trigger="click">
+      <el-dropdown v-if="videoSources.length > 0"  trigger="click">
         <el-button size="small" :disabled="allDisabled || source.pending">
           <span v-t="'monitor.source.title'"></span>
           <i :class="`el-icon--right el-icon-${source.pending ? 'loading' : 'arrow-down'}`"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="videoSources.length === 0" disabled>
-            <span v-t="'monitor.source.empty'"></span>
-          </el-dropdown-item>
-          <template v-else>
+          <template>
             <el-dropdown-item
               v-for="s of videoSources"
               :key="s.source"
@@ -29,15 +26,12 @@
         </el-dropdown-menu>
       </el-dropdown>
       <!-- control dropdown -->
-      <el-dropdown trigger="click">
+      <el-dropdown v-if="availableControls.length > 0  || hasStickControl" trigger="click">
         <el-button size="small" :disabled="allDisabled">
           <span v-t="'monitor.control.title'"></span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="availableControls.length === 0 && !hasStickControl" disabled>
-            <span v-t="'monitor.control.empty'"></span>
-          </el-dropdown-item>
           <el-dropdown-item
             v-for="c of availableControls"
             :key="c.type"
@@ -61,16 +55,16 @@
         </el-dropdown-menu>
       </el-dropdown>
       <!-- action dropdown -->
-      <el-dropdown trigger="click" @command="handleAction">
+      <el-dropdown v-if="availableActions.length > 0" trigger="click" @command="handleAction">
         <el-button size="small" :disabled="allDisabled">
           <span v-t="'monitor.action.title'"></span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="availableActions.length === 0" disabled>
+          <el-dropdown-item v-if="shownActions.length === 0" disabled>
             <span v-t="'monitor.action.empty'"></span>
           </el-dropdown-item>
-          <el-dropdown-item v-for="a of availableActions" :key="a.method" :command="a.method">
+          <el-dropdown-item v-for="a of shownActions" :key="a.method" :command="a.method">
             <span v-t="a.label || `monitor.action.${a.method}` || a.method"></span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -293,8 +287,12 @@ export default {
     },
     /** @returns {{ method: string, label: string }[]} */
     availableActions() {
+      return get(this.point.params, 'action', []);
+    },
+    /** @returns {{ method: string, label: string }[]} */
+    shownActions() {
       const enabled = this.msg.action_enabled;
-      return get(this.point.params, 'action', []).filter(a => enabled.includes(a.method));
+      return this.availableActions.filter(a => enabled.includes(a.method));
     },
     /** @returns {{ viewBox: string, elements: { type: string, text: string }[] }} */
     overlaySVG() {
