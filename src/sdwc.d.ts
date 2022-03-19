@@ -22,15 +22,12 @@ declare namespace SDWC {
     title: string;
     aside_logo: string;
     super_dock_api_server: string;
-    oauth_client_id: string;
-    oauth_client_secret: string;
     lang: string;
     ice_server?: string;
     ice_servers?: RTCIceServer[];
     map_tiles_url: string;
     caiyun_key: string;
     heweather_key: string;
-    mqtt_url: string;
   }
 
   // store/modules/node.js
