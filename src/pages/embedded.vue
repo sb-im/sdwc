@@ -39,9 +39,8 @@ export default {
     selectedPoint() {
       return this.selectedNode.info.points.find(p =>
         p.id == this.point ||
-        p.point_type_id == this.point ||
-        p.point_type_name == this.point ||
-        p.point_type_name.startsWith(this.point)
+        p.type == this.point ||
+        p.type.startsWith(this.point)
       );
     },
   },

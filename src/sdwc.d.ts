@@ -36,13 +36,10 @@ declare namespace SDWC {
   // store/modules/node.js
   export interface NodePoint {
     id: number;
+    type: string;
     name: string;
     params: any;
     node_id: number;
-    point_type_id: number;
-    point_type_name: string;
-    created_at: string;
-    updated_at: string;
   }
   export interface NodeInfo {
     id: number;

@@ -60,7 +60,7 @@ export default {
     parameterPoint() {
       const node = this.$store.state.node.find(n => n.info.id === this.nodeId);
       if (!node) return null;
-      const point = node.info.points.find(p => p.point_type_name === 'parameter');
+      const point = node.info.points.find(p => p.type === 'parameter');
       return point;
     }
   },

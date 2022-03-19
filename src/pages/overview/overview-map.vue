@@ -73,7 +73,7 @@ export default {
     dronePlaceStyle() {
       const style = {};
       for (const d of this.drones) {
-        const mapPoint = d.info.points.find(p => p.point_type_name === 'map') || {};
+        const mapPoint = d.info.points.find(p => p.type === 'map') || {};
         style[d.info.id] = Object.assign({}, PlaceStyle, get(mapPoint, 'params.common.place', {}));
       }
       return style;

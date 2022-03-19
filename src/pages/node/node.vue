@@ -95,10 +95,10 @@ export default {
         points = node.info.points;
       }
       return points.map((point, index) => {
-        const { node_id, point_type_name } = point;
+        const { node_id, type } = point;
         const node = this.nodes.find(n => n.info.id === node_id);
-        const compo = CompoName[point_type_name] || '';
-        const key = `${node_id}-${point_type_name}-${index}`;
+        const compo = CompoName[type] || '';
+        const key = `${node_id}-${type}-${index}`;
         return { node, point, compo, key };
       }).sort((a, b) => CompoOrder[a.compo] - CompoOrder[b.compo]);
     }

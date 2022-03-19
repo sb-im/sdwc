@@ -245,13 +245,13 @@ export function subscribeNodes({ state, commit }) {
     const id = node.info.id;
     const points = node.info.points ?? [];
     MqttClient.subscribeNode(id);
-    if (points.some(p => p.point_type_name.startsWith('livestream_'))) {
+    if (points.some(p => p.type.startsWith('livestream_'))) {
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.gimbal}`);
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.action}`);
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.overlay}`);
     }
     points.forEach(point => {
-      switch (point.point_type_name) {
+      switch (point.type) {
         case 'custom': {
           if (typeof point.params !== 'object') break;
           const { topic = 'custom' } = point.params;
@@ -271,7 +271,7 @@ export function subscribeNodes({ state, commit }) {
         }
         default: {
           /** @type {string[]} */
-          const topics = PointTopic[point.point_type_name];
+          const topics = PointTopic[point.type];
           if (!topics) break;
           topics.forEach(topic => {
             MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
