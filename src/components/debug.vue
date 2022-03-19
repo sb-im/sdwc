@@ -43,6 +43,7 @@ export default {
   name: 'sd-node-debug',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropType<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
@@ -69,9 +70,15 @@ export default {
     disabledText() {
       return this.$t('control.abnormal');
     },
-    /** @returns {{ value: string }[]} */
+    /** @returns {string[]} */
     commands() {
-      return this.point.name.trim().split(' ').filter(c => c !== '').map(value => ({ value }));
+      let strings = [];
+      if (Array.isArray(this.point.params)) {
+        strings = this.point.params;
+      } else if (this.point.name) {
+        strings = this.point.name.trim().split(' ');
+      }
+      return strings.filter(c => c !== '').map(value => ({ value }));
     }
   },
   methods: {
