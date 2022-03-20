@@ -63,14 +63,25 @@ namespace ApiTypes {
 
     export interface Task extends BaseEntity {
       name: string;
+      index: number;
       node_id: number;
       files?: { [key: string]: string };
       extra?: { [key: string]: string };
     }
 
     export interface Job extends BaseEntity {
+      /** job ordinal number */
+      index: number;
       files?: { [key: string]: string };
       extra?: { [key: string]: string };
+    }
+
+    export interface TaskWithJobs extends Task {
+      jobs: Job[];
+    }
+
+    export interface TaskWithJob extends Task {
+      job: Job;
     }
 
     export interface Blob extends BaseEntity {

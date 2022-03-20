@@ -115,7 +115,7 @@ export function createTask(task) {
  * @param {number} id
  * @param {number} page
  * @param {number} size
- * @returns {Promise<ApiTypes.V3.Task>}
+ * @returns {Promise<ApiTypes.V3.TaskWithJobs>}
  */
 export function getTaskDetail(id, page, size) {
   return wr.url(`/tasks/${id}`)
@@ -146,21 +146,22 @@ export function deleteTask(id) {
 
 /**
  * @param {number} id
- * @param {number} page
- * @param {number} size
- * @returns {Promise<ApiTypes.V3.Job[]>}
+ * @returns {Promise<ApiTypes.V3.TaskWithJob>}
  */
-export function getTaskJobs(id, page, size) {
-  return wr.url(`/tasks/${id}/jobs`)
-    .query({ page, size })
-    .get()
+export function runTask(id) {
+  return wr.url(`/tasks/${id}/running`)
+    .post()
     .json();
 }
 
-export function createTaskJob(id) {
-  return wr.url(`/tasks/${id}/jobs`)
-    .post()
-    .json();
+/**
+ * @param {number} id
+ * @returns {Promise<any>}
+ */
+export function cancelTask(id) {
+  return wr.url(`/tasks/${id}/running`)
+    .delete()
+    .res();
 }
 
 /**

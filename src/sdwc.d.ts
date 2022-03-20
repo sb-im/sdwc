@@ -251,6 +251,8 @@ declare namespace SDWC {
   export interface PlanInfo {
     id: number;
     name: string;
+    /** run/jobs count */
+    index: number;
     node_id: number;
     files: {
       waypoint?: string;
@@ -297,9 +299,11 @@ declare namespace SDWC {
   // PlanJob
   export interface PlanJob {
     id: number;
+    /** job ordinal number */
+    index: number;
     /** file name: blob id */
-    files: { [key: string]: string; };
-    extra: { [key: string]: string; };
+    files?: { [key: string]: string; };
+    extra?: { [key: string]: string; };
     created_at: string;
     updated_at: string;
   }
