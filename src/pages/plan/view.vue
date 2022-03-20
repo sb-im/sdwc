@@ -21,7 +21,7 @@
           <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
-      <sd-plan-readonly :plan="planToShow"></sd-plan-readonly>
+      <sd-plan-readonly :plan="plan"></sd-plan-readonly>
     </sd-card>
     <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
     <sd-job-file ref="jobFile"></sd-job-file>
@@ -57,6 +57,7 @@
         layout="total, prev, pager, next"
         :total="job.total"
         :current-page.sync="job.page"
+        @current-change="refreshShownJobs"
       ></el-pagination>
     </sd-card>
   </div>
@@ -64,7 +65,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { createTaskJob, getTaskJobs } from '@/api/super-dock-v3';
+import { runTask, cancelTask } from '@/api/super-dock-v3';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -112,25 +113,20 @@ export default {
     /** @returns {boolean} */
     isRunning() {
       return this.runningContent !== null;
-    },
-    /** @returns {SDWC.PlanInfo} */
-    planToShow() {
-      if (!this.isRunning) return this.plan;
-      return Object.assign({}, this.plan, {
-        files: Object.assign({}, this.plan.files, this.runningContent.files),
-        extra: Object.assign({}, this.plan.extra, this.runningContent.extra)
-      });
     }
   },
   methods: {
     ...mapActions([
+      'getTaskJobs',
       'getPlanWaypoints'
     ]),
     handleEdit() {
       this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
     },
     handleRun() {
-      createTaskJob(this.plan.id).catch(() => { /* noop */ });
+      runTask(this.plan.id)
+        .catch(() => { /* noop */ })
+        .then(() => this.refreshShownJobs());
     },
     handleStop() {
       if (!this.isRunning) return;
@@ -145,9 +141,7 @@ export default {
         title: this.plan.name,
         message: this.$t('plan.view.pending'),
       });
-      // TODO: cancel job
-      const cancelPlanJob = () => Promise.resolve();
-      cancelPlanJob(this.plan.id, this.runningContent.id).then(() => {
+      cancelTask(this.plan.id, this.runningContent.id).then(() => {
         Object.assign(n.$data, {
           message: this.$t('plan.view.stop_run'),
           type: 'warning',
@@ -161,15 +155,14 @@ export default {
         });
       });
     },
-    async getPlanJobs() {
+    async refreshShownJobs() {
       this.job.loading = true;
-      const res = await getTaskJobs(this.plan.id, this.job.page, 10);
+      const res = await this.getTaskJobs({ id: this.plan.id, page: this.job.page });
       if (this.isRunning) {
         this.patchRunningJob(res, this.runningContent.job);
       }
       this.jobs = res;
-      // TODO: total jobs
-      this.job.total = res.length;
+      this.job.total = this.plan.index;
       this.job.loading = false;
     },
     /**
@@ -180,23 +173,9 @@ export default {
       if (!runningJob?.id) return;
       /** @type {SDWC.PlanJob} */
       const job = jobs.find(j => j.id === runningJob.id);
-      if (typeof job !== 'object') {
-        const now = new Date().toISOString();
-        jobs.unshift(Object.assign({
-          temporary: true,
-          id: runningJob.id,
-          created_at: now,
-          updated_at: now
-        }, runningJob));
-      } else {
-        if (job.temporary) {
-          job.files = runningJob.files;
-          job.extra = runningJob.extra;
-        } else {
-          job.files = Object.assign({}, job.files, runningJob.files);
-          job.extra = Object.assign({}, job.extra, runningJob.extra);
-        }
-      }
+      if (!job) return;
+      job.files = Object.assign(job.files, runningJob.files);
+      job.extra = Object.assign(job.extra, runningJob.extra);
     },
     /**
      * @param {{ row: SDWC.PlanJob }} _
@@ -222,7 +201,7 @@ export default {
     this.getPlanWaypoints(this.plan)
       .then(wp => this.map = waypointsToMapProps(wp))
       .catch(() => { /* noop */ });
-    this.getPlanJobs();
+    this.refreshShownJobs();
     this._unsub = this.$store.subscribe(({ type, payload }) => {
       if (type === PLAN.SET_PLAN_RUNNING) {
         if (payload.id === this.plan.id && payload.running.job) {

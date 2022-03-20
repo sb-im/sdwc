@@ -348,6 +348,19 @@ export async function getPlanWaypoints(_, plan) {
 }
 
 /**
+ * @param {Context} context
+ * @param {{ id: number, size?: number, page?: number }} payload
+ * @returns {Promise<SDWC.PlanJob[]>}
+ */
+ export async function getTaskJobs({ commit }, { id, size = 10, page = 1 }) {
+  const data = await SuperDockV3.getTaskDetail(id, page, size);
+  const jobs = data.jobs ?? [];
+  delete data.jobs;
+  commit(PLAN.UPDATE_PLAN, data);
+  return jobs;
+}
+
+/**
  * @param {Context} _
  * @param {string} id blob id
  * @returns {Promise<{ filename: string, blob: Blob }>}
