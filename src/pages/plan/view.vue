@@ -174,8 +174,8 @@ export default {
       /** @type {SDWC.PlanJob} */
       const job = jobs.find(j => j.id === runningJob.id);
       if (!job) return;
-      job.files = Object.assign(job.files, runningJob.files);
-      job.extra = Object.assign(job.extra, runningJob.extra);
+      job.files = Object.assign({}, job.files, runningJob.files);
+      job.extra = Object.assign({}, job.extra, runningJob.extra);
     },
     /**
      * @param {{ row: SDWC.PlanJob }} _
