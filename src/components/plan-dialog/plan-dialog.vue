@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     handleRouteClick() {
-      this.$router.push(this.planRoute);
+      this.$router.push(this.planRoute).catch(() => { /* noop */ });
       this.close();
     },
     /**
@@ -105,5 +105,8 @@ export default {
 }
 .sd-plan-dialog .navigate {
   margin: 0 0 1em;
+}
+.sd-plan-dialog .navigate .el-link {
+  vertical-align: baseline;
 }
 </style>
