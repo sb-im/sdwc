@@ -447,7 +447,7 @@ export default {
     fit(val) {
       if (!this.mapInitialized || !val) return;
       this.fitPath().then(success => {
-        if (!success) () => this.fitMarkers();
+        if (!success) this.fitMarkers();
       });
     },
     follow(val) {
