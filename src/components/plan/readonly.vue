@@ -1,18 +1,23 @@
 <template>
-  <el-form class="plan__form" label-width="80px" :model="plan">
+  <el-form class="plan__form" label-width="80px" size="small" :model="plan">
     <el-form-item>
       <span slot="label" v-t="'plan.name'"></span>
-      <el-input size="small" :value="plan.name" readonly></el-input>
+      <el-input :value="plan.name" readonly></el-input>
     </el-form-item>
     <el-form-item>
       <span slot="label" v-t="'plan.node'"></span>
-      <el-input size="small" :value="nodeName" :placeholder="$t('common.none')" readonly></el-input>
+      <router-link v-if="nodeRoute" :to="nodeRoute" v-slot="{ href }">
+        <a class="plan__node" :href="href">
+          <el-input :value="nodeName" readonly></el-input>
+        </a>
+      </router-link>
+      <el-input v-else :placeholder="$t('common.none')" readonly></el-input>
     </el-form-item>
-    <el-form-item size="small">
+    <el-form-item>
       <span slot="label" v-t="'plan.files'"></span>
       <sd-plan-files :value="plan.files" readonly></sd-plan-files>
     </el-form-item>
-    <el-form-item size="small">
+    <el-form-item>
       <span slot="label" v-t="'plan.extra'"></span>
       <sd-plan-extra :value="plan.extra" readonly></sd-plan-extra>
     </el-form-item>
@@ -36,9 +41,18 @@ export default {
   computed: {
     /** @returns {SDWC.Node[]} */
     nodes() { return this.$store.state.node; },
+    /** @returns {SDWC.Node?} */
+    node() { return this.nodes.find(d => d.info.id === this.plan.node_id); },
     /** @returns {string} */
     nodeName() {
-      return this.nodes.find(d => d.info.id === this.plan.node_id)?.info?.name ?? '';
+      return this.node?.info?.name ?? '';
+    },
+    /** @returns {import('vue-router').Route} */
+    nodeRoute() {
+      if (this.node) {
+        return { name: 'node', params: { id: this.node.info.id } };
+      }
+      return null;
     }
   },
   components: {
@@ -48,3 +62,14 @@ export default {
   }
 };
 </script>
+
+<style>
+.plan__node .el-input__inner {
+  cursor: pointer;
+}
+.plan__node .el-input__inner:hover {
+  cursor: pointer;
+  color: #409eff;
+  text-decoration: underline;
+}
+</style>
