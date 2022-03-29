@@ -45,14 +45,15 @@ declare namespace SDWC {
   }
   export interface NodeConnectionStatus {
     code: number;
-    msg: string;
+    msg: string | 'online' | 'offline' | 'neterror';
     status: {
       link_id: number;
-      position_ok: boolean;
       lat: string;
       lng: string;
       alt: string;
+      type?: 'drone' | 'depot';
     };
+    timestamp: string;
   }
   export interface NodeNetworkStatus {
     /** (0 ~ 100)% */
