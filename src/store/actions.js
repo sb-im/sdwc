@@ -217,15 +217,6 @@ export function clearDronePath({ commit }, id) {
   commit(NODE.CLEAR_NODE_PATH, id);
 }
 
-/**
- * @param {Context} context
- * @param {string} id depot id
- */
-export async function updateDepotStatus({ commit }, id) {
-  const status = await MqttClient.invoke(id, 'ncp', ['status']);
-  commit(NODE.SET_NODE_STATUS, { id, payload: { status } });
-}
-
 const PointTopic = {
   depot_status: ['depot_status', 'notification', 'overview', 'charger'],
   drone_status: ['drone_status', 'notification', 'overview'],

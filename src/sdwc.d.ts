@@ -44,8 +44,6 @@ declare namespace SDWC {
     points: NodePoint[];
   }
   export interface NodeConnectionStatus {
-    /** needs `ncp status` to retrieve status */
-    legacy?: boolean;
     code: number;
     msg: string;
     status: {
