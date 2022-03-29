@@ -54,7 +54,7 @@ configurePromise.then(() => {
       return;
     }
     router.replace({ name: 'panel' });
-  });
+  }).catch(() => { /* ignore errors */ });
 });
 
 window.addEventListener('beforeunload', () => {

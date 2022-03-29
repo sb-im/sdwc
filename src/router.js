@@ -138,7 +138,7 @@ router.beforeEach((to, from, next) => {
     default: {
       if (auth) {
         next();
-        return;
+        break;
       }
       next({ name: 'login', query: { redir: to.fullPath } });
       break;

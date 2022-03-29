@@ -152,7 +152,7 @@ export async function restoreSession({ commit }) {
   if (!str) return;
   /** @type {SDWC.User} */
   let json;
-  try { json = JSON.parse(str); } catch (e) { /* ignore it */ }
+  try { json = JSON.parse(str); } catch (e) { return; }
   if (json.credential.implicit) {
     // singer user mode; no token needed
   } else if (json.credential.token) {
@@ -160,8 +160,6 @@ export async function restoreSession({ commit }) {
     if (timeRemaining < 10 * 1000) return;
     SuperDockV3.setAuth(json.credential.token);
     setTimeout(() => commit(USER.INVALIDATE_TOKEN), timeRemaining);
-  } else {
-    return;
   }
   commit(USER.SET_USER_TOKEN, json.credential);
   commit(USER.SET_USER_INFO, json.info);

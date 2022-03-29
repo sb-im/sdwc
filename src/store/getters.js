@@ -6,7 +6,7 @@
  */
 export function authenticated(state) {
   const { implicit, token, expire } = state.user.credential;
-  return implicit || token.length > 0 && new Date(expire).getTime() > Date.now();
+  return implicit || (token.length > 0 && new Date(expire).getTime() > Date.now());
 }
 
 /**
