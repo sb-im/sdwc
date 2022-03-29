@@ -12,6 +12,7 @@ const state = {
   map_tiles_url: '',
   caiyun_key: '',
   heweather_key: '',
+  mqtt_url: ''
 };
 
 export const MutationTypes = {

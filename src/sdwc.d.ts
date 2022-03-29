@@ -28,6 +28,7 @@ declare namespace SDWC {
     map_tiles_url: string;
     caiyun_key: string;
     heweather_key: string;
+    mqtt_url: string;
   }
 
   // store/modules/node.js

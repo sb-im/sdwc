@@ -170,7 +170,21 @@ export async function restoreSession({ commit }) {
  * @param {Context} context
  */
 export async function connectMqtt({ state }) {
-  const mqttUrl = await SuperDockV3.createMqttUser();
+  let mqttUrl = await SuperDockV3.createMqttUser();
+  mqttUrl = mqttUrl.replace(/^mqtt/, 'ws');
+  if (typeof state.config.mqtt_url === 'string') {
+    const url = new URL(mqttUrl);
+    try {
+      const override = new URL(state.config.mqtt_url);
+      ['protocol', 'username', 'password', 'host', 'pathname', 'search'].forEach(k => {
+        if (override[k]) url[k] = override[k];
+      });
+      mqttUrl = url.toString();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[sdwc] Invalid `mqtt_url` override in config.json');
+    }
+  }
   MqttClient.setRpcPrefix(state.user.info.id);
   MqttClient.connect(mqttUrl);
 }
