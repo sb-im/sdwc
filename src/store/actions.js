@@ -98,7 +98,46 @@ export async function login({ commit, dispatch }, { username, password }) {
   commit(USER.SET_USER_TOKEN, data);
   SuperDockV3.setAuth(data.token);
   dispatch('initialize');
-  setTimeout(() => commit(USER.INVALIDATE_TOKEN), (new Date(data.expire).getTime() - Date.now()));
+}
+
+/**
+ * @param {Context} context
+ */
+export async function refreshToken({ commit }) {
+  const data = await SuperDockV3.refershToken();
+  commit(USER.SET_USER_TOKEN, data);
+  SuperDockV3.setAuth(data.token);
+}
+
+/**
+ * @param {Context} context
+ */
+export async function handleTokenExpire({ state, commit, dispatch }) {
+  if (!state.ui.idle) {
+    try {
+      await dispatch('refreshToken');
+      await dispatch('setupTokenExpireTimer');
+      return;
+    } catch (e) {
+      // ignore
+    }
+  }
+  dispatch('logout');
+  commit(USER.INVALIDATE_TOKEN);
+}
+
+/**
+ * @param {Context} context
+ * @param {number} timeout
+ */
+export function setupTokenExpireTimer({ state, commit, dispatch }, timeout) {
+  const oldTimer = state.ui.expireTimer;
+  if (oldTimer > 0) {
+    clearTimeout(oldTimer);
+  }
+  const t = timeout ?? new Date(state.user.credential.expire).getTime() - Date.now();
+  const timer = setTimeout(() => dispatch('handleTokenExpire'), t);
+  commit(UI.SET_UI, { expireTimer: timer });
 }
 
 /**
@@ -109,6 +148,7 @@ export function logout({ commit }) {
   commit(USER.SET_USER_INFO, { id: -1, username: '', teams: [], team_id: -1 });
   commit(NODE.CLEAR_NODES);
   commit(PLAN.CLEAR_PLANS);
+  commit(UI.SET_UI, { sidebar: [] });
   sessionStorage.removeItem('user');
   MqttClient.disconnect();
   SuperDockV3.setAuth('');
@@ -133,7 +173,6 @@ export async function switchTeam({ commit, dispatch }, id) {
   commit(USER.SET_USER_TOKEN, data);
   SuperDockV3.setAuth(data.token);
   dispatch('initialize');
-  setTimeout(() => commit(USER.INVALIDATE_TOKEN), (new Date(data.expire).getTime() - Date.now()));
 }
 
 /**
@@ -159,7 +198,6 @@ export async function restoreSession({ commit }) {
     const timeRemaining = new Date(json.credential.expire).getTime() - Date.now();
     if (timeRemaining < 10 * 1000) return;
     SuperDockV3.setAuth(json.credential.token);
-    setTimeout(() => commit(USER.INVALIDATE_TOKEN), timeRemaining);
   }
   commit(USER.SET_USER_TOKEN, json.credential);
   commit(USER.SET_USER_INFO, json.info);
@@ -204,6 +242,7 @@ export async function getSidebar({ commit }) {
  * @param {Context} context
  */
 export async function initialize({ dispatch }) {
+  dispatch('setupTokenExpireTimer');
   dispatch('getSidebar');
   await dispatch('getUserInfo');
   await dispatch('connectMqtt');
@@ -356,7 +395,7 @@ export async function getPlanWaypoints(_, plan) {
  * @param {{ id: number, size?: number, page?: number }} payload
  * @returns {Promise<SDWC.PlanJob[]>}
  */
- export async function getTaskJobs({ commit }, { id, size = 10, page = 1 }) {
+export async function getTaskJobs({ commit }, { id, size = 10, page = 1 }) {
   const data = await SuperDockV3.getTaskDetail(id, page, size);
   const jobs = data.jobs ?? [];
   delete data.jobs;

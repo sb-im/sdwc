@@ -353,6 +353,8 @@ declare namespace SDWC {
   }
 
   export interface UI {
+    idle: boolean;
+    expireTimer: number;
     mqttConnected: boolean;
     mqttDelay: number;
     sidebar: SidebarItem[];

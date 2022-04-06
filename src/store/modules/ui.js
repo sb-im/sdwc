@@ -4,6 +4,8 @@
  * @type {SDWC.UI}
  */
 const state = {
+  idle: false,
+  expireTimer: -1,
   mqttConnected: false,
   mqttDelay: -1,
   sidebar: []

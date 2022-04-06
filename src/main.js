@@ -26,6 +26,7 @@ import { MutationTypes as PLAN } from './store/modules/plan';
 import 'chartist';
 import 'chartist-plugin-tooltips';
 import JSONTreeView from 'vue-json-tree-view/src/index';
+import IfVisible from 'ifvisible.js';
 
 Vue.use(JSONTreeView);
 
@@ -74,7 +75,6 @@ const app = new Vue({
 
 store.subscribe((mutation) => {
   if (mutation.type === USER.INVALIDATE_TOKEN) {
-    store.dispatch('logout');
     router.replace({ name: 'login' });
     app.$message({
       type: 'error',
@@ -102,6 +102,11 @@ MqttClient.on('plan', (id, output, dialog) => {
 MqttClient.on('plan_running', (id, running) => {
   store.commit(PLAN.SET_PLAN_RUNNING, { id, running });
 });
+
+IfVisible.setIdleDuration(10 * 60);
+
+IfVisible.on('idle', () => store.commit(UI.SET_UI, { idle: true }));
+IfVisible.on('wakeup', () => store.commit(UI.SET_UI, { idle: false }));
 
 if (__SDWC_DEV__) {
   // 'DEVELOPMENT' badge

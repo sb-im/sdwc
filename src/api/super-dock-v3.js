@@ -56,7 +56,7 @@ export function switchTeam(id) {
  */
 export function refershToken() {
   return wr.url('/refresh_token')
-    .post()
+    .get()
     .json();
 }
 
