@@ -172,10 +172,11 @@ export async function restoreSession({ commit }) {
 export async function connectMqtt({ state }) {
   let mqttUrl = await SuperDockV3.createMqttUser();
   mqttUrl = mqttUrl.replace(/^mqtt/, 'ws');
-  if (typeof state.config.mqtt_url === 'string') {
+  const overrideUrl = state.config.mqtt_url;
+  if (typeof overrideUrl === 'string' && overrideUrl.length > 0) {
     const url = new URL(mqttUrl);
     try {
-      const override = new URL(state.config.mqtt_url);
+      const override = new URL(overrideUrl);
       ['protocol', 'username', 'password', 'host', 'pathname', 'search'].forEach(k => {
         if (override[k]) url[k] = override[k];
       });
