@@ -2957,10 +2957,10 @@ ieee754@^1.1.12, ieee754@^1.1.13, ieee754@^1.2.1:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
-ifvisible.js@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/ifvisible.js/-/ifvisible.js-1.0.6.tgz#52eb151ce89c56f15316226462e892d1f8451261"
-  integrity sha1-UusVHOicVvFTFiJkYuiS0fhFEmE=
+ifvisible.js@^2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/ifvisible.js/-/ifvisible.js-2.0.11.tgz#5d58f0e64b270b6e76b7a8dde7949aa15acfec5d"
+  integrity sha1-XVjw5ksnC252t6jd55SaoVrP7F0=
 
 ignore@^5.1.9, ignore@^5.2.0:
   version "5.2.0"

@@ -26,7 +26,7 @@ import { MutationTypes as PLAN } from './store/modules/plan';
 import 'chartist';
 import 'chartist-plugin-tooltips';
 import JSONTreeView from 'vue-json-tree-view/src/index';
-import IfVisible from 'ifvisible.js';
+import { ifvisible } from 'ifvisible.js';
 
 Vue.use(JSONTreeView);
 
@@ -43,6 +43,9 @@ store.dispatch('restorePreference');
  * restored
  */
 configurePromise.then(() => {
+  ifvisible.setIdleDuration(store.state.config.idle_timeout);
+  ifvisible.on('idle', () => store.dispatch('handleUserIdle'));
+  ifvisible.on('wakeup', () => store.commit(UI.SET_UI, { idle: false }));
   if (store.getters.authenticated) {
     store.dispatch('initialize');
     return;
@@ -103,11 +106,6 @@ MqttClient.on('plan_running', (id, running) => {
   store.commit(PLAN.SET_PLAN_RUNNING, { id, running });
 });
 
-IfVisible.setIdleDuration(10 * 60);
-
-IfVisible.on('idle', () => store.commit(UI.SET_UI, { idle: true }));
-IfVisible.on('wakeup', () => store.commit(UI.SET_UI, { idle: false }));
-
 if (__SDWC_DEV__) {
   // 'DEVELOPMENT' badge
   import(/* webpackChunkName: 'development' */ './styles/development.css');
@@ -118,4 +116,5 @@ if (__SDWC_DEV__) {
   import('@/api/mqtt').then(c => {
     window._mqttClient = c.default;
   });
+  window._ifvisible = ifvisible;
 }

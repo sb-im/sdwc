@@ -12,7 +12,8 @@ const state = {
   map_tiles_url: '',
   caiyun_key: '',
   heweather_key: '',
-  mqtt_url: ''
+  mqtt_url: '',
+  idle_timeout: 600
 };
 
 export const MutationTypes = {

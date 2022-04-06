@@ -29,6 +29,7 @@ declare namespace SDWC {
     caiyun_key: string;
     heweather_key: string;
     mqtt_url: string;
+    idle_timeout: number;
   }
 
   // store/modules/node.js

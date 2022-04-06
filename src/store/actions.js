@@ -143,6 +143,23 @@ export function setupTokenExpireTimer({ state, commit, dispatch }, timeout) {
 /**
  * @param {Context} context
  */
+export async function handleUserIdle({ state, getters, commit, dispatch }) {
+  commit(UI.SET_UI, { idle: true });
+  const oldTimer = state.ui.expireTimer;
+  if (oldTimer > 0) {
+    clearTimeout(oldTimer);
+    commit(UI.SET_UI, { expireTimer: -1 });
+  }
+  if (!getters.authenticated) {
+    return;
+  }
+  dispatch('logout');
+  commit(USER.INVALIDATE_TOKEN);
+}
+
+/**
+ * @param {Context} context
+ */
 export function logout({ commit }) {
   commit(USER.SET_USER_TOKEN, { token: '', expire: '' });
   commit(USER.SET_USER_INFO, { id: -1, username: '', teams: [], team_id: -1 });
