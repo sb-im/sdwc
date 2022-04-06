@@ -9,6 +9,7 @@
     @map-move="handleMove"
     @map-change="handleClose"
     @marker-click="handleMarkerClick"
+    @marker-right-click="handleMarkerRightClick"
   >
     <template #action>
       <el-button
@@ -201,7 +202,14 @@ export default {
      * @param {number | string} id
      * @param {HTMLDivElement} el
      */
-    handleMarkerClick(id, el) {
+    handleMarkerClick(id /*, el*/) {
+      this.$router.push({ name: 'node', params: { id } });
+    },
+    /**
+     * @param {number | string} id
+     * @param {HTMLDivElement} el
+     */
+    handleMarkerRightClick(id, el) {
       this.popover.node = id;
       if (!this.$refs.popover.popperJS) {
         this.$refs.popover.referenceElm = el;

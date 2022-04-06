@@ -345,6 +345,9 @@ export default {
             elm.onclick = () => {
               this.$emit('marker-click', marker.id, elm);
             };
+            elm.oncontextmenu = () => {
+              this.$emit('marker-right-click', marker.id, elm);
+            };
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
@@ -508,7 +511,10 @@ export default {
     for (const prop of objects) {
       if (this[prop]) {
         if (typeof this[prop].getElement === 'function') {
-          this[prop].getElement().onclick = null;
+          /** @type {HTMLElement} */
+          const el = this[prop].getElement();
+          el.onclick = null;
+          el.oncontextmenu = null;
         }
         this[prop].remove();
         this[prop] = null;
