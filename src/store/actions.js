@@ -64,12 +64,12 @@ export function restorePreference({ commit }) {
  */
 export async function configure({ state, commit }) {
   const data = await S.config();
-  document.title = data.title;
   commit(CONF.SET_CONFIG, data);
-  if (!state.preference.lang) {
-    commit(PREF.SET_PREFERENCE, { lang: data.lang });
-  }
   const config = state.config;
+  if (!state.preference.lang) {
+    commit(PREF.SET_PREFERENCE, { lang: config.lang });
+  }
+  document.title = config.title;
   SuperDockV3.setBaseURL(config.super_dock_api_server);
   HeWeather.setApiKey(config.heweather_key);
   CaiYun.setApiKey(config.caiyun_key);
