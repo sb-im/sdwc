@@ -190,6 +190,9 @@ export default {
   align-items: center;
   justify-content: center;
 }
+.aside__header .el-menu-item {
+  flex-shrink: 0;
+}
 .aside__logo {
   width: 50px;
   height: 50px;
