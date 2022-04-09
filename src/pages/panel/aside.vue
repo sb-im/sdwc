@@ -6,7 +6,6 @@
     active-text-color="#fff"
     :default-active="activeIndex"
     :collapse="collapse"
-    @select="handleSelect"
     router
   >
     <div class="aside__header">
@@ -44,11 +43,7 @@
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
       <!-- type: node -->
-      <el-submenu
-        :key="index"
-        v-else-if="item.type === 'node'"
-        :index="`${index}`"
-      >
+      <el-submenu :key="index" v-else-if="item.type === 'node'" :index="`${index}`">
         <template #title>
           <sd-icon :value="item.icon || 'depot-blue'"></sd-icon>
           <span slot="title" v-t="item.name || 'common.node'"></span>
@@ -90,7 +85,7 @@
         </div>
       </template>
     </div>
-    <el-menu-item index="never" :route="{}" @click.native="toggleCollpase">
+    <el-menu-item index="never" :route="{}" @click="toggleCollpase">
       <i :class="`el-icon-s-${collapse ? 'un' : ''}fold`"></i>
       <span slot="title" class="aside__collapse-text" v-t="`aside.${collapse ? 'un' : ''}fold`"></span>
     </el-menu-item>
@@ -106,7 +101,6 @@ export default {
   name: 'sd-aside',
   data() {
     return {
-      activeIndex: '',
       collapse: window.innerWidth < 1580
     };
   },
@@ -139,6 +133,9 @@ export default {
       }
       return running.concat(standby);
     },
+    activeIndex() {
+      return this.resolveActiveIndex(this.$route);
+    },
     /** @returns {string} */
     version() {
       return __SDWC__VERSION__; // would be replaced on compile
@@ -146,12 +143,34 @@ export default {
   },
   methods: {
     /**
-     * @param {string} index
-     * @param {string[]} indexPath
+     * @param {import('vue-router').Route} route
+     * @returns {string}
      */
-    handleSelect(index /*, indexPath*/) {
-      // TODO: find out current active index on first render
-      this.activeIndex = index;
+    resolveActiveIndex(route) {
+      /** @type {SDWC.SidebarItem[]} */
+      const items = this.ui.sidebar;
+      const pathIndex = items.findIndex(i => i.type == 'path' && i.args == route.fullPath);
+      if (pathIndex >= 0) return `${pathIndex}`;
+      const total = items.length;
+      for (let index = 0; index < total; index++) {
+        const item = this.ui.sidebar[index];
+        switch (item.type) {
+          case 'iframe':
+            if (route.params.index == index) return `${index}`;
+            break;
+          case 'node':
+            if (route.name == 'node') return `${index}-node-${route.params.id}`;
+            break;
+          case 'plan':
+            if (route.name === 'plan/new') return 'plan-new';
+            if (route.name.startsWith('plan')) return `${index}-plan-${route.params.id}`;
+            break;
+          case 'overview':
+            if (route.name == 'overview') return `${index}`;
+            break;
+        }
+      }
+      return '';
     },
     toggleCollpase() {
       this.collapse = !this.collapse;
