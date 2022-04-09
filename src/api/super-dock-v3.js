@@ -60,6 +60,27 @@ export function refershToken() {
     .json();
 }
 
+/**
+ * @param {string} name
+ * @returns {Promise<any>}
+ */
+export function getProfile(name) {
+  return wr.url(`/profiles/${name}`)
+    .get()
+    .json();
+}
+
+/**
+ * @param {string} name
+ * @param {any} obj
+ * @returns {Promise<any>}
+ */
+ export function putProfile(name, obj) {
+  return wr.url(`/profiles/${name}`)
+    .put(obj)
+    .json();
+}
+
 export const DefaultSidebar = [
   { type: 'overview' },
   { type: 'plan' },
@@ -67,11 +88,11 @@ export const DefaultSidebar = [
   { type: 'schedule' }
 ];
 
-/** @returns {Promise<SDWC.SidebarItem[]>} */
+/**
+ * @returns {Promise<SDWC.SidebarItem[]>}
+ */
 export function getSidebar() {
-  return wr.url('/sidebar')
-    .get()
-    .json()
+  return getProfile('sidebar')
     .catch(() => DefaultSidebar);
 }
 
