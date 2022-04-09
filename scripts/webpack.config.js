@@ -36,7 +36,18 @@ const cfg = {
     path: P('/dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
-    hashFunction: 'xxhash64'
+    hashFunction: 'xxhash64',
+    // fix source map directory structure
+    // https://github.com/vuejs/vue-cli/issues/2978#issuecomment-473240405
+    // https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
+    devtoolModuleFilenameTemplate: (info) => {
+      const isGeneratedDuplicate = info.resourcePath.match(/\.vue$/) && info.allLoaders;
+      if (isGeneratedDuplicate) {
+        return `webpack-generated:///${info.resourcePath}?${info.hash}`;
+      }
+      return `webpack:///${path.normalize(info.resourcePath)}`;
+    },
+    devtoolFallbackModuleFilenameTemplate: 'webpack:///[resource-path]?[hash]'
   },
   module: {
     rules: [
