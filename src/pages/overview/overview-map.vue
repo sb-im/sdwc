@@ -6,6 +6,7 @@
     :polylines="polylines"
     :markers="markers"
     :fit="fit"
+    :fitPadding="200"
     @map-move="handleMove"
     @map-change="handleClose"
     @marker-click="handleMarkerClick"
