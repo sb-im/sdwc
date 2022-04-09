@@ -10,10 +10,10 @@ import { randColor } from './common';
 import { loadMapbox } from './mapbox-loader';
 
 /** @type {number} */
-let __MAPBOX_ZOOM__;
+let __MAPBOX_ZOOM__ = 0.5;
 
-/** @type {mapboxgl.LngLat} */
-let __MAPBOX_CENTER__;
+/** @type {mapboxgl.LngLatLike} */
+let __MAPBOX_CENTER__ = { lat: 27, lng: 162 };
 
 /** @type {mapboxgl.Style} */
 const GoogleRasterStyle = {
@@ -118,6 +118,10 @@ export default {
       type: Boolean,
       default: false
     },
+    fitPadding: {
+      type: Number,
+      default: 40,
+    },
     follow: {
       type: Boolean,
       default: false
@@ -150,8 +154,8 @@ export default {
         container: this.$refs.map,
         style: GoogleRasterStyle,
         maxZoom: 19,
-        zoom: __MAPBOX_ZOOM__ || 0.5,
-        center: __MAPBOX_CENTER__ || { lat: 27, lng: 162 },
+        zoom: __MAPBOX_ZOOM__,
+        center: __MAPBOX_CENTER__,
       });
       map.addControl(new ScaleControl(), 'bottom-left');
       map.addControl(new NavigationControl(), 'bottom-right');
@@ -282,8 +286,7 @@ export default {
       }
     },
     async drawNamedMarkers() {
-      const { LngLat, LngLatBounds, Marker } = await loadMapbox();
-      const bounds = new LngLatBounds();
+      const { LngLat, Marker } = await loadMapbox();
       /** @type {mapboxgl.Map} */
       const map = this.map;
       // remove unused markers
@@ -351,12 +354,11 @@ export default {
           }
           this.namedMarkers[marker.id] = mapMarker;
         }
-        bounds.extend(lnglat);
       }
-      if (this.fit && !bounds.isEmpty() && !this.popoverShown) {
-        // only fit to markers if no path persent
+      if (this.fit && !this.popoverShown) {
+        // fit to markers if no path persent
         this.fitPath().then(success => {
-          if (!success) this.map.fitBounds(bounds, { padding: 40, linear: true });
+          if (!success) this.fitMarkers();
         });
       }
     },
@@ -409,24 +411,24 @@ export default {
       return true;
     },
     async fitPath(duration = 500) {
-      const { LngLat, LngLatBounds } = await loadMapbox();
-      const bounds = new LngLatBounds();
       const path = this.polylines.find(l => l.name === 'path');
       if (!path || !path.coordinates) return false;
+      const { LngLat, LngLatBounds } = await loadMapbox();
+      const bounds = new LngLatBounds();
       for (const { lng, lat } of path.coordinates) {
         bounds.extend(new LngLat(lng, lat));
       }
-      this.map.fitBounds(bounds, { padding: 40, linear: true, duration });
+      this.map.fitBounds(bounds, { padding: this.fitPadding, linear: true, duration });
       return true;
     },
     async fitMarkers() {
+      if (this.markers.length <=  0) return false;
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
       for (const { position: { lng, lat } } of this.markers) {
         bounds.extend(new LngLat(lng, lat));
       }
-      if (bounds.isEmpty()) return false;
-      this.map.fitBounds(bounds, { padding: 40, linear: true });
+      this.map.fitBounds(bounds, { padding: this.fitPadding, linear: true });
       return true;
     }
   },
