@@ -30,6 +30,14 @@ import { ifvisible } from 'ifvisible.js';
 
 Vue.use(JSONTreeView);
 
+async function enableIdleCheck() {
+  // 'eager' mode prevents webpack from generating extra chunk for this module
+  const { ifvisible } = await import(/* webpackMode: 'eager' */ 'ifvisible.js');
+  ifvisible.setIdleDuration(store.state.config.idle_timeout);
+  ifvisible.on('idle', () => store.dispatch('handleUserIdle'));
+  ifvisible.on('wakeup', () => store.commit(UI.SET_UI, { idle: false }));
+}
+
 const configurePromise = store.dispatch('configure');
 /**
  * Restore user token (if avaliable) before Vue instance was created.
@@ -42,23 +50,28 @@ store.dispatch('restorePreference');
  * re-initialize data and connections after configure completed and session
  * restored
  */
-configurePromise.then(() => {
-  ifvisible.setIdleDuration(store.state.config.idle_timeout);
-  ifvisible.on('idle', () => store.dispatch('handleUserIdle'));
-  ifvisible.on('wakeup', () => store.commit(UI.SET_UI, { idle: false }));
+configurePromise.then(async () => {
   if (store.getters.authenticated) {
     store.dispatch('initialize');
+    if (!store.state.user.credential.implicit) {
+      // enable idle check when not in single user mode
+      enableIdleCheck();
+    }
     return;
   }
-  store.dispatch('checkSingleUserMode').then(() => {
+  const isSingleUserMode = await store.dispatch('checkSingleUserMode');
+  if (isSingleUserMode) {
     store.dispatch('initialize');
     const { name, query } = router.currentRoute;
     if (name === 'login' && query.redir) {
       router.replace(query.redir);
-      return;
+    } else {
+      router.replace({ name: 'panel' });
     }
-    router.replace({ name: 'panel' });
-  }).catch(() => { /* ignore errors */ });
+  } else {
+    // enable idle check when not in single user mode
+    enableIdleCheck();
+  }
 });
 
 window.addEventListener('beforeunload', () => {

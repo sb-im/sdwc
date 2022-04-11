@@ -80,13 +80,17 @@ export async function configure({ state, commit }) {
  * @param {Context} context
  */
 export async function checkSingleUserMode({ state, commit, dispatch }) {
-  await dispatch('getUserInfo');
-  const { id, username, team_id } = state.user.info;
-  if (id > 0 && username.length > 0 && team_id > 0) {
-    commit(USER.SET_USER_TOKEN, { implicit: true });
-    return true;
+  try {
+    await dispatch('getUserInfo');
+    const { id, username, team_id } = state.user.info;
+    if (id > 0 && username.length > 0 && team_id > 0) {
+      commit(USER.SET_USER_TOKEN, { implicit: true });
+      return true;
+    }
+  } catch (e) {
+    return false;
   }
-  throw false;
+  return false;
 }
 
 /**
@@ -258,8 +262,10 @@ export async function getSidebar({ commit }) {
  * initialize all necessary data and mqtt subs
  * @param {Context} context
  */
-export async function initialize({ dispatch }) {
-  dispatch('setupTokenExpireTimer');
+export async function initialize({ state, dispatch }) {
+  if (!state.user.credential.implicit) {
+    dispatch('setupTokenExpireTimer');
+  }
   dispatch('getSidebar');
   await dispatch('getUserInfo');
   await dispatch('connectMqtt');
