@@ -14,7 +14,7 @@ const RpcNotifications = new Map();
 
 /**
  * @this {Vue}
- * @param {number} id
+ * @param {string} id
  * @param {SDWC.ControlItem} ctl
  * @param {SDWC.MqttRpcOptions} options
  */

@@ -12,7 +12,7 @@ export default {
   inheritAttrs: false,
   props: {
     node: {
-      type: Number,
+      type: String,
       required: true
     },
     point: {

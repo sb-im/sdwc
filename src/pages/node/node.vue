@@ -71,7 +71,7 @@ export default {
   name: 'sd-node',
   props: {
     id: {
-      type: Number,
+      type: String,
       required: true
     },
     /** @type {Vue.PropOptions<SDWC.NodePoint>} */
@@ -83,16 +83,17 @@ export default {
   computed: {
     /** @returns {SDWC.Node[]} */
     nodes() { return this.$store.state.node; },
+    /** @returns {SDWC.Node} */
+    node() { return this.nodes.find(node => node.info.id === this.id); },
     /** @returns {PointComponent[]} */
     points() {
-      const node = this.nodes.find(node => node.info.id === this.id);
-      if (!node) return [];
+      if (!this.node) return [];
       /** @type {SDWC.NodePoint[]} */
       let points = [];
       if (this.point) {
         points.push(this.point);
       } else {
-        points = node.info.points;
+        points = this.node.info.points;
       }
       return points.map((point, index) => {
         const { node_id, type } = point;

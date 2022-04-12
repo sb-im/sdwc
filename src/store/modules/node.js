@@ -100,7 +100,7 @@ const mutations = {
       }
     });
   },
-  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: number, payload: Partial<SDWC.NodeConnectionStatus> }} */ { id, payload }) {
+  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: string, payload: Partial<SDWC.NodeConnectionStatus> }} */ { id, payload }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
     if (payload.status) {
@@ -112,12 +112,12 @@ const mutations = {
     }
     Object.assign(node.status, payload);
   },
-  [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: number, payload: SDWC.NodeNetworkStatus }} */ { id, payload }) {
+  [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: string, payload: SDWC.NodeNetworkStatus }} */ { id, payload }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
     Object.assign(node.network, payload);
   },
-  [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: number, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
+  [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: string, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
     for (const [category, value] of Object.entries(msg)) {
@@ -139,14 +139,14 @@ const mutations = {
       }
     }
   },
-  [MutationTypes.ADD_NODE_TOPIC](state, /** @type {{ id: number, topic: string }} */ { id, topic }) {
+  [MutationTypes.ADD_NODE_TOPIC](state, /** @type {{ id: string, topic: string }} */ { id, topic }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
     // @ts-ignore
     // replace msg object, make new property reactive
     node.msg = { ...node.msg, [topic]: {} };
   },
-  [MutationTypes.CLEAR_NODE_PATH](state, /** @type {number} */ id) {
+  [MutationTypes.CLEAR_NODE_PATH](state, /** @type {string} */ id) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
     node.msg.position.splice(1);

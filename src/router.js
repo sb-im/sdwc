@@ -61,7 +61,7 @@ const routes = [
         path: 'node/:id',
         name: 'node',
         component: Node,
-        props: route => ({ id: int(route.params.id) })
+        props: route => ({ id: route.params.id })
       },
       {
         path: 'plan/new',
@@ -106,7 +106,7 @@ const routes = [
     },
     props(route) {
       const { node, point } = route.params;
-      const props = { node: int(node), point };
+      const props = { node, point };
       for (const key in route.query) {
         props[camelize(key)] = route.query[key];
       }

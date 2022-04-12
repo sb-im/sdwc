@@ -278,7 +278,6 @@ export async function initialize({ state, dispatch }) {
  */
 export async function getNodes({ commit }) {
   const data = await SuperDockV3.getNodes();
-  data.sort((a, b) => a.id - b.id);
   data.forEach(node => {
     commit(NODE.ADD_NODE, node);
   });

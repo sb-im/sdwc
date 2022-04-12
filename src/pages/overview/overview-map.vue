@@ -56,7 +56,7 @@ export default {
       fit: true,
       popover: {
         show: false,
-        node: -1
+        node: ''
       }
     };
   },
@@ -70,7 +70,7 @@ export default {
     /** @returns {SDWC.Node[]} */
     depots() { return this.$store.getters.depots; },
     /**
-     * @returns {{ [droneId: number]: { [placeType: string]: SDWC.DronePlaceStyle }}}
+     * @returns {{ [droneId: string]: { [placeType: string]: SDWC.DronePlaceStyle }}}
      */
     dronePlaceStyle() {
       const style = {};
@@ -175,7 +175,7 @@ export default {
     },
     /** @returns {SDWC.Node} */
     selectedNode() {
-      if (this.popover.node < 0) return null;
+      if (!this.popover.node) return null;
       return this.node.find(n => n.info.id === this.popover.node);
     }
   },
@@ -226,7 +226,7 @@ export default {
       this.popover.show = false;
     },
     handleAfterLeave() {
-      this.popover.node = -1;
+      this.popover.node = '';
     },
     handleUpdate() {
       this.$nextTick(() => this.$refs.popover.updatePopper());

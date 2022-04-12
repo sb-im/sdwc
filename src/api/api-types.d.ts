@@ -53,10 +53,15 @@ namespace ApiTypes {
       username: string;
     }
 
-    export interface Point extends BaseEntity {
+    export interface Point {
+      name: string;
+      type: string;
+      params: any;
+      node_id?: string;
     }
 
-    export interface Node extends BaseEntity {
+    export interface Node {
+      id: string;
       name: string;
       points?: Point[];
     }
@@ -64,7 +69,7 @@ namespace ApiTypes {
     export interface Task extends BaseEntity {
       name: string;
       index: number;
-      node_id: number;
+      node_id: string;
       files?: { [key: string]: string };
       extra?: { [key: string]: string };
     }

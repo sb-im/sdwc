@@ -38,10 +38,10 @@ declare namespace SDWC {
     type: string;
     name: string;
     params: any;
-    node_id: number;
+    node_id: string;
   }
   export interface NodeInfo {
-    id: number;
+    id: string;
     name: string;
     points: NodePoint[];
   }
@@ -254,7 +254,7 @@ declare namespace SDWC {
     name: string;
     /** run/jobs count */
     index: number;
-    node_id: number;
+    node_id: string;
     files: {
       waypoint?: string;
       speaker?: string;
@@ -340,7 +340,7 @@ declare namespace SDWC {
     lang: string;
     mapFollow: boolean;
     overviewFit: boolean;
-    notifyNoPopup: number[];
+    notifyNoPopup: string[];
     rpcMsgPopup: boolean;
     planDialogPopup: boolean;
   }
@@ -406,7 +406,7 @@ declare namespace SDWC {
 
   // components/map.vue
   interface MarkerBase {
-    id: number | string;
+    id: string;
     position: { lng: number; lat: number };
     name: string;
   }
