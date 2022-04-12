@@ -1,6 +1,6 @@
 <template>
   <iframe
-    :src="point.name"
+    :src="point.params.url"
     class="monitor-iframe"
     width="100%"
     height="100%"

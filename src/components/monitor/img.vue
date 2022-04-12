@@ -1,5 +1,5 @@
 <template>
-  <img class="monitor-img" :src="point.name" :style="imgStyle" />
+  <img class="monitor-img" :src="point.params.url" :style="imgStyle" />
 </template>
 
 <script>

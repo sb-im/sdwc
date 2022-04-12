@@ -21,7 +21,7 @@ export default {
               isLive: true,
               hasAudio: false,
               hasVideo: true,
-              url: this.point.name
+              url: this.point.params.url
             },
             {
               enableWorker: true,

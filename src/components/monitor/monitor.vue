@@ -86,11 +86,7 @@ export default {
     },
     /** @returns {boolean} */
     streamAvailable() {
-      if (this.status.code !== 0) return false;
-      if (this.point.type === 'livestream_webrtc2') {
-        return true;
-      }
-      return this.point.name !== '';
+      return this.status.code === 0;
     }
   },
   methods: {
