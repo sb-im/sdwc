@@ -38,8 +38,7 @@ export default {
     /** @returns {SDWC.NodePoint} */
     selectedPoint() {
       return this.selectedNode.info.points.find(p =>
-        p.id == this.point ||
-        p.type == this.point ||
+        p.type === this.point ||
         p.type.startsWith(this.point)
       );
     },

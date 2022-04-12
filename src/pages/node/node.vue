@@ -96,8 +96,8 @@ export default {
         points = this.node.info.points;
       }
       return points.map((point, index) => {
-        const { node_id, type } = point;
-        const node = this.nodes.find(n => n.info.id === node_id);
+        const { node_id = '', type } = point;
+        const node = this.nodes.find(n => n.info.id === node_id) ?? this.node;
         const compo = CompoName[type] || '';
         const key = `${node_id}-${type}-${index}`;
         return { node, point, compo, key };

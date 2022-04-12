@@ -107,6 +107,9 @@ export function getNodes() {
         if (!Array.isArray(n.points)) {
           n.points = [];
         }
+        for (const p of n.points) {
+          p.node_id ??= n.id;
+        }
       }
       return nodes;
     });

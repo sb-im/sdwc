@@ -34,7 +34,6 @@ declare namespace SDWC {
 
   // store/modules/node.js
   export interface NodePoint {
-    id: number;
     type: string;
     name: string;
     params: any;
