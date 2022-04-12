@@ -1,7 +1,7 @@
 /* global module */
 module.exports = {
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 'latest'
   },
   extends: [
     'eslint:recommended',

@@ -58,7 +58,7 @@ function nextAnimationFrame() {
 }
 
 /**
- * @param {SDWC.NotificationItem} n
+ * @param {Partial<SDWC.NotificationItem>} n
  * @param {boolean} mod
  */
 async function emitNotification(n, mod = false) {

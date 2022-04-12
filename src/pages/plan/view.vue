@@ -141,7 +141,7 @@ export default {
         title: this.plan.name,
         message: this.$t('plan.view.pending'),
       });
-      cancelTask(this.plan.id, this.runningContent.id).then(() => {
+      cancelTask(this.plan.id).then(() => {
         Object.assign(n.$data, {
           message: this.$t('plan.view.stop_run'),
           type: 'warning',

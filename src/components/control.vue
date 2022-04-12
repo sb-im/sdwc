@@ -30,7 +30,7 @@ import Icon from '@/components/sd-icon.vue';
 
 /**
  * custom control group
- * @type {ControlButtonGroup[]}
+ * @type {SDWC.ControlButtonGroup[]}
  */
 const Controls = [
   {

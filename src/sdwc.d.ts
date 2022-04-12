@@ -192,7 +192,7 @@ declare namespace SDWC {
     [key: string]: string;
   }
   export interface NodeNotification {
-    time: string;
+    time: number;
     /** 0: Emergency, 1: Alert, 2: Critical, 3: Error, 4: Warn, 5: Notice, 6: Info, 7: Debug */
     level: number;
     msg: string;

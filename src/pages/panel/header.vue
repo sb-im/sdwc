@@ -149,7 +149,7 @@ import { NodeStatusClass } from '@/constants/node-status-class';
 import { MutationTypes as PLAN } from '@/store/modules/plan';
 import { MutationTypes as NOTI } from '@/store/modules/notification';
 
-/** @typedef {{ id: number, prefix: string, icon: string, title: string }} NotifyItem */
+/** @typedef {{ id: number|string, prefix: string, icon: string, title: string }} NotifyItem */
 
 export default {
   name: 'sd-header',

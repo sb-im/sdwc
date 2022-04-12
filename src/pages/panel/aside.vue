@@ -133,6 +133,7 @@ export default {
       }
       return running.concat(standby);
     },
+    /** @returns {string} */
     activeIndex() {
       return this.resolveActiveIndex(this.$route);
     },

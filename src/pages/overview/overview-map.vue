@@ -108,6 +108,7 @@ export default {
      * @returns {SDWC.MarkerDrone[]}
      */
     droneMarkers() {
+      /** @type {SDWC.MarkerDrone[]} */
       const markers = [];
       for (let d of this.drones) {
         const position = d.msg.position[0];
@@ -127,6 +128,7 @@ export default {
      * @returns {SDWC.MarkerDepot[]}
      */
     depotMarkers() {
+      /** @type {SDWC.MarkerDepot[]} */
       const markers = [];
       for (const d of this.depots) {
         const { code, status } = d.status;
@@ -148,6 +150,7 @@ export default {
      * @returns {SDWC.MarkerPlace[]}
      */
     placeMarkers() {
+      /** @type {SDWC.MarkerPlace[]} */
       const markers = [];
       for (const d of this.drones) {
         const { position, place } = d.msg;

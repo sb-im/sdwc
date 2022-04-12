@@ -159,6 +159,7 @@ export default {
     },
     /** @return {SDWC.MapPolyline[]} */
     polylines() {
+      /** @type {SDWC.MapPolyline[]} */
       const polylines = [];
       /** @type {{ position: SDWC.NodePosition[], place: SDWC.NodePlaces }} */
       const { position, place } = this.msg;
@@ -191,6 +192,7 @@ export default {
     },
     /** @returns {SDWC.MarkerDrone[]} */
     droneMarkers() {
+      /** @type {SDWC.MarkerDrone[]} */
       const markers = [];
       const nodeId = this.point.node_id;
       for (const d of this.drones) {
@@ -210,6 +212,7 @@ export default {
     },
     /** @returns {SDWC.MarkerDepot[]} */
     depotMarkers() {
+      /** @type {SDWC.MarkerDepot[]} */
       const markers = [];
       const nodeId = this.point.node_id;
       for (const d of this.depots) {
@@ -228,6 +231,7 @@ export default {
     /** @returns {SDWC.MarkerPlace[]} */
     placeMarkers() {
       const { place } = this.msg;
+      /** @type {SDWC.MarkerPlace[]} */
       const markers = [];
       for (const [name, pos] of Object.entries(place)) {
           const style = this.placeStyle[name] || {};

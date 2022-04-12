@@ -75,7 +75,7 @@ export function getProfile(name) {
  * @param {any} obj
  * @returns {Promise<any>}
  */
- export function putProfile(name, obj) {
+export function putProfile(name, obj) {
   return wr.url(`/profiles/${name}`)
     .put(obj)
     .json();
@@ -102,7 +102,7 @@ export function getSidebar() {
 export function getNodes() {
   return wr.url('/nodes')
     .get()
-    .json(nodes => {
+    .json((/** @type {any[]} */ nodes) => {
       for (const n of nodes) {
         if (!Array.isArray(n.points)) {
           n.points = [];

@@ -41,7 +41,7 @@ export default {
     visible: false,
     pending: false,
     form: {
-      target: ''
+      target: -1
     }
   }),
   computed: {
