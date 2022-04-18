@@ -30,6 +30,10 @@
           <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
         </template>
         <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.plan'"></li>
+        <el-menu-item index="plan-list" :route="{ name: 'plan/list' }">
+          <i class="el-icon-notebook-2"></i>
+          <span v-t="'plan.list.list'"></span>
+        </el-menu-item>
         <el-menu-item index="plan-new" :route="{ name: 'plan/new' }">
           <i class="el-icon-plus"></i>
           <span v-t="'plan.edit.add'"></span>
@@ -163,6 +167,7 @@ export default {
             if (route.name == 'node') return `${index}-node-${route.params.id}`;
             break;
           case 'plan':
+            if (route.name === 'plan/list') return 'plan-list';
             if (route.name === 'plan/new') return 'plan-new';
             if (route.name.startsWith('plan')) return `${index}-plan-${route.params.id}`;
             break;

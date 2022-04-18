@@ -51,7 +51,7 @@ export default {
         .catch(e => this.$message.error(this.$t('plan.edit.create_failed', { code: e.status })));
     },
     handleCancel() {
-      this.$router.push({ name: 'overview' });
+      this.$router.push({ name: 'plan/list' });
     },
     handleWaypointChange(wp) {
       this.map = waypointsToMapProps(wp);

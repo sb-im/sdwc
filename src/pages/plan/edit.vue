@@ -60,7 +60,7 @@ export default {
         type: 'warning'
       })
         .then(() => this.deletePlan(this.initial.id))
-        .then(() => this.$router.push({ name: 'panel' }))
+        .then(() => this.$router.push({ name: 'plan/list' }))
         .catch(() => { /* noop */ });
     },
     handleCancel() {

@@ -7,6 +7,7 @@ import Login from './pages/login.vue';
 import Panel from './pages/panel/panel.vue';
 import Overview from './pages/overview/overview.vue';
 import Plan from './pages/plan/plan.vue';
+import PlanList from './pages/plan/list.vue';
 import PlanNew from './pages/plan/new.vue';
 import PlanEdit from './pages/plan/edit.vue';
 import PlanView from './pages/plan/view.vue';
@@ -62,6 +63,11 @@ const routes = [
         name: 'node',
         component: Node,
         props: route => ({ id: route.params.id })
+      },
+      {
+        path: 'plan/list',
+        name: 'plan/list',
+        component: PlanList
       },
       {
         path: 'plan/new',

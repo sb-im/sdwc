@@ -71,6 +71,13 @@ export default {
     node: 'Node',
     files: 'Files',
     extra: 'Extra',
+    list: {
+      list: 'Task List',
+      created: 'Creation Time',
+      state: 'State',
+      running: 'Running',
+      idle: 'Idle'
+    },
     view: {
       title: 'View Plan',
       run: 'Run Plan',

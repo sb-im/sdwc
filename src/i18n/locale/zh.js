@@ -71,6 +71,13 @@ export default {
     node: '执行设备',
     files: '文件列表',
     extra: '附加信息',
+    list: {
+      list: '任务列表',
+      created: '创建时间',
+      state: '执行状态',
+      running: '执行中',
+      idle: '待执行'
+    },
     view: {
       title: '查看任务',
       run: '执行任务',
