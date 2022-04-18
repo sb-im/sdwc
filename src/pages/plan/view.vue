@@ -238,7 +238,11 @@ export default {
   padding: 8px 25px;
 }
 
-.plan__history .el-table__row.is-running > td {
-  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px) !important;
+.plan__history .el-table__row.is-running {
+  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px);
+}
+.plan__history .el-table__row.is-running:hover .el-table__cell,
+.plan__history .el-table__row.is-running.el-table__row--striped .el-table__cell {
+  background-color: transparent;
 }
 </style>
