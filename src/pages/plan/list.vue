@@ -37,12 +37,12 @@
             <span v-t="'plan.list.state'"></span>
           </template>
           <template v-slot="{ row }">
-            <el-tag
-              size="medium"
-              :effect="row.running ? 'dark' : 'plain'"
-              :type="row.running ? '' : 'info'"
-              v-t="`plan.list.${row.running ? 'running' : 'idle'}`"
-            ></el-tag>
+            <el-link v-if="row.running" :underline="false" icon="el-icon-success" type="primary">
+              <span v-t="'plan.list.running'"></span>
+            </el-link>
+            <el-link v-else :underline="false" icon="el-icon-info">
+              <span v-t="'plan.list.idle'"></span>
+            </el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -151,6 +151,11 @@ export default {
 
 .plan-list .el-table__cell {
   padding: 5px 0;
+}
+
+/* make plan state indicator unclickable */
+.plan-list .el-link:not(.is-underline) {
+  pointer-events: none;
 }
 
 .plan-list .el-table__row.is-running {
