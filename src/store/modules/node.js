@@ -100,22 +100,22 @@ const mutations = {
       }
     });
   },
-  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: string, payload: Partial<SDWC.NodeConnectionStatus> }} */ { id, payload }) {
+  [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: string, status: Partial<SDWC.NodeConnectionStatus> }} */ { id, status }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
-    if (payload.status) {
+    if (status.status) {
       for (const k of ['lng', 'lat', 'alt']) {
-        if (typeof payload.status[k] === 'string') {
-          payload.status[k] = Number.parseFloat(payload.status[k]);
+        if (typeof status.status[k] === 'string') {
+          status.status[k] = Number.parseFloat(status.status[k]);
         }
       }
     }
-    Object.assign(node.status, payload);
+    Object.assign(node.status, status);
   },
-  [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: string, payload: SDWC.NodeNetworkStatus }} */ { id, payload }) {
+  [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: string, network: SDWC.NodeNetworkStatus }} */ { id, network }) {
     const node = state.find(node => node.info.id === id);
     if (!node) return;
-    Object.assign(node.network, payload);
+    Object.assign(node.network, network);
   },
   [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: string, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
     const node = state.find(node => node.info.id === id);

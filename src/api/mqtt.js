@@ -206,10 +206,10 @@ export class MqttClient extends EventEmitter2 {
   onNode(topic, str) {
     switch (topic.category) {
       case 'status':
-        this.emit('status', topic.id, JSON.parse(str));
+        this.emit('node:status', { id: topic.id, status: JSON.parse(str) });
         break;
       case 'network':
-        this.emit('network', topic.id, JSON.parse(str));
+        this.emit('node:network', { id: topic.id, network: JSON.parse(str) });
         break;
       case 'rpc':
         switch (topic.param) {
@@ -222,7 +222,7 @@ export class MqttClient extends EventEmitter2 {
         }
         break;
       case 'msg':
-        this.emit('message', topic.id, { [topic.param]: JSON.parse(str) });
+        this.emit('node:message', { id: topic.id, msg: { [topic.param]: JSON.parse(str) } });
         break;
       default:
         MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);

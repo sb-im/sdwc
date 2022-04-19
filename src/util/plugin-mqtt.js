@@ -127,7 +127,7 @@ function registerRpcListener() {
 }
 
 function registerStatusListener() {
-  MqttClient.on('status', (id, { code }) => {
+  MqttClient.on('node:status', ({ id, status: { code } }) => {
     const node = store.state.node.find(node => node.info.id === id);
     if (!node || node.status.code === code) return;
     const now = Date.now();
@@ -143,7 +143,7 @@ function registerStatusListener() {
 }
 
 function registerNotificationListener() {
-  MqttClient.on('message', (id, msg) => {
+  MqttClient.on('node:message', ({ id, msg }) => {
     if (router.currentRoute.meta.suppressNotify) return;
     /** @type {SDWC.NodeNotification} */
     const n = msg.notification;
