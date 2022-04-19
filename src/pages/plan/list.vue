@@ -6,13 +6,7 @@
           <span v-t="'plan.edit.add'"></span>
         </el-button>
       </template>
-      <el-table
-        ref="table"
-        stripe
-        :data="tableData"
-        :height="tableHeight"
-        :row-class-name="getRowClassName"
-      >
+      <el-table stripe :data="tableData" :height="tableHeight" :row-class-name="getRowClassName">
         <el-table-column>
           <template #header>
             <span v-t="'plan.name'"></span>
@@ -71,7 +65,7 @@ export default {
     tableHeight: 500,
   }),
   computed: {
-    /** @returns {SDWC.PlanState} */
+    /** @returns {SDWC.PlanState[]} */
     plans() { return this.$store.state.plan; },
     /** @returns {SDWC.Node[]} */
     nodes() { return this.$store.state.node; },
@@ -79,14 +73,14 @@ export default {
     tableData() {
       /** @type {PlanListItem[]} */
       const result = [];
-      for (const p of this.plans.info) {
+      for (const plan of this.plans) {
         result.push({
-          id: p.id,
-          name: p.name,
-          node_id: p.node_id,
-          node: this.nodes.find(n => n.info.id === p.node_id)?.info.name ?? this.$t('common.none'),
-          created: new Date(p.created_at),
-          running: this.plans.running.find(r => r.id === p.id)?.running !== undefined
+          id: plan.info.id,
+          name: plan.info.name,
+          node_id: plan.info.node_id,
+          node: this.nodes.find(n => n.info.id === plan.info.node_id)?.info.name ?? this.$t('common.none'),
+          created: new Date(plan.info.created_at),
+          running: plan.running !== null
         });
       }
       return result;
@@ -155,7 +149,7 @@ export default {
   margin: 0;
 }
 
-.plan-list  .el-table__cell {
+.plan-list .el-table__cell {
   padding: 5px 0;
 }
 

@@ -9,7 +9,7 @@
     <p class="navigate">
       <span v-t="'plan.dialog.running'"></span>
       <router-link :to="planRoute" v-slot="{ href }">
-        <el-link v-text="planInfo.name" :href="href" @click.native="handleRouteClick"></el-link>
+        <el-link v-text="plan.info.name" :href="href" @click.native="handleRouteClick"></el-link>
       </router-link>
     </p>
     <el-alert
@@ -53,11 +53,11 @@ export default {
     visible: false
   }),
   computed: {
-    /** @returns {SDWC.PlanState} */
+    /** @returns {SDWC.PlanState[]} */
     plans() { return this.$store.state.plan; },
-    /** @returns {SDWC.PlanInfo} */
-    planInfo() {
-      return this.plans.info.find(p => p.id === this.planId);
+    /** @returns {SDWC.PlanState} */
+    plan() {
+      return this.plans.find(p => p.info.id === this.planId);
     },
     /** @returns {import('vue-router').Route} */
     planRoute() {
@@ -65,7 +65,7 @@ export default {
     },
     /** @returns {SDWC.PlanDialogContent} */
     form() {
-      return this.plans.dialog.find(d => d.id === this.planId)?.dialog ?? {};
+      return this.plan?.dialog ?? {};
     },
     /** @returns {string} */
     alertType() {

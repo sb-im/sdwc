@@ -1,8 +1,10 @@
 <template>
   <div class="plan">
+    <!--
     <div class="el-card sd-card term">
-      <sd-status-notify :notification="termOutput" :canPopup="false"></sd-status-notify>
+      <sd-status-notify :notification="plan.term" :canPopup="false"></sd-status-notify>
     </div>
+    -->
     <sd-card icon="doc" title="plan.view.title">
       <template #action>
         <el-button type="primary" size="medium" icon="el-icon-edit" @click="handleEdit">
@@ -21,7 +23,7 @@
           <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
-      <sd-plan-readonly :plan="plan"></sd-plan-readonly>
+      <sd-plan-readonly :plan="plan.info"></sd-plan-readonly>
     </sd-card>
     <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
     <sd-job-file ref="jobFile"></sd-job-file>
@@ -80,9 +82,8 @@ import { waypointsToMapProps } from './common';
 export default {
   name: 'sd-plan-view',
   props: {
-    /** @type {Vue.PropOptions<SDWC.PlanInfo>}*/
-    plan: {
-      type: Object,
+    planId: {
+      type: Number,
       required: true
     }
   },
@@ -93,26 +94,22 @@ export default {
       jobs: [],
       job: {
         loading: false,
-        total: -1,
+        total: null,
         page: 1,
         order: 'descending'
       }
     };
   },
   computed: {
-    /** @returns {SDWC.PlanState} */
+    /** @returns {SDWC.PlanState[]} */
     plans() { return this.$store.state.plan; },
-    /** @returns {SDWC.PlanTermOutput[]} */
-    termOutput() {
-      return this.plans.term.find(t => t.id === this.plan.id)?.output ?? [];
-    },
-    /** @returns {SDWC.RunningTask} */
-    runningContent() {
-      return this.plans.running.find(r => r.id === this.plan.id)?.running ?? null;
+    /** @returns {SDWC.PlanState} */
+    plan() {
+      return this.plans.find(p => p.info.id === this.planId);
     },
     /** @returns {boolean} */
     isRunning() {
-      return this.runningContent !== null;
+      return this.plan.running !== null;
     }
   },
   methods: {
@@ -121,10 +118,10 @@ export default {
       'getPlanWaypoints'
     ]),
     handleEdit() {
-      this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
+      this.$router.push({ name: 'plan/edit', params: { id: this.planId } });
     },
     handleRun() {
-      runTask(this.plan.id)
+      runTask(this.planId)
         .catch(() => { /* noop */ })
         .then(() => this.refreshShownJobs());
     },
@@ -138,10 +135,10 @@ export default {
         offset: 50,
         duration: 0,
         type: 'info',
-        title: this.plan.name,
+        title: this.plan.info.name,
         message: this.$t('plan.view.pending'),
       });
-      cancelTask(this.plan.id).then(() => {
+      cancelTask(this.planId).then(() => {
         Object.assign(n.$data, {
           message: this.$t('plan.view.stop_run'),
           type: 'warning',
@@ -157,12 +154,12 @@ export default {
     },
     async refreshShownJobs() {
       this.job.loading = true;
-      const res = await this.getTaskJobs({ id: this.plan.id, page: this.job.page });
+      const res = await this.getTaskJobs({ id: this.planId, page: this.job.page });
       if (this.isRunning) {
-        this.patchRunningJob(res, this.runningContent.job);
+        this.patchRunningJob(res, this.plan.running.job);
       }
       this.jobs = res;
-      this.job.total = this.plan.index;
+      this.job.total = this.plan.info.index;
       this.job.loading = false;
     },
     /**
@@ -183,7 +180,7 @@ export default {
      */
     getTableRowClass({ row }) {
       if (!this.isRunning) return '';
-      return this.runningContent.job.id === row.id ? 'is-running' : '';
+      return this.plan.running.job.id === row.id ? 'is-running' : '';
     },
     handleSortChange({ order }) {
       this.job.order = order;
@@ -198,13 +195,13 @@ export default {
     }
   },
   created() {
-    this.getPlanWaypoints(this.plan)
+    this.getPlanWaypoints(this.plan.info)
       .then(wp => this.map = waypointsToMapProps(wp))
       .catch(() => { /* noop */ });
     this.refreshShownJobs();
     this._unsub = this.$store.subscribe(({ type, payload }) => {
       if (type === PLAN.SET_PLAN_RUNNING) {
-        if (payload.id === this.plan.id && payload.running.job) {
+        if (payload.id === this.planId && payload.running.job) {
           this.patchRunningJob(this.jobs, payload.running.job);
         }
       }

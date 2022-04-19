@@ -169,8 +169,8 @@ export default {
     node() { return this.$store.state.node; },
     /** @returns {SDWC.NotificationItem[]} */
     notification() { return this.$store.state.notification; },
-    /** @returns {SDWC.PlanState} */
-    plan() { return this.$store.state.plan; },
+    /** @returns {SDWC.PlanState[]} */
+    plans() { return this.$store.state.plan; },
     /** @returns {SDWC.Preference} */
     preference() { return this.$store.state.preference; },
     /** @returns {SDWC.UI} */
@@ -179,13 +179,10 @@ export default {
     user() { return this.$store.state.user; },
     /** @returns {NotifyItem[]} */
     dialog() {
-      const dialog = this.plan.dialog;
-      return dialog.map(d => {
-        /** @type {SDWC.PlanInfo} */
-        const plan = this.plan.info.find(p => p.id === d.id) || {};
-        const prefix = `${plan.name || d.id} · ${this.$d(d.time, 'time')}`;
-        const icon = PlanDialogLevelClass[d.dialog.level] || PlanDialogLevelClass.unknown;
-        return { id: d.id, prefix, icon, title: d.dialog.name };
+      return this.plans.filter(p => p.dialog).map(plan => {
+        const prefix = `${plan.info.name} · ${this.$d(plan.dialog.time, 'time')}`;
+        const icon = PlanDialogLevelClass[plan.dialog.level] || PlanDialogLevelClass.unknown;
+        return { id: plan.info.id, prefix, icon, title: plan.dialog.name };
       });
     },
     /** @returns {NotifyItem[]} */
@@ -292,7 +289,7 @@ export default {
       }
     },
     openPlanDialog(id) {
-      if (this.plan.dialog.findIndex(d => d.id === id) < 0) return;
+      if (this.plans.findIndex(p => p.info.id === id) < 0) return;
       this.planDialog.id = id;
       if (this.$refs.planDialog.visible) return;
       this.$nextTick(() => this.$refs.planDialog.open());
@@ -307,7 +304,7 @@ export default {
      * @param {SDWC.PlanDialogContent} dialog dialog content
      */
     triggerPlanNotify(id, dialog) {
-      const plan = this.plan.info.find(p => p.id === id) || { name: `Plan#${id}` };
+      const plan = this.plans.find(p => p.info.id === id)?.info;
       if (this.planNotify[id]) {
         this.closePlanNotify(id);
       }
@@ -327,8 +324,8 @@ export default {
       const h = this.$createElement;
       n.$slots.default = [
         h('div', null, [
-          h('span', { class: 'status-notify__title' }, [plan.name]),
-          h('span', null, [' · ', this.$d(Date.now(), 'seconds')]),
+          h('span', { class: 'status-notify__title' }, [plan?.name ?? `Plan#${id}`]),
+          h('span', null, [' · ', this.$d(dialog.time, 'seconds')]),
         ]),
         h('i', { class: PlanDialogLevelClass[dialog.level] || PlanDialogLevelClass.unknown }),
         h('span', null, [' ', dialog.name])
@@ -347,7 +344,7 @@ export default {
             this.notifyAlert = true;
           }
           break;
-        case PLAN.ADD_PLAN_MSG:
+        case PLAN.SET_PLAN_DIALOG:
           if (typeof payload.dialog !== 'object') return;
           if (Object.getOwnPropertyNames(payload.dialog).length > 0) {
             // dialog not empty

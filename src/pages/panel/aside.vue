@@ -27,7 +27,7 @@
         <template #title>
           <sd-icon :value="item.icon || 'tasks-blue'"></sd-icon>
           <span v-t="item.name || 'common.plan'"></span>
-          <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
+          <el-badge class="aside__badge" :value="running.size" :hidden="running.size <= 0"></el-badge>
         </template>
         <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.plan'"></li>
         <el-menu-item index="plan-list" :route="{ name: 'plan/list' }">
@@ -43,7 +43,7 @@
           :key="plan.id"
           :index="`${index}-plan-${plan.id}`"
           :route="{ name: 'plan', params: { id: plan.id } }"
-          :class="{ 'is-running': isPlanRunning[plan.id] }"
+          :class="{ 'is-running': running.has(plan.id) }"
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
       <!-- type: node -->
@@ -113,17 +113,18 @@ export default {
     ui() { return this.$store.state.ui; },
     /** @returns {SDWC.Config} */
     config() { return this.$store.state.config; },
-    /** @returns {SDWC.PlanInfo[]} */
-    plans() { return this.$store.state.plan.info; },
-    /** @returns {SDWC.PlanRunning[]} */
-    running() { return this.$store.state.plan.running; },
+    /** @returns {SDWC.PlanState[]} */
+    plans() { return this.$store.state.plan; },
     /** @returns {SDWC.Node[]} */
     nodes() { return this.$store.state.node; },
-    /** @returns {{ [planId: string]: boolean }} */
-    isPlanRunning() {
-      const result = {};
-      for (const r of this.running) {
-        result[r.id] = true;
+    /** @returns {Set<number>} */
+    running() {
+      /** @type {Set<number>} */
+      const result = new Set();
+      for (const p of this.plans) {
+        if (p.running !== null) {
+          result.add(p.info.id);
+        }
       }
       return result;
     },
@@ -132,8 +133,8 @@ export default {
       const running = [];
       const standby = [];
       for (const p of this.plans) {
-        if (this.isPlanRunning[p.id]) running.push(p);
-        else standby.push(p);
+        if (p.running !== null) running.push(p.info);
+        else standby.push(p.info);
       }
       return running.concat(standby);
     },
