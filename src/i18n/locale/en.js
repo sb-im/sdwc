@@ -22,8 +22,6 @@ export default {
     clear: 'Clear',
     none: 'None',
     status: {
-      '-3': 'precheck Failed',
-      '-2': '',
       '-1': 'Not Connected',
       0: 'Normal',
       1: 'Powered Off',

@@ -22,8 +22,6 @@ export default {
     clear: '清空',
     none: '暂无',
     status: {
-      '-3': 'precheck 失败',
-      '-2': '',
       '-1': '未连接',
       0: '正常',
       1: '已关闭',
