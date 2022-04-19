@@ -34,10 +34,6 @@
           <i class="el-icon-notebook-2"></i>
           <span v-t="'plan.list.list'"></span>
         </el-menu-item>
-        <el-menu-item index="plan-new" :route="{ name: 'plan/new' }">
-          <i class="el-icon-plus"></i>
-          <span v-t="'plan.edit.add'"></span>
-        </el-menu-item>
         <el-menu-item
           v-for="plan in orderedPlans"
           :key="plan.id"
@@ -168,9 +164,8 @@ export default {
             if (route.name == 'node') return `${index}-node-${route.params.id}`;
             break;
           case 'plan':
-            if (route.name === 'plan/list') return 'plan-list';
-            if (route.name === 'plan/new') return 'plan-new';
-            if (route.name.startsWith('plan')) return `${index}-plan-${route.params.id}`;
+            if (route.name === 'plan/list' || route.name == 'plan/new') return 'plan-list';
+            if (route.name.startsWith('plan/')) return `${index}-plan-${route.params.id}`;
             break;
           case 'overview':
             if (route.name == 'overview') return `${index}`;
