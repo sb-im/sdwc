@@ -138,7 +138,8 @@ export class MqttClient extends EventEmitter2 {
     [
       `tasks/${id}/term`,
       `tasks/${id}/dialog`,
-      `tasks/${id}/running`
+      `tasks/${id}/running`,
+      `tasks/${id}/notification`
     ].forEach(topic => {
       this.mqtt.subscribe(topic);
     });
@@ -278,13 +279,16 @@ export class MqttClient extends EventEmitter2 {
   onPlan(topic, str) {
     switch (topic.category) {
       case 'term':
-        this.emit('plan', topic.id, str, undefined);
+        this.emit('plan:term', { id: topic.id, output: str });
         break;
       case 'dialog':
-        this.emit('plan', topic.id, null, JSON.parse(str));
+        this.emit('plan:dialog', { id: topic.id, dialog: JSON.parse(str) });
         break;
       case 'running':
-        this.emit('plan_running', topic.id, JSON.parse(str));
+        this.emit('plan:running', { id: topic.id, running: JSON.parse(str) });
+        break;
+      case 'notification':
+        this.emit('plan:notification', { id: topic.id, notification: JSON.parse(str) });
         break;
       default:
         MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);

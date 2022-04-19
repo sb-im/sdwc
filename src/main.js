@@ -108,12 +108,10 @@ MqttClient.on('node:status', arg => store.commit(NODE.SET_NODE_STATUS, arg));
 MqttClient.on('node:network', arg => store.commit(NODE.SET_NODE_NETWORK, arg));
 MqttClient.on('node:message', arg => store.commit(NODE.ADD_NODE_MSG, arg));
 
-MqttClient.on('plan', (id, output, dialog) => {
-  store.commit(PLAN.ADD_PLAN_MSG, { id, output, dialog });
-});
-MqttClient.on('plan_running', (id, running) => {
-  store.commit(PLAN.SET_PLAN_RUNNING, { id, running });
-});
+MqttClient.on('plan:term', arg => store.commit(PLAN.ADD_PLAN_TERM, arg));
+MqttClient.on('plan:dialog', arg => store.commit(PLAN.SET_PLAN_DIALOG, arg));
+MqttClient.on('plan:running', arg => store.commit(PLAN.SET_PLAN_RUNNING, arg));
+MqttClient.on('plan:notification', arg => store.commit(PLAN.ADD_PLAN_NOTIFY, arg));
 
 if (__SDWC_DEV__) {
   // 'DEVELOPMENT' badge
