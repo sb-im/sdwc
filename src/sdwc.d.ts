@@ -266,10 +266,6 @@ declare namespace SDWC {
     };
   }
   // PlanTerm
-  export interface PlanTerm {
-    id: number;
-    output: PlanTermOutput[];
-  }
   export interface PlanTermOutput {
     time: number;
     msg: string;
@@ -281,16 +277,12 @@ declare namespace SDWC {
     level: LevelEnum;
   }
   export interface PlanDialogContent {
+    time: number;
     name?: string;
     message?: string;
     level?: LevelEnum;
     items?: PlanDialogItem[];
     buttons?: PlanDialogItem[];
-  }
-  export interface PlanDialog {
-    id: number;
-    time: number;
-    dialog: PlanDialogContent;
   }
   // PlanStatus
   export interface PlanStatusData {
@@ -307,14 +299,10 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
-  export interface RunningTask extends PlanInfo {
-    /** running task id */
+  export interface RunningTask {
+    files?: { [key: string]: string; };
+    extra?: { [key: string]: string; };
     job: PlanJob;
-  }
-  export interface PlanRunning {
-    /** Plan Id */
-    id: number;
-    running: RunningTask;
   }
   // PlanLog
   export interface PlanLog {
@@ -327,11 +315,17 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  export interface PlanNotification {
+    time: number;
+    level: number;
+    msg: string;
+  }
   export interface PlanState {
-    info: PlanInfo[];
-    term: PlanTerm[];
-    dialog: PlanDialog[];
-    running: PlanRunning[]
+    info: PlanInfo;
+    term: PlanTermOutput[];
+    dialog?: PlanDialogContent;
+    running?: RunningTask;
+    notification: PlanNotification[];
   }
 
   // store/modules/preference.js
@@ -374,7 +368,7 @@ declare namespace SDWC {
     config: Config;
     node: Node[];
     notification: NotificationItem[];
-    plan: PlanState;
+    plan: PlanState[];
     preference: Preference;
     ui: UI;
     user: User;

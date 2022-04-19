@@ -362,8 +362,8 @@ export async function getPlans({ commit }) {
  * @param {Context} context
  */
 export function subscribePlans({ state }) {
-  state.plan.info.forEach(plan => {
-    MqttClient.subscribePlan(plan.id);
+  state.plan.forEach(plan => {
+    MqttClient.subscribePlan(plan.info.id);
   });
 }
 
