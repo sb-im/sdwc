@@ -75,8 +75,8 @@ import { mapActions } from 'vuex';
 
 const PredefinedFileKeys = new Set([
   'waypoint',
-  'speaker',
   'lua',
+  'speaker',
   'droneconfig'
 ]);
 
