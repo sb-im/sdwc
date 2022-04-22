@@ -58,8 +58,11 @@ export default {
       type: ''
     },
     charge: {
+      /** @type {{ set_voltage: number; set_current: number }} */
       info: { /* set_voltage: 5.5, set_current: 3.5 */ },
+      /** @type {{ timestamp: number; intervalsl: number }} */
       history_info: { /* timestamp: 1582975681, intervalsl: 30 */ },
+      /** @type {{ V: number; A: number }[]} */
       history: [/* { V: 1.7, A: 0.4 } */]
     }
   }),
@@ -154,7 +157,7 @@ export default {
       const datum = this.popover.type === 'voltage' ? (h => h.V)
         : this.popover.type === 'current' ? (h => h.A)
           : (h => h.V * h.A);
-      /** @type {Chartist.IChartistData} */
+      /** @type {Chartist.IChartistData & { series: { x: number; y: number }[][] }} */
       const data = { series: [[]] };
       for (let i = this.charge.history.length - 1; i >= 0; i--) {
         const h = this.charge.history[i];

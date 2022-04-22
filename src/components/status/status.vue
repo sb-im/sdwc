@@ -43,7 +43,7 @@ export default {
       required: true
     },
     nodeId: {
-      type: Number,
+      type: [Number, String],
       required: true
     },
     statusCode: {
