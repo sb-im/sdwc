@@ -118,6 +118,11 @@ export default {
       type: Boolean,
       default: false
     },
+    /** @type {Vue.PropOptions<'path'|'markers'|'all'>} */
+    fitType: {
+      type: String,
+      default: 'path'
+    },
     fitPadding: {
       type: Number,
       default: 40,
@@ -280,7 +285,7 @@ export default {
         }
       }
       if (this.fit) {
-        this.fitPath();
+        this.autoFit();
       } else if (this.follow && !this.popoverShown) {
         this.followPath();
       }
@@ -356,10 +361,7 @@ export default {
         }
       }
       if (this.fit && !this.popoverShown) {
-        // fit to markers if no path persent
-        this.fitPath().then(success => {
-          if (!success) this.fitMarkers();
-        });
+        this.autoFit();
       }
     },
     async drawHeatmap() {
@@ -410,26 +412,64 @@ export default {
       this.map.setCenter(path.coordinates[0]);
       return true;
     },
-    async fitPath(duration = 500) {
+    /** @returns {Promise<mapboxgl.LngLatBounds>} */
+    async getPathBounds() {
       const path = this.polylines.find(l => l.name === 'path');
-      if (!path || !path.coordinates) return false;
+      if (!path || !path.coordinates) return;
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
       for (const { lng, lat } of path.coordinates) {
         bounds.extend(new LngLat(lng, lat));
       }
-      this.map.fitBounds(bounds, { padding: this.fitPadding, linear: true, duration });
-      return true;
+      return bounds;
     },
-    async fitMarkers() {
-      if (this.markers.length <=  0) return false;
+    /** @returns {Promise<mapboxgl.LngLatBounds>} */
+    async getMarkersBounds() {
+      if (this.markers.length <= 0) return;
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
       for (const { position: { lng, lat } } of this.markers) {
         bounds.extend(new LngLat(lng, lat));
       }
-      this.map.fitBounds(bounds, { padding: this.fitPadding, linear: true });
-      return true;
+      return bounds;
+    },
+    /**
+     * @param {mapboxgl.LngLatBounds | mapboxgl.LngLatBounds[]} bounds
+     * @param {number} duration
+     */
+    async fitBounds(bounds, duration = 500) {
+      if (!Array.isArray(bounds)) {
+        this.map.fitBounds(bounds, { padding: this.fitPadding, linear: true, duration });
+        return;
+      }
+      const { LngLatBounds } = await loadMapbox();
+      const outerBounds = new LngLatBounds();
+      bounds.forEach(b => outerBounds.extend(b));
+      this.map.fitBounds(outerBounds, { padding: this.fitPadding, linear: true, duration });
+    },
+    async autoFit() {
+      switch (this.fitType) {
+        case 'path': {
+          const bounds = await this.getPathBounds();
+          if (bounds) this.fitBounds(bounds);
+          break;
+        }
+        case 'markers': {
+          const bounds = await this.getMarkersBounds();
+          if (bounds) this.fitBounds(bounds);
+          break;
+        }
+        case 'all': {
+          /** @type {mapboxgl.LngLatBounds[]} */
+          const bounds = [];
+          const pathBounds = await this.getPathBounds();
+          if (pathBounds) bounds.push(pathBounds);
+          const markersBounds = await this.getMarkersBounds();
+          if (markersBounds) bounds.push(markersBounds);
+          this.fitBounds(bounds);
+          break;
+        }
+      }
     }
   },
   watch: {
@@ -451,9 +491,7 @@ export default {
     },
     fit(val) {
       if (!this.mapInitialized || !val) return;
-      this.fitPath().then(success => {
-        if (!success) this.fitMarkers();
-      });
+      this.autoFit();
     },
     follow(val) {
       if (!this.mapInitialized || !val) return;
@@ -487,7 +525,7 @@ export default {
         this.drawBoundary();
       }
       if (this.polylines.length > 0) {
-        this.drawNamedPolylines().then(() => this.fitPath(0));
+        this.drawNamedPolylines();
       }
       if (this.markers.length > 0) {
         this.drawNamedMarkers();

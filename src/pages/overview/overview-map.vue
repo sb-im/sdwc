@@ -6,6 +6,7 @@
     :polylines="polylines"
     :markers="markers"
     :fit="fit"
+    fitType="markers"
     :fitPadding="200"
     @map-move="handleMove"
     @map-change="handleClose"
@@ -52,7 +53,6 @@ export default {
   name: 'sd-overview-map',
   data() {
     return {
-      type: '',
       fit: true,
       popover: {
         show: false,
@@ -239,7 +239,6 @@ export default {
     }
   },
   created() {
-    this.type = this.preference.mapType;
     this.fit = this.preference.overviewFit;
   },
   components: {

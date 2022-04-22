@@ -25,7 +25,7 @@
       </template>
       <sd-plan-readonly :plan="plan.info"></sd-plan-readonly>
     </sd-card>
-    <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
+    <sd-map icon="map-waypoint" title="map.waypoint" fit fitType="all" v-bind="map"></sd-map>
     <sd-job-file ref="jobFile"></sd-job-file>
     <sd-card class="plan__history" icon="paper-busy" title="plan.view.history" dense>
       <el-table
