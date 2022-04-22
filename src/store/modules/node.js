@@ -27,11 +27,11 @@ const mutations = {
         msg: '',
         status: {
           link_id: -1,
-          lat: '',
-          lng: '',
-          alt: ''
-        },
-        timestamp: ''
+          lat: null,
+          lng: null,
+          alt: null,
+          type: null
+        }
       },
       network: {
         loss: -1,

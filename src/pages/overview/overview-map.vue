@@ -137,10 +137,7 @@ export default {
             type: 'depot',
             id: d.info.id,
             name: d.info.name,
-            position: {
-              lng: +status.lng,
-              lat: +status.lat,
-            }
+            position: { lng: status.lng, lat: status.lat }
           });
         }
       }

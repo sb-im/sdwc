@@ -49,12 +49,11 @@ declare namespace SDWC {
     msg: string | 'online' | 'offline' | 'neterror';
     status: {
       link_id: number;
-      lat: string;
-      lng: string;
-      alt: string;
+      lat?: number;
+      lng?: number;
+      alt?: number;
       type?: 'drone' | 'depot';
     };
-    timestamp: string;
   }
   export interface NodeNetworkStatus {
     /** (0 ~ 100)% */
