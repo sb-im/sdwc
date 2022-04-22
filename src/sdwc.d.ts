@@ -403,6 +403,7 @@ declare namespace SDWC {
     id: string;
     position: { lng: number; lat: number };
     name: string;
+    type: string;
   }
   export interface MarkerAction extends MarkerBase {
     type: 'action';

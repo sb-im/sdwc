@@ -89,7 +89,14 @@ export default {
   },
   data() {
     return {
-      map: {},
+      map: {
+        /** @type {SDWC.LatLng[]} */
+        boundary: [],
+        /** @type {SDWC.MapPolyline[]} */
+        polylines: [],
+        /** @type {SDWC.MarkerBase[]} */
+        markers: []
+      },
       /** @type {SDWC.PlanJob[]} */
       jobs: [],
       job: {
@@ -101,6 +108,8 @@ export default {
     };
   },
   computed: {
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
     /** @returns {SDWC.PlanState[]} */
     plans() { return this.$store.state.plan; },
     /** @returns {SDWC.PlanState} */
@@ -110,6 +119,15 @@ export default {
     /** @returns {boolean} */
     isRunning() {
       return this.plan.running !== null;
+    },
+    /** @returns {SDWC.MarkerDepot[]} */
+    depotMarker() {
+      return this.depots.filter(d => d.info.id === this.plan.info.node_id).map(d => ({
+        type: 'depot',
+        id: d.info.id,
+        name: d.info.name,
+        position: { lng: d.status.status.lng, lat: d.status.status.lat }
+      }));
     }
   },
   methods: {
@@ -151,6 +169,14 @@ export default {
           type: 'error'
         });
       });
+    },
+    async refreshPlanWaypoints() {
+      try {
+        const wp = await this.getPlanWaypoints(this.plan.info);
+        const map = waypointsToMapProps(wp);
+        map.markers.push(...this.depotMarker);
+        this.map = map;
+      } catch (e) { /* ignore */ }
     },
     async refreshShownJobs() {
       this.job.loading = true;
@@ -194,10 +220,16 @@ export default {
       return this.$d(new Date(cellValue), 'long');
     }
   },
+  watch: {
+    // sometimes waypoints loaded before node info (eg. page refresh)
+    // append depot marker if there's none
+    depotMarker(val) {
+      if (this.map.markers.findIndex(m => m.type === 'depot') >= 0) return;
+      this.map.markers.push(...val);
+    }
+  },
   created() {
-    this.getPlanWaypoints(this.plan.info)
-      .then(wp => this.map = waypointsToMapProps(wp))
-      .catch(() => { /* noop */ });
+    this.refreshPlanWaypoints();
     this.refreshShownJobs();
     this._unsub = this.$store.subscribe(({ type, payload }) => {
       if (type === PLAN.SET_PLAN_RUNNING) {
