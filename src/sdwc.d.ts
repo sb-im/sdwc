@@ -264,6 +264,8 @@ declare namespace SDWC {
     extra: {
       [key: string]: string;
     };
+    created_at: string;
+    updated_at: string;
   }
   // PlanTerm
   export interface PlanTermOutput {

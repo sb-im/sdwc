@@ -6,7 +6,13 @@
           <span v-t="'plan.edit.add'"></span>
         </el-button>
       </template>
-      <el-table stripe :data="tableData" :height="tableHeight" :row-class-name="getRowClassName">
+      <el-table
+        stripe
+        :data="tableData"
+        :height="tableHeight"
+        :default-sort="{ prop: 'updated', order: 'descending' }"
+        :row-class-name="getRowClassName"
+      >
         <el-table-column>
           <template #header>
             <span v-t="'plan.name'"></span>
@@ -27,9 +33,9 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="created" :formatter="dateFormatter" sortable>
+        <el-table-column prop="updated" :formatter="dateFormatter" sortable>
           <template #header>
-            <span v-t="'plan.list.created'"></span>
+            <span v-t="'plan.list.updated'"></span>
           </template>
         </el-table-column>
         <el-table-column width="120px" sortable :sort-method="sortByRunning">
@@ -115,7 +121,7 @@ export default {
      * @param {any} column
      */
     dateFormatter(row) {
-      return this.$d(row.created, 'long');
+      return this.$d(row.updated, 'long');
     },
     /**
      * @param {PlanListItem} a

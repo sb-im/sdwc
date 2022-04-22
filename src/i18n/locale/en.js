@@ -71,7 +71,7 @@ export default {
     extra: 'Extra',
     list: {
       list: 'Task List',
-      created: 'Creation Time',
+      updated: 'Update Time',
       state: 'State',
       running: 'Running',
       idle: 'Idle'

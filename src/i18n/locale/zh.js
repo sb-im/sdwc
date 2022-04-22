@@ -71,7 +71,7 @@ export default {
     extra: '附加信息',
     list: {
       list: '任务列表',
-      created: '创建时间',
+      updated: '更新时间',
       state: '执行状态',
       running: '执行中',
       idle: '待执行'
