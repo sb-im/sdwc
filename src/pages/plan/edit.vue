@@ -39,7 +39,14 @@ export default {
   data() {
     return {
       plan: Object.assign({}, this.initial),
-      map: {}
+      map: {
+        /** @type {SDWC.LatLng[]} */
+        boundary: [],
+        /** @type {SDWC.MapPolyline[]} */
+        polylines: [],
+        /** @type {SDWC.MarkerBase[]} */
+        markers: []
+      }
     };
   },
   methods: {

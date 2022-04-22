@@ -30,14 +30,21 @@ export default {
   name: 'sd-plan-new',
   data() {
     return {
-      /** @type {SDWC.PlanInfo} */
+      /** @type {Partial<SDWC.PlanInfo>} */
       initial: {
         name: '',
         node_id: null,
         files: { waypoint: '' },
         extra: {}
       },
-      map: {}
+      map: {
+        /** @type {SDWC.LatLng[]} */
+        boundary: [],
+        /** @type {SDWC.MapPolyline[]} */
+        polylines: [],
+        /** @type {SDWC.MarkerBase[]} */
+        markers: []
+      }
     };
   },
   methods: {
