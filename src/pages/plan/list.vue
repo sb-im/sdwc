@@ -17,7 +17,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column :filters="nodeFilters" :filter-method="handleFilterByNode">
+        <el-table-column :filters="depotsFilter" :filter-method="handleFilterByNode">
           <template #header>
             <span v-t="'plan.node'"></span>
           </template>
@@ -56,7 +56,7 @@ import throttle from 'lodash/throttle';
 import Card from '@/components/card.vue';
 
 /**
- * @typedef {{ id: number, name: string, node: string, node_id: string, created: Date, running: boolean }} PlanListItem
+ * @typedef {{ id: number, name: string, node: string, node_id: string, updated: Date, running: boolean }} PlanListItem
  */
 
 export default {
@@ -68,7 +68,7 @@ export default {
     /** @returns {SDWC.PlanState[]} */
     plans() { return this.$store.state.plan; },
     /** @returns {SDWC.Node[]} */
-    nodes() { return this.$store.state.node; },
+    depots() { return this.$store.getters.depots; },
     /** @returns {PlanListItem[]} */
     tableData() {
       /** @type {PlanListItem[]} */
@@ -78,16 +78,16 @@ export default {
           id: plan.info.id,
           name: plan.info.name,
           node_id: plan.info.node_id,
-          node: this.nodes.find(n => n.info.id === plan.info.node_id)?.info.name ?? this.$t('common.none'),
-          created: new Date(plan.info.created_at),
+          node: this.depots.find(n => n.info.id === plan.info.node_id)?.info.name ?? this.$t('common.none'),
+          updated: new Date(plan.info.updated_at),
           running: plan.running !== null
         });
       }
       return result;
     },
     /** @returns {{ text: string, value: string }[]} */
-    nodeFilters() {
-      return this.nodes.map(n => ({ text: n.info.name, value: n.info.id }));
+    depotsFilter() {
+      return this.depots.map(n => ({ text: n.info.name, value: n.info.id }));
     }
   },
   methods: {

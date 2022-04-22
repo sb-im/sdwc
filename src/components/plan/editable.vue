@@ -7,7 +7,7 @@
     <el-form-item>
       <span slot="label" v-t="'plan.node'"></span>
       <el-select v-model="plan.node_id" :placeholder="$t('plan.edit.node_inp')">
-        <el-option v-for="n in nodes" :key="n.info.id" :label="n.info.name" :value="n.info.id"></el-option>
+        <el-option v-for="n in depots" :key="n.info.id" :label="n.info.name" :value="n.info.id"></el-option>
       </el-select>
     </el-form-item>
     <el-form-item>
@@ -45,7 +45,7 @@ export default {
   },
   computed: {
     /** @returns {SDWC.Node[]} */
-    nodes() { return this.$store.state.node; }
+    depots() { return this.$store.getters.depots; }
   },
   methods: {
     getPlan() {
