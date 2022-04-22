@@ -1,10 +1,10 @@
 // @ts-check
 
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter } from 'eventemitter3';
 
 import { trace } from './webrtc-client';
 
-export class WebRTC4Client extends EventEmitter2 {
+export class WebRTC4Client extends EventEmitter {
   /**
    * @param {string | RTCIceServer[]} iceServer
    * @param {string} signalURL

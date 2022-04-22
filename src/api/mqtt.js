@@ -1,11 +1,11 @@
 // @ts-check
 
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter } from 'eventemitter3';
 
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
 
-export class MqttClient extends EventEmitter2 {
+export class MqttClient extends EventEmitter {
   constructor() {
     super();
     this.lastPing = -1;

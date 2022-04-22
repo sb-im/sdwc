@@ -24,7 +24,7 @@
     "chartist-plugin-tooltips": "^0.0.17",
     "coordtransform": "^2.1.2",
     "element-ui": "^2.15.8",
-    "eventemitter2": "^6.4.5",
+    "eventemitter3": "^4.0.7",
     "fetch-jsonp": "^1.2.1",
     "flv.js": "^1.6.2",
     "hls.js": "^1.1.3",
