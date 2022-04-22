@@ -493,7 +493,7 @@ declare namespace SDWC {
   // MqttClient
   export interface MqttTopicInfo {
     entity: 'nodes' | 'plans' | string;
-    id: number;
+    id: string;
     category: string;
     param: string;
   }

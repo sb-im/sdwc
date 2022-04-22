@@ -39,7 +39,7 @@ export class MqttClient extends EventEmitter2 {
     const parts = topic.split('/');
     const result = {
       entity: parts[0],
-      id: Number.parseInt(parts[1], 10),
+      id: parts[1],
       category: parts[2],
       param: parts[3]
     };
@@ -117,7 +117,7 @@ export class MqttClient extends EventEmitter2 {
 
   /**
    * subscirbe `/nodes/:id/{rpc/{send,recv},message,status}`
-   * @param {number|string} id node id
+   * @param {string} id node id
    */
   subscribeNode(id) {
     [
@@ -132,7 +132,7 @@ export class MqttClient extends EventEmitter2 {
 
   /**
    * subscirbe `/tasks/:id/{term,dialog,running}`
-   * @param {number|string} id plan id
+   * @param {number} id plan id
    */
   subscribePlan(id) {
     [
@@ -232,7 +232,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {number} id
+   * @param {string} id
    * @param {string} str
    */
   onNodeRpcSend(id, str) {
@@ -247,7 +247,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {number} id
+   * @param {string} id
    * @param {string} str
    */
   onNodeRpcRecv(id, str) {
@@ -277,18 +277,19 @@ export class MqttClient extends EventEmitter2 {
    * @param {string} str
    */
   onPlan(topic, str) {
+    const id = Number.parseInt(topic.id, 10);
     switch (topic.category) {
       case 'term':
-        this.emit('plan:term', { id: topic.id, output: str });
+        this.emit('plan:term', { id, output: str });
         break;
       case 'dialog':
-        this.emit('plan:dialog', { id: topic.id, dialog: JSON.parse(str) });
+        this.emit('plan:dialog', { id, dialog: JSON.parse(str) });
         break;
       case 'running':
-        this.emit('plan:running', { id: topic.id, running: JSON.parse(str) });
+        this.emit('plan:running', { id, running: JSON.parse(str) });
         break;
       case 'notification':
-        this.emit('plan:notification', { id: topic.id, notification: JSON.parse(str) });
+        this.emit('plan:notification', { id, notification: JSON.parse(str) });
         break;
       default:
         MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);
