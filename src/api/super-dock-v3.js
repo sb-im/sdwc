@@ -121,7 +121,7 @@ export function getNodes() {
 export function getTasks() {
   return wr.url('/tasks')
     .get()
-    .json();
+    .json(tasks => tasks.sort((a, b) => a.name.localeCompare(b.name)));
 }
 
 /**
