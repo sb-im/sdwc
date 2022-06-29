@@ -408,8 +408,8 @@ export async function deletePlan({ commit }, id) {
 export async function getPlanWaypoints(_, plan) {
   const blobId = plan.files.waypoint;
   if (!blobId) throw new Error('no waypoint in plan');
-  const text = await SuperDockV3.getBlob(blobId).then(r => r.text());
-  return parseWaypoints(text);
+  const buf = await SuperDockV3.getBlob(blobId).then(r => r.arrayBuffer());
+  return parseWaypoints(buf);
 }
 
 /**

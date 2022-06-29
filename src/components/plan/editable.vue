@@ -53,10 +53,10 @@ export default {
     },
     handleWaypointChange(file) {
       const reader = new FileReader();
-      reader.onload = e => {
-        this.$emit('waypoint-change', parseWaypoints(e.target.result));
+      reader.onload = async e => {
+        this.$emit('waypoint-change', await parseWaypoints(e.target.result));
       };
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     },
   },
   components: {

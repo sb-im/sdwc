@@ -266,8 +266,8 @@ export default {
       const waypoints = [];
       for (const url of Object.values(this.msg.waypoint)) {
         const wp = await fetch(url)
-          .then(res =>res.text())
-          .then(text => parseWaypoints(text));
+          .then(res =>res.arrayBuffer())
+          .then(buf => parseWaypoints(buf));
         const i = waypoints.length;
         wp.actions.forEach(a => a.id = `wp${i}_${a.id}`);
         waypoints.push({
