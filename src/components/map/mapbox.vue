@@ -214,7 +214,7 @@ export default {
     async drawBoundary() {
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      if (!map || this.boundary.length <= 0) return;
+      if (!map) return;
       const lnglats = this.boundary.map(p => [p.lng, p.lat]);
       /** @type {GeoJSON.Polygon} */
       const boundaryData = { type: 'Polygon', coordinates: [lnglats] };
