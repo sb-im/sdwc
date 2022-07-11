@@ -45,3 +45,17 @@ build docker:
     - docker push ${CONTAINER_IMAGE}:${CI_COMMIT_SHORT_SHA}
     - docker push ${CONTAINER_IMAGE}:latest
 
+build-docker-customregistry:
+  image: docker:20.10.5
+  stage: artifact
+  services:
+    - docker:20.10.5-dind
+  before_script:
+    - docker login -u $CI_CUSTOMREGISTRY_USER -p $CI_CUSTOMREGISTRY_PASS $CI_CUSTOMREGISTRY_IMAGEBASE
+  variables:
+    CONTAINER_REGISTRY_IMAGE: $CI_CUSTOMREGISTRY_IMAGEBASE/sbim/sdwc
+  script:
+    - docker pull $CONTAINER_RELEASE_IMAGE:latest || true
+    - docker build --cache-from $CONTAINER_REGISTRY_IMAGE:latest --tag $CONTAINER_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA --tag $CONTAINER_REGISTRY_IMAGE:latest .
+    - docker push $CONTAINER_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $CONTAINER_REGISTRY_IMAGE:latest
