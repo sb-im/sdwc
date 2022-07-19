@@ -266,7 +266,7 @@ export default {
         }
       } else if (typeof cmd.lang === 'string') {
         this.setPreference(cmd);
-      } else if (typeof cmd.node === 'number') {
+      } else if (typeof cmd.node === 'string') {
         this.$router.push({ name: 'node', params: { id: cmd.node } }).catch(() => { /* noop */ });
       } else if (typeof cmd.notify === 'string') {
         switch (cmd.notify) {
