@@ -19,6 +19,7 @@
           </template>
           <template v-slot="{ row }">
             <router-link :to="{ name: 'plan/view', params: { id: row.id } }" v-slot="{ href }">
+              <!-- eslint-disable vue/no-v-text-v-html-on-component -->
               <el-link v-text="row.name" :href="href"></el-link>
             </router-link>
           </template>

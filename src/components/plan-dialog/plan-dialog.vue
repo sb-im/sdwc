@@ -9,6 +9,7 @@
     <p class="navigate">
       <span v-t="'plan.dialog.running'"></span>
       <router-link :to="planRoute" v-slot="{ href }">
+        <!-- eslint-disable vue/no-v-text-v-html-on-component -->
         <el-link v-text="plan.info.name" :href="href" @click.native="handleRouteClick"></el-link>
       </router-link>
     </p>
