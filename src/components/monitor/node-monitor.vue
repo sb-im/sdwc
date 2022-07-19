@@ -73,6 +73,7 @@
     <template>
       <div class="monitor__overlay">
         <svg class="monitor__svg" :view-box.camel="overlaySVG.viewBox">
+          <!-- eslint-disable vue/no-v-text-v-html-on-component -->
           <component
             v-for="(shape, index) of overlaySVG.elements"
             :key="index"
@@ -107,6 +108,7 @@
               v-model="gimbal.pitch"
               :min="point.params.control.gimbal.pitch[0]"
               :max="point.params.control.gimbal.pitch[1]"
+              :marks="{ [msg.gimbal.pitch]: `${msg.gimbal.pitch}` }"
               @change="handleGimbalCtl({ pitch: $event })"
               height="135px"
             />
@@ -117,6 +119,7 @@
               v-model="gimbal.yaw"
               :min="point.params.control.gimbal.yaw[0]"
               :max="point.params.control.gimbal.yaw[1]"
+              :marks="{ [msg.gimbal.yaw]: `${msg.gimbal.yaw}` }"
               @change="handleGimbalCtl({ yaw: $event })"
               style="width:180px"
             />
@@ -135,6 +138,7 @@
             :min="point.params.control.zoom.zoom[0]"
             :max="point.params.control.zoom.zoom[1]"
             :step="0.1"
+            :marks="{ [msg.gimbal.zoom]: `${msg.gimbal.zoom}` }"
             @change="handleGimbalZoom"
             height="135px"
           />
@@ -783,7 +787,6 @@ export default {
     }
   },
   created() {
-    // TODO: sync values between msg.gimbal and $data.gimbal
     this.gimbal = { ...this.msg.gimbal };
     this._canvas = new OffscreenCanvas(500, 100);
     this._ctx2d = this._canvas.getContext('2d');
@@ -847,11 +850,22 @@ export default {
 .monitor-drone-control__target.double {
   background-color: #409effb2;
 }
-.monitor-drone-control--vertical {
-  float: right;
-}
+.monitor-drone-control--vertical,
 .monitor-drone-control--horizontal {
   float: right;
+}
+.monitor-drone-control .el-slider__marks-text {
+  font-size: 12px;
+  color: white;
+  text-shadow: 0 0 6px black;
+}
+.monitor-drone-control--vertical .el-slider.is-vertical .el-slider__marks-text {
+  left: -30px;
+  width: 20px;
+  text-align: right;
+}
+.monitor-drone-control .el-slider__stop {
+  background-color: #E6A23C;
 }
 .monitor-drone-control--bottom {
   position: absolute;
@@ -890,6 +904,7 @@ export default {
   height: 30px !important;
   margin: -15px 0 0 -15px !important;
 }
+/* safari workarounds */
 .sd--safari .monitor--full .monitor-drone-control {
   top: 18px;
   right: 4px;
