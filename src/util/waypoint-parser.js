@@ -1,4 +1,4 @@
-import JSZip from 'jszip';
+import UZIP from 'uzip';
 import Papaparse from 'papaparse';
 
 const sharedDOMParser = new DOMParser();
@@ -153,11 +153,10 @@ export async function parseKMZ(buf) {
   /** @type {SDWC.MarkerAction[]} */
   const actions = [];
   // load zip file
-  const zip = new JSZip();
-  await zip.loadAsync(buf);
+  const zip = UZIP.parse(buf);
   // read template
-  const template = zip.file('wpmz/template.kml');
-  const templateStr = await template.async('string');
+  const template = zip['wpmz/template.kml'];
+  const templateStr = sharedTextDecoder.decode(template);
   const kml = sharedDOMParser.parseFromString(templateStr, 'text/xml');
   const kmlFolder = kml.querySelector('Document>Folder');
   const templateType = kmlFolder.getElementsByTagName('wpml:templateType')[0].textContent;
@@ -172,8 +171,8 @@ export async function parseKMZ(buf) {
       });
   }
   // read waypoint and actions
-  const waylines = zip.file('wpmz/waylines.wpml');
-  const waylineStr = await waylines.async('string');
+  const waylines = zip['wpmz/waylines.wpml'];
+  const waylineStr = sharedTextDecoder.decode(waylines);
   const xml = sharedDOMParser.parseFromString(waylineStr, 'text/xml');
   const placemarks = xml.querySelectorAll('Document>Folder>Placemark');
   const placemarkArray = Array.from(placemarks).sort((a, b) => {
