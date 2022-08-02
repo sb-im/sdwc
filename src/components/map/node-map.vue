@@ -199,13 +199,27 @@ export default {
         if (d.info.id === nodeId && d.status.code === 0) {
           const position = d.msg.position[0];
           if (typeof position !== 'object') continue;
-          markers.push({
+          /** @type {SDWC.MarkerDrone} */
+          const droneMarker = {
             type: 'drone',
             id: d.info.id,
             name: d.info.name,
             position: { lng: position.lng, lat: position.lat },
             heading: position.heading
-          });
+          };
+          if (d.info.points.findIndex(p => p.type.startsWith('livestream_')) >= 0) {
+            // monitor available, draw gimbal pitch and yaw
+            const gimbalMarker = Object.assign({}, droneMarker, {
+              type: 'drone_gimbal',
+              id: `${d.info.id}_gimbal`,
+              name: `${d.info.name}_gimbal`,
+              yaw: d.msg.gimbal.yaw,
+              pitch: d.msg.gimbal.pitch
+            });
+            markers.push(gimbalMarker, droneMarker);
+          } else {
+            markers.push(droneMarker);
+          }
         }
       }
       return markers;

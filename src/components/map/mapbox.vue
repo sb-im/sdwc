@@ -78,10 +78,28 @@ function createDroneElement(label = '', color = '#ea4335') {
       hs('path', {
         fill: color,
         stroke: '#fff',
-        d: 'M17 1L5 32.5 17 27l12 5.5z'
+        d: 'M17 1l-12 31.5 12 -5.5 12 5.5z'
       })
     ]),
     label ? h('div', { class: 'mapbox-marker__label', style: `background:${color}` }, label) : null
+  ]);
+}
+
+function createDroneGimbalElement(color = '#d9c626') {
+  return h('div', { class: 'mapbox-marker mapbox-marker--gimbal', style: 'width:60px;height:72px' }, [
+    hs('svg', { width: 60, height: 72 }, [
+      hs('defs', null, [
+        hs('linearGradient', { id: 'lG', gradientTransform: 'rotate(90)' }, [
+          hs('stop', { offset: '0%', 'stop-color': '#00000000' }),
+          hs('stop', { offset: '80%', 'stop-color': color })
+        ])
+      ]),
+      hs('path', {
+        fill: 'url(#lG)',
+        d: 'M30 20l20 -20 -40 0z',
+        'transform-origin': '30px 20px'
+      })
+    ])
   ]);
 }
 
@@ -312,6 +330,12 @@ export default {
           mapMarker.setLngLat(lnglat);
           if (marker.type === 'drone') {
             mapMarker.getElement().querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
+          } else if (marker.type === 'drone_gimbal') {
+            const element = mapMarker.getElement();
+            const svg = element.querySelector('svg');
+            svg.style.transform = `rotate(${marker.heading}deg)`;
+            const path = svg.querySelector('path');
+            path.style.transform = `rotate(${marker.yaw}deg) scaleY(${1 - 0.6 * (marker.pitch / 90)})`;
           } else if (marker.type === 'depot') {
             const labelElm = mapMarker.getElement().getElementsByClassName('mapbox-marker__label')[0];
             if (labelElm.textContet !== marker.name) {
@@ -328,6 +352,15 @@ export default {
           if (marker.type === 'drone') {
             const element = createDroneElement(marker.name);
             element.querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
+            mapMarker = new Marker({ element })
+              .setLngLat(lnglat)
+              .addTo(map);
+          } else if (marker.type === 'drone_gimbal') {
+            const element = createDroneGimbalElement();
+            const svg = element.querySelector('svg');
+            svg.style.transform = `rotate(${marker.heading}deg)`;
+            const path = svg.querySelector('path');
+            path.style.transform = `rotate(${marker.yaw}deg) scaleY(${1 - 0.6 * (marker.pitch / 90)})`;
             mapMarker = new Marker({ element })
               .setLngLat(lnglat)
               .addTo(map);
@@ -576,6 +609,9 @@ export default {
 }
 .mapbox-marker--drone {
   z-index: 1;
+}
+.mapbox-marker--gimbal {
+  pointer-events: none;
 }
 .mapbox-marker__label {
   position: absolute;

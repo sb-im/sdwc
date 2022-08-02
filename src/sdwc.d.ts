@@ -416,11 +416,16 @@ declare namespace SDWC {
     type: 'drone';
     heading: number;
   }
+  export interface MarkerDroneGimbal extends MarkerDrone {
+    type: 'drone_gimbal';
+    pitch: number;
+    yaw: number;
+  }
   export interface MarkerPlace extends MarkerBase {
     type: 'place';
     style: DronePlaceStyle;
   }
-  export type Marker = MarkerAction | MarkerDepot | MarkerDrone | MarkerPlace;
+  export type Marker = MarkerAction | MarkerDepot | MarkerDrone | MarkerDroneGimbal | MarkerPlace;
   export type DroneMapControlParamDescriptor = {
     type: 'string';
     required?: boolean;
