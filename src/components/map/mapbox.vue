@@ -90,7 +90,7 @@ function createDroneGimbalElement(color = '#d9c626') {
     hs('svg', { width: 60, height: 72 }, [
       hs('defs', null, [
         hs('linearGradient', { id: 'lG', gradientTransform: 'rotate(90)' }, [
-          hs('stop', { offset: '0%', 'stop-color': '#00000000' }),
+          hs('stop', { offset: '0%', 'stop-color': `${color}00` }),
           hs('stop', { offset: '80%', 'stop-color': color })
         ])
       ]),
