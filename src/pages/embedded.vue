@@ -33,7 +33,7 @@ export default {
     },
     /** @returns {SDWC.Node} */
     selectedNode() {
-      return this.$store.state.node.find(node => node.info.id === this.node);
+      return this.$store.state.node.find(node => node.info.uuid === this.node);
     },
     /** @returns {SDWC.NodePoint} */
     selectedPoint() {

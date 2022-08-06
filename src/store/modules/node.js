@@ -18,7 +18,7 @@ export const MutationTypes = {
  */
 const mutations = {
   [MutationTypes.ADD_NODE](state, /** @type {SDWC.NodeInfo} */ payload) {
-    const node = state.find(node => node.info.id === payload.id);
+    const node = state.find(node => node.info.uuid === payload.id);
     if (node) return;
     state.push({
       info: payload,
@@ -101,7 +101,7 @@ const mutations = {
     });
   },
   [MutationTypes.SET_NODE_STATUS](state, /** @type {{ id: string, status: Partial<SDWC.NodeConnectionStatus> }} */ { id, status }) {
-    const node = state.find(node => node.info.id === id);
+    const node = state.find(node => node.info.uuid === id);
     if (!node) return;
     if (status.status) {
       for (const k of ['lng', 'lat', 'alt']) {
@@ -113,12 +113,12 @@ const mutations = {
     Object.assign(node.status, status);
   },
   [MutationTypes.SET_NODE_NETWORK](state, /** @type {{ id: string, network: SDWC.NodeNetworkStatus }} */ { id, network }) {
-    const node = state.find(node => node.info.id === id);
+    const node = state.find(node => node.info.uuid === id);
     if (!node) return;
     Object.assign(node.network, network);
   },
   [MutationTypes.ADD_NODE_MSG](state, /** @type {{ id: string, msg: SDWC.RawNodeMessage }} */ { id, msg }) {
-    const node = state.find(node => node.info.id === id);
+    const node = state.find(node => node.info.uuid === id);
     if (!node) return;
     for (const [category, value] of Object.entries(msg)) {
       switch (category) {
@@ -140,14 +140,14 @@ const mutations = {
     }
   },
   [MutationTypes.ADD_NODE_TOPIC](state, /** @type {{ id: string, topic: string }} */ { id, topic }) {
-    const node = state.find(node => node.info.id === id);
+    const node = state.find(node => node.info.uuid === id);
     if (!node) return;
     // @ts-ignore
     // replace msg object, make new property reactive
     node.msg = { ...node.msg, [topic]: {} };
   },
   [MutationTypes.CLEAR_NODE_PATH](state, /** @type {string} */ id) {
-    const node = state.find(node => node.info.id === id);
+    const node = state.find(node => node.info.uuid === id);
     if (!node) return;
     node.msg.position.splice(1);
   },

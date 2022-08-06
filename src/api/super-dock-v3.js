@@ -108,7 +108,7 @@ export function getNodes() {
           n.points = [];
         }
         for (const p of n.points) {
-          p.node_id ??= n.id;
+          p.node_id ??= n.uuid;
         }
       }
       return nodes;

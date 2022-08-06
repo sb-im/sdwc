@@ -29,7 +29,7 @@
             <span v-t="'plan.node'"></span>
           </template>
           <template v-slot="{ row }">
-            <router-link :to="{ name: 'node', params: { id: row.node_id } }" v-slot="{ href }">
+            <router-link :to="{ name: 'node', params: { id: row.node_uuid } }" v-slot="{ href }">
               <el-link v-text="row.node" :href="href"></el-link>
             </router-link>
           </template>
@@ -86,6 +86,7 @@ export default {
           name: plan.info.name,
           node_id: plan.info.node_id,
           node: this.depots.find(n => n.info.id === plan.info.node_id)?.info.name ?? this.$t('common.none'),
+          node_uuid: this.depots.find(n => n.info.id === plan.info.node_id)?.info.uuid ?? this.$t('common.none'),
           updated: new Date(plan.info.updated_at),
           running: plan.running !== null
         });

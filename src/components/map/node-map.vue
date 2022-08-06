@@ -196,13 +196,14 @@ export default {
       const markers = [];
       const nodeId = this.point.node_id;
       for (const d of this.drones) {
-        if (d.info.id === nodeId && d.status.code === 0) {
+        if (d.info.uuid === nodeId && d.status.code === 0) {
           const position = d.msg.position[0];
           if (typeof position !== 'object') continue;
           /** @type {SDWC.MarkerDrone} */
           const droneMarker = {
             type: 'drone',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position: { lng: position.lng, lat: position.lat },
             heading: position.heading
@@ -235,6 +236,7 @@ export default {
           markers.push({
             type: 'depot',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position: { lng: status.lng, lat: status.lat }
           });

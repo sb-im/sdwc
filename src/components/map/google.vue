@@ -283,7 +283,7 @@ export default {
       for (const marker of this.markers) {
         if (!marker.position) continue;
         /** @type {google.maps.Marker} */
-        let mapMarker = this.namedMarkers[marker.id];
+        let mapMarker = this.namedMarkers[marker.uuid];
         if (mapMarker) {
           mapMarker.setPosition(marker.position);
           if (marker.type === 'drone') {
@@ -344,7 +344,7 @@ export default {
             continue;
           }
           if (marker.type === 'depot' || marker.type === 'drone') {
-            mapMarker.set('sd-node-id', marker.id);
+            mapMarker.set('sd-node-id', marker.uuid);
             mapMarker.addListener('click', () => {
               const id = mapMarker.get('sd-node-id');
               const el = Array.from(this.$el.querySelectorAll(`div[title=${marker.name}]`));
@@ -358,7 +358,7 @@ export default {
               }
             });
           }
-          this.namedMarkers[marker.id] = mapMarker;
+          this.namedMarkers[marker.uuid] = mapMarker;
         }
       }
     },

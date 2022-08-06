@@ -51,9 +51,9 @@
         <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.node'"></li>
         <el-menu-item
           v-for="node in nodes"
-          :key="node.info.id"
-          :index="`${index}-node-${node.info.id}`"
-          :route="{ name: 'node', params: { id: node.info.id } }"
+          :key="node.info.uuid"
+          :index="`${index}-node-${node.info.uuid}`"
+          :route="{ name: 'node', params: { id: node.info.uuid } }"
         >{{ node.info.name }}</el-menu-item>
       </el-submenu>
       <!-- type: path -->
@@ -161,7 +161,7 @@ export default {
             if (route.params.index == index) return `${index}`;
             break;
           case 'node':
-            if (route.name == 'node') return `${index}-node-${route.params.id}`;
+            if (route.name == 'node') return `${index}-node-${route.params.uuid}`;
             break;
           case 'plan':
             if (route.name === 'plan/list' || route.name == 'plan/new') return 'plan-list';

@@ -50,7 +50,7 @@ export default {
     /** @returns {import('vue-router').Route} */
     nodeRoute() {
       if (this.node) {
-        return { name: 'node', params: { id: this.node.info.id } };
+        return { name: 'node', params: { id: this.node.info.uuid } };
       }
       return null;
     }

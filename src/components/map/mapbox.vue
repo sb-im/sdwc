@@ -384,13 +384,13 @@ export default {
           if (marker.type === 'depot' || marker.type === 'drone') {
             const elm = mapMarker.getElement();
             elm.onclick = () => {
-              this.$emit('marker-click', marker.id, elm);
+              this.$emit('marker-click', marker.uuid, elm);
             };
             elm.oncontextmenu = () => {
-              this.$emit('marker-right-click', marker.id, elm);
+              this.$emit('marker-right-click', marker.uuid, elm);
             };
           }
-          this.namedMarkers[marker.id] = mapMarker;
+          this.namedMarkers[marker.uuid] = mapMarker;
         }
       }
       if (this.fit && !this.popoverShown) {

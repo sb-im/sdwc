@@ -84,7 +84,7 @@ export default {
     /** @returns {SDWC.Node[]} */
     nodes() { return this.$store.state.node; },
     /** @returns {SDWC.Node} */
-    node() { return this.nodes.find(node => node.info.id === this.id); },
+    node() { return this.nodes.find(node => node.info.uuid === this.id); },
     /** @returns {PointComponent[]} */
     points() {
       if (!this.node) return [];
@@ -97,7 +97,7 @@ export default {
       }
       return points.map((point, index) => {
         const { node_id = '', type } = point;
-        const node = this.nodes.find(n => n.info.id === node_id) ?? this.node;
+        const node = this.nodes.find(n => n.info.uuid === node_id) ?? this.node;
         const compo = CompoName[type] || '';
         const key = `${node_id}-${type}-${index}`;
         return { node, point, compo, key };

@@ -307,7 +307,7 @@ const PointTopic = {
  */
 export function subscribeNodes({ state, commit }) {
   state.node.forEach(node => {
-    const id = node.info.id;
+    const id = node.info.uuid;
     const points = node.info.points ?? [];
     MqttClient.subscribeNode(id);
     if (points.some(p => p.type.startsWith('livestream_'))) {

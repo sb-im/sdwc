@@ -42,6 +42,7 @@ declare namespace SDWC {
   export interface NodeInfo {
     id: string;
     name: string;
+    uuid: string;
     points: NodePoint[];
   }
   export interface NodeConnectionStatus {
