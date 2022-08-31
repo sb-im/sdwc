@@ -140,7 +140,12 @@ export default {
     },
     handleRun() {
       runTask(this.planId)
-        .catch(() => { /* noop */ })
+        .catch(e => {
+          this.$alert(e.error, {
+            title: '执行任务失败',
+            type: 'error'
+          });
+        })
         .then(() => this.refreshShownJobs());
     },
     handleStop() {

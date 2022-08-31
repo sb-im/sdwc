@@ -175,6 +175,7 @@ export function deleteTask(id) {
 export function runTask(id) {
   return wr.url(`/tasks/${id}/running`)
     .post()
+    .internalError(e => Promise.reject(JSON.parse(e.text)))
     .json();
 }
 
