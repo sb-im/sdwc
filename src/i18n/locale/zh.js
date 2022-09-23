@@ -81,6 +81,7 @@ export default {
       title: '查看任务',
       run: '执行任务',
       stop: '终止任务',
+      run_fail: '执行任务失败',
       history: '任务执行历史',
       run_time: '执行时间',
       raw_data: '原始数据',
@@ -135,7 +136,8 @@ export default {
     },
     view: {
       title: '定时任务详情',
-      trigger: '立即执行'
+      trigger: '立即执行',
+      trigger_success: '定时任务执行完成'
     },
     edit: {
       new: '新建定时任务'

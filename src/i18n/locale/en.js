@@ -81,7 +81,8 @@ export default {
       title: 'View Plan',
       run: 'Run Plan',
       stop: 'Terminate Plan',
-      history: 'Plan axecution history',
+      history: 'Plan execution history',
+      run_fail: 'Run Plan failed',
       run_time: 'Execution time',
       raw_data: 'Raw data',
       auto_run: 'Automatic processing',
@@ -135,7 +136,8 @@ export default {
     },
     view: {
       title: 'Schedule Detail',
-      trigger: 'Trigger Now'
+      trigger: 'Trigger Now',
+      trigger_success: 'Schedule Triggered'
     },
     edit: {
       new: 'New Schedule'

@@ -142,7 +142,7 @@ export default {
       runTask(this.planId)
         .catch(e => {
           this.$alert(e.error, {
-            title: '执行任务失败',
+            title: this.$t('plan.view.run_fail'),
             type: 'error'
           });
         })

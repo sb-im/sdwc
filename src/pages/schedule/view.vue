@@ -40,9 +40,12 @@ export default {
     },
     handleRun() {
       triggerSchedule(this.scheduleId)
+        .then(() => {
+          this.$message.success(this.$t('schedule.view.trigger_success'));
+        })
         .catch(e => {
           this.$alert(e.error, {
-            title: '执行任务失败',
+            title: this.$t('plan.view.run_fail'),
             type: 'error'
           });
         });
