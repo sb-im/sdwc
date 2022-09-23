@@ -442,7 +442,21 @@ export async function getSchedules({ commit }) {
  * @param {Context} context
  * @param {ApiTypes.V3.Schedule} schedule
  */
- export async function updateSchedule({ commit }, schedule) {
+export async function createSchedule({ commit }, schedule) {
+  const data = await SuperDockV3.createSchedule(schedule);
+  if (data && typeof data.id === 'number') {
+    commit(SCHE.ADD_SCHEDULE, data);
+    return data;
+  } else {
+    throw data;
+  }
+}
+
+/**
+ * @param {Context} context
+ * @param {ApiTypes.V3.Schedule} schedule
+ */
+export async function updateSchedule({ commit }, schedule) {
   const data = await SuperDockV3.updateSchedule(schedule.id, schedule);
   commit(SCHE.UPDATE_SCHEDULE, data);
   return data;

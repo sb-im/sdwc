@@ -53,7 +53,7 @@ export default {
         title: this.$t('plan.edit.delete_title'),
         type: 'warning'
       })
-        .then(() => this.deleteSchedule(this.initial.id))
+        .then(() => this.deleteSchedule(this.scheduleId))
         .then(() => this.$router.push({ name: 'schedule/list' }))
         .catch(() => { /* noop */ });
     },
