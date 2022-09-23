@@ -12,6 +12,11 @@ import PlanNew from './pages/plan/new.vue';
 import PlanEdit from './pages/plan/edit.vue';
 import PlanView from './pages/plan/view.vue';
 import Node from './pages/node/node.vue';
+import Schedule from './pages/schedule/schedule.vue';
+import ScheduleList from './pages/schedule/list.vue';
+import ScheduleNew from './pages/schedule/new.vue';
+import ScheduleEdit from './pages/schedule/edit.vue';
+import ScheduleView from './pages/schedule/view.vue';
 import Embedded from './pages/embedded.vue';
 import Iframe from './pages/iframe.vue';
 
@@ -90,6 +95,35 @@ const routes = [
             path: 'view',
             name: 'plan/view',
             component: PlanView
+          }
+        ]
+      },
+      {
+        path: 'schedule/list',
+        name: 'schedule/list',
+        component: ScheduleList,
+      },
+      {
+        path: 'schedule/new',
+        name: 'schedule/new',
+        component: ScheduleNew,
+      },
+      {
+        path: 'schedule/:id',
+        name: 'schedule',
+        component: Schedule,
+        redirect: { name: 'schedule/view' },
+        props: route => ({ id: int(route.params.id) }),
+        children: [
+          {
+            path: 'edit',
+            name: 'schedule/edit',
+            component: ScheduleEdit
+          },
+          {
+            path: 'view',
+            name: 'schedule/view',
+            component: ScheduleView
           }
         ]
       },

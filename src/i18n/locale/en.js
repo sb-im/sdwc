@@ -9,6 +9,7 @@ export default {
     depot: 'Depot',
     node: 'Node',
     plan: 'Plan',
+    schedule: 'Schedule',
     overview: 'Overview',
     confirm: 'Confirm',
     cancel: 'Cancel',
@@ -119,6 +120,25 @@ export default {
     },
     dialog: {
       running: 'Running Task: '
+    }
+  },
+  schedule: {
+    name: 'Schedule Name',
+    state: 'State',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    cron: 'cron Expression',
+    method: 'Method',
+    params: 'Params',
+    list: {
+      list: 'Schedule List'
+    },
+    view: {
+      title: 'Schedule Detail',
+      trigger: 'Trigger Now'
+    },
+    edit: {
+      new: 'New Schedule'
     }
   },
   air: {

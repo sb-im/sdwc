@@ -9,6 +9,7 @@ export default {
     depot: '机场',
     node: '节点',
     plan: '任务',
+    schedule: '定时任务',
     overview: '概况',
     confirm: '确定',
     cancel: '取消',
@@ -119,6 +120,25 @@ export default {
     },
     dialog: {
       running: '执行中任务：'
+    }
+  },
+  schedule: {
+    name: '定时任务名称',
+    state: '状态',
+    enabled: '启用',
+    disabled: '禁用',
+    cron: 'cron 表达式',
+    method: '方法',
+    params: '参数',
+    list: {
+      list: '定时任务列表'
+    },
+    view: {
+      title: '定时任务详情',
+      trigger: '立即执行'
+    },
+    edit: {
+      new: '新建定时任务'
     }
   },
   air: {
