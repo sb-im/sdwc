@@ -1,6 +1,7 @@
 import wretch from 'wretch';
+import queryString from 'wretch/addons/queryString';
 
-let wr = wretch();
+let wr = wretch().addon(queryString);
 
 export function setBaseURL(url = '') {
   if (!url.endsWith('/')) {
@@ -233,7 +234,7 @@ export function createMqttUser() {
  * @param {number} size
  * @returns {Promise<ApiTypes.V3.Schedule[]>}
  */
-export function getSchedules(page, size) {
+export function getSchedules(page = 1, size = 100) {
   return wr.url('/schedules')
     .query({ page, size })
     .get()
