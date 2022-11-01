@@ -114,6 +114,8 @@ const cfg = {
       // use browser version mqtt.js
       'mqtt': 'mqtt/dist/mqtt.js'
     },
+    // ele-vue-cron needs '.vue' extension
+    extensions: ['.js', '.json', '.wasm', '.vue'],
     fallback: {
       path: false
     }

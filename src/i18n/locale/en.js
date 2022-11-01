@@ -133,6 +133,7 @@ export default {
     params: 'Params',
     simple: 'Simple',
     advanced: 'Advanced',
+    strategy: 'Strategy',
     list: {
       list: 'Schedule List'
     },

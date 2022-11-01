@@ -133,6 +133,7 @@ export default {
     params: '参数',
     simple: '简明',
     advanced: '高级',
+    strategy: '执行策略',
     list: {
       list: '定时任务列表'
     },
