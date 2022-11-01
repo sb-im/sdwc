@@ -69,7 +69,9 @@ const cfg = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        // since we import .vue files directly from ele-vue-cron,
+        // they need to be processed by babel for element-ui on-demand import to work
+        exclude: path => path.includes('node_modules') && !path.includes('ele-vue-cron'),
         loader: 'babel-loader',
         options: {
           presets: [
