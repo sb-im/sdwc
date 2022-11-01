@@ -131,6 +131,8 @@ export default {
     cron: 'cron 表达式',
     method: '方法',
     params: '参数',
+    simple: '简明',
+    advanced: '高级',
     list: {
       list: '定时任务列表'
     },

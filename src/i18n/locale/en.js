@@ -131,6 +131,8 @@ export default {
     cron: 'cron Expression',
     method: 'Method',
     params: 'Params',
+    simple: 'Simple',
+    advanced: 'Advanced',
     list: {
       list: 'Schedule List'
     },

@@ -22,22 +22,28 @@
         :readonly="readonly"
       ></el-switch>
     </el-form-item>
+    <template v-if="advanced">
+      <sd-schedule-edit-advanced v-model="schedule" :readonly="readonly"></sd-schedule-edit-advanced>
+    </template>
+    <template v-else>
+      <sd-schedule-edit-simple v-model="schedule" :readonly="readonly"></sd-schedule-edit-simple>
+    </template>
     <el-form-item>
-      <span slot="label" v-t="'schedule.cron'"></span>
-      <el-input class="schedule--mono" v-model="schedule.cron" :readonly="readonly"></el-input>
-    </el-form-item>
-    <el-form-item>
-      <span slot="label" v-t="'schedule.method'"></span>
-      <el-input class="schedule--mono" v-model="schedule.method" :readonly="readonly"></el-input>
-    </el-form-item>
-    <el-form-item>
-      <span slot="label" v-t="'schedule.params'"></span>
-      <el-input class="schedule--mono" v-model="schedule.params" :readonly="readonly"></el-input>
+      <el-switch
+        v-model="advanced"
+        active-color="#E6A23C"
+        :active-text="$t('schedule.advanced')"
+        inactive-color="#409EFF"
+        :inactive-text="$t('schedule.simple')"
+      ></el-switch>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
+import Simple from './schedule-edit-simple.vue';
+import Advanced from './schedule-edit-advanced.vue';
+
 export default {
   name: 'sd-schedule-detail',
   props: {
@@ -54,7 +60,8 @@ export default {
   data() {
     return {
       /** @type {ApiTypes.V3.Schedule} */
-      schedule: Object.assign({}, this.initial)
+      schedule: Object.assign({}, this.initial),
+      advanced: false
     };
   },
   methods: {
@@ -64,6 +71,10 @@ export default {
     getSchedule() {
       return this.schedule;
     }
+  },
+  components: {
+    [Simple.name]: Simple,
+    [Advanced.name]: Advanced
   }
 };
 </script>
