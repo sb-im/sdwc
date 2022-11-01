@@ -1,7 +1,8 @@
 import wretch from 'wretch';
 import queryString from 'wretch/addons/queryString';
-import FormDataAddon from 'wretch/addons/formData';
-let wr = wretch().addon(queryString).addon(FormDataAddon);
+import formData from 'wretch/addons/formData';
+
+let wr = wretch().addon(queryString).addon(formData);
 
 export function setBaseURL(url = '') {
   if (!url.endsWith('/')) {
