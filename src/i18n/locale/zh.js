@@ -134,6 +134,7 @@ export default {
     simple: '简明',
     advanced: '高级',
     strategy: '执行策略',
+    next5: '未来 5 次执行时间',
     list: {
       list: '定时任务列表'
     },

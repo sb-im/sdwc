@@ -30,17 +30,22 @@
     </template>
     <el-form-item>
       <el-switch
+        class="schedule__switch"
         v-model="advanced"
         active-color="#E6A23C"
         :active-text="$t('schedule.advanced')"
         inactive-color="#409EFF"
         :inactive-text="$t('schedule.simple')"
       ></el-switch>
+      <el-divider content-position="left">{{ $t('schedule.next5') }}</el-divider>
+      <p class="schedule__times" v-text="scheduleTimes"></p>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
+import cronParser from 'cron-parser';
+
 import Simple from './schedule-edit-simple.vue';
 import Advanced from './schedule-edit-advanced.vue';
 
@@ -55,6 +60,22 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    /** @returns {string} */
+    scheduleTimes() {
+      try {
+        const iterator = cronParser.parseExpression(this.schedule.cron, { iterator: true });
+        const times = [];
+        for (let i = 0; i < 5; i++) {
+          const date = iterator.next().value.toDate();
+          times.push(this.$d(date, 'long'));
+        }
+        return times.join('\n');
+      } catch {
+        return '';
+      }
     }
   },
   data() {
@@ -91,5 +112,16 @@ export default {
 
 .schedule--mono input {
   font-family: monospace;
+}
+
+.schedule__switch {
+  display: block;
+  margin-top: 10px;
+}
+
+.schedule__times {
+  white-space: pre-wrap;
+  margin: 0;
+  line-height: 1.5rem;
 }
 </style>

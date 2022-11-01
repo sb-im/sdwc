@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import cronParser from 'cron-parser';
 import EleVueCron from 'ele-vue-cron/packages/Cron/core/index.vue';
 
 export default {
@@ -86,7 +87,16 @@ export default {
     /** @param {{ cron: string, period: string}} val */
     handleCronChange(val) {
       if (this.readonly) return;
-      this.$emit('input', { ...this.value, cron: val.cron });
+      let cron = val.cron;
+      // remove dayOfWeek constrain if period type is not 'week'
+      if (val.period !== 'week') {
+        const interval = cronParser.parseExpression(val.cron);
+        cron = cronParser.fieldsToExpression({
+          ...interval.fields,
+          dayOfWeek: [0, 1, 2, 3, 4, 5, 6, 7]
+        }).stringify();
+      }
+      this.$emit('input', { ...this.value, cron: cron });
     }
   },
   components: {

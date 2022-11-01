@@ -134,6 +134,7 @@ export default {
     simple: 'Simple',
     advanced: 'Advanced',
     strategy: 'Strategy',
+    next5: 'Upcoming 5 schedules',
     list: {
       list: 'Schedule List'
     },

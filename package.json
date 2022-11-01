@@ -23,6 +23,7 @@
     "chartist": "^0.11.4",
     "chartist-plugin-tooltips": "^0.0.17",
     "coordtransform": "^2.1.2",
+    "cron-parser": "^4.6.0",
     "ele-vue-cron": "^0.1.4",
     "element-ui": "^2.15.10",
     "eventemitter3": "^4.0.7",
