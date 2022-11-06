@@ -1,6 +1,7 @@
 import wretch from 'wretch';
+import formData from 'wretch/addons/formData';
 
-let wr = wretch();
+let wr = wretch().addon(formData);
 
 export function setBaseURL(url = '') {
   wr = wr.url(url.replace(/\/$/, ''), true);
