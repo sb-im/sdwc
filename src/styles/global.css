@@ -47,7 +47,7 @@ body {
   font-feature-settings: 'liga';
 }
 
-@media screen and (min-width: 1200px) { /* width > 1200, 部分双栏 */
+@media screen and (min-width: 1080px) { /* width > 1200, 部分双栏 */
   /* container */
   .plan,
   .node {

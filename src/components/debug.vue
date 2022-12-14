@@ -106,7 +106,9 @@ export default {
       let params = [];
       if (this.params.length > 0) {
         try {
-          params = JSON.parse(this.params);
+          const input = JSON.parse(this.params);
+          if (typeof input !== 'object') throw input;
+          params = input;
         } catch (e) {
           params = this.params.split(' ');
         }

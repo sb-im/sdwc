@@ -208,19 +208,15 @@ export default {
             position: { lng: position.lng, lat: position.lat },
             heading: position.heading
           };
-          if (d.info.points.findIndex(p => p.type.startsWith('livestream_')) >= 0) {
-            // monitor available, draw gimbal pitch and yaw
-            const gimbalMarker = Object.assign({}, droneMarker, {
-              type: 'drone_gimbal',
-              id: `${d.info.id}_gimbal`,
-              name: `${d.info.name}_gimbal`,
-              yaw: d.msg.gimbal.yaw,
-              pitch: d.msg.gimbal.pitch
-            });
-            markers.push(gimbalMarker, droneMarker);
-          } else {
-            markers.push(droneMarker);
-          }
+          const gimbalMarker = Object.assign({}, droneMarker, {
+            type: 'drone_gimbal',
+            id: `${d.info.id}_gimbal`,
+            name: `${d.info.name}_gimbal`,
+            yaw: d.msg.gimbal.yaw,
+            pitch: d.msg.gimbal.pitch
+          });
+          // put drone gimbal marker under drone marker
+          markers.push(gimbalMarker, droneMarker);
         }
       }
       return markers;

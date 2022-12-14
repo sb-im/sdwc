@@ -1,5 +1,8 @@
 /* global module */
 module.exports = {
+  ignorePatterns: [
+    '*.d.ts'
+  ],
   parserOptions: {
     ecmaVersion: 'latest'
   },

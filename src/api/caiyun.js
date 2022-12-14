@@ -1,6 +1,7 @@
 import wretchJSONP from './wretch-jsonp';
+import queryString from 'wretch/addons/queryString';
 
-const baseWr = wretchJSONP.url('https://api.caiyunapp.com/v2/');
+const baseWr = wretchJSONP.addon(queryString).url('https://api.caiyunapp.com/v2/');
 
 /**
  * test token

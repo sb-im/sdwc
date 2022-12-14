@@ -1,6 +1,8 @@
 import wretch from 'wretch';
+import queryString from 'wretch/addons/queryString';
+import formData from 'wretch/addons/formData';
 
-let wr = wretch();
+let wr = wretch().addon(queryString).addon(formData);
 
 export function setBaseURL(url = '') {
   if (!url.endsWith('/')) {
@@ -175,6 +177,7 @@ export function deleteTask(id) {
 export function runTask(id) {
   return wr.url(`/tasks/${id}/running`)
     .post()
+    .internalError(e => Promise.reject(JSON.parse(e.text)))
     .json();
 }
 
@@ -232,7 +235,7 @@ export function createMqttUser() {
  * @param {number} size
  * @returns {Promise<ApiTypes.V3.Schedule[]>}
  */
-export function getSchedules(page, size) {
+export function getSchedules(page = 1, size = 100) {
   return wr.url('/schedules')
     .query({ page, size })
     .get()

@@ -141,7 +141,12 @@ export default {
     },
     handleRun() {
       runTask(this.planId)
-        .catch(() => { /* noop */ })
+        .catch(e => {
+          this.$alert(e.error, {
+            title: this.$t('plan.view.run_fail'),
+            type: 'error'
+          });
+        })
         .then(() => this.refreshShownJobs());
     },
     handleStop() {

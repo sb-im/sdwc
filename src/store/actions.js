@@ -11,6 +11,7 @@ import * as SuperDockV3 from '@/api/super-dock-v3';
 import { parseWaypoints } from '@/util/waypoint-parser';
 
 import { MutationTypes as PREF } from './modules/preference';
+import { MutationTypes as SCHE } from './modules/schedule';
 import { MutationTypes as CONF } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
 import { MutationTypes as NODE } from './modules/node';
@@ -169,6 +170,7 @@ export function logout({ commit }) {
   commit(USER.SET_USER_INFO, { id: -1, username: '', teams: [], team_id: -1 });
   commit(NODE.CLEAR_NODES);
   commit(PLAN.CLEAR_PLANS);
+  commit(SCHE.CLEAR_SCHEDULES);
   commit(UI.SET_UI, { sidebar: [] });
   sessionStorage.removeItem('user');
   MqttClient.disconnect();
@@ -271,6 +273,7 @@ export async function initialize({ state, dispatch }) {
   await dispatch('connectMqtt');
   dispatch('getNodes').then(() => dispatch('subscribeNodes'));
   dispatch('getPlans').then(() => dispatch('subscribePlans'));
+  dispatch('getSchedules');
 }
 
 /**
@@ -423,6 +426,49 @@ export async function getTaskJobs({ commit }, { id, size = 10, page = 1 }) {
   delete data.jobs;
   commit(PLAN.UPDATE_PLAN, data);
   return jobs;
+}
+
+/**
+ * @param {Context} context
+ */
+export async function getSchedules({ commit }) {
+  const data = await SuperDockV3.getSchedules();
+  data.forEach(schedule => {
+    commit(SCHE.ADD_SCHEDULE, schedule);
+  });
+}
+
+/**
+ * @param {Context} context
+ * @param {ApiTypes.V3.Schedule} schedule
+ */
+export async function createSchedule({ commit }, schedule) {
+  const data = await SuperDockV3.createSchedule(schedule);
+  if (data && typeof data.id === 'number') {
+    commit(SCHE.ADD_SCHEDULE, data);
+    return data;
+  } else {
+    throw data;
+  }
+}
+
+/**
+ * @param {Context} context
+ * @param {ApiTypes.V3.Schedule} schedule
+ */
+export async function updateSchedule({ commit }, schedule) {
+  const data = await SuperDockV3.updateSchedule(schedule.id, schedule);
+  commit(SCHE.UPDATE_SCHEDULE, data);
+  return data;
+}
+
+/**
+ * @param {Context} context
+ * @param {number} id
+ */
+export async function deleteSchedule({ commit }, id) {
+  await SuperDockV3.deleteSchedule(id);
+  commit(SCHE.DELETE_SCHEDULE, id);
 }
 
 /**

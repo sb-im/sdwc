@@ -344,7 +344,7 @@ declare namespace SDWC {
   export interface SidebarItem {
     icon: string;
     name: string;
-    type: 'overview' | 'plan' | 'node' | 'path' | 'iframe';
+    type: 'overview' | 'plan' | 'node' | 'schedule' | 'path' | 'iframe';
     args: string;
   }
 

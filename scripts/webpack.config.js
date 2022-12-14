@@ -69,7 +69,9 @@ const cfg = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        // since we import .vue files directly from ele-vue-cron,
+        // they need to be processed by babel for element-ui on-demand import to work
+        exclude: path => path.includes('node_modules') && !path.includes('ele-vue-cron'),
         loader: 'babel-loader',
         options: {
           presets: [
@@ -114,6 +116,8 @@ const cfg = {
       // use browser version mqtt.js
       'mqtt': 'mqtt/dist/mqtt.js'
     },
+    // ele-vue-cron needs '.vue' extension
+    extensions: ['.js', '.json', '.wasm', '.vue'],
     fallback: {
       path: false
     }

@@ -9,6 +9,7 @@ export default {
     depot: 'Depot',
     node: 'Node',
     plan: 'Plan',
+    schedule: 'Schedule',
     overview: 'Overview',
     confirm: 'Confirm',
     cancel: 'Cancel',
@@ -80,7 +81,8 @@ export default {
       title: 'View Plan',
       run: 'Run Plan',
       stop: 'Terminate Plan',
-      history: 'Plan axecution history',
+      history: 'Plan execution history',
+      run_fail: 'Run Plan failed',
       run_time: 'Execution time',
       raw_data: 'Raw data',
       auto_run: 'Automatic processing',
@@ -119,6 +121,30 @@ export default {
     },
     dialog: {
       running: 'Running Task: '
+    }
+  },
+  schedule: {
+    name: 'Schedule Name',
+    state: 'State',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    cron: 'cron Expression',
+    method: 'Method',
+    params: 'Params',
+    simple: 'Simple',
+    advanced: 'Advanced',
+    strategy: 'Strategy',
+    next5: 'Upcoming 5 schedules',
+    list: {
+      list: 'Schedule List'
+    },
+    view: {
+      title: 'Schedule Detail',
+      trigger: 'Trigger Now',
+      trigger_success: 'Schedule Triggered'
+    },
+    edit: {
+      new: 'New Schedule'
     }
   },
   air: {
