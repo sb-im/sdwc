@@ -154,7 +154,7 @@ export default {
       for (const d of this.drones) {
         const { position, place } = d.msg;
         if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
-        const droneId = d.info.id;
+        const droneId = d.info.uuid;
         const placeStyle = this.dronePlaceStyle[droneId];
         for (const [placeName, pos] of Object.entries(place)) {
           const style = placeStyle[placeName] || {};
@@ -178,7 +178,7 @@ export default {
     /** @returns {SDWC.Node} */
     selectedNode() {
       if (!this.popover.node) return null;
-      return this.node.find(n => n.info.id === this.popover.node);
+      return this.node.find(n => n.info.uuid === this.popover.node);
     }
   },
   methods: {
