@@ -1,61 +1,36 @@
 image: node:latest
 
 stages:
-  - artifact
+  - build
   - deploy
 
-before_script:
-  - eval "$(ssh-agent -s)"
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - >/dev/null
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
-  - chmod 644 ~/.ssh/known_hosts
+#使用CI的yarn生成静态文件
+build:
+  stage: build
+  script:
+    - rm -rf dist/
+    - yarn install
+    - yarn build
+    - cp src/config.json dist/
+  artifacts:
+    paths:
+      - dist/
 
-deploy_staging:
+#生成支持amd64/arm64平台的镜像
+deploy:
   stage: deploy
-  only:
-    refs:
-      - dev
-  script:
-    - ./scripts/build-tar.sh --env dev
-    - cat file.tar.xz | ssh ${USER_CLOUD_STAGING}@${HOST_CLOUD_STAGING} 'cd ~/www/sb.im/sdwc && find . ! -name 'config.json*' -delete && tar -xJf -'
-
-deploy_production:
-  stage: deploy
-  only:
-    refs:
-      - master
-  script:
-    - ./scripts/build-tar.sh
-    - cat file.tar.xz | ssh ${USER_CLOUD_PRODUCTION}@${HOST_CLOUD_PRODUCTION} 'cd ~/sdwc && find . ! -name 'config.json*' -delete && tar -xJf -'
-
-build docker:
-  image: docker:20.10.5
-  stage: artifact
+  image: jdrouet/docker-with-buildx:stable
   services:
-    - docker:20.10.5-dind
-  before_script:
-    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_NAME}
-  script:
-    - docker pull ${CONTAINER_IMAGE}:latest || true
-    - docker build --cache-from ${CONTAINER_IMAGE}:latest --tag ${CONTAINER_IMAGE}:latest --tag ${CONTAINER_IMAGE}:${CI_COMMIT_SHORT_SHA} .
-    - docker push ${CONTAINER_IMAGE}:${CI_COMMIT_SHORT_SHA}
-    - docker push ${CONTAINER_IMAGE}:latest
-
-build-docker-customregistry:
-  image: docker:20.10.5
-  stage: artifact
-  services:
-    - docker:20.10.5-dind
+    - docker:dind
   before_script:
     - docker login -u $CI_CUSTOMREGISTRY_USER -p $CI_CUSTOMREGISTRY_PASS $CI_CUSTOMREGISTRY_IMAGEBASE
   variables:
     CONTAINER_REGISTRY_IMAGE: $CI_CUSTOMREGISTRY_IMAGEBASE/sbim/sdwc
   script:
-    - docker pull $CONTAINER_RELEASE_IMAGE:latest || true
-    - docker build --cache-from $CONTAINER_REGISTRY_IMAGE:latest --tag $CONTAINER_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA --tag $CONTAINER_REGISTRY_IMAGE:latest .
-    - docker push $CONTAINER_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-    - docker push $CONTAINER_REGISTRY_IMAGE:latest
+    #默认的Dockerfile构建arm64特别慢，直接用CI的dist目录复制到amd64镜像中
+    - rm Dockerfile
+    - mv Dockerfile-deploy Dockerfile
+    - docker buildx create --name builderx
+    - docker buildx use builderx
+    - docker buildx inspect --bootstrap
+    - docker buildx build --platform linux/amd64,linux/arm64 --tag $CONTAINER_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA --tag $CONTAINER_REGISTRY_IMAGE:latest --push .
