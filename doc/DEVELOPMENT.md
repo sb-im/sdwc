@@ -2,13 +2,13 @@
 
 ## 翻译约定
 
-|English|  中文  |
-|:-----:|:-----:|
-|node   |节点|
-|plan   |任务|
-|drone  |无人机|
-|depot  |机场|
-|point  |`// TODO`|
+| English | 中文 |
+|:-------:|:----:|
+| `node`  | 节点 |
+| `task`  | 任务 |
+| `drone` | 飞机 |
+| `depot` | 机场 |
+| `point` | 挂载 |
 
 ## 构建依赖
 
@@ -90,7 +90,7 @@ yarn build
 
 构建产物位于项目根目录中的 `dist` 目录。将 `assets` 目录复制到 `dist` 目录中，即可作为 wwwroot 部署。
 
-更详细的步骤可以参考 [CI 构建脚本](/scripts/gitlab-ci.sh)。
+更详细的步骤可以参考 [CI 构建脚本](/scripts/build-tar.sh)。
 
 ## 路由结构
 

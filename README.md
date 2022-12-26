@@ -1,21 +1,58 @@
 # SDWC == S Dashboard Web Console
 
-[![Build Status](https://travis-ci.org/SB-IM/SDWC.svg?branch=master)](https://travis-ci.org/SB-IM/SDWC)
+[![ci](https://github.com/sb-im/sdwc/actions/workflows/ci.yml/badge.svg)](https://github.com/sb-im/sdwc/actions/workflows/ci.yml)
 
-多无人机与机场（地面站）网页控制终端。
+Robotics Cluster Cloud Console
 
-## 介绍
+## Introduction
 
-SDWC 由草莓科技开发，并以MPL-2.0协议开源。
+> The Application developed by the sbim inno (StrawBerry Tech)
+> MPL-2.0 protocol open source, the goal is to do a universal robotics console application
 
-可以同时控制多台设备，最终目标是实现一个通用型控制台。
+## Build Setup
 
-SDWC 是云控制系统的一部分，可单独使用。具有良好的扩展性。易于二次开发
+``` bash
+# install dependencies
+yarn install
 
-## 更新日志
+# build for production with minification
+yarn run build
+```
+
+## Install && Config
+
+```bash
+cp src/config.json ./
+```
+
+## Development
+
+```bash
+# docker or nerdctl
+docker compose up
+
+# Init database
+# Into gosd shell
+docker exec -it gosd fish
+
+# Create database tables
+gosd database migrate
+# Create database seed data
+gosd database seed
+# Create demo data
+gosd node sync data
+
+# Exit gosd shell
+exit
+
+# serve with hot reload at localhost:8080
+yarn run dev
+```
+
+## CHANGELOG
 
 [doc/CHANGELOG.md](/doc/CHANGELOG.md)
 
-## 开发指南
+## Development Docs
 
 [doc/DEVELOPMENT.md](/doc/DEVELOPMENT.md)
