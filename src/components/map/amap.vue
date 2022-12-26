@@ -210,7 +210,7 @@ export default {
           const marker = this.markers[i];
           if (!marker.position) continue;
           /** @type {AMap.Marker} */
-          let mapMarker = this.namedMarkers[marker.id];
+          let mapMarker = this.namedMarkers[marker.uuid];
           const position = coordinate[i];
           if (mapMarker) {
             mapMarker.setPosition(position);
@@ -227,7 +227,7 @@ export default {
                 iconStyle: 'red',
                 position,
                 extData: {
-                  id: marker.id,
+                  id: marker.uuid,
                 },
                 label: {
                   content: marker.name,
@@ -244,7 +244,7 @@ export default {
                 offset: { x: -20, y: -20 },
                 position,
                 extData: {
-                  id: marker.id,
+                  id: marker.uuid,
                   img,
                   heading: marker.heading
                 },
@@ -277,7 +277,7 @@ export default {
                 this.$emit('marker-click', mapMarker.getExtData().id, mapMarker.getContent());
               });
             }
-            this.namedMarkers[marker.id] = mapMarker;
+            this.namedMarkers[marker.uuid] = mapMarker;
             this.map.add(mapMarker);
           }
           if (this.fit && !this.popoverShown) {

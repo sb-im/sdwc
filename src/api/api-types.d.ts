@@ -62,6 +62,7 @@ namespace ApiTypes {
 
     export interface Node {
       id: string;
+      uuid: string;
       name: string;
       points?: Point[];
     }

@@ -122,9 +122,10 @@ export default {
     },
     /** @returns {SDWC.MarkerDepot[]} */
     depotMarker() {
-      return this.depots.filter(d => d.info.id === this.plan.info.node_id).map(d => ({
+      return this.depots.filter(d => d.info.uuid === this.plan.info.node_id).map(d => ({
         type: 'depot',
         id: d.info.id,
+        uuid: d.info.uuid,
         name: d.info.name,
         position: { lng: d.status.status.lng, lat: d.status.status.lat }
       }));

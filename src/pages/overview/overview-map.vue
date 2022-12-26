@@ -76,7 +76,7 @@ export default {
       const style = {};
       for (const d of this.drones) {
         const mapPoint = d.info.points.find(p => p.type === 'map') || {};
-        style[d.info.id] = Object.assign({}, PlaceStyle, get(mapPoint, 'params.common.place', {}));
+        style[d.info.uuid] = Object.assign({}, PlaceStyle, get(mapPoint, 'params.common.place', {}));
       }
       return style;
     },
@@ -88,7 +88,7 @@ export default {
       for (const d of this.drones) {
         const { position, place } = d.msg;
         if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
-        const droneId = d.info.id;
+        const droneId = d.info.uuid;
         const placeStyle = this.dronePlaceStyle[droneId];
         const origin = position[0];
         for (const [placeName, pos] of Object.entries(place)) {
@@ -116,6 +116,7 @@ export default {
           markers.push({
             type: 'drone',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position,
             heading: position.heading
@@ -136,6 +137,7 @@ export default {
           markers.push({
             type: 'depot',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position: { lng: status.lng, lat: status.lat }
           });
@@ -152,7 +154,7 @@ export default {
       for (const d of this.drones) {
         const { position, place } = d.msg;
         if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
-        const droneId = d.info.id;
+        const droneId = d.info.uuid;
         const placeStyle = this.dronePlaceStyle[droneId];
         for (const [placeName, pos] of Object.entries(place)) {
           const style = placeStyle[placeName] || {};
@@ -176,7 +178,7 @@ export default {
     /** @returns {SDWC.Node} */
     selectedNode() {
       if (!this.popover.node) return null;
-      return this.node.find(n => n.info.id === this.popover.node);
+      return this.node.find(n => n.info.uuid === this.popover.node);
     }
   },
   methods: {
