@@ -33,13 +33,14 @@ services:
       POSTGRES_PASSWORD: password
 
   gosd:
-    image: ghcr.io/sb-im/gosd:v3
+    image: ghcr.io/sb-im/gosd:3.0
     container_name: gosd
     depends_on:
       - emqx
       - redis
       - postgres
     environment:
+      DEMO_MODE: true
       LISTEN_ADDR: '0.0.0.0:8000'
       REDIS_URL: 'redis://redis:6379/1'
       MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
@@ -47,6 +48,30 @@ services:
     ports:
       - "8000:8000/tcp"
     restart: always
+
+  ncp-1:
+    image: ghcr.io/sb-im/ncp:latest
+    container_name: ncp-1
+    environment:
+      NCP_UUID: 1
+      NCP_TYPE: drone
+      NCP_MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
+
+  ncp-2:
+    image: ghcr.io/sb-im/ncp:latest
+    container_name: ncp-2
+    environment:
+      NCP_UUID: 2
+      NCP_TYPE: depot
+      NCP_MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
+
+  ncp-3:
+    image: ghcr.io/sb-im/ncp:latest
+    container_name: ncp-3
+    environment:
+      NCP_UUID: 3
+      NCP_TYPE: drone
+      NCP_MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
 
 networks:
   default:

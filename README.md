@@ -30,21 +30,6 @@ cp src/config.json ./
 ```bash
 # docker or nerdctl
 docker compose up
-
-# Init database
-# Into gosd shell
-docker exec -it gosd fish
-
-# Create database tables
-gosd database migrate
-# Create database seed data
-gosd database seed
-# Create demo data
-gosd node sync data
-
-# Exit gosd shell
-exit
-
 # serve with hot reload at localhost:8080
 yarn run dev
 ```
