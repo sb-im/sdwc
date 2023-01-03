@@ -57,23 +57,23 @@
         >{{ node.info.name }}</el-menu-item>
       </el-submenu>
       <!-- type: schedule -->
-      <el-submenu :key="index" v-else-if="item.type === 'schedule'" :index="`${index}`">
-        <template #title>
-          <sd-icon :value="item.icon || 'timespan'"></sd-icon>
-          <span slot="title" v-t="item.name || 'common.schedule'"></span>
-        </template>
-        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.schedule'"></li>
-        <el-menu-item index="schedule-list" :route="{ name: 'schedule/list' }">
-          <i class="el-icon-notebook-2"></i>
-          <span v-t="'schedule.list.list'"></span>
-        </el-menu-item>
-        <el-menu-item
-          v-for="s in schedules"
-          :key="s.id"
-          :index="`${index}-schedule-${s.id}`"
-          :route="{ name: 'schedule', params: { id: s.id } }"
-        >{{ s.name }}</el-menu-item>
-      </el-submenu>
+<!--      <el-submenu :key="index" v-else-if="item.type === 'schedule'" :index="`${index}`">-->
+<!--        <template #title>-->
+<!--          <sd-icon :value="item.icon || 'timespan'"></sd-icon>-->
+<!--          <span slot="title" v-t="item.name || 'common.schedule'"></span>-->
+<!--        </template>-->
+<!--        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.schedule'"></li>-->
+<!--        <el-menu-item index="schedule-list" :route="{ name: 'schedule/list' }">-->
+<!--          <i class="el-icon-notebook-2"></i>-->
+<!--          <span v-t="'schedule.list.list'"></span>-->
+<!--        </el-menu-item>-->
+<!--        <el-menu-item-->
+<!--          v-for="s in schedules"-->
+<!--          :key="s.id"-->
+<!--          :index="`${index}-schedule-${s.id}`"-->
+<!--          :route="{ name: 'schedule', params: { id: s.id } }"-->
+<!--        >{{ s.name }}</el-menu-item>-->
+<!--      </el-submenu>-->
       <!-- type: path -->
       <el-menu-item
         :key="index"
@@ -187,10 +187,10 @@ export default {
             if (route.name === 'plan/list' || route.name == 'plan/new') return 'plan-list';
             if (route.name.startsWith('plan/')) return `${index}-plan-${route.params.id}`;
             break;
-          case 'schedule':
-            if (route.name === 'schedule/list' || route.name == 'schedule/new') return 'schedule-list';
-            if (route.name.startsWith('schedule/')) return `${index}-schedule-${route.params.id}`;
-            break;
+          // case 'schedule':
+          //   if (route.name === 'schedule/list' || route.name == 'schedule/new') return 'schedule-list';
+          //   if (route.name.startsWith('schedule/')) return `${index}-schedule-${route.params.id}`;
+          //   break;
           case 'overview':
             if (route.name == 'overview') return `${index}`;
             break;
