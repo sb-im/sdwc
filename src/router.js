@@ -7,10 +7,16 @@ import Login from './pages/login.vue';
 import Panel from './pages/panel/panel.vue';
 import Overview from './pages/overview/overview.vue';
 import Plan from './pages/plan/plan.vue';
+import PlanList from './pages/plan/list.vue';
 import PlanNew from './pages/plan/new.vue';
 import PlanEdit from './pages/plan/edit.vue';
 import PlanView from './pages/plan/view.vue';
 import Node from './pages/node/node.vue';
+import Schedule from './pages/schedule/schedule.vue';
+import ScheduleList from './pages/schedule/list.vue';
+import ScheduleNew from './pages/schedule/new.vue';
+import ScheduleEdit from './pages/schedule/edit.vue';
+import ScheduleView from './pages/schedule/view.vue';
 import Embedded from './pages/embedded.vue';
 import Iframe from './pages/iframe.vue';
 
@@ -61,7 +67,12 @@ const routes = [
         path: 'node/:id',
         name: 'node',
         component: Node,
-        props: route => ({ id: int(route.params.id) })
+        props: route => ({ id: route.params.id })
+      },
+      {
+        path: 'plan/list',
+        name: 'plan/list',
+        component: PlanList
       },
       {
         path: 'plan/new',
@@ -88,6 +99,35 @@ const routes = [
         ]
       },
       {
+        path: 'schedule/list',
+        name: 'schedule/list',
+        component: ScheduleList,
+      },
+      {
+        path: 'schedule/new',
+        name: 'schedule/new',
+        component: ScheduleNew,
+      },
+      {
+        path: 'schedule/:id',
+        name: 'schedule',
+        component: Schedule,
+        redirect: { name: 'schedule/view' },
+        props: route => ({ id: int(route.params.id) }),
+        children: [
+          {
+            path: 'edit',
+            name: 'schedule/edit',
+            component: ScheduleEdit
+          },
+          {
+            path: 'view',
+            name: 'schedule/view',
+            component: ScheduleView
+          }
+        ]
+      },
+      {
         path: 'iframe/:index',
         name: 'iframe',
         component: Iframe,
@@ -106,7 +146,7 @@ const routes = [
     },
     props(route) {
       const { node, point } = route.params;
-      const props = { node: int(node), point };
+      const props = { node, point };
       for (const key in route.query) {
         props[camelize(key)] = route.query[key];
       }
@@ -127,17 +167,22 @@ router.beforeEach((to, from, next) => {
       break;
     case 'login':
     case 'login-api':
-    case 'login-api-path':
-      // eslint-disable-next-line no-case-declarations
+    case 'login-api-path': {
       let { path = '' } = to.params;
       if (path[0] !== '/') {
         path = '/' + path;
       }
       next(auth ? { path, query: to.query } : undefined);
       break;
-    default:
-      next(auth ? undefined : '/login');
+    }
+    default: {
+      if (auth) {
+        next();
+        break;
+      }
+      next({ name: 'login', query: { redir: to.fullPath } });
       break;
+    }
   }
 });
 

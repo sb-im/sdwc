@@ -12,7 +12,7 @@ export default {
       this.couldRetry = false;
       const result = await this.$mqtt(this.point.node_id, {
         mission: 'webrtc3',
-        arg: { url: this.point.name }
+        arg: { url: this.point.params.url }
       });
       const client = new WebRTC3Client(this.iceServer, result.url);
       client.on('icestatechange', (/** @type {RTCIceConnectionState} */ state) => {

@@ -1,11 +1,11 @@
 // @ts-check
 
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter } from 'eventemitter3';
 
 import mqtt from 'mqtt';
 import jsonrpc from 'jsonrpc-lite';
 
-export class MqttClient extends EventEmitter2 {
+export class MqttClient extends EventEmitter {
   constructor() {
     super();
     this.lastPing = -1;
@@ -31,7 +31,7 @@ export class MqttClient extends EventEmitter2 {
    * - `nodes/:id/{status,network}`
    * - `nodes/:id/rpc/{send,recv}`
    * - `nodes/:id/msg/{position,battery,weather,...}`
-   * - `plans/:id/{term,dialog,running}`
+   * - `tasks/:id/{term,dialog,running}`
    * @param {string} topic
    * @returns {SDWC.MqttTopicInfo}
    */
@@ -39,7 +39,7 @@ export class MqttClient extends EventEmitter2 {
     const parts = topic.split('/');
     const result = {
       entity: parts[0],
-      id: Number.parseInt(parts[1], 10),
+      id: parts[1],
       category: parts[2],
       param: parts[3]
     };
@@ -93,7 +93,7 @@ export class MqttClient extends EventEmitter2 {
           case 'nodes':
             this.onNode(t, str);
             break;
-          case 'plans':
+          case 'tasks':
             this.onPlan(t, str);
             break;
           default:
@@ -117,7 +117,7 @@ export class MqttClient extends EventEmitter2 {
 
   /**
    * subscirbe `/nodes/:id/{rpc/{send,recv},message,status}`
-   * @param {number|string} id node id
+   * @param {string} id node id
    */
   subscribeNode(id) {
     [
@@ -131,21 +131,22 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * subscirbe `/plans/:id/{term,dialog}`
-   * @param {number|string} id plan id
+   * subscirbe `/tasks/:id/{term,dialog,running}`
+   * @param {number} id plan id
    */
   subscribePlan(id) {
     [
-      `plans/${id}/term`,
-      `plans/${id}/dialog`,
-      `plans/${id}/running`
+      `tasks/${id}/term`,
+      `tasks/${id}/dialog`,
+      `tasks/${id}/running`,
+      `tasks/${id}/notification`
     ].forEach(topic => {
       this.mqtt.subscribe(topic);
     });
   }
 
   /**
-   * invoke rpc method, or add to queue if connection not ready.
+   * invoke node rpc method, or add to queue if connection not ready.
    * @param {number|string} target target node id
    * @param {string} method method name
    * @param {any} arg method argument
@@ -191,16 +192,25 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
+   * respond to task dialog
+   * @param {number} target task id
+   * @param {string} message button message
+   */
+  respond(target, message) {
+    this.mqtt.publish(`tasks/${target}/term`, message);
+  }
+
+  /**
    * @param {SDWC.MqttTopicInfo} topic
    * @param {string} str
    */
   onNode(topic, str) {
     switch (topic.category) {
       case 'status':
-        this.emit('status', topic.id, JSON.parse(str));
+        this.emit('node:status', { id: topic.id, status: JSON.parse(str) });
         break;
       case 'network':
-        this.emit('network', topic.id, JSON.parse(str));
+        this.emit('node:network', { id: topic.id, network: JSON.parse(str) });
         break;
       case 'rpc':
         switch (topic.param) {
@@ -213,7 +223,7 @@ export class MqttClient extends EventEmitter2 {
         }
         break;
       case 'msg':
-        this.emit('message', topic.id, { [topic.param]: JSON.parse(str) });
+        this.emit('node:message', { id: topic.id, msg: { [topic.param]: JSON.parse(str) } });
         break;
       default:
         MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);
@@ -222,7 +232,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {number} id
+   * @param {string} id
    * @param {string} str
    */
   onNodeRpcSend(id, str) {
@@ -237,7 +247,7 @@ export class MqttClient extends EventEmitter2 {
   }
 
   /**
-   * @param {number} id
+   * @param {string} id
    * @param {string} str
    */
   onNodeRpcRecv(id, str) {
@@ -267,15 +277,19 @@ export class MqttClient extends EventEmitter2 {
    * @param {string} str
    */
   onPlan(topic, str) {
+    const id = Number.parseInt(topic.id, 10);
     switch (topic.category) {
       case 'term':
-        this.emit('plan', topic.id, str, undefined);
+        this.emit('plan:term', { id, output: str });
         break;
       case 'dialog':
-        this.emit('plan', topic.id, null, JSON.parse(str));
+        this.emit('plan:dialog', { id, dialog: JSON.parse(str) });
         break;
       case 'running':
-        this.emit('plan_running', topic.id, JSON.parse(str));
+        this.emit('plan:running', { id, running: JSON.parse(str) });
+        break;
+      case 'notification':
+        this.emit('plan:notification', { id, notification: JSON.parse(str) });
         break;
       default:
         MqttClient.warn(`Unknown category "${topic.category}", with payload:`, str);

@@ -7,7 +7,9 @@ export default {
   common: {
     air: 'Drone',
     depot: 'Depot',
+    node: 'Node',
     plan: 'Plan',
+    schedule: 'Schedule',
     overview: 'Overview',
     confirm: 'Confirm',
     cancel: 'Cancel',
@@ -21,8 +23,6 @@ export default {
     clear: 'Clear',
     none: 'None',
     status: {
-      '-3': 'precheck Failed',
-      '-2': '',
       '-1': 'Not Connected',
       0: 'Normal',
       1: 'Powered Off',
@@ -55,6 +55,10 @@ export default {
       loss: '{loss}% Packet Loss',
       delay: 'Delay {delay}ms'
     },
+    team: 'Team: ',
+    switch_team: 'Switch Team',
+    switch_team_to: 'Please select a Team to switch to:',
+    switching_team: 'Switching Team, please wait ...',
     logout: 'Logout'
   },
   aside: {
@@ -62,11 +66,23 @@ export default {
     unfold: 'Unfold Menu'
   },
   plan: {
+    name: 'Name',
+    node: 'Node',
+    files: 'Files',
+    extra: 'Extra',
+    list: {
+      list: 'Task List',
+      updated: 'Update Time',
+      state: 'State',
+      running: 'Running',
+      idle: 'Idle'
+    },
     view: {
       title: 'View Plan',
       run: 'Run Plan',
       stop: 'Terminate Plan',
-      history: 'Plan axecution history',
+      history: 'Plan execution history',
+      run_fail: 'Run Plan failed',
       run_time: 'Execution time',
       raw_data: 'Raw data',
       auto_run: 'Automatic processing',
@@ -84,13 +100,13 @@ export default {
       edit: 'Edit Plan',
       create_failed: 'Failed to create Plan: Error code {code}',
       update_failed: 'Failed to edit Plan: Error code {code}',
-      name_inp: 'Enter the name of plan',
-      desc_inp: 'Enter the description of plan',
-      air_inp: 'Select the drone',
+      name_inp: 'Enter name of this plan',
+      node_inp: 'Select Node to run this plan',
       delete_title: 'Delete Plan',
       delete_tips: 'Do you really want to permanently delete this plan?'
     },
     file: {
+      label: 'File label',
       key: {
         waypoint: 'Waypoint',
         speaker: 'Speaker audio',
@@ -103,12 +119,33 @@ export default {
       re: 'Re-Select..',
       error: 'Failed to upload file: Error code {code}'
     },
-    name: 'Name',
-    desc: 'Description',
-    desc_no: 'No description',
-    files: 'Files',
-    air: 'Flying drone',
-    ctime: 'Creation time'
+    dialog: {
+      running: 'Running Task: '
+    }
+  },
+  schedule: {
+    name: 'Schedule Name',
+    state: 'State',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    cron: 'cron Expression',
+    method: 'Method',
+    params: 'Params',
+    simple: 'Simple',
+    advanced: 'Advanced',
+    strategy: 'Strategy',
+    next5: 'Upcoming 5 schedules',
+    list: {
+      list: 'Schedule List'
+    },
+    view: {
+      title: 'Schedule Detail',
+      trigger: 'Trigger Now',
+      trigger_success: 'Schedule Triggered'
+    },
+    edit: {
+      new: 'New Schedule'
+    }
   },
   air: {
     signal: 'Signal Strength',

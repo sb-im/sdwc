@@ -7,7 +7,9 @@ export default {
   common: {
     air: '无人机',
     depot: '机场',
+    node: '节点',
     plan: '任务',
+    schedule: '定时任务',
     overview: '概况',
     confirm: '确定',
     cancel: '取消',
@@ -21,8 +23,6 @@ export default {
     clear: '清空',
     none: '暂无',
     status: {
-      '-3': 'precheck 失败',
-      '-2': '',
       '-1': '未连接',
       0: '正常',
       1: '已关闭',
@@ -55,6 +55,10 @@ export default {
       loss: '丢包率 {loss}%',
       delay: '延迟 {delay}ms'
     },
+    team: '团队：',
+    switch_team: '切换团队',
+    switch_team_to: '请选择要切换到的团队：',
+    switching_team: '切换团队中，请稍等 ...',
     logout: '退出'
   },
   aside: {
@@ -62,10 +66,22 @@ export default {
     unfold: '展开菜单'
   },
   plan: {
+    name: '任务名称',
+    node: '执行设备',
+    files: '文件列表',
+    extra: '附加信息',
+    list: {
+      list: '任务列表',
+      updated: '更新时间',
+      state: '执行状态',
+      running: '执行中',
+      idle: '待执行'
+    },
     view: {
       title: '查看任务',
       run: '执行任务',
       stop: '终止任务',
+      run_fail: '执行任务失败',
       history: '任务执行历史',
       run_time: '执行时间',
       raw_data: '原始数据',
@@ -85,12 +101,12 @@ export default {
       create_failed: '创建任务失败：错误代码 {code}',
       update_failed: '编辑任务失败：错误代码 {code}',
       name_inp: '请输入任务名称',
-      desc_inp: '请输入任务描述',
-      air_inp: '请选择执飞无人机',
+      node_inp: '请选择执行设备',
       delete_title: '删除任务',
       delete_tips: '确定要永久删除此任务吗？'
     },
     file: {
+      label: '文件标签',
       key: {
         waypoint: '航点',
         speaker: '喊话器音频',
@@ -103,12 +119,33 @@ export default {
       re: '重新上传',
       error: '上传文件失败：错误代码 {code}'
     },
-    name: '任务名称',
-    desc: '任务描述',
-    desc_no: '暂无任务描述',
-    files: '文件列表',
-    air: '执飞无人机',
-    ctime: '创建时间'
+    dialog: {
+      running: '执行中任务：'
+    }
+  },
+  schedule: {
+    name: '定时任务名称',
+    state: '状态',
+    enabled: '启用',
+    disabled: '禁用',
+    cron: 'cron 表达式',
+    method: '方法',
+    params: '参数',
+    simple: '简明',
+    advanced: '高级',
+    strategy: '执行策略',
+    next5: '未来 5 次执行时间',
+    list: {
+      list: '定时任务列表'
+    },
+    view: {
+      title: '定时任务详情',
+      trigger: '立即执行',
+      trigger_success: '定时任务执行完成'
+    },
+    edit: {
+      new: '新建定时任务'
+    }
   },
   air: {
     signal: '信号强度',

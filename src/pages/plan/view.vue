@@ -1,8 +1,10 @@
 <template>
   <div class="plan">
+    <!--
     <div class="el-card sd-card term">
-      <sd-status-notify :notification="termOutput" :canPopup="false"></sd-status-notify>
+      <sd-status-notify :notification="plan.term" :canPopup="false"></sd-status-notify>
     </div>
+    -->
     <sd-card icon="doc" title="plan.view.title">
       <template #action>
         <el-button type="primary" size="medium" icon="el-icon-edit" @click="handleEdit">
@@ -21,15 +23,15 @@
           <span v-t="'plan.view.run'"></span>
         </el-button>
       </template>
-      <sd-plan-readonly :plan="planToShow"></sd-plan-readonly>
+      <sd-plan-readonly :plan="plan.info"></sd-plan-readonly>
     </sd-card>
-    <sd-map icon="map-waypoint" title="map.waypoint" fit v-bind="map"></sd-map>
+    <sd-map icon="map-waypoint" title="map.waypoint" fit fitType="all" v-bind="map"></sd-map>
     <sd-job-file ref="jobFile"></sd-job-file>
     <sd-card class="plan__history" icon="paper-busy" title="plan.view.history" dense>
       <el-table
         stripe
         v-loading="job.loading"
-        :data="jobsToShow"
+        :data="jobs"
         :row-class-name="getTableRowClass"
         :default-sort="{ prop: 'created_at', order: 'descending' }"
         @sort-change="handleSortChange"
@@ -55,8 +57,9 @@
       </el-table>
       <el-pagination
         layout="total, prev, pager, next"
-        :total="jobs.length"
-        :current-page.sync="pagination.current"
+        :total="job.total"
+        :current-page.sync="job.page"
+        @current-change="refreshShownJobs"
       ></el-pagination>
     </sd-card>
   </div>
@@ -64,7 +67,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { runPlanJob, getPlanJobs, cancelPlanJob } from '@/api/super-dock';
+import { runTask, cancelTask } from '@/api/super-dock-v3';
 
 import Card from '@/components/card.vue';
 import PlanMap from '@/components/map/map.vue';
@@ -79,74 +82,72 @@ import { waypointsToMapProps } from './common';
 export default {
   name: 'sd-plan-view',
   props: {
-    /** @type {import('vue').PropOptions<SDWC.PlanInfo>}*/
-    plan: {
-      type: Object,
+    planId: {
+      type: Number,
       required: true
     }
   },
   data() {
     return {
-      map: {},
+      map: {
+        /** @type {SDWC.LatLng[]} */
+        boundary: [],
+        /** @type {SDWC.MapPolyline[]} */
+        polylines: [],
+        /** @type {SDWC.MarkerBase[]} */
+        markers: []
+      },
       /** @type {SDWC.PlanJob[]} */
       jobs: [],
       job: {
         loading: false,
+        total: null,
+        page: 1,
         order: 'descending'
-      },
-      pagination: {
-        size: 10,
-        current: 1
       }
     };
   },
   computed: {
-    /**
-     * @returns {SDWC.PlanTermOutput[]}
-     */
-    termOutput() {
-      /** @type {SDWC.State} */
-      const state = this.$store.state;
-      const term = state.plan.term.find(t => t.id === this.plan.id);
-      return term ? term.output : [];
-    },
-    /**
-     * @returns {SDWC.PlanRunningContent}
-     */
-    runningContent() {
-      /** @type {SDWC.State} */
-      const state = this.$store.state;
-      const running = state.plan.running.find(r => r.id === this.plan.id);
-      return running ? running.running : null;
+    /** @returns {SDWC.Node[]} */
+    depots() { return this.$store.getters.depots; },
+    /** @returns {SDWC.PlanState[]} */
+    plans() { return this.$store.state.plan; },
+    /** @returns {SDWC.PlanState} */
+    plan() {
+      return this.plans.find(p => p.info.id === this.planId);
     },
     /** @returns {boolean} */
     isRunning() {
-      return this.runningContent !== null;
+      return this.plan.running !== null;
     },
-    /** @returns {SDWC.PlanInfo} */
-    planToShow() {
-      if (!this.isRunning) return this.plan;
-      return Object.assign({}, this.plan, {
-        files: Object.assign({}, this.plan.files, this.runningContent.files),
-        extra: Object.assign({}, this.plan.extra, this.runningContent.extra)
-      });
-    },
-    /** @returns {SDWC.PlanJob[]} */
-    jobsToShow() {
-      const { size, current } = this.pagination;
-      const end = current * size;
-      return this.jobs.slice(end - size, end);
+    /** @returns {SDWC.MarkerDepot[]} */
+    depotMarker() {
+      return this.depots.filter(d => d.info.uuid === this.plan.info.node_id).map(d => ({
+        type: 'depot',
+        id: d.info.id,
+        uuid: d.info.uuid,
+        name: d.info.name,
+        position: { lng: d.status.status.lng, lat: d.status.status.lat }
+      }));
     }
   },
   methods: {
     ...mapActions([
+      'getTaskJobs',
       'getPlanWaypoints'
     ]),
     handleEdit() {
-      this.$router.push({ name: 'plan/edit', params: { id: this.plan.id } });
+      this.$router.push({ name: 'plan/edit', params: { id: this.planId } });
     },
     handleRun() {
-      runPlanJob(this.plan.id).catch(() => { /* noop */ });
+      runTask(this.planId)
+        .catch(e => {
+          this.$alert(e.error, {
+            title: this.$t('plan.view.run_fail'),
+            type: 'error'
+          });
+        })
+        .then(() => this.refreshShownJobs());
     },
     handleStop() {
       if (!this.isRunning) return;
@@ -158,10 +159,10 @@ export default {
         offset: 50,
         duration: 0,
         type: 'info',
-        title: this.plan.name,
+        title: this.plan.info.name,
         message: this.$t('plan.view.pending'),
       });
-      cancelPlanJob(this.plan.id, this.runningContent.id).then(() => {
+      cancelTask(this.planId).then(() => {
         Object.assign(n.$data, {
           message: this.$t('plan.view.stop_run'),
           type: 'warning',
@@ -175,47 +176,35 @@ export default {
         });
       });
     },
-    sortJobs(order = 'descending') {
-      const modifier = order === 'descending' ? -1 : 1;
-      this.jobs.sort((a, b) => (a.created_at - b.created_at) * modifier);
+    async refreshPlanWaypoints() {
+      try {
+        const wp = await this.getPlanWaypoints(this.plan.info);
+        const map = waypointsToMapProps(wp);
+        map.markers.push(...this.depotMarker);
+        this.map = map;
+      } catch (e) { /* ignore */ }
     },
-    async getPlanJobs() {
+    async refreshShownJobs() {
       this.job.loading = true;
-      const res = await getPlanJobs(this.plan.id);
+      const res = await this.getTaskJobs({ id: this.planId, page: this.job.page });
       if (this.isRunning) {
-        this.patchRunningJob(res, this.runningContent.job);
+        this.patchRunningJob(res, this.plan.running.job);
       }
-      res.forEach(l => l.created_at = new Date(l.created_at));
       this.jobs = res;
-      this.sortJobs();
+      this.job.total = this.plan.info.index;
       this.job.loading = false;
     },
     /**
      * @param {SDWC.PlanJob[]} jobs
-     * @param {SDWC.PlanRunningContentJob} runningJob
+     * @param {SDWC.PlanJob} runningJob
      */
     patchRunningJob(jobs, runningJob) {
-      if (!runningJob || !runningJob.job_id) return;
+      if (!runningJob?.id) return;
       /** @type {SDWC.PlanJob} */
-      const job = jobs.find(j => j.job_id === runningJob.job_id);
-      if (typeof job !== 'object') {
-        const now = new Date();
-        jobs.unshift(Object.assign({
-          temporary: true,
-          job_id: runningJob.job_id,
-          plan_id: this.plan.id,
-          created_at: now,
-          updated_at: now
-        }, runningJob));
-      } else {
-        if (job.temporary) {
-          job.files = runningJob.files;
-          job.extra = runningJob.extra;
-        } else {
-          job.files = Object.assign({}, job.files, runningJob.files);
-          job.extra = Object.assign({}, job.extra, runningJob.extra);
-        }
-      }
+      const job = jobs.find(j => j.id === runningJob.id);
+      if (!job) return;
+      job.files = Object.assign({}, job.files, runningJob.files);
+      job.extra = Object.assign({}, job.extra, runningJob.extra);
     },
     /**
      * @param {{ row: SDWC.PlanJob }} _
@@ -223,26 +212,34 @@ export default {
      */
     getTableRowClass({ row }) {
       if (!this.isRunning) return '';
-      return this.runningContent.job.job_id === row.job_id ? 'is-running' : '';
+      return this.plan.running.job.id === row.id ? 'is-running' : '';
     },
     handleSortChange({ order }) {
       this.job.order = order;
-      this.pagination.current = 1;
-      this.sortJobs(order);
+      this.job.page = 1;
+      // TODO: refetch jobs
     },
     handleOpenFile(blobId) {
       this.$refs.jobFile.open(blobId);
     },
     dateFormatter(row, column, cellValue /*, index */) {
-      return this.$d(cellValue, 'long');
+      return this.$d(new Date(cellValue), 'long');
+    }
+  },
+  watch: {
+    // sometimes waypoints loaded before node info (eg. page refresh)
+    // append depot marker if there's none
+    depotMarker(val) {
+      if (this.map.markers.findIndex(m => m.type === 'depot') >= 0) return;
+      this.map.markers.push(...val);
     }
   },
   created() {
-    this.getPlanWaypoints(this.plan).then(wp => this.map = waypointsToMapProps(wp));
-    this.getPlanJobs();
+    this.refreshPlanWaypoints();
+    this.refreshShownJobs();
     this._unsub = this.$store.subscribe(({ type, payload }) => {
       if (type === PLAN.SET_PLAN_RUNNING) {
-        if (payload.id === this.plan.id && payload.running.job) {
+        if (payload.id === this.planId && payload.running.job) {
           this.patchRunningJob(this.jobs, payload.running.job);
         }
       }
@@ -276,7 +273,11 @@ export default {
   padding: 8px 25px;
 }
 
-.plan__history .el-table__row.is-running > td {
-  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px) !important;
+.plan__history .el-table__row.is-running {
+  background-image: repeating-linear-gradient(45deg, #00000015, #00000015 10px, transparent 10px, transparent 20px);
+}
+.plan__history .el-table__row.is-running:hover .el-table__cell,
+.plan__history .el-table__row.is-running.el-table__row--striped .el-table__cell {
+  background-color: transparent;
 }
 </style>

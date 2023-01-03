@@ -6,6 +6,13 @@
     :title="form.name"
     :visible.sync="visible"
   >
+    <p class="navigate">
+      <span v-t="'plan.dialog.running'"></span>
+      <router-link :to="planRoute" v-slot="{ href }">
+        <!-- eslint-disable vue/no-v-text-v-html-on-component -->
+        <el-link v-text="plan.info.name" :href="href" @click.native="handleRouteClick"></el-link>
+      </router-link>
+    </p>
     <el-alert
       v-if="form.message"
       show-icon
@@ -47,10 +54,19 @@ export default {
     visible: false
   }),
   computed: {
+    /** @returns {SDWC.PlanState[]} */
+    plans() { return this.$store.state.plan; },
+    /** @returns {SDWC.PlanState} */
+    plan() {
+      return this.plans.find(p => p.info.id === this.planId);
+    },
+    /** @returns {import('vue-router').Route} */
+    planRoute() {
+      return { name: 'plan', params: { id: this.planId } };
+    },
     /** @returns {SDWC.PlanDialogContent} */
     form() {
-      const d = this.$store.state.plan.dialog.find(d => d.id === this.planId) || {};
-      return d.dialog || {};
+      return this.plan?.dialog ?? {};
     },
     /** @returns {string} */
     alertType() {
@@ -60,11 +76,15 @@ export default {
     }
   },
   methods: {
+    handleRouteClick() {
+      this.$router.push(this.planRoute).catch(() => { /* noop */ });
+      this.close();
+    },
     /**
      * @param {{ name: string, message: string, level: string }} button
      */
     handleButtonClick(button) {
-      MqttClient.mqtt.publish(`plans/${this.planId}/term`, button.message);
+      MqttClient.respond(this.planId, button.message);
     },
     open() {
       this.visible = true;
@@ -83,5 +103,11 @@ export default {
 .sd-plan-dialog .el-dialog__body {
   padding: 10px 20px 20px;
   box-sizing: content-box;
+}
+.sd-plan-dialog .navigate {
+  margin: 0 0 1em;
+}
+.sd-plan-dialog .navigate .el-link {
+  vertical-align: baseline;
 }
 </style>

@@ -2,16 +2,13 @@
   <sd-node-monitor ref="monitor" :point="point" :status="status" v-bind="$attrs">
     <template #action>
       <!-- video source dropdown -->
-      <el-dropdown trigger="click">
+      <el-dropdown v-if="videoSources.length > 0"  trigger="click">
         <el-button size="small" :disabled="allDisabled || source.pending">
           <span v-t="'monitor.source.title'"></span>
           <i :class="`el-icon--right el-icon-${source.pending ? 'loading' : 'arrow-down'}`"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="videoSources.length === 0" disabled>
-            <span v-t="'monitor.source.empty'"></span>
-          </el-dropdown-item>
-          <template v-else>
+          <template>
             <el-dropdown-item
               v-for="s of videoSources"
               :key="s.source"
@@ -29,15 +26,12 @@
         </el-dropdown-menu>
       </el-dropdown>
       <!-- control dropdown -->
-      <el-dropdown trigger="click">
+      <el-dropdown v-if="availableControls.length > 0  || hasStickControl" trigger="click">
         <el-button size="small" :disabled="allDisabled">
           <span v-t="'monitor.control.title'"></span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="availableControls.length === 0 && !hasStickControl" disabled>
-            <span v-t="'monitor.control.empty'"></span>
-          </el-dropdown-item>
           <el-dropdown-item
             v-for="c of availableControls"
             :key="c.type"
@@ -61,16 +55,16 @@
         </el-dropdown-menu>
       </el-dropdown>
       <!-- action dropdown -->
-      <el-dropdown trigger="click" @command="handleAction">
+      <el-dropdown v-if="availableActions.length > 0" trigger="click" @command="handleAction">
         <el-button size="small" :disabled="allDisabled">
           <span v-t="'monitor.action.title'"></span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="availableActions.length === 0" disabled>
+          <el-dropdown-item v-if="shownActions.length === 0" disabled>
             <span v-t="'monitor.action.empty'"></span>
           </el-dropdown-item>
-          <el-dropdown-item v-for="a of availableActions" :key="a.method" :command="a.method">
+          <el-dropdown-item v-for="a of shownActions" :key="a.method" :command="a.method">
             <span v-t="a.label || `monitor.action.${a.method}` || a.method"></span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -79,6 +73,7 @@
     <template>
       <div class="monitor__overlay">
         <svg class="monitor__svg" :view-box.camel="overlaySVG.viewBox">
+          <!-- eslint-disable vue/no-v-text-v-html-on-component -->
           <component
             v-for="(shape, index) of overlaySVG.elements"
             :key="index"
@@ -113,6 +108,7 @@
               v-model="gimbal.pitch"
               :min="point.params.control.gimbal.pitch[0]"
               :max="point.params.control.gimbal.pitch[1]"
+              :marks="{ [msg.gimbal.pitch]: `${msg.gimbal.pitch}` }"
               @change="handleGimbalCtl({ pitch: $event })"
               height="135px"
             />
@@ -123,6 +119,7 @@
               v-model="gimbal.yaw"
               :min="point.params.control.gimbal.yaw[0]"
               :max="point.params.control.gimbal.yaw[1]"
+              :marks="{ [msg.gimbal.yaw]: `${msg.gimbal.yaw}` }"
               @change="handleGimbalCtl({ yaw: $event })"
               style="width:180px"
             />
@@ -141,6 +138,7 @@
             :min="point.params.control.zoom.zoom[0]"
             :max="point.params.control.zoom.zoom[1]"
             :step="0.1"
+            :marks="{ [msg.gimbal.zoom]: `${msg.gimbal.zoom}` }"
             @change="handleGimbalZoom"
             height="135px"
           />
@@ -293,8 +291,12 @@ export default {
     },
     /** @returns {{ method: string, label: string }[]} */
     availableActions() {
+      return get(this.point.params, 'action', []);
+    },
+    /** @returns {{ method: string, label: string }[]} */
+    shownActions() {
       const enabled = this.msg.action_enabled;
-      return get(this.point.params, 'action', []).filter(a => enabled.includes(a.method));
+      return this.availableActions.filter(a => enabled.includes(a.method));
     },
     /** @returns {{ viewBox: string, elements: { type: string, text: string }[] }} */
     overlaySVG() {
@@ -785,7 +787,6 @@ export default {
     }
   },
   created() {
-    // TODO: sync values between msg.gimbal and $data.gimbal
     this.gimbal = { ...this.msg.gimbal };
     this._canvas = new OffscreenCanvas(500, 100);
     this._ctx2d = this._canvas.getContext('2d');
@@ -849,11 +850,22 @@ export default {
 .monitor-drone-control__target.double {
   background-color: #409effb2;
 }
-.monitor-drone-control--vertical {
-  float: right;
-}
+.monitor-drone-control--vertical,
 .monitor-drone-control--horizontal {
   float: right;
+}
+.monitor-drone-control .el-slider__marks-text {
+  font-size: 12px;
+  color: white;
+  text-shadow: 0 0 6px black;
+}
+.monitor-drone-control--vertical .el-slider.is-vertical .el-slider__marks-text {
+  left: -30px;
+  width: 20px;
+  text-align: right;
+}
+.monitor-drone-control .el-slider__stop {
+  background-color: #E6A23C;
 }
 .monitor-drone-control--bottom {
   position: absolute;
@@ -892,6 +904,7 @@ export default {
   height: 30px !important;
   margin: -15px 0 0 -15px !important;
 }
+/* safari workarounds */
 .sd--safari .monitor--full .monitor-drone-control {
   top: 18px;
   right: 4px;

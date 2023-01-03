@@ -36,7 +36,18 @@ const cfg = {
     path: P('/dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
-    hashFunction: 'xxhash64'
+    hashFunction: 'xxhash64',
+    // fix source map directory structure
+    // https://github.com/vuejs/vue-cli/issues/2978#issuecomment-473240405
+    // https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
+    devtoolModuleFilenameTemplate: (info) => {
+      const isGeneratedDuplicate = info.resourcePath.match(/\.vue$/) && info.allLoaders;
+      if (isGeneratedDuplicate) {
+        return `webpack-generated:///${info.resourcePath}?${info.hash}`;
+      }
+      return `webpack:///${path.normalize(info.resourcePath)}`;
+    },
+    devtoolFallbackModuleFilenameTemplate: 'webpack:///[resource-path]?[hash]'
   },
   module: {
     rules: [
@@ -58,7 +69,9 @@ const cfg = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        // since we import .vue files directly from ele-vue-cron,
+        // they need to be processed by babel for element-ui on-demand import to work
+        exclude: path => path.includes('node_modules') && !path.includes('ele-vue-cron'),
         loader: 'babel-loader',
         options: {
           presets: [
@@ -103,6 +116,8 @@ const cfg = {
       // use browser version mqtt.js
       'mqtt': 'mqtt/dist/mqtt.js'
     },
+    // ele-vue-cron needs '.vue' extension
+    extensions: ['.js', '.json', '.wasm', '.vue'],
     fallback: {
       path: false
     }

@@ -50,8 +50,7 @@ export default {
   name: 'sd-status-notify',
   props: {
     nodeId: {
-      type: Number,
-      default: -1
+      type: [Number, String]
     },
     notification: {
       type: Array,

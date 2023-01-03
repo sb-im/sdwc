@@ -1,7 +1,10 @@
 /* global module */
 module.exports = {
+  ignorePatterns: [
+    '*.d.ts'
+  ],
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 'latest'
   },
   extends: [
     'eslint:recommended',

@@ -26,8 +26,17 @@ import { MutationTypes as PLAN } from './store/modules/plan';
 import 'chartist';
 import 'chartist-plugin-tooltips';
 import JSONTreeView from 'vue-json-tree-view/src/index';
+import { ifvisible } from 'ifvisible.js';
 
 Vue.use(JSONTreeView);
+
+async function enableIdleCheck() {
+  // 'eager' mode prevents webpack from generating extra chunk for this module
+  const { ifvisible } = await import(/* webpackMode: 'eager' */ 'ifvisible.js');
+  ifvisible.setIdleDuration(store.state.config.idle_timeout);
+  ifvisible.on('idle', () => store.dispatch('handleUserIdle'));
+  ifvisible.on('wakeup', () => store.commit(UI.SET_UI, { idle: false }));
+}
 
 const configurePromise = store.dispatch('configure');
 /**
@@ -41,9 +50,27 @@ store.dispatch('restorePreference');
  * re-initialize data and connections after configure completed and session
  * restored
  */
-configurePromise.then(() => {
+configurePromise.then(async () => {
   if (store.getters.authenticated) {
     store.dispatch('initialize');
+    if (!store.state.user.credential.implicit) {
+      // enable idle check when not in single user mode
+      enableIdleCheck();
+    }
+    return;
+  }
+  const isSingleUserMode = await store.dispatch('checkSingleUserMode');
+  if (isSingleUserMode) {
+    store.dispatch('initialize');
+    const { name, query } = router.currentRoute;
+    if (name === 'login' && query.redir) {
+      router.replace(query.redir);
+    } else {
+      router.replace({ name: 'panel' });
+    }
+  } else {
+    // enable idle check when not in single user mode
+    enableIdleCheck();
   }
 });
 
@@ -64,7 +91,6 @@ const app = new Vue({
 
 store.subscribe((mutation) => {
   if (mutation.type === USER.INVALIDATE_TOKEN) {
-    store.dispatch('logout');
     router.replace({ name: 'login' });
     app.$message({
       type: 'error',
@@ -77,31 +103,15 @@ store.subscribe((mutation) => {
 MqttClient.on('close', () => store.commit(UI.SET_UI, { mqttConnected: false }));
 MqttClient.on('connect', () => store.commit(UI.SET_UI, { mqttConnected: true }));
 MqttClient.on('ping', delay => store.commit(UI.SET_UI, { mqttDelay: delay }));
-MqttClient.on('status', async (id, payload) => {
-  if (!payload.legacy) {
-    store.commit(NODE.SET_NODE_STATUS, { id, payload });
-    return;
-  }
-  if (payload.code === 0) {
-    const node = store.state.node.find(n => n.info.id === id);
-    if (node.info.type_name === 'depot') {
-      await store.dispatch('updateDepotStatus', id);
-    }
-    store.commit(NODE.SET_NODE_STATUS, { id, payload });
-  }
-});
-MqttClient.on('network', (id, payload) => {
-  store.commit(NODE.SET_NODE_NETWORK, { id, payload });
-});
-MqttClient.on('message', (id, msg) => {
-  store.commit(NODE.ADD_NODE_MSG, { id, msg });
-});
-MqttClient.on('plan', (id, output, dialog) => {
-  store.commit(PLAN.ADD_PLAN_MSG, { id, output, dialog });
-});
-MqttClient.on('plan_running', (id, running) => {
-  store.commit(PLAN.SET_PLAN_RUNNING, { id, running });
-});
+
+MqttClient.on('node:status', arg => store.commit(NODE.SET_NODE_STATUS, arg));
+MqttClient.on('node:network', arg => store.commit(NODE.SET_NODE_NETWORK, arg));
+MqttClient.on('node:message', arg => store.commit(NODE.ADD_NODE_MSG, arg));
+
+MqttClient.on('plan:term', arg => store.commit(PLAN.ADD_PLAN_TERM, arg));
+MqttClient.on('plan:dialog', arg => store.commit(PLAN.SET_PLAN_DIALOG, arg));
+MqttClient.on('plan:running', arg => store.commit(PLAN.SET_PLAN_RUNNING, arg));
+MqttClient.on('plan:notification', arg => store.commit(PLAN.ADD_PLAN_NOTIFY, arg));
 
 if (__SDWC_DEV__) {
   // 'DEVELOPMENT' badge
@@ -113,4 +123,5 @@ if (__SDWC_DEV__) {
   import('@/api/mqtt').then(c => {
     window._mqttClient = c.default;
   });
+  window._ifvisible = ifvisible;
 }

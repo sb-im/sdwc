@@ -14,14 +14,17 @@ export default {
   name: 'sd-drone-status',
   inheritAttrs: false,
   props: {
+    /** @type {Vue.PropOptions<SDWC.NodePoint>} */
     point: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeConnectionStatus>} */
     status: {
       type: Object,
       required: true
     },
+    /** @type {Vue.PropOptions<SDWC.NodeMsg>} */
     msg: {
       type: Object,
       required: true

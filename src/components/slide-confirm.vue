@@ -51,11 +51,11 @@ export default {
         'sd-slide-confirm--completed': this.completed
       };
     },
-    /** @returns {{ [key: string]: boolean }} */
+    /** @returns {{ [key: string]: string }} */
     containerStyle() {
       return { width: `${this.width}px` };
     },
-    /** @returns {{ [key: string]: boolean }} */
+    /** @returns {{ [key: string]: string }} */
     textStyle() {
       return { visibility: this.position ? 'hidden' : 'visible' };
     },
@@ -67,7 +67,7 @@ export default {
         icon: this.completed ? 'el-icon-check' : this.$attrs.icon || 'el-icon-arrow-right'
       };
     },
-    /** @returns {{ [key: string]: boolean }} */
+    /** @returns {{ [key: string]: string }} */
     buttonStyle() {
       if (this.completed) return { marginLeft: `${this.completedPosition}px` };
       if (!this.dragable) return {};

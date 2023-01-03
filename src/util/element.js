@@ -71,7 +71,7 @@ import {
   // Footer,
   // Timeline,
   // TimelineItem,
-  // Link,
+  Link,
   Divider,
   // Image,
   // Calendar,
@@ -158,7 +158,7 @@ Vue.use(Header);
 // Vue.use(Footer);
 // Vue.use(Timeline);
 // Vue.use(TimelineItem);
-// Vue.use(Link);
+Vue.use(Link);
 Vue.use(Divider);
 // Vue.use(Image);
 // Vue.use(Calendar);

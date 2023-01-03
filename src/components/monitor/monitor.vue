@@ -82,15 +82,11 @@ export default {
     },
     /** @returns {keyof CompoName} */
     compoName() {
-      return CompoName[this.point.point_type_name] || '';
+      return CompoName[this.point.type] || '';
     },
     /** @returns {boolean} */
     streamAvailable() {
-      if (this.status.code !== 0) return false;
-      if (this.point.point_type_name === 'livestream_webrtc2') {
-        return true;
-      }
-      return this.point.name !== '';
+      return this.status.code === 0;
     }
   },
   methods: {

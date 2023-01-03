@@ -10,7 +10,7 @@ export default {
     createChannel() {
       this.msg = this.$t('monitor.connecting');
       this.couldRetry = false;
-      const channel = new WebSocketSignalingChannel(this.point.name, this.$refs.video, this.iceServer);
+      const channel = new WebSocketSignalingChannel(this.point.params.url, this.$refs.video, this.iceServer);
       channel.on('event', ev => {
         if (ev.type === 'error' || ev.type === 'notice') {
           this.msg = ev.mesg;

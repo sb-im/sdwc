@@ -47,7 +47,7 @@ export default {
         this.treeViewOpts.rootObjectKey = 'msg';
         val = {};
         for (const point of this.node.info.points) {
-          const topic = PointTopic[point.point_type_name];
+          const topic = PointTopic[point.type];
           if (topic) {
             const msg = this.node.msg[topic];
             val[topic] = Array.isArray(msg) ? msg[0] : msg;

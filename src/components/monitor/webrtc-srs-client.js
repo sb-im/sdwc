@@ -1,7 +1,7 @@
 // @ts-check
 
 import wretch from 'wretch';
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter } from 'eventemitter3';
 
 // https://github.com/ossrs/srs/blob/v5.0.21/trunk/3rdparty/signaling/www/demos/js/srs.sdk.js
 
@@ -145,7 +145,7 @@ const __internal = {
   }
 };
 
-export class WebRTCSRSClient extends EventEmitter2 {
+export class WebRTCSRSClient extends EventEmitter {
   /**
    * @param {string | RTCIceServer[]} iceServer
    */

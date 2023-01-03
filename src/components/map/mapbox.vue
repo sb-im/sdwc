@@ -10,10 +10,10 @@ import { randColor } from './common';
 import { loadMapbox } from './mapbox-loader';
 
 /** @type {number} */
-let __MAPBOX_ZOOM__;
+let __MAPBOX_ZOOM__ = 0.5;
 
-/** @type {mapboxgl.LngLat} */
-let __MAPBOX_CENTER__;
+/** @type {mapboxgl.LngLatLike} */
+let __MAPBOX_CENTER__ = { lat: 27, lng: 162 };
 
 /** @type {mapboxgl.Style} */
 const GoogleRasterStyle = {
@@ -78,10 +78,28 @@ function createDroneElement(label = '', color = '#ea4335') {
       hs('path', {
         fill: color,
         stroke: '#fff',
-        d: 'M17 1L5 32.5 17 27l12 5.5z'
+        d: 'M17 1l-12 31.5 12 -5.5 12 5.5z'
       })
     ]),
     label ? h('div', { class: 'mapbox-marker__label', style: `background:${color}` }, label) : null
+  ]);
+}
+
+function createDroneGimbalElement(color = '#d9c626') {
+  return h('div', { class: 'mapbox-marker mapbox-marker--gimbal', style: 'width:60px;height:72px' }, [
+    hs('svg', { width: 60, height: 72 }, [
+      hs('defs', null, [
+        hs('linearGradient', { id: 'lG', gradientTransform: 'rotate(90)' }, [
+          hs('stop', { offset: '0%', 'stop-color': `${color}00` }),
+          hs('stop', { offset: '80%', 'stop-color': color })
+        ])
+      ]),
+      hs('path', {
+        fill: 'url(#lG)',
+        d: 'M30 20l20 -20 -40 0z',
+        'transform-origin': '30px 20px'
+      })
+    ])
   ]);
 }
 
@@ -118,6 +136,15 @@ export default {
       type: Boolean,
       default: false
     },
+    /** @type {Vue.PropOptions<'path'|'markers'|'all'>} */
+    fitType: {
+      type: String,
+      default: 'path'
+    },
+    fitPadding: {
+      type: Number,
+      default: 40,
+    },
     follow: {
       type: Boolean,
       default: false
@@ -150,8 +177,8 @@ export default {
         container: this.$refs.map,
         style: GoogleRasterStyle,
         maxZoom: 19,
-        zoom: __MAPBOX_ZOOM__ || 0.5,
-        center: __MAPBOX_CENTER__ || { lat: 27, lng: 162 },
+        zoom: __MAPBOX_ZOOM__,
+        center: __MAPBOX_CENTER__,
       });
       map.addControl(new ScaleControl(), 'bottom-left');
       map.addControl(new NavigationControl(), 'bottom-right');
@@ -205,7 +232,7 @@ export default {
     async drawBoundary() {
       /** @type {mapboxgl.Map} */
       const map = this.map;
-      if (!map || this.boundary.length <= 0) return;
+      if (!map) return;
       const lnglats = this.boundary.map(p => [p.lng, p.lat]);
       /** @type {GeoJSON.Polygon} */
       const boundaryData = { type: 'Polygon', coordinates: [lnglats] };
@@ -276,14 +303,13 @@ export default {
         }
       }
       if (this.fit) {
-        this.fitPath();
+        this.autoFit();
       } else if (this.follow && !this.popoverShown) {
         this.followPath();
       }
     },
     async drawNamedMarkers() {
-      const { LngLat, LngLatBounds, Marker } = await loadMapbox();
-      const bounds = new LngLatBounds();
+      const { LngLat, Marker } = await loadMapbox();
       /** @type {mapboxgl.Map} */
       const map = this.map;
       // remove unused markers
@@ -304,6 +330,12 @@ export default {
           mapMarker.setLngLat(lnglat);
           if (marker.type === 'drone') {
             mapMarker.getElement().querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
+          } else if (marker.type === 'drone_gimbal') {
+            const element = mapMarker.getElement();
+            const svg = element.querySelector('svg');
+            svg.style.transform = `rotate(${marker.heading}deg)`;
+            const path = svg.querySelector('path');
+            path.style.transform = `rotate(${marker.yaw}deg) scaleY(${1 - 0.6 * (marker.pitch / 90)})`;
           } else if (marker.type === 'depot') {
             const labelElm = mapMarker.getElement().getElementsByClassName('mapbox-marker__label')[0];
             if (labelElm.textContet !== marker.name) {
@@ -320,6 +352,15 @@ export default {
           if (marker.type === 'drone') {
             const element = createDroneElement(marker.name);
             element.querySelector('svg').style.transform = `rotate(${marker.heading}deg)`;
+            mapMarker = new Marker({ element })
+              .setLngLat(lnglat)
+              .addTo(map);
+          } else if (marker.type === 'drone_gimbal') {
+            const element = createDroneGimbalElement();
+            const svg = element.querySelector('svg');
+            svg.style.transform = `rotate(${marker.heading}deg)`;
+            const path = svg.querySelector('path');
+            path.style.transform = `rotate(${marker.yaw}deg) scaleY(${1 - 0.6 * (marker.pitch / 90)})`;
             mapMarker = new Marker({ element })
               .setLngLat(lnglat)
               .addTo(map);
@@ -343,18 +384,17 @@ export default {
           if (marker.type === 'depot' || marker.type === 'drone') {
             const elm = mapMarker.getElement();
             elm.onclick = () => {
-              this.$emit('marker-click', marker.id, elm);
+              this.$emit('marker-click', marker.uuid, elm);
+            };
+            elm.oncontextmenu = () => {
+              this.$emit('marker-right-click', marker.uuid, elm);
             };
           }
-          this.namedMarkers[marker.id] = mapMarker;
+          this.namedMarkers[marker.uuid] = mapMarker;
         }
-        bounds.extend(lnglat);
       }
-      if (this.fit && !bounds.isEmpty() && !this.popoverShown) {
-        // only fit to markers if no path persent
-        this.fitPath().then(success => {
-          if (!success) this.map.fitBounds(bounds, { padding: 40, linear: true });
-        });
+      if (this.fit && !this.popoverShown) {
+        this.autoFit();
       }
     },
     async drawHeatmap() {
@@ -405,26 +445,64 @@ export default {
       this.map.setCenter(path.coordinates[0]);
       return true;
     },
-    async fitPath(duration = 500) {
+    /** @returns {Promise<mapboxgl.LngLatBounds>} */
+    async getPathBounds() {
+      const path = this.polylines.find(l => l.name === 'path');
+      if (!path || !path.coordinates) return;
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
-      const path = this.polylines.find(l => l.name === 'path');
-      if (!path || !path.coordinates) return false;
       for (const { lng, lat } of path.coordinates) {
         bounds.extend(new LngLat(lng, lat));
       }
-      this.map.fitBounds(bounds, { padding: 40, linear: true, duration });
-      return true;
+      return bounds;
     },
-    async fitMarkers() {
+    /** @returns {Promise<mapboxgl.LngLatBounds>} */
+    async getMarkersBounds() {
+      if (this.markers.length <= 0) return;
       const { LngLat, LngLatBounds } = await loadMapbox();
       const bounds = new LngLatBounds();
       for (const { position: { lng, lat } } of this.markers) {
         bounds.extend(new LngLat(lng, lat));
       }
-      if (bounds.isEmpty()) return false;
-      this.map.fitBounds(bounds, { padding: 40, linear: true });
-      return true;
+      return bounds;
+    },
+    /**
+     * @param {mapboxgl.LngLatBounds | mapboxgl.LngLatBounds[]} bounds
+     * @param {number} duration
+     */
+    async fitBounds(bounds, duration = 500) {
+      if (!Array.isArray(bounds)) {
+        this.map.fitBounds(bounds, { padding: this.fitPadding, linear: true, duration });
+        return;
+      }
+      const { LngLatBounds } = await loadMapbox();
+      const outerBounds = new LngLatBounds();
+      bounds.forEach(b => outerBounds.extend(b));
+      this.map.fitBounds(outerBounds, { padding: this.fitPadding, linear: true, duration });
+    },
+    async autoFit() {
+      switch (this.fitType) {
+        case 'path': {
+          const bounds = await this.getPathBounds();
+          if (bounds) this.fitBounds(bounds);
+          break;
+        }
+        case 'markers': {
+          const bounds = await this.getMarkersBounds();
+          if (bounds) this.fitBounds(bounds);
+          break;
+        }
+        case 'all': {
+          /** @type {mapboxgl.LngLatBounds[]} */
+          const bounds = [];
+          const pathBounds = await this.getPathBounds();
+          if (pathBounds) bounds.push(pathBounds);
+          const markersBounds = await this.getMarkersBounds();
+          if (markersBounds) bounds.push(markersBounds);
+          this.fitBounds(bounds);
+          break;
+        }
+      }
     }
   },
   watch: {
@@ -446,9 +524,7 @@ export default {
     },
     fit(val) {
       if (!this.mapInitialized || !val) return;
-      this.fitPath().then(success => {
-        if (!success) () => this.fitMarkers();
-      });
+      this.autoFit();
     },
     follow(val) {
       if (!this.mapInitialized || !val) return;
@@ -482,7 +558,7 @@ export default {
         this.drawBoundary();
       }
       if (this.polylines.length > 0) {
-        this.drawNamedPolylines().then(() => this.fitPath(0));
+        this.drawNamedPolylines();
       }
       if (this.markers.length > 0) {
         this.drawNamedMarkers();
@@ -508,7 +584,10 @@ export default {
     for (const prop of objects) {
       if (this[prop]) {
         if (typeof this[prop].getElement === 'function') {
-          this[prop].getElement().onclick = null;
+          /** @type {HTMLElement} */
+          const el = this[prop].getElement();
+          el.onclick = null;
+          el.oncontextmenu = null;
         }
         this[prop].remove();
         this[prop] = null;
@@ -530,6 +609,9 @@ export default {
 }
 .mapbox-marker--drone {
   z-index: 1;
+}
+.mapbox-marker--gimbal {
+  pointer-events: none;
 }
 .mapbox-marker__label {
   position: absolute;

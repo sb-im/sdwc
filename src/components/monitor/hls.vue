@@ -16,7 +16,7 @@ export default {
       import(/* webpackChunkName: 'hls' */ 'hls.js/dist/hls.light').then(({ default: Hls }) => {
         if (Hls.isSupported()) {
           this.hls = new Hls();
-          this.hls.loadSource(this.point.name);
+          this.hls.loadSource(this.point.params.url);
           this.hls.attachMedia(this.$refs.video);
           this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
             this.$refs.video.play();

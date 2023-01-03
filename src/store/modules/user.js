@@ -2,10 +2,21 @@
 
 /** @type {SDWC.User} */
 const state = {
-  id: -1,
-  email: '',
-  token: '',
-  due: -1
+  info: {
+    id: -1,
+    language: '',
+    team_id: -1,
+    teams: [],
+    timezone: '',
+    username: '',
+    created_at: '',
+    updated_at: ''
+  },
+  credential: {
+    implicit: false,
+    token: '',
+    expire: ''
+  }
 };
 
 export const MutationTypes = {
@@ -18,17 +29,18 @@ export const MutationTypes = {
  * @type {{ [x: string]: (state: SDWC.User, payload: any) => void }}
  */
 const mutations = {
-  [MutationTypes.SET_USER_TOKEN](state, { token, due }) {
-    state.token = token;
-    state.due = due;
+  [MutationTypes.SET_USER_TOKEN](state, payload) {
+    state.credential = payload;
   },
-  [MutationTypes.SET_USER_INFO](state, { id, email }) {
-    state.id = id;
-    state.email = email;
+  [MutationTypes.SET_USER_INFO](state, payload) {
+    state.info = payload;
   },
   [MutationTypes.INVALIDATE_TOKEN](state) {
-    state.token = '';
-    state.due = -1;
+    state.credential = {
+      implicit: false,
+      token: '',
+      expire: ''
+    };
   }
 };
 

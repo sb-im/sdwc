@@ -22,8 +22,6 @@ declare namespace SDWC {
     title: string;
     aside_logo: string;
     super_dock_api_server: string;
-    oauth_client_id: string;
-    oauth_client_secret: string;
     lang: string;
     ice_server?: string;
     ice_servers?: RTCIceServer[];
@@ -31,37 +29,31 @@ declare namespace SDWC {
     caiyun_key: string;
     heweather_key: string;
     mqtt_url: string;
+    idle_timeout: number;
   }
 
   // store/modules/node.js
   export interface NodePoint {
-    id: number;
+    type: string;
     name: string;
     params: any;
-    node_id: number;
-    point_type_id: number;
-    point_type_name: string;
-    created_at: string;
-    updated_at: string;
+    node_id: string;
   }
   export interface NodeInfo {
-    id: number;
+    id: string;
     name: string;
-    type_name: 'air' | 'depot';
-    description: string;
+    uuid: string;
     points: NodePoint[];
   }
   export interface NodeConnectionStatus {
-    /** needs `ncp status` to retrieve status */
-    legacy?: boolean;
     code: number;
-    msg: string;
+    msg: string | 'online' | 'offline' | 'neterror';
     status: {
       link_id: number;
-      position_ok: boolean;
-      lat: string;
-      lng: string;
-      alt: string;
+      lat?: number;
+      lng?: number;
+      alt?: number;
+      type?: 'drone' | 'depot';
     };
   }
   export interface NodeNetworkStatus {
@@ -200,7 +192,7 @@ declare namespace SDWC {
     [key: string]: string;
   }
   export interface NodeNotification {
-    time: string;
+    time: number;
     /** 0: Emergency, 1: Alert, 2: Critical, 3: Error, 4: Warn, 5: Notice, 6: Info, 7: Debug */
     level: number;
     msg: string;
@@ -259,8 +251,9 @@ declare namespace SDWC {
   export interface PlanInfo {
     id: number;
     name: string;
-    description: string;
-    node_id: number;
+    /** run/jobs count */
+    index: number;
+    node_id: string;
     files: {
       waypoint?: string;
       speaker?: string;
@@ -268,15 +261,13 @@ declare namespace SDWC {
       droneconfig?: string;
       [key: string]: string;
     };
-    extra?: {
+    extra: {
       [key: string]: string;
     };
+    created_at: string;
+    updated_at: string;
   }
   // PlanTerm
-  export interface PlanTerm {
-    id: number;
-    output: PlanTermOutput[];
-  }
   export interface PlanTermOutput {
     time: number;
     msg: string;
@@ -288,16 +279,12 @@ declare namespace SDWC {
     level: LevelEnum;
   }
   export interface PlanDialogContent {
+    time: number;
     name?: string;
     message?: string;
     level?: LevelEnum;
     items?: PlanDialogItem[];
     buttons?: PlanDialogItem[];
-  }
-  export interface PlanDialog {
-    id: number;
-    time: number;
-    dialog: PlanDialogContent;
   }
   // PlanStatus
   export interface PlanStatusData {
@@ -306,28 +293,18 @@ declare namespace SDWC {
   // PlanJob
   export interface PlanJob {
     id: number;
-    job_id: number;
-    plan_id: number;
+    /** job ordinal number */
+    index: number;
     /** file name: blob id */
-    files: { [key: string]: string; };
-    extra: { [key: string]: string; };
+    files?: { [key: string]: string; };
+    extra?: { [key: string]: string; };
     created_at: string;
     updated_at: string;
   }
-  export interface PlanRunningContentJob {
-    job_id: number;
-    files: { [key: string]: string; };
-    extra: { [key: string]: string; };
-  }
-  export interface PlanRunningContent {
-    files: { [key: string]: string; };
-    extra: { [key: string]: string; };
-    job: PlanRunningContentJob;
-  }
-  export interface PlanRunning {
-    /** Plan Id */
-    id: number;
-    running: PlanRunningContent;
+  export interface RunningTask {
+    files?: { [key: string]: string; };
+    extra?: { [key: string]: string; };
+    job: PlanJob;
   }
   // PlanLog
   export interface PlanLog {
@@ -340,11 +317,17 @@ declare namespace SDWC {
     created_at: string;
     updated_at: string;
   }
+  export interface PlanNotification {
+    time: number;
+    level: number;
+    msg: string;
+  }
   export interface PlanState {
-    info: PlanInfo[];
-    term: PlanTerm[];
-    dialog: PlanDialog[];
-    running: PlanRunning[]
+    info: PlanInfo;
+    term: PlanTermOutput[];
+    dialog?: PlanDialogContent;
+    running?: RunningTask;
+    notification: PlanNotification[];
   }
 
   // store/modules/preference.js
@@ -352,7 +335,7 @@ declare namespace SDWC {
     lang: string;
     mapFollow: boolean;
     overviewFit: boolean;
-    notifyNoPopup: number[];
+    notifyNoPopup: string[];
     rpcMsgPopup: boolean;
     planDialogPopup: boolean;
   }
@@ -361,11 +344,13 @@ declare namespace SDWC {
   export interface SidebarItem {
     icon: string;
     name: string;
-    type: 'overview' | 'plan' | 'node' | 'path' | 'iframe';
+    type: 'overview' | 'plan' | 'node' | 'schedule' | 'path' | 'iframe';
     args: string;
   }
 
   export interface UI {
+    idle: boolean;
+    expireTimer: number;
     mqttConnected: boolean;
     mqttDelay: number;
     sidebar: SidebarItem[];
@@ -373,17 +358,19 @@ declare namespace SDWC {
 
   // store/modules/user.js
   export interface User {
-    id: number;
-    email: string;
-    token: string;
-    due: number;
+    info: ApiTypes.V3.User;
+    credential: {
+      implicit: boolean;
+      token: string;
+      expire: string;
+    }
   }
 
   export interface State {
     config: Config;
     node: Node[];
     notification: NotificationItem[];
-    plan: PlanState;
+    plan: PlanState[];
     preference: Preference;
     ui: UI;
     user: User;
@@ -414,9 +401,10 @@ declare namespace SDWC {
 
   // components/map.vue
   interface MarkerBase {
-    id: number | string;
+    id: string;
     position: { lng: number; lat: number };
     name: string;
+    type: string;
   }
   export interface MarkerAction extends MarkerBase {
     type: 'action';
@@ -429,11 +417,16 @@ declare namespace SDWC {
     type: 'drone';
     heading: number;
   }
+  export interface MarkerDroneGimbal extends MarkerDrone {
+    type: 'drone_gimbal';
+    pitch: number;
+    yaw: number;
+  }
   export interface MarkerPlace extends MarkerBase {
     type: 'place';
     style: DronePlaceStyle;
   }
-  export type Marker = MarkerAction | MarkerDepot | MarkerDrone | MarkerPlace;
+  export type Marker = MarkerAction | MarkerDepot | MarkerDrone | MarkerDroneGimbal | MarkerPlace;
   export type DroneMapControlParamDescriptor = {
     type: 'string';
     required?: boolean;
@@ -508,7 +501,7 @@ declare namespace SDWC {
   // MqttClient
   export interface MqttTopicInfo {
     entity: 'nodes' | 'plans' | string;
-    id: number;
+    id: string;
     category: string;
     param: string;
   }

@@ -1,5 +1,8 @@
 <template>
   <div class="plan__files">
+    <div v-if="readonly && fileEntries.length <= 0">
+      <el-input readonly :value="t('common.none')"></el-input>
+    </div>
     <div class="plan-file-item" v-for="(item, index) of fileEntries" :key="index">
       <template v-if="readonly">
         <el-input readonly :value="t(item.key)"></el-input>
@@ -14,7 +17,7 @@
       <template v-else>
         <el-select
           popper-class="plan-file__select"
-          placeholder="文件标签"
+          :placeholder="$t('plan.file.label')"
           filterable
           :allow-create="false"
           default-first-option
@@ -39,7 +42,7 @@
           :http-request="handleUpload"
           :disabled="item.button.disabled"
         >
-          <el-button class="plan-file__button" :icon="item.button.icon" :type="item.button.type">
+          <el-button class="plan-file__button" v-bind="item.button">
             <span v-t="`plan.file.${item.button.text}`"></span>
           </el-button>
         </el-upload>
@@ -60,7 +63,7 @@
 </template>
 
 <script>
-import { uploadFile } from '@/api/super-dock';
+import { createBlob } from '@/api/super-dock-v3';
 
 import { mapActions } from 'vuex';
 
@@ -72,8 +75,8 @@ import { mapActions } from 'vuex';
 
 const PredefinedFileKeys = new Set([
   'waypoint',
-  'speaker',
   'lua',
+  'speaker',
   'droneconfig'
 ]);
 
@@ -207,11 +210,12 @@ export default {
      */
     handleUpload(options) {
       const file = options.file;
+      /** @type {FileEntry} */
       const fileEntry = options.data;
       const key = fileEntry.key;
       fileEntry.button = FileButton.selected;
       fileEntry.filename = file.name;
-      uploadFile({ [key]: file }).then(r => {
+      createBlob({ [key]: file }).then(r => {
         fileEntry.button = FileButton.uploaded;
         fileEntry.blobId = r[key];
         this.updateValue();
@@ -251,10 +255,6 @@ export default {
 </script>
 
 <style>
-.plan__files {
-  height: 210px;
-  overflow-y: auto;
-}
 .plan-file-item {
   display: flex;
   margin-bottom: 6px;
@@ -279,8 +279,5 @@ export default {
 .plan-file-label__right {
   float: right;
   color: #8492a6;
-}
-.plan-file__add {
-  text-align: right;
 }
 </style>

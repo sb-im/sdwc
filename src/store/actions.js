@@ -7,10 +7,11 @@ import * as S from '@/api/sdwc';
 import MqttClient from '@/api/mqtt';
 import * as CaiYun from '@/api/caiyun';
 import * as HeWeather from '@/api/heweather';
-import * as SuperDock from '@/api/super-dock';
+import * as SuperDockV3 from '@/api/super-dock-v3';
 import { parseWaypoints } from '@/util/waypoint-parser';
 
 import { MutationTypes as PREF } from './modules/preference';
+import { MutationTypes as SCHE } from './modules/schedule';
 import { MutationTypes as CONF } from './modules/config';
 import { MutationTypes as USER } from './modules/user';
 import { MutationTypes as NODE } from './modules/node';
@@ -64,13 +65,13 @@ export function restorePreference({ commit }) {
  */
 export async function configure({ state, commit }) {
   const data = await S.config();
-  document.title = data.title;
   commit(CONF.SET_CONFIG, data);
-  if (!state.preference.lang) {
-    commit(PREF.SET_PREFERENCE, { lang: data.lang });
-  }
   const config = state.config;
-  SuperDock.setBaseURL(config.super_dock_api_server);
+  if (!state.preference.lang) {
+    commit(PREF.SET_PREFERENCE, { lang: config.lang });
+  }
+  document.title = config.title;
+  SuperDockV3.setBaseURL(config.super_dock_api_server);
   HeWeather.setApiKey(config.heweather_key);
   CaiYun.setApiKey(config.caiyun_key);
   setLocale(state.preference.lang);
@@ -78,41 +79,123 @@ export async function configure({ state, commit }) {
 
 /**
  * @param {Context} context
+ */
+export async function checkSingleUserMode({ state, commit, dispatch }) {
+  try {
+    await dispatch('getUserInfo');
+    const { id, username, team_id } = state.user.info;
+    if (id > 0 && username.length > 0 && team_id > 0) {
+      commit(USER.SET_USER_TOKEN, { implicit: true });
+      return true;
+    }
+  } catch (e) {
+    return false;
+  }
+  return false;
+}
+
+/**
+ * @param {Context} context
  * @param {{username: string; password: string}} payload
  */
-export async function login({ state, commit, dispatch }, { username, password }) {
-  const data = await SuperDock.token(username, password, state.config.oauth_client_id, state.config.oauth_client_secret);
-  const token = `${data.token_type} ${data.access_token}`;
-  const due = (data.created_at + data.expires_in) * 1000;
-  commit(USER.SET_USER_TOKEN, { token, due });
-  SuperDock.setAuth(token);
+export async function login({ commit, dispatch }, { username, password }) {
+  const data = await SuperDockV3.login(username, password);
+  commit(USER.SET_USER_TOKEN, data);
+  SuperDockV3.setAuth(data.token);
   dispatch('initialize');
-  setTimeout(() => commit(USER.INVALIDATE_TOKEN), data.expires_in * 1000);
-  return token;
 }
 
 /**
  * @param {Context} context
  */
-export function logout({ state, commit }) {
-  commit(USER.SET_USER_TOKEN, { token: '', due: -1 });
-  commit(USER.SET_USER_INFO, { email: '', id: -1 });
+export async function refreshToken({ commit }) {
+  const data = await SuperDockV3.refershToken();
+  commit(USER.SET_USER_TOKEN, data);
+  SuperDockV3.setAuth(data.token);
+}
+
+/**
+ * @param {Context} context
+ */
+export async function handleTokenExpire({ state, commit, dispatch }) {
+  if (!state.ui.idle) {
+    try {
+      await dispatch('refreshToken');
+      await dispatch('setupTokenExpireTimer');
+      return;
+    } catch (e) {
+      // ignore
+    }
+  }
+  dispatch('logout');
+  commit(USER.INVALIDATE_TOKEN);
+}
+
+/**
+ * @param {Context} context
+ * @param {number} timeout
+ */
+export function setupTokenExpireTimer({ state, commit, dispatch }, timeout) {
+  const oldTimer = state.ui.expireTimer;
+  if (oldTimer > 0) {
+    clearTimeout(oldTimer);
+  }
+  const t = timeout ?? new Date(state.user.credential.expire).getTime() - Date.now();
+  const timer = setTimeout(() => dispatch('handleTokenExpire'), t);
+  commit(UI.SET_UI, { expireTimer: timer });
+}
+
+/**
+ * @param {Context} context
+ */
+export async function handleUserIdle({ state, getters, commit, dispatch }) {
+  commit(UI.SET_UI, { idle: true });
+  const oldTimer = state.ui.expireTimer;
+  if (oldTimer > 0) {
+    clearTimeout(oldTimer);
+    commit(UI.SET_UI, { expireTimer: -1 });
+  }
+  if (!getters.authenticated) {
+    return;
+  }
+  dispatch('logout');
+  commit(USER.INVALIDATE_TOKEN);
+}
+
+/**
+ * @param {Context} context
+ */
+export function logout({ commit }) {
+  commit(USER.SET_USER_TOKEN, { token: '', expire: '' });
+  commit(USER.SET_USER_INFO, { id: -1, username: '', teams: [], team_id: -1 });
   commit(NODE.CLEAR_NODES);
   commit(PLAN.CLEAR_PLANS);
+  commit(SCHE.CLEAR_SCHEDULES);
+  commit(UI.SET_UI, { sidebar: [] });
   sessionStorage.removeItem('user');
   MqttClient.disconnect();
-  SuperDock.logout(state.user.token.slice(7))
-    .catch(() => { /* noop */ })
-    .then(() => SuperDock.setAuth(''));
+  SuperDockV3.setAuth('');
 }
 
 /**
  * @param {Context} context
  */
 export async function getUserInfo({ commit, dispatch }) {
-  const data = await SuperDock.user();
+  const data = await SuperDockV3.getCurrentUser();
   commit(USER.SET_USER_INFO, data);
   dispatch('storeUser');
+}
+
+/**
+ * @param {Context} context
+ * @param {number} id
+ */
+export async function switchTeam({ commit, dispatch }, id) {
+  const data = await SuperDockV3.switchTeam(id);
+  await dispatch('logout');
+  commit(USER.SET_USER_TOKEN, data);
+  SuperDockV3.setAuth(data.token);
+  dispatch('initialize');
 }
 
 /**
@@ -131,21 +214,41 @@ export async function restoreSession({ commit }) {
   if (!str) return;
   /** @type {SDWC.User} */
   let json;
-  try { json = JSON.parse(str); } catch (e) { /* ignore it */ }
-  if (!json.token) return;
-  commit(USER.SET_USER_TOKEN, json);
-  commit(USER.SET_USER_INFO, json);
-  SuperDock.setAuth(json.token);
-  setTimeout(() => commit(USER.INVALIDATE_TOKEN), json.due - Date.now());
+  try { json = JSON.parse(str); } catch (e) { return; }
+  if (json.credential.implicit) {
+    // singer user mode; no token needed
+  } else if (json.credential.token) {
+    const timeRemaining = new Date(json.credential.expire).getTime() - Date.now();
+    if (timeRemaining < 10 * 1000) return;
+    SuperDockV3.setAuth(json.credential.token);
+  }
+  commit(USER.SET_USER_TOKEN, json.credential);
+  commit(USER.SET_USER_INFO, json.info);
 }
 
 /**
  * establish mqtt connection
  * @param {Context} context
  */
-export function connectMqtt({ state }) {
-  MqttClient.setRpcPrefix(state.user.id);
-  MqttClient.connect(state.config.mqtt_url);
+export async function connectMqtt({ state }) {
+  let mqttUrl = await SuperDockV3.createMqttUser();
+  mqttUrl = mqttUrl.replace(/^mqtt/, 'ws');
+  const overrideUrl = state.config.mqtt_url;
+  if (typeof overrideUrl === 'string' && overrideUrl.length > 0) {
+    const url = new URL(mqttUrl);
+    try {
+      const override = new URL(overrideUrl);
+      ['protocol', 'username', 'password', 'host', 'pathname', 'search'].forEach(k => {
+        if (override[k]) url[k] = override[k];
+      });
+      mqttUrl = url.toString();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[sdwc] Invalid `mqtt_url` override in config.json');
+    }
+  }
+  MqttClient.setRpcPrefix(state.user.info.id);
+  MqttClient.connect(mqttUrl);
 }
 
 /**
@@ -153,7 +256,7 @@ export function connectMqtt({ state }) {
  * @param {Context} context
  */
 export async function getSidebar({ commit }) {
-  const sidebar = await SuperDock.sidebar();
+  const sidebar = await SuperDockV3.getSidebar();
   commit(UI.SET_UI, { sidebar });
 }
 
@@ -161,21 +264,23 @@ export async function getSidebar({ commit }) {
  * initialize all necessary data and mqtt subs
  * @param {Context} context
  */
-export function initialize({ dispatch }) {
+export async function initialize({ state, dispatch }) {
+  if (!state.user.credential.implicit) {
+    dispatch('setupTokenExpireTimer');
+  }
   dispatch('getSidebar');
-  dispatch('getUserInfo').then(() => {
-    dispatch('connectMqtt');
-    dispatch('getNodes').then(() => dispatch('subscribeNodes'));
-    dispatch('getPlans').then(() => dispatch('subscribePlans'));
-  });
+  await dispatch('getUserInfo');
+  await dispatch('connectMqtt');
+  dispatch('getNodes').then(() => dispatch('subscribeNodes'));
+  dispatch('getPlans').then(() => dispatch('subscribePlans'));
+  dispatch('getSchedules');
 }
 
 /**
  * @param {Context} context
  */
 export async function getNodes({ commit }) {
-  const data = await SuperDock.nodes();
-  data.sort((a, b) => a.id - b.id);
+  const data = await SuperDockV3.getNodes();
   data.forEach(node => {
     commit(NODE.ADD_NODE, node);
   });
@@ -187,15 +292,6 @@ export async function getNodes({ commit }) {
  */
 export function clearDronePath({ commit }, id) {
   commit(NODE.CLEAR_NODE_PATH, id);
-}
-
-/**
- * @param {Context} context
- * @param {string} id depot id
- */
-export async function updateDepotStatus({ commit }, id) {
-  const status = await MqttClient.invoke(id, 'ncp', ['status']);
-  commit(NODE.SET_NODE_STATUS, { id, payload: { status } });
 }
 
 const PointTopic = {
@@ -214,15 +310,16 @@ const PointTopic = {
  */
 export function subscribeNodes({ state, commit }) {
   state.node.forEach(node => {
-    const { id, points } = node.info;
+    const id = node.info.uuid;
+    const points = node.info.points ?? [];
     MqttClient.subscribeNode(id);
-    if (points.some(p => p.point_type_name.startsWith('livestream_'))) {
+    if (points.some(p => p.type.startsWith('livestream_'))) {
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.gimbal}`);
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.action}`);
       MqttClient.mqtt.subscribe(`nodes/${id}/msg/${PointTopic.overlay}`);
     }
     points.forEach(point => {
-      switch (point.point_type_name) {
+      switch (point.type) {
         case 'custom': {
           if (typeof point.params !== 'object') break;
           const { topic = 'custom' } = point.params;
@@ -242,7 +339,7 @@ export function subscribeNodes({ state, commit }) {
         }
         default: {
           /** @type {string[]} */
-          const topics = PointTopic[point.point_type_name];
+          const topics = PointTopic[point.type];
           if (!topics) break;
           topics.forEach(topic => {
             MqttClient.mqtt.subscribe(`nodes/${id}/msg/${topic}`);
@@ -258,7 +355,7 @@ export function subscribeNodes({ state, commit }) {
  * @param {Context} context
  */
 export async function getPlans({ commit }) {
-  const data = await SuperDock.plans();
+  const data = await SuperDockV3.getTasks();
   data.forEach(plan => {
     commit(PLAN.ADD_PLAN, plan);
   });
@@ -268,8 +365,8 @@ export async function getPlans({ commit }) {
  * @param {Context} context
  */
 export function subscribePlans({ state }) {
-  state.plan.info.forEach(plan => {
-    MqttClient.subscribePlan(plan.id);
+  state.plan.forEach(plan => {
+    MqttClient.subscribePlan(plan.info.id);
   });
 }
 
@@ -278,7 +375,7 @@ export function subscribePlans({ state }) {
  * @param {SDWC.PlanInfo} plan
  */
 export async function createPlan({ commit }, plan) {
-  const data = await SuperDock.createPlan(plan);
+  const data = await SuperDockV3.createTask(plan);
   if (data && typeof data.id === 'number') {
     commit(PLAN.ADD_PLAN, data);
     MqttClient.subscribePlan(data.id);
@@ -293,7 +390,7 @@ export async function createPlan({ commit }, plan) {
  * @param {SDWC.PlanInfo} plan
  */
 export async function updatePlan({ commit }, plan) {
-  const data = await SuperDock.updatePlan(plan.id, plan);
+  const data = await SuperDockV3.updateTask(plan.id, plan);
   commit(PLAN.UPDATE_PLAN, data);
   return data;
 }
@@ -303,7 +400,7 @@ export async function updatePlan({ commit }, plan) {
  * @param {number} id
  */
 export async function deletePlan({ commit }, id) {
-  await SuperDock.deletePlan(id);
+  await SuperDockV3.deleteTask(id);
   commit(PLAN.DELETE_PLAN, id);
 }
 
@@ -313,22 +410,65 @@ export async function deletePlan({ commit }, id) {
  */
 export async function getPlanWaypoints(_, plan) {
   const blobId = plan.files.waypoint;
-  const text = await SuperDock.downloadBlob(blobId).then(r => r.text());
-  return parseWaypoints(text);
+  if (!blobId) throw new Error('no waypoint in plan');
+  const buf = await SuperDockV3.getBlob(blobId).then(r => r.arrayBuffer());
+  return parseWaypoints(buf);
 }
 
 /**
- * @param {Context} _
- * @param {string} path file path
- * @returns {Promise<{ filename: string, blob: Blob }>}
+ * @param {Context} context
+ * @param {{ id: number, size?: number, page?: number }} payload
+ * @returns {Promise<SDWC.PlanJob[]>}
  */
-export async function downloadFile(_, path) {
-  const res = await SuperDock.downloadFile(path);
-  const cd = res.headers.get('content-disposition') || 'attachment';
-  /** @type {Record<string, any>} */
-  const { filename = '' } = parseContentDisposition(cd).parameters;
-  const blob = await res.blob();
-  return { filename, blob };
+export async function getTaskJobs({ commit }, { id, size = 10, page = 1 }) {
+  const data = await SuperDockV3.getTaskDetail(id, page, size);
+  const jobs = data.jobs ?? [];
+  delete data.jobs;
+  commit(PLAN.UPDATE_PLAN, data);
+  return jobs;
+}
+
+/**
+ * @param {Context} context
+ */
+export async function getSchedules({ commit }) {
+  const data = await SuperDockV3.getSchedules();
+  data.forEach(schedule => {
+    commit(SCHE.ADD_SCHEDULE, schedule);
+  });
+}
+
+/**
+ * @param {Context} context
+ * @param {ApiTypes.V3.Schedule} schedule
+ */
+export async function createSchedule({ commit }, schedule) {
+  const data = await SuperDockV3.createSchedule(schedule);
+  if (data && typeof data.id === 'number') {
+    commit(SCHE.ADD_SCHEDULE, data);
+    return data;
+  } else {
+    throw data;
+  }
+}
+
+/**
+ * @param {Context} context
+ * @param {ApiTypes.V3.Schedule} schedule
+ */
+export async function updateSchedule({ commit }, schedule) {
+  const data = await SuperDockV3.updateSchedule(schedule.id, schedule);
+  commit(SCHE.UPDATE_SCHEDULE, data);
+  return data;
+}
+
+/**
+ * @param {Context} context
+ * @param {number} id
+ */
+export async function deleteSchedule({ commit }, id) {
+  await SuperDockV3.deleteSchedule(id);
+  commit(SCHE.DELETE_SCHEDULE, id);
 }
 
 /**
@@ -336,8 +476,13 @@ export async function downloadFile(_, path) {
  * @param {string} id blob id
  * @returns {Promise<{ filename: string, blob: Blob }>}
  */
-export async function downloadBlob({ dispatch }, id) {
-  return dispatch('downloadFile', `/api/v2/blobs/${id}`);
+export async function downloadBlob(_, id) {
+  const res = await SuperDockV3.getBlob(id);
+  const cd = res.headers.get('content-disposition') || 'attachment';
+  /** @type {Record<string, any>} */
+  const { filename = '' } = parseContentDisposition(cd).parameters;
+  const blob = await res.blob();
+  return { filename, blob };
 }
 
 /**

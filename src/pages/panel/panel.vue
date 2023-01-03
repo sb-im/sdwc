@@ -44,6 +44,8 @@ export default {
 .sd-panel__view {
   padding: 10px;
   flex-grow: 1;
+  align-items: flex-start;
+  align-content: flex-start;
 }
 .sd-panel__view.el-loading-parent--relative {
   height: 100%;

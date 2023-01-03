@@ -6,15 +6,14 @@ const state = {
   title: 'S Dashboard Web Console',
   aside_logo: '',
   super_dock_api_server: '',
-  oauth_client_id: '',
-  oauth_client_secret: '',
   lang: 'en',
   ice_server: '',
   ice_servers: null,
   map_tiles_url: '',
   caiyun_key: '',
   heweather_key: '',
-  mqtt_url: ''
+  mqtt_url: '',
+  idle_timeout: 600
 };
 
 export const MutationTypes = {

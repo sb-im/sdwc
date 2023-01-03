@@ -1,5 +1,6 @@
 export { default as notification } from './notification';
 export { default as preference } from './preference';
+export { default as schedule } from './schedule';
 export { default as config } from './config';
 export { default as user } from './user';
 export { default as node } from './node';

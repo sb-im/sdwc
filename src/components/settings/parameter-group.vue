@@ -11,6 +11,7 @@
         v-bind="item"
         @change="handleChange(key, $event)"
       ></sd-node-parameter-group>
+      <!-- render signle item -->
       <el-form-item v-else :key="key" :label="$t(item.label)">
         <component
           :is="item.type"
@@ -127,7 +128,7 @@ export default {
 .parameter__body .el-form-item,
 .parameter__body .el-form .el-form {
   display: inline-block;
-  width: 420px;
+  width: 400px;
   margin-bottom: 10px;
 }
 .parameter__body .parameter__bottom {

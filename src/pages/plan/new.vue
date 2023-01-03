@@ -30,15 +30,21 @@ export default {
   name: 'sd-plan-new',
   data() {
     return {
-      /** @type {SDWC.PlanInfo} */
+      /** @type {Partial<SDWC.PlanInfo>} */
       initial: {
         name: '',
-        description: '',
         node_id: null,
         files: { waypoint: '' },
         extra: {}
       },
-      map: {}
+      map: {
+        /** @type {SDWC.LatLng[]} */
+        boundary: [],
+        /** @type {SDWC.MapPolyline[]} */
+        polylines: [],
+        /** @type {SDWC.MarkerBase[]} */
+        markers: []
+      }
     };
   },
   methods: {
@@ -52,7 +58,7 @@ export default {
         .catch(e => this.$message.error(this.$t('plan.edit.create_failed', { code: e.status })));
     },
     handleCancel() {
-      this.$router.push({ name: 'overview' });
+      this.$router.push({ name: 'plan/list' });
     },
     handleWaypointChange(wp) {
       this.map = waypointsToMapProps(wp);

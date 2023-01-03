@@ -6,9 +6,12 @@
     :polylines="polylines"
     :markers="markers"
     :fit="fit"
+    fitType="markers"
+    :fitPadding="200"
     @map-move="handleMove"
     @map-change="handleClose"
     @marker-click="handleMarkerClick"
+    @marker-right-click="handleMarkerRightClick"
   >
     <template #action>
       <el-button
@@ -50,11 +53,10 @@ export default {
   name: 'sd-overview-map',
   data() {
     return {
-      type: '',
       fit: true,
       popover: {
         show: false,
-        node: -1
+        node: ''
       }
     };
   },
@@ -68,13 +70,13 @@ export default {
     /** @returns {SDWC.Node[]} */
     depots() { return this.$store.getters.depots; },
     /**
-     * @returns {{ [droneId: number]: { [placeType: string]: SDWC.DronePlaceStyle }}}
+     * @returns {{ [droneId: string]: { [placeType: string]: SDWC.DronePlaceStyle }}}
      */
     dronePlaceStyle() {
       const style = {};
       for (const d of this.drones) {
-        const mapPoint = d.info.points.find(p => p.point_type_name === 'map') || {};
-        style[d.info.id] = Object.assign({}, PlaceStyle, get(mapPoint, 'params.common.place', {}));
+        const mapPoint = d.info.points.find(p => p.type === 'map') || {};
+        style[d.info.uuid] = Object.assign({}, PlaceStyle, get(mapPoint, 'params.common.place', {}));
       }
       return style;
     },
@@ -86,7 +88,7 @@ export default {
       for (const d of this.drones) {
         const { position, place } = d.msg;
         if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
-        const droneId = d.info.id;
+        const droneId = d.info.uuid;
         const placeStyle = this.dronePlaceStyle[droneId];
         const origin = position[0];
         for (const [placeName, pos] of Object.entries(place)) {
@@ -106,6 +108,7 @@ export default {
      * @returns {SDWC.MarkerDrone[]}
      */
     droneMarkers() {
+      /** @type {SDWC.MarkerDrone[]} */
       const markers = [];
       for (let d of this.drones) {
         const position = d.msg.position[0];
@@ -113,6 +116,7 @@ export default {
           markers.push({
             type: 'drone',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position,
             heading: position.heading
@@ -125,6 +129,7 @@ export default {
      * @returns {SDWC.MarkerDepot[]}
      */
     depotMarkers() {
+      /** @type {SDWC.MarkerDepot[]} */
       const markers = [];
       for (const d of this.depots) {
         const { code, status } = d.status;
@@ -132,11 +137,9 @@ export default {
           markers.push({
             type: 'depot',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
-            position: {
-              lng: +status.lng,
-              lat: +status.lat,
-            }
+            position: { lng: status.lng, lat: status.lat }
           });
         }
       }
@@ -146,11 +149,12 @@ export default {
      * @returns {SDWC.MarkerPlace[]}
      */
     placeMarkers() {
+      /** @type {SDWC.MarkerPlace[]} */
       const markers = [];
       for (const d of this.drones) {
         const { position, place } = d.msg;
         if (d.status.code !== 0 || position.length <= 0 || Object.keys(place).length <= 0) continue;
-        const droneId = d.info.id;
+        const droneId = d.info.uuid;
         const placeStyle = this.dronePlaceStyle[droneId];
         for (const [placeName, pos] of Object.entries(place)) {
           const style = placeStyle[placeName] || {};
@@ -173,8 +177,8 @@ export default {
     },
     /** @returns {SDWC.Node} */
     selectedNode() {
-      if (this.popover.node < 0) return null;
-      return this.node.find(n => n.info.id === this.popover.node);
+      if (!this.popover.node) return null;
+      return this.node.find(n => n.info.uuid === this.popover.node);
     }
   },
   methods: {
@@ -201,7 +205,14 @@ export default {
      * @param {number | string} id
      * @param {HTMLDivElement} el
      */
-    handleMarkerClick(id, el) {
+    handleMarkerClick(id /*, el*/) {
+      this.$router.push({ name: 'node', params: { id } });
+    },
+    /**
+     * @param {number | string} id
+     * @param {HTMLDivElement} el
+     */
+    handleMarkerRightClick(id, el) {
       this.popover.node = id;
       if (!this.$refs.popover.popperJS) {
         this.$refs.popover.referenceElm = el;
@@ -217,7 +228,7 @@ export default {
       this.popover.show = false;
     },
     handleAfterLeave() {
-      this.popover.node = -1;
+      this.popover.node = '';
     },
     handleUpdate() {
       this.$nextTick(() => this.$refs.popover.updatePopper());
@@ -230,7 +241,6 @@ export default {
     }
   },
   created() {
-    this.type = this.preference.mapType;
     this.fit = this.preference.overviewFit;
   },
   components: {

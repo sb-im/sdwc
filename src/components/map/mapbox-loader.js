@@ -1,5 +1,7 @@
 const Mapbox = {
+  /** @type {import('mapbox-gl')} */
   js: null,
+  /** @type {import('webpack').Module} */
   style: null
 };
 

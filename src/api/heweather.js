@@ -1,4 +1,5 @@
 import wretch from 'wretch';
+import queryString from 'wretch/addons/queryString';
 
 let BaseURL = 'https://api.heweather.net';
 
@@ -6,7 +7,7 @@ if (__SDWC_DEV__) {
   BaseURL = 'https://devapi.heweather.net';
 }
 
-const wr = wretch(BaseURL);
+const wr = wretch(BaseURL).addon(queryString);
 
 const conf = {
   key: '',

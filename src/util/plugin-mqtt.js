@@ -14,7 +14,7 @@ const RpcNotifications = new Map();
 
 /**
  * @this {Vue}
- * @param {number} id
+ * @param {string} id
  * @param {SDWC.ControlItem} ctl
  * @param {SDWC.MqttRpcOptions} options
  */
@@ -58,7 +58,7 @@ function nextAnimationFrame() {
 }
 
 /**
- * @param {SDWC.NotificationItem} n
+ * @param {Partial<SDWC.NotificationItem>} n
  * @param {boolean} mod
  */
 async function emitNotification(n, mod = false) {
@@ -97,7 +97,7 @@ async function emitNotification(n, mod = false) {
 function registerRpcListener() {
   MqttClient.on('rpc:request', ({ id, request }) => {
     let prefix = request.payload.id.split('-')[0];
-    const node = store.state.node.find(node => node.info.id === id).info;
+    const node = store.state.node.find(node => node.info.uuid === id).info;
     if (!node) return;
     emitNotification({
       id: request.payload.id,
@@ -109,7 +109,7 @@ function registerRpcListener() {
   });
   let notificationId = 0;
   MqttClient.on('rpc:notification', ({ id, request }) => {
-    const node = store.state.node.find(node => node.info.id === id).info;
+    const node = store.state.node.find(node => node.info.uuid === id).info;
     if (!node) return;
     const now = Date.now();
     emitNotification({
@@ -127,8 +127,8 @@ function registerRpcListener() {
 }
 
 function registerStatusListener() {
-  MqttClient.on('status', (id, { code }) => {
-    const node = store.state.node.find(node => node.info.id === id);
+  MqttClient.on('node:status', ({ id, status: { code } }) => {
+    const node = store.state.node.find(node => node.info.uuid === id);
     if (!node || node.status.code === code) return;
     const now = Date.now();
     const st = i18n.t(`common.status.${code}`);
@@ -143,13 +143,13 @@ function registerStatusListener() {
 }
 
 function registerNotificationListener() {
-  MqttClient.on('message', (id, msg) => {
+  MqttClient.on('node:message', ({ id, msg }) => {
     if (router.currentRoute.meta.suppressNotify) return;
     /** @type {SDWC.NodeNotification} */
     const n = msg.notification;
     if (!n) return;
-    const node = store.state.node.find(node => node.info.id === id);
-    if (!node || store.state.preference.notifyNoPopup.includes(node.info.id)) return;
+    const node = store.state.node.find(node => node.info.uuid === id);
+    if (!node || store.state.preference.notifyNoPopup.includes(node.info.uuid)) return;
     const notify = Notification({
       offset: 50,
       message: 'REPLACED_BY_VNODE',

@@ -1,0 +1,79 @@
+version: "3"
+services:
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    hostname: redis
+
+  emqx:
+    image: emqx/emqx:latest
+    container_name: emqx
+    hostname: mqtt-broker
+    environment:
+      - EMQX_LOADED_PLUGINS="emqx_recon,emqx_retainer,emqx_management,emqx_auth_mnesia,emqx_auth_jwt,emqx_auth_redis"
+      - EMQX_ALLOW_ANONYMOUS=false
+      - EMQX_AUTH__REDIS__SERVER=redis:6379
+      - EMQX_AUTH__REDIS__POOL=8
+      - EMQX_AUTH__REDIS__DATABASE=1
+      - EMQX_AUTH__USER__1__USERNAME=${MQTT_USERNAME:-admin}
+      - EMQX_AUTH__USER__1__PASSWORD=${MQTT_PASSWORD:-public}
+      - EMQX_AUTH__JWT__SECRET=secretkey
+      - EMQX_AUTH__JWT__FROM=password
+    ports:
+      - "1883:1883/tcp"
+      - "8083:8083/tcp"
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_DB: gosd
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  gosd:
+    image: ghcr.io/sb-im/gosd:3.0
+    container_name: gosd
+    depends_on:
+      - emqx
+      - redis
+      - postgres
+    environment:
+      DEMO_MODE: true
+      LISTEN_ADDR: '0.0.0.0:8000'
+      REDIS_URL: 'redis://redis:6379/1'
+      MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
+      DATABASE_URL: 'postgres://postgres:password@postgres/gosd?sslmode=disable'
+    ports:
+      - "8000:8000/tcp"
+    restart: always
+
+  ncp-1:
+    image: ghcr.io/sb-im/ncp:latest
+    container_name: ncp-1
+    environment:
+      NCP_UUID: 1
+      NCP_TYPE: drone
+      NCP_MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
+
+  ncp-2:
+    image: ghcr.io/sb-im/ncp:latest
+    container_name: ncp-2
+    environment:
+      NCP_UUID: 2
+      NCP_TYPE: depot
+      NCP_MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
+
+  ncp-3:
+    image: ghcr.io/sb-im/ncp:latest
+    container_name: ncp-3
+    environment:
+      NCP_UUID: 3
+      NCP_TYPE: drone
+      NCP_MQTT_URL: 'mqtt://admin:public@mqtt-broker:1883'
+
+networks:
+  default:
+    name: superdock
+

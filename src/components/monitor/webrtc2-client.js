@@ -1,10 +1,10 @@
 // @ts-check
 
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter } from 'eventemitter3';
 
 import { trace } from './webrtc-client';
 
-export class WebRTC2Client extends EventEmitter2 {
+export class WebRTC2Client extends EventEmitter {
   /**
    * @param {string | RTCIceServer[]} iceServer
    */
@@ -19,7 +19,7 @@ export class WebRTC2Client extends EventEmitter2 {
     pc.addEventListener('iceconnectionstatechange', () => this.onIceConnStateChange());
     pc.addEventListener('icecandidate', ev => this.onIceCandidate(ev));
     pc.addEventListener('track', ev => this.onTrack(ev));
-    pc.addTransceiver('video', { direction: 'recvonly' });
+    pc.addTransceiver('video', { direction: 'sendrecv' });
     pc.createOffer().then(offer => {
       trace('createOffer', offer);
       pc.setLocalDescription(offer);

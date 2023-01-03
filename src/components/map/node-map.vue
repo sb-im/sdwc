@@ -159,6 +159,7 @@ export default {
     },
     /** @return {SDWC.MapPolyline[]} */
     polylines() {
+      /** @type {SDWC.MapPolyline[]} */
       const polylines = [];
       /** @type {{ position: SDWC.NodePosition[], place: SDWC.NodePlaces }} */
       const { position, place } = this.msg;
@@ -191,25 +192,38 @@ export default {
     },
     /** @returns {SDWC.MarkerDrone[]} */
     droneMarkers() {
+      /** @type {SDWC.MarkerDrone[]} */
       const markers = [];
       const nodeId = this.point.node_id;
       for (const d of this.drones) {
-        if (d.info.id === nodeId && d.status.code === 0) {
+        if (d.info.uuid === nodeId && d.status.code === 0) {
           const position = d.msg.position[0];
           if (typeof position !== 'object') continue;
-          markers.push({
+          /** @type {SDWC.MarkerDrone} */
+          const droneMarker = {
             type: 'drone',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position: { lng: position.lng, lat: position.lat },
             heading: position.heading
+          };
+          const gimbalMarker = Object.assign({}, droneMarker, {
+            type: 'drone_gimbal',
+            id: `${d.info.id}_gimbal`,
+            name: `${d.info.name}_gimbal`,
+            yaw: d.msg.gimbal.yaw,
+            pitch: d.msg.gimbal.pitch
           });
+          // put drone gimbal marker under drone marker
+          markers.push(gimbalMarker, droneMarker);
         }
       }
       return markers;
     },
     /** @returns {SDWC.MarkerDepot[]} */
     depotMarkers() {
+      /** @type {SDWC.MarkerDepot[]} */
       const markers = [];
       const nodeId = this.point.node_id;
       for (const d of this.depots) {
@@ -218,6 +232,7 @@ export default {
           markers.push({
             type: 'depot',
             id: d.info.id,
+            uuid: d.info.uuid,
             name: d.info.name,
             position: { lng: status.lng, lat: status.lat }
           });
@@ -228,6 +243,7 @@ export default {
     /** @returns {SDWC.MarkerPlace[]} */
     placeMarkers() {
       const { place } = this.msg;
+      /** @type {SDWC.MarkerPlace[]} */
       const markers = [];
       for (const [name, pos] of Object.entries(place)) {
           const style = this.placeStyle[name] || {};
@@ -262,8 +278,8 @@ export default {
       const waypoints = [];
       for (const url of Object.values(this.msg.waypoint)) {
         const wp = await fetch(url)
-          .then(res =>res.text())
-          .then(text => parseWaypoints(text));
+          .then(res =>res.arrayBuffer())
+          .then(buf => parseWaypoints(buf));
         const i = waypoints.length;
         wp.actions.forEach(a => a.id = `wp${i}_${a.id}`);
         waypoints.push({

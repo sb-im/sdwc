@@ -39,7 +39,14 @@ export default {
   data() {
     return {
       plan: Object.assign({}, this.initial),
-      map: {}
+      map: {
+        /** @type {SDWC.LatLng[]} */
+        boundary: [],
+        /** @type {SDWC.MapPolyline[]} */
+        polylines: [],
+        /** @type {SDWC.MarkerBase[]} */
+        markers: []
+      }
     };
   },
   methods: {
@@ -60,7 +67,7 @@ export default {
         type: 'warning'
       })
         .then(() => this.deletePlan(this.initial.id))
-        .then(() => this.$router.push({ name: 'panel' }))
+        .then(() => this.$router.push({ name: 'plan/list' }))
         .catch(() => { /* noop */ });
     },
     handleCancel() {
@@ -71,7 +78,9 @@ export default {
     }
   },
   created() {
-    this.getPlanWaypoints(this.plan).then(wp => this.map = waypointsToMapProps(wp));
+    this.getPlanWaypoints(this.plan)
+      .then(wp => this.map = waypointsToMapProps(wp))
+      .catch(() => { /* noop */ });
   },
   components: {
     [Card.name]: Card,

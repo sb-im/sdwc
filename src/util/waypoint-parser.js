@@ -1,4 +1,8 @@
+import UZIP from 'uzip';
 import Papaparse from 'papaparse';
+
+const sharedDOMParser = new DOMParser();
+const sharedTextDecoder = new TextDecoder();
 
 /**
  * @param {SDWC.LatLng} p1
@@ -98,8 +102,7 @@ export function parseKML(text) {
   const path = [];
   /** @type {SDWC.MarkerAction[]} */
   const actions = [];
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(text, 'text/xml');
+  const xml = sharedDOMParser.parseFromString(text, 'text/xml');
   const placemarks = xml.querySelectorAll('Document>Folder>Placemark');
   const placemarkArray = Array.from(placemarks).sort((a, b) => {
     const [ia, ib] = [a, b].map(e => Number.parseInt(e.querySelector('name').textContent.replace(/[A-Za-z]/g, ''), 10));
@@ -129,6 +132,74 @@ export function parseKML(text) {
   }
   prependHomeMark(path, actions);
   return { path, actions };
+}
+
+const KMZActions = {
+  'takePhoto': '\uE3B0',      // camera_alt
+  'startRecord': '\uE04B',    // videocam
+  'stopRecord': '\uE04C'      // videocam_off
+};
+
+/**
+ * parse KMZ file to path object
+ * @param {ArrayBuffer} buf KMZ buffer
+ * @returns {Promise<{ boundary: SDWC.LatLng[], path: SDWC.LatLng[], actions: SDWC.MarkerAction[] }>}
+ */
+export async function parseKMZ(buf) {
+  /** @type {SDWC.LatLng[]} */
+  const boundary = [];
+  /** @type {SDWC.LatLng[]} */
+  const path = [];
+  /** @type {SDWC.MarkerAction[]} */
+  const actions = [];
+  // load zip file
+  const zip = UZIP.parse(buf);
+  // read template
+  const template = zip['wpmz/template.kml'];
+  const templateStr = sharedTextDecoder.decode(template);
+  const kml = sharedDOMParser.parseFromString(templateStr, 'text/xml');
+  const kmlFolder = kml.querySelector('Document>Folder');
+  const templateType = kmlFolder.getElementsByTagName('wpml:templateType')[0].textContent;
+  if (templateType === 'mapping2d') {
+    kmlFolder.querySelector('Placemark>Polygon coordinates')
+      .textContent
+      .replace(/[\n\t ]/g, '')
+      .replace(/,0$/, '')
+      .split(',0').forEach(lnglat => {
+        const [lng, lat] = lnglat.split(',').map(Number.parseFloat);
+        boundary.push({ lng, lat });
+      });
+  }
+  // read waypoint and actions
+  const waylines = zip['wpmz/waylines.wpml'];
+  const waylineStr = sharedTextDecoder.decode(waylines);
+  const xml = sharedDOMParser.parseFromString(waylineStr, 'text/xml');
+  const placemarks = xml.querySelectorAll('Document>Folder>Placemark');
+  const placemarkArray = Array.from(placemarks).sort((a, b) => {
+    const [ia, ib] = [a, b].map(e => Number.parseInt(e.getElementsByTagName('wpml:index')[0].textContent, 10));
+    return ia - ib;
+  });
+  for (const pm of placemarkArray) {
+    const [lng, lat /*, alt */] = pm.querySelector('Point>coordinates').textContent.split(',').map(Number.parseFloat);
+    const position = { lng, lat };
+    path.push(position);
+    const actionGroup = pm.getElementsByTagName('wpml:actionGroup')[0];
+    if (!actionGroup) continue;
+    const action = makeAction(`a${actions.length}`, position);
+    for (const act of Array.from(actionGroup.getElementsByTagName('wpml:action'))) {
+      const func = act.getElementsByTagName('wpml:actionActuatorFunc')[0].textContent;
+      const a = KMZActions[func];
+      if (!a) continue;
+      if (!action.action.includes(a)) {
+        action.action.push(a);
+      }
+    }
+    if (action.action.length > 0) {
+      actions.push(action);
+    }
+  }
+  prependHomeMark(path, actions);
+  return { boundary, path, actions };
 }
 
 /**
@@ -191,10 +262,16 @@ export function parseLitchiCSV(text) {
 
 /**
  * parse waypoint file to path object
- * @param {string} text
- * @returns {SDWC.ParsedWaypoint}
+ * @param {ArrayBuffer} buf
+ * @returns {Promise<SDWC.ParsedWaypoint>}
  */
-export function parseWaypoints(text) {
+export async function parseWaypoints(buf) {
+  const view = new DataView(buf, 0, 4);
+  // PKZip haeder "PK\3\4"
+  if (view.getUint32(0) === 0x504b0304) {
+    return parseKMZ(buf);
+  }
+  const text = sharedTextDecoder.decode(buf);
   const t = text.trim();
   if (/^<\?xml/i.test(t) && /<kml/i.test(t)) {
     return parseKML(text);

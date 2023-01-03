@@ -6,7 +6,6 @@
     active-text-color="#fff"
     :default-active="activeIndex"
     :collapse="collapse"
-    @select="handleSelect"
     router
   >
     <div class="aside__header">
@@ -28,57 +27,53 @@
         <template #title>
           <sd-icon :value="item.icon || 'tasks-blue'"></sd-icon>
           <span v-t="item.name || 'common.plan'"></span>
-          <el-badge class="aside__badge" :value="running.length" :hidden="running.length <= 0"></el-badge>
+          <el-badge class="aside__badge" :value="running.size" :hidden="running.size <= 0"></el-badge>
         </template>
         <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.plan'"></li>
-        <el-menu-item index="plan-new" :route="{ name: 'plan/new' }">
-          <i class="el-icon-plus"></i>
-          <span v-t="'plan.edit.add'"></span>
+        <el-menu-item index="plan-list" :route="{ name: 'plan/list' }">
+          <i class="el-icon-notebook-2"></i>
+          <span v-t="'plan.list.list'"></span>
         </el-menu-item>
         <el-menu-item
           v-for="plan in orderedPlans"
           :key="plan.id"
           :index="`${index}-plan-${plan.id}`"
           :route="{ name: 'plan', params: { id: plan.id } }"
-          :class="{ 'is-running': isPlanRunning[plan.id] }"
+          :class="{ 'is-running': running.has(plan.id) }"
         >{{ plan.name }}</el-menu-item>
       </el-submenu>
-      <!-- type: node/drone -->
-      <el-submenu
-        :key="index"
-        v-else-if="item.type === 'node' && item.args === 'drone'"
-        :index="`${index}`"
-      >
-        <template #title>
-          <sd-icon :value="item.icon || 'drone-blue'"></sd-icon>
-          <span slot="title" v-t="item.name || 'common.air'"></span>
-        </template>
-        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.air'"></li>
-        <el-menu-item
-          v-for="drone in drones"
-          :key="drone.info.id"
-          :index="`${index}-node-${drone.info.id}`"
-          :route="{ name: 'node', params: { id: drone.info.id } }"
-        >{{ drone.info.name }}</el-menu-item>
-      </el-submenu>
-      <!-- type: node/depot -->
-      <el-submenu
-        :key="index"
-        v-else-if="item.type === 'node' && item.args === 'depot'"
-        :index="`${index}`"
-      >
+      <!-- type: node -->
+      <el-submenu :key="index" v-else-if="item.type === 'node'" :index="`${index}`">
         <template #title>
           <sd-icon :value="item.icon || 'depot-blue'"></sd-icon>
-          <span slot="title" v-t="item.name || 'common.depot'"></span>
+          <span slot="title" v-t="item.name || 'common.node'"></span>
         </template>
-        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.depot'"></li>
+        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.node'"></li>
         <el-menu-item
-          v-for="depot in depots"
-          :key="depot.info.id"
-          :index="`${index}-node-${depot.info.id}`"
-          :route="{ name: 'node', params: { id: depot.info.id } }"
-        >{{ depot.info.name }}</el-menu-item>
+          v-for="node in nodes"
+          :key="node.info.uuid"
+          :index="`${index}-node-${node.info.uuid}`"
+          :route="{ name: 'node', params: { id: node.info.uuid } }"
+        >{{ node.info.name }}</el-menu-item>
       </el-submenu>
+      <!-- type: schedule -->
+<!--      <el-submenu :key="index" v-else-if="item.type === 'schedule'" :index="`${index}`">-->
+<!--        <template #title>-->
+<!--          <sd-icon :value="item.icon || 'timespan'"></sd-icon>-->
+<!--          <span slot="title" v-t="item.name || 'common.schedule'"></span>-->
+<!--        </template>-->
+<!--        <li v-if="collapse" class="aside__subtitle" v-t="item.name || 'common.schedule'"></li>-->
+<!--        <el-menu-item index="schedule-list" :route="{ name: 'schedule/list' }">-->
+<!--          <i class="el-icon-notebook-2"></i>-->
+<!--          <span v-t="'schedule.list.list'"></span>-->
+<!--        </el-menu-item>-->
+<!--        <el-menu-item-->
+<!--          v-for="s in schedules"-->
+<!--          :key="s.id"-->
+<!--          :index="`${index}-schedule-${s.id}`"-->
+<!--          :route="{ name: 'schedule', params: { id: s.id } }"-->
+<!--        >{{ s.name }}</el-menu-item>-->
+<!--      </el-submenu>-->
       <!-- type: path -->
       <el-menu-item
         :key="index"
@@ -124,7 +119,6 @@ export default {
   name: 'sd-aside',
   data() {
     return {
-      activeIndex: '',
       collapse: window.innerWidth < 1580
     };
   },
@@ -133,19 +127,20 @@ export default {
     ui() { return this.$store.state.ui; },
     /** @returns {SDWC.Config} */
     config() { return this.$store.state.config; },
-    /** @returns {SDWC.PlanInfo[]} */
-    plans() { return this.$store.state.plan.info; },
-    /** @returns {SDWC.PlanRunning[]} */
-    running() { return this.$store.state.plan.running; },
+    /** @returns {SDWC.PlanState[]} */
+    plans() { return this.$store.state.plan; },
     /** @returns {SDWC.Node[]} */
-    drones() { return this.$store.getters.drones; },
-    /** @returns {SDWC.Node[]} */
-    depots() { return this.$store.getters.depots; },
-    /** @returns {{ [planId: string]: boolean }} */
-    isPlanRunning() {
-      const result = {};
-      for (const r of this.running) {
-        result[r.id] = true;
+    nodes() { return this.$store.state.node; },
+    /** @returns {ApiTypes.V3.Schedule[]} */
+    schedules() { return this.$store.state.schedule; },
+    /** @returns {Set<number>} */
+    running() {
+      /** @type {Set<number>} */
+      const result = new Set();
+      for (const p of this.plans) {
+        if (p.running !== null) {
+          result.add(p.info.id);
+        }
       }
       return result;
     },
@@ -154,10 +149,14 @@ export default {
       const running = [];
       const standby = [];
       for (const p of this.plans) {
-        if (this.isPlanRunning[p.id]) running.push(p);
-        else standby.push(p);
+        if (p.running !== null) running.push(p.info);
+        else standby.push(p.info);
       }
       return running.concat(standby);
+    },
+    /** @returns {string} */
+    activeIndex() {
+      return this.resolveActiveIndex(this.$route);
     },
     /** @returns {string} */
     version() {
@@ -166,12 +165,38 @@ export default {
   },
   methods: {
     /**
-     * @param {string} index
-     * @param {string[]} indexPath
+     * @param {import('vue-router').Route} route
+     * @returns {string}
      */
-    handleSelect(index /*, indexPath*/) {
-      // TODO: find out current active index on first render
-      this.activeIndex = index;
+    resolveActiveIndex(route) {
+      /** @type {SDWC.SidebarItem[]} */
+      const items = this.ui.sidebar;
+      const pathIndex = items.findIndex(i => i.type == 'path' && i.args == route.fullPath);
+      if (pathIndex >= 0) return `${pathIndex}`;
+      const total = items.length;
+      for (let index = 0; index < total; index++) {
+        const item = this.ui.sidebar[index];
+        switch (item.type) {
+          case 'iframe':
+            if (route.params.index == index) return `${index}`;
+            break;
+          case 'node':
+            if (route.name == 'node') return `${index}-node-${route.params.uuid}`;
+            break;
+          case 'plan':
+            if (route.name === 'plan/list' || route.name == 'plan/new') return 'plan-list';
+            if (route.name.startsWith('plan/')) return `${index}-plan-${route.params.id}`;
+            break;
+          // case 'schedule':
+          //   if (route.name === 'schedule/list' || route.name == 'schedule/new') return 'schedule-list';
+          //   if (route.name.startsWith('schedule/')) return `${index}-schedule-${route.params.id}`;
+          //   break;
+          case 'overview':
+            if (route.name == 'overview') return `${index}`;
+            break;
+        }
+      }
+      return '';
     },
     toggleCollpase() {
       this.collapse = !this.collapse;
@@ -209,6 +234,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.aside__header .el-menu-item {
+  flex-shrink: 0;
 }
 .aside__logo {
   width: 50px;

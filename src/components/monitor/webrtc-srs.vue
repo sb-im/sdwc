@@ -14,7 +14,7 @@ export default {
       client.on('track', (/** @type {MediaStream[]} */ streams) => {
         this.$refs.video.srcObject = streams[0];
       });
-      client.play(this.point.params.srs).then(session => {
+      client.play(this.point.params.url).then(session => {
         this.session = session;
         this.msg = '';
         this.couldRetry = false;

@@ -58,8 +58,11 @@ export default {
       type: ''
     },
     charge: {
+      /** @type {{ set_voltage: number; set_current: number }} */
       info: { /* set_voltage: 5.5, set_current: 3.5 */ },
+      /** @type {{ timestamp: number; intervalsl: number }} */
       history_info: { /* timestamp: 1582975681, intervalsl: 30 */ },
+      /** @type {{ V: number; A: number }[]} */
       history: [/* { V: 1.7, A: 0.4 } */]
     }
   }),
@@ -134,7 +137,7 @@ export default {
       const now = Date.now();
       const { timestamp = 0, intervalsl = 0 } = this.charge.history_info;
       if (this.chargerInfoInterval > 0 || now < (timestamp + intervalsl) * 1000) return;
-      // 立即更新
+      // update chart data immediately on schedule
       this.updateChargerInfo().then(info => {
         const { timestamp, intervalsl } = info.history_info;
         const timeout = (timestamp + intervalsl + 1) * 1000 - now;
@@ -145,22 +148,29 @@ export default {
         }, timeout);
       });
     },
+    /**
+     * @param {number} offset number of intervals from timestamp
+     * @returns {string} time string in `hh:mm:ss`
+     */
     formatTime(offset) {
       const { timestamp, intervalsl } = this.charge.history_info;
       const dt = new Date((timestamp - intervalsl * offset) * 1000);
-      return dt.toLocaleString('zh', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, });
+      return this.$d(dt, 'seconds');
     },
     updateChart() {
+      /** @type { (h: { V: number, A: number }) => number } */
       const datum = this.popover.type === 'voltage' ? (h => h.V)
         : this.popover.type === 'current' ? (h => h.A)
           : (h => h.V * h.A);
-      /** @type {Chartist.IChartistData} */
+      const history = this.charge.history;
+      const size = history.length;
+      /** @type {Chartist.IChartistData & { series: { value: number; meta: string }[][] }} */
       const data = { series: [[]] };
-      for (let i = this.charge.history.length - 1; i >= 0; i--) {
-        const h = this.charge.history[i];
-        data.series[0].push({ x: i, y: datum(h) });
+      for (let i = size - 1; i >= 0; i--) {
+        // meta's value shows on tooltip
+        data.series[0].push({ value: datum(history[i]), meta: this.formatTime(i) });
       }
-      const size = data.series[0].length;
+      // show at most 4 labels on X axis
       const step = size <= 4 ? 1 : Math.ceil(size / 4);
       /** @type {Chartist.ILineChartOptions} */
       const options = {
@@ -169,7 +179,7 @@ export default {
         showArea: true,
         axisX: {
           labelInterpolationFnc: (value, index) => {
-            return (index % step === 0) ? this.formatTime(index) : null;
+            return (index % step === 0) ? this.formatTime(size - index - 1) : '';
           }
         },
         axisY: { low: 0 },
@@ -178,8 +188,7 @@ export default {
             anchorToPoint: true,
             tooltipOffset: { x: 0, y: -14 },
             tooltipFnc: (meta, value) => {
-              const [offset, num] = value.split(',');
-              return `${this.formatTime(Number.parseInt(offset))} , ${Number.parseFloat(num).toFixed(2)}`;
+              return `${meta} , ${Number.parseFloat(value).toFixed(2)}`;
             }
           })
         ]
