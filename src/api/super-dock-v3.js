@@ -87,7 +87,7 @@ export const DefaultSidebar = [
   { type: 'overview' },
   { type: 'plan' },
   { type: 'node' },
-  { type: 'schedule' }
+//  { type: 'schedule' }
 ];
 
 /**
