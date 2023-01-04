@@ -1,5 +1,36 @@
 # SDWC - Changelog
 
+## 2023-01-04 v4.0.0
+
+Use api/v3
+
+### Add
+- Layout
+  - config sidebar
+- Task
+  - WPML format airline
+- Speaker
+  - speaker record audio
+- Map
+  - gimbal direction
+- Monitor
+  - SRS webrtc
+- Status
+  - Setting Page
+
+### Change
+- Weather
+  - caiyun => heweather
+
+### Fix
+- Monitor
+  - gimbal target and current show
+  - click drift
+- Status
+  - charger_info
+- Debug
+  - jsonrpc single number
+
 ## 2020-07-24 v3.5.0
 
 ### Add
