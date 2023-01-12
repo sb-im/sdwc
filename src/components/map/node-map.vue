@@ -211,6 +211,7 @@ export default {
           const gimbalMarker = Object.assign({}, droneMarker, {
             type: 'drone_gimbal',
             id: `${d.info.id}_gimbal`,
+            uuid: `${d.info.uuid}_gimbal`,
             name: `${d.info.name}_gimbal`,
             yaw: d.msg.gimbal.yaw,
             pitch: d.msg.gimbal.pitch
