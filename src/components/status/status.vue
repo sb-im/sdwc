@@ -58,7 +58,7 @@ export default {
   computed: {
     /** @returns {SDWC.NodePoint} */
     parameterPoint() {
-      const node = this.$store.state.node.find(n => n.info.id === this.nodeId);
+      const node = this.$store.state.node.find(n => n.info.uuid === this.nodeId);
       if (!node) return null;
       const point = node.info.points.find(p => p.type === 'parameter');
       return point;
