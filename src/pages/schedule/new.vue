@@ -33,8 +33,7 @@ export default {
       name: '',
       enable: true,
       cron: '',
-      method: '',
-      params: ''
+      task_id: '',
     }
   }),
   methods: {

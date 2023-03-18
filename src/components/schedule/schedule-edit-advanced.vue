@@ -1,33 +1,13 @@
 <template>
-  <div>
-    <el-form-item>
-      <span slot="label" v-t="'schedule.method'"></span>
-      <el-input
-        class="schedule--mono"
-        :readonly="readonly"
-        :value="value.method"
-        @input="emitUpdate('method', $event)"
-      ></el-input>
-    </el-form-item>
-    <el-form-item>
-      <span slot="label" v-t="'schedule.params'"></span>
-      <el-input
-        class="schedule--mono"
-        :readonly="readonly"
-        :value="value.params"
-        @input="emitUpdate('params', $event)"
-      ></el-input>
-    </el-form-item>
-    <el-form-item>
-      <span slot="label" v-t="'schedule.cron'"></span>
-      <el-input
-        class="schedule--mono"
-        :readonly="readonly"
-        :value="value.cron"
-        @input="emitUpdate('cron', $event)"
-      ></el-input>
-    </el-form-item>
-  </div>
+  <el-form-item>
+    <span slot="label" v-t="'schedule.cron'"></span>
+    <el-input
+      class="schedule--mono"
+      :readonly="readonly"
+      :value="value.cron"
+      @input="emitUpdate('cron', $event)"
+    ></el-input>
+  </el-form-item>
 </template>
 
 <script>

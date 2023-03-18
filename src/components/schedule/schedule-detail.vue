@@ -22,6 +22,25 @@
         :readonly="readonly"
       ></el-switch>
     </el-form-item>
+    <el-form-item>
+      <span slot="label" v-t="'common.plan'"></span>
+      <template v-if="readonly">
+        <router-link v-if="planRoute" :to="planRoute" v-slot="{ href }">
+          <a class="plan__node" :href="href">
+            <el-input :value="planName" readonly></el-input>
+          </a>
+        </router-link>
+        <el-input v-else :value="planName" :placeholder="$t('common.none')" readonly></el-input>
+      </template>
+      <el-select v-else v-model="schedule.task_id">
+        <el-option
+          v-for="plan in plans"
+          :key="plan.info.id"
+          :label="plan.info.name"
+          :value="plan.info.id"
+        ></el-option>
+      </el-select>
+    </el-form-item>
     <template v-if="advanced">
       <sd-schedule-edit-advanced v-model="schedule" :readonly="readonly"></sd-schedule-edit-advanced>
     </template>
@@ -63,6 +82,19 @@ export default {
     }
   },
   computed: {
+    /** @returns {SDWC.PlanState[]} */
+    plans() { return this.$store.state.plan; },
+    /** @returns {import('vue-router').Route} */
+    planRoute() {
+      if (this.schedulePlan !== null) {
+        return { name: 'plan', params: { id: this.schedule.task_id } };
+      }
+      return null;
+    },
+    /** @returns {string} */
+    planName() {
+      return this.plans.find(p => p.info.id === this.schedule.task_id)?.info.name ?? '';
+    },
     /** @returns {string} */
     scheduleTimes() {
       try {
