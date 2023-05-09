@@ -1,6 +1,9 @@
 name: Build container image
 
-on: [push]
+on:
+  push:
+    tags:
+    - "v*"
 
 jobs:
   build:
@@ -14,7 +17,9 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: ghcr.io/sb-im/sdwc
+        images: |
+          ghcr.io/sb-im/sdwc
+          registry.cn-hangzhou.aliyuncs.com/sbim/sdwc
         tags: |
           type=ref,event=branch
           type=semver,pattern={{version}}
@@ -29,14 +34,6 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Cache Docker layers
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
-
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
       with:
@@ -44,13 +41,22 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Login to Custom Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ secrets.CUSTOM_REGISTRY }}
+        username: ${{ secrets.CUSTOM_USERNAME }}
+        password: ${{ secrets.CUSTOM_PASSWORD }}
+
     - name: Build and push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         file: Dockerfile
         push: true
+        context: .
         platforms: linux/amd64,linux/arm64
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
+        cache-from: type=registry,ref=user/app:latest
+        cache-to: type=inline
+
