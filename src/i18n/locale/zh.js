@@ -144,7 +144,8 @@ export default {
       trigger_success: '定时任务执行完成'
     },
     edit: {
-      new: '新建定时任务'
+      new: '新建定时任务',
+      empty_name: '定时任务名称不能为空'
     }
   },
   air: {

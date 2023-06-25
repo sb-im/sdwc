@@ -43,7 +43,12 @@ export default {
       'deleteSchedule'
     ]),
     handleUpdate() {
+      /** @type {ApiTypes.V3.Schedule} */
       const schedule = this.$refs.detail.getSchedule();
+      if (schedule.name.trim().length <= 0) {
+        this.$message.error(this.$t('schedule.edit.empty_name'));
+        return;
+      }
       this.updateSchedule(schedule)
         .then(() => this.$router.push({ name: 'schedule/view', params: { id: this.schedule.id } }))
         .catch(e => this.$message.error(this.$t('plan.edit.update_failed', { code: e.status })));

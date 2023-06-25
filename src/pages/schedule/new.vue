@@ -41,7 +41,12 @@ export default {
       'createSchedule'
     ]),
     handleCreate() {
+      /** @type {ApiTypes.V3.Schedule} */
       const schedule = this.$refs.detail.getSchedule();
+      if (schedule.name.trim().length <= 0) {
+        this.$message.error(this.$t('schedule.edit.empty_name'));
+        return;
+      }
       this.createSchedule(schedule)
         .then(p => this.$router.push({ name: 'schedule/view', params: { id: p.id } }))
         .catch(e => this.$message.error(this.$t('plan.edit.create_failed', { code: e.status })));

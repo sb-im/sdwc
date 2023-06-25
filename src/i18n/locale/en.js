@@ -144,7 +144,8 @@ export default {
       trigger_success: 'Schedule Triggered'
     },
     edit: {
-      new: 'New Schedule'
+      new: 'New Schedule',
+      empty_name: 'Schedule Name cannot be empty'
     }
   },
   air: {
