@@ -149,7 +149,9 @@
           </el-tooltip>
         </div>
       </div>
-      <div class="monitor-drone-joystick" ref="joysticks" v-show="joystick.show">
+      <div class="monitor-drone-joystick" ref="joysticks" v-show="joystick.show"
+           @contextmenu.prevent>
+      >
         <div class="monitor-drone-joystick__zone"></div>
         <div class="monitor-drone-joystick__zone"></div>
       </div>
@@ -680,6 +682,11 @@ export default {
      * @param {number} index
      */
     createSingleJoystick(index) {
+      const zone = this.$refs.joysticks.children[index];
+
+      // 为摇杆区域禁用右键菜单
+      zone.addEventListener('contextmenu', e => e.preventDefault());
+
       const instance = nipplejs.create({
         zone: this.$refs.joysticks.children[index],
         mode: 'static',
@@ -688,6 +695,7 @@ export default {
         restOpacity: 0.6,
         fadeTime: 200
       });
+
       instance.on('start', () => this.$set(this.joystick.moving, index, true));
       instance.on('end', () => {
         this.$set(this.joystick.moving, index, false);
